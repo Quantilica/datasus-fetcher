@@ -6,7 +6,7 @@ import threading
 import time
 from functools import lru_cache
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Iterable
 
 from . import meta
 from .storage import RemoteFile, get_filename, calculate_sha256
@@ -286,6 +286,35 @@ def list_dataset_files(ftp: ftplib.FTP, dataset: str) -> list[RemoteFile]:
                 file.partition |= parse_filename(m, fn_pattern)
                 dataset_files.append(file)
     return dataset_files
+
+
+def download_data(
+    datasets: Iterable[str],
+    destdir: Path,
+    threads: int = 2,
+    callback: Callable = print,
+):
+    """Multithreaded download data files"""
+    print(f"Starting download with {threads} threads")
+    if datasets:
+        datasets_ = set(datasets) & set(meta.datasets.keys())
+    else:
+        datasets_ = meta.datasets.keys()
+    ftp0 = connect()
+    q = queue.Queue()
+    for _ in range(threads):
+        _w = Fetcher(q, destdir, callback=callback)
+        _w.start()
+    for dataset in datasets_:
+        print(f"Getting files of {dataset}")
+        for remote_file in list_dataset_files(ftp0, dataset):
+            q.put(remote_file)
+    ftp0.close()
+    print("Joining queue")
+    q.join()
+    for th in threading.enumerate():
+        if th.daemon:
+            th.ftp.close()
 
 
 def download_documentation(
