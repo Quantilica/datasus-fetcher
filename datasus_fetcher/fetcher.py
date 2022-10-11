@@ -48,6 +48,18 @@ class Fetcher(threading.Thread):
                 tt = time.time() - t0
                 sha256 = calculate_sha256(filepath)
                 log_download(tt, file.size, sha256)
+
+                file_metadata = {
+                    "url": f"ftp://{FTP_HOST}/{file.full_path}",
+                    "size": file.size,
+                    "directory": str(self.dest_dir),
+                    "filename": filename,
+                    "suffix": file.extension,
+                    "sha256": sha256,
+                    "dataset": dataset,
+                    "created_at": file.datetime,
+                }
+
             except Exception as e:
                 print(f"Exception {e}")
             finally:
@@ -295,3 +307,14 @@ def download_documentation(
         download_speed_kbps = f"{file['size'] / tt / 1024:.2f} kB/s"
         print(f"      {sha256} {tt:.2f} s {filesize_kb} {download_speed_kbps}")
 
+        file_metadata = {
+            "url": f"ftp://{FTP_HOST}/{file['full_path']}",
+            "size": file["size"],
+            "directory": str(destdir),
+            "filename": filename,
+            "created_at": file["datetime"],
+            "sha256": sha256,
+            "suffix": extension,
+        }
+
+        yield file_metadata
