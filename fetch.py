@@ -6,16 +6,18 @@ import threading
 from datasus_fetcher import fetcher, meta
 
 
-def download(datasets, destdir, threads=2):
+def download(datasets, destdir, threads=2, callback=None):
     print(f"Starting download with {threads} threads")
     if datasets:
         datasets_ = set(datasets) & set(meta.datasets.keys())
     else:
         datasets_ = meta.datasets.keys()
+    if callback is None:
+        callback = print
     ftp0 = fetcher.connect()
     q = queue.Queue()
     for _ in range(threads):
-        _w = fetcher.Fetcher(q, destdir)
+        _w = fetcher.Fetcher(q, destdir, callback=callback)
         _w.start()
     for dataset in datasets_:
         print(f"Getting files of {dataset}")

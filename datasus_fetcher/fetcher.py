@@ -6,6 +6,7 @@ import threading
 import time
 from functools import lru_cache
 from pathlib import Path
+from typing import Callable
 
 from . import meta
 from .storage import RemoteFile, get_filename, calculate_sha256
@@ -16,12 +17,16 @@ MEGA = 1_000_000
 
 class Fetcher(threading.Thread):
 
-    def __init__(self, q: queue.Queue, dest_dir: Path):
+    def __init__(self, q: queue.Queue, dest_dir: Path, callback: Callable = None):
         super().__init__()
         self.daemon = True
         self.ftp = connect()
         self.q = q
         self.dest_dir = dest_dir
+        if callable(callback):
+            self.callback = callback
+        else:
+            self.callback = lambda _: None
 
     def run(self):
         while True:
@@ -59,6 +64,8 @@ class Fetcher(threading.Thread):
                     "dataset": dataset,
                     "created_at": file.datetime,
                 }
+
+                self.callback(file_metadata)
 
             except Exception as e:
                 print(f"Exception {e}")
