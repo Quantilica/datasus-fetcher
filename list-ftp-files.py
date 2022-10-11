@@ -14,7 +14,14 @@ def main():
             total_files += 1
             dataset_size += file.size
             dataset_files += 1
-        print(f"{dataset: <27} {dataset_files: >6} files totaling {dataset_size / 2**20: >9.1f} MB")
+        msg = " ".join(
+            [
+                f"{dataset: <27}",
+                f"{dataset_files: >6} files",
+                f"totaling {dataset_size / 2**20: >9.1f} MB",
+            ]
+        )
+        print(msg)
 
     print(f"Total size: {total_size / 2**30:.1f} GB")
     print(f"Total files: {total_files} files")

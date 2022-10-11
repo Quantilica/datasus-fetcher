@@ -1,32 +1,7 @@
 import argparse
 import pathlib
-import queue
-import threading
 
-from datasus_fetcher import fetcher, meta
-
-
-def download(datasets, destdir, threads=2):
-    print(f"Starting download with {threads} threads")
-    if datasets:
-        datasets_ = set(datasets) & set(meta.datasets.keys())
-    else:
-        datasets_ = meta.datasets.keys()
-    ftp0 = fetcher.connect()
-    q = queue.Queue()
-    for _ in range(threads):
-        _w = fetcher.Fetcher(q, destdir)
-        _w.start()
-    for dataset in datasets_:
-        print(f"Getting files of {dataset}")
-        for remote_file in fetcher.list_dataset_files(ftp0, dataset):
-            q.put(remote_file)
-    ftp0.close()
-    print("Joining queue")
-    q.join()
-    for th in threading.enumerate():
-        if th.daemon:
-            th.ftp.close()
+from datasus_fetcher import fetcher
 
 
 def get_args():
@@ -64,7 +39,7 @@ def main():
     datasets = args.datasets
     destdir = args.destdir
     threads = args.threads
-    download(datasets, destdir, threads)
+    fetcher.download_data(datasets, destdir, threads)
 
 
 if __name__ == "__main__":

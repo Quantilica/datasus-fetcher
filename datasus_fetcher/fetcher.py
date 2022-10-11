@@ -6,9 +6,10 @@ import threading
 import time
 from functools import lru_cache
 from pathlib import Path
+from typing import Callable, Iterable
 
 from . import meta
-from .storage import RemoteFile, get_filename, get_sha1_hash
+from .storage import RemoteFile, get_filename, calculate_sha256
 
 FTP_HOST = "ftp.datasus.gov.br"
 MEGA = 1_000_000
@@ -16,12 +17,16 @@ MEGA = 1_000_000
 
 class Fetcher(threading.Thread):
 
-    def __init__(self, q: queue.Queue, dest_dir: Path):
+    def __init__(self, q: queue.Queue, dest_dir: Path, callback: Callable = None):
         super().__init__()
         self.daemon = True
         self.ftp = connect()
         self.q = q
         self.dest_dir = dest_dir
+        if callable(callback):
+            self.callback = callback
+        else:
+            self.callback = lambda _: None
 
     def run(self):
         while True:
@@ -44,21 +49,36 @@ class Fetcher(threading.Thread):
             try:
                 print(file.full_path, "->", filepath)
                 t0 = time.time()
-                sha1 = fetch_file(self.ftp, file.full_path, filepath)
+                fetch_file(self.ftp, file.full_path, filepath)
                 tt = time.time() - t0
-                log_download(tt, file.size, sha1)
+                sha256 = calculate_sha256(filepath)
+                log_download(tt, file.size, sha256)
+
+                file_metadata = {
+                    "url": f"ftp://{FTP_HOST}/{file.full_path}",
+                    "size": file.size,
+                    "directory": str(self.dest_dir),
+                    "filename": filename,
+                    "suffix": file.extension,
+                    "sha256": sha256,
+                    "dataset": dataset,
+                    "created_at": file.datetime,
+                }
+
+                self.callback(file_metadata)
+
             except Exception as e:
                 print(f"Exception {e}")
             finally:
                 self.q.task_done()
 
 
-def log_download(tt: float, size: int, sha1=""):
+def log_download(tt: float, size: int, sha256: str = ""):
     filesize_mb = size / MEGA
     download_speed_mbps = (size * 8) / tt / MEGA
     log = " ".join(
         [
-            f"{sha1: >46}",
+            f"{sha256: >46}",
             f"{filesize_mb: >6.2f} MB",
             f"{tt: >5.2f} s",
             f"{download_speed_mbps: >5.2f} Mb/s",
@@ -119,7 +139,7 @@ def fetch_file(
     path: str,
     dest_filepath: Path | str,
     retries: int = 3,
-) -> str:
+):
     """Fetch a file from a remote FTP server.
 
     :param path: The path to the file.
@@ -136,13 +156,12 @@ def fetch_file(
         try:
             with open(dest_filepath, "wb") as f:
                 ftp.retrbinary("RETR " + path, f.write)
-            sha1 = get_sha1_hash(dest_filepath)
-            return sha1
+            break
         # File not found exception
         except ftplib.error_perm:
             print(f"File {path} not found.")
             dest_filepath.unlink(missing_ok=True)
-            return
+            break
         # Timeout exception
         except (ftplib.error_temp, TimeoutError):
             print(f"Timeout exception for {path}.")
@@ -270,6 +289,35 @@ def list_dataset_files(ftp: ftplib.FTP, dataset: str) -> list[RemoteFile]:
     return dataset_files
 
 
+def download_data(
+    datasets: Iterable[str],
+    destdir: Path,
+    threads: int = 2,
+    callback: Callable = print,
+):
+    """Multithreaded download data files"""
+    print(f"Starting download with {threads} threads")
+    if datasets:
+        datasets_ = set(datasets) & set(meta.datasets.keys())
+    else:
+        datasets_ = meta.datasets.keys()
+    ftp0 = connect()
+    q = queue.Queue()
+    for _ in range(threads):
+        _w = Fetcher(q, destdir, callback=callback)
+        _w.start()
+    for dataset in datasets_:
+        print(f"Getting files of {dataset}")
+        for remote_file in list_dataset_files(ftp0, dataset):
+            q.put(remote_file)
+    ftp0.close()
+    print("Joining queue")
+    q.join()
+    for th in threading.enumerate():
+        if th.daemon:
+            th.ftp.close()
+
+
 def download_documentation(
     ftp: ftplib.FTP,
     dataset: str,
@@ -289,8 +337,21 @@ def download_documentation(
         filepath = destdir / filename
         print(f"{i: >5}", file["full_path"], "->", filepath)
         t0 = time.time()
-        sha1 = fetch_file(ftp, file["full_path"], filepath)
+        fetch_file(ftp, file["full_path"], filepath)
         tt = time.time() - t0
+        sha256 = calculate_sha256(filepath)
         filesize_kb = f"{file['size'] / 1024:.2f} kB"
         download_speed_kbps = f"{file['size'] / tt / 1024:.2f} kB/s"
-        print(f"      {sha1} {tt:.2f} s {filesize_kb} {download_speed_kbps}")
+        print(f"      {sha256} {tt:.2f} s {filesize_kb} {download_speed_kbps}")
+
+        file_metadata = {
+            "url": f"ftp://{FTP_HOST}/{file['full_path']}",
+            "size": file["size"],
+            "directory": str(destdir),
+            "filename": filename,
+            "created_at": file["datetime"],
+            "sha256": sha256,
+            "suffix": extension,
+        }
+
+        yield file_metadata
