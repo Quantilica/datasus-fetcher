@@ -161,7 +161,7 @@ def fetch_file(
         except ftplib.error_perm:
             print(f"File {path} not found.")
             dest_filepath.unlink(missing_ok=True)
-            return
+            break
         # Timeout exception
         except (ftplib.error_temp, TimeoutError):
             print(f"Timeout exception for {path}.")
