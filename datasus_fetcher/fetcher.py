@@ -156,6 +156,7 @@ def fetch_file(
         try:
             with open(dest_filepath, "wb") as f:
                 ftp.retrbinary("RETR " + path, f.write)
+            break
         # File not found exception
         except ftplib.error_perm:
             print(f"File {path} not found.")
