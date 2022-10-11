@@ -8,7 +8,7 @@ from functools import lru_cache
 from pathlib import Path
 
 from . import meta
-from .storage import RemoteFile, get_filename, get_sha1_hash
+from .storage import RemoteFile, get_filename, calculate_sha256
 
 FTP_HOST = "ftp.datasus.gov.br"
 MEGA = 1_000_000
@@ -44,21 +44,22 @@ class Fetcher(threading.Thread):
             try:
                 print(file.full_path, "->", filepath)
                 t0 = time.time()
-                sha1 = fetch_file(self.ftp, file.full_path, filepath)
+                fetch_file(self.ftp, file.full_path, filepath)
                 tt = time.time() - t0
-                log_download(tt, file.size, sha1)
+                sha256 = calculate_sha256(filepath)
+                log_download(tt, file.size, sha256)
             except Exception as e:
                 print(f"Exception {e}")
             finally:
                 self.q.task_done()
 
 
-def log_download(tt: float, size: int, sha1=""):
+def log_download(tt: float, size: int, sha256: str = ""):
     filesize_mb = size / MEGA
     download_speed_mbps = (size * 8) / tt / MEGA
     log = " ".join(
         [
-            f"{sha1: >46}",
+            f"{sha256: >46}",
             f"{filesize_mb: >6.2f} MB",
             f"{tt: >5.2f} s",
             f"{download_speed_mbps: >5.2f} Mb/s",
@@ -119,7 +120,7 @@ def fetch_file(
     path: str,
     dest_filepath: Path | str,
     retries: int = 3,
-) -> str:
+):
     """Fetch a file from a remote FTP server.
 
     :param path: The path to the file.
@@ -136,8 +137,6 @@ def fetch_file(
         try:
             with open(dest_filepath, "wb") as f:
                 ftp.retrbinary("RETR " + path, f.write)
-            sha1 = get_sha1_hash(dest_filepath)
-            return sha1
         # File not found exception
         except ftplib.error_perm:
             print(f"File {path} not found.")
@@ -289,8 +288,10 @@ def download_documentation(
         filepath = destdir / filename
         print(f"{i: >5}", file["full_path"], "->", filepath)
         t0 = time.time()
-        sha1 = fetch_file(ftp, file["full_path"], filepath)
+        fetch_file(ftp, file["full_path"], filepath)
         tt = time.time() - t0
+        sha256 = calculate_sha256(filepath)
         filesize_kb = f"{file['size'] / 1024:.2f} kB"
         download_speed_kbps = f"{file['size'] / tt / 1024:.2f} kB/s"
-        print(f"      {sha1} {tt:.2f} s {filesize_kb} {download_speed_kbps}")
+        print(f"      {sha256} {tt:.2f} s {filesize_kb} {download_speed_kbps}")
+
