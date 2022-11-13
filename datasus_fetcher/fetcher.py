@@ -57,8 +57,7 @@ class Fetcher(threading.Thread):
                 file_metadata = {
                     "url": f"ftp://{FTP_HOST}/{file.full_path}",
                     "size": file.size,
-                    "directory": str(self.dest_dir),
-                    "filename": filename,
+                    "filepath": filepath,
                     "suffix": file.extension,
                     "sha256": sha256,
                     "dataset": dataset,
@@ -347,8 +346,7 @@ def download_documentation(
         file_metadata = {
             "url": f"ftp://{FTP_HOST}/{file['full_path']}",
             "size": file["size"],
-            "directory": str(destdir),
-            "filename": filename,
+            "filepath": filepath,
             "created_at": file["datetime"],
             "sha256": sha256,
             "suffix": extension,
