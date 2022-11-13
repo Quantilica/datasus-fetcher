@@ -1,5 +1,5 @@
 import argparse
-import pathlib
+from pathlib import Path
 
 from datasus_fetcher import fetcher
 
@@ -18,7 +18,7 @@ def get_args():
         "--output",
         "--destdir",
         dest="destdir",
-        type=pathlib.Path,
+        type=Path,
         required=True,
         help="Directory to download to",
     )

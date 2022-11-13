@@ -1,5 +1,5 @@
 import argparse
-import pathlib
+from pathlib import Path
 
 from datasus_fetcher import fetcher, meta
 
@@ -29,7 +29,7 @@ def get_parser():
         "--output",
         "--destdir",
         dest="destdir",
-        type=pathlib.Path,
+        type=Path,
         help="Directory to download to",
     )
     return parser

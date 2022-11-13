@@ -1,11 +1,11 @@
 import argparse
-import pathlib
 import subprocess
+from pathlib import Path
 
 from datasus_fetcher import meta
 
 
-def compress_files_by_period(dataset_dirpath: pathlib.Path, destdirpath: pathlib.Path):
+def compress_files_by_period(dataset_dirpath: Path, destdirpath: Path):
     dataset = dataset_dirpath.name
     periods = set(
         [
@@ -33,7 +33,7 @@ def compress_files_by_period(dataset_dirpath: pathlib.Path, destdirpath: pathlib
         subprocess.run(cmd)
 
 
-def compress_files_by_dataset(datadirpath: pathlib.Path, destdirpath: pathlib.Path):
+def compress_files_by_dataset(datadirpath: Path, destdirpath: Path):
 
     for datasetdir in sorted(datadirpath.iterdir()):
         dest_filepath = destdirpath / f"{datasetdir.name}.7z"
@@ -59,12 +59,12 @@ def get_parser():
     )
     parser.add_argument(
         "datadirpath",
-        type=pathlib.Path,
+        type=Path,
         help="Directory to compress",
     )
     parser.add_argument(
         "destdirpath",
-        type=pathlib.Path,
+        type=Path,
         help="Directory to store compressed files",
     )
     parser.add_argument("-by", choices=["dataset", "period"], default="period")
