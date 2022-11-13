@@ -1,5 +1,6 @@
 import datetime as dt
 import ftplib
+import logging
 import queue
 import re
 import threading
@@ -9,10 +10,11 @@ from pathlib import Path
 from typing import Callable, Iterable
 
 from . import meta
-from .storage import RemoteFile, get_filename, calculate_sha256
+from .storage import RemoteFile, calculate_sha256, get_filename
 
 FTP_HOST = "ftp.datasus.gov.br"
 MEGA = 1_000_000
+logger = logging.getLogger(__name__)
 
 
 class Fetcher(threading.Thread):
@@ -47,7 +49,7 @@ class Fetcher(threading.Thread):
             filepath.parent.mkdir(parents=True, exist_ok=True)
 
             try:
-                print(file.full_path, "->", filepath)
+                logger.debug(file.full_path, "->", filepath)
                 t0 = time.time()
                 fetch_file(self.ftp, file.full_path, filepath)
                 tt = time.time() - t0
@@ -67,7 +69,7 @@ class Fetcher(threading.Thread):
                 self.callback(file_metadata)
 
             except Exception as e:
-                print(f"Exception {e}")
+                logger.debug(f"Exception {e}")
             finally:
                 self.q.task_done()
 
@@ -83,7 +85,7 @@ def log_download(tt: float, size: int, sha256: str = ""):
             f"{download_speed_mbps: >5.2f} Mb/s",
         ]
     )
-    print(log)
+    logger.info(log)
 
 
 def connect() -> ftplib.FTP:
@@ -98,7 +100,7 @@ def list_files(ftp: ftplib.FTP, directory: str, retries: int = 3) -> list[dict]:
     try:
         ftp.cwd(directory)
     except ftplib.error_perm:
-        print(f"Directory not found. {directory}")
+        logger.exception(f"Directory not found. {directory}")
 
     while retries > 0:
         files = []
@@ -107,7 +109,7 @@ def list_files(ftp: ftplib.FTP, directory: str, retries: int = 3) -> list[dict]:
             break
         # Timeout exception
         except (ftplib.error_temp, TimeoutError):
-            print(f"Timeout exception while listing files.")
+            logger.exception(f"Timeout exception while listing files.")
             retries -= 1
             time.sleep(5)
 
@@ -158,12 +160,12 @@ def fetch_file(
             break
         # File not found exception
         except ftplib.error_perm:
-            print(f"File {path} not found.")
+            logger.exception(f"File {path} not found.")
             dest_filepath.unlink(missing_ok=True)
             break
         # Timeout exception
         except (ftplib.error_temp, TimeoutError):
-            print(f"Timeout exception for {path}.")
+            logger.exception(f"Timeout exception for {path}.")
             dest_filepath.unlink(missing_ok=True)
             retries -= 1
             time.sleep(5)
@@ -295,7 +297,7 @@ def download_data(
     callback: Callable = print,
 ):
     """Multithreaded download data files"""
-    print(f"Starting download with {threads} threads")
+    logger.info(f"Starting download with {threads} threads")
     if datasets:
         datasets_ = set(datasets) & set(meta.datasets.keys())
     else:
@@ -306,11 +308,11 @@ def download_data(
         _w = Fetcher(q, destdir, callback=callback)
         _w.start()
     for dataset in datasets_:
-        print(f"Getting files of {dataset}")
+        logger.info(f"Getting files of {dataset}")
         for remote_file in list_dataset_files(ftp0, dataset):
             q.put(remote_file)
     ftp0.close()
-    print("Joining queue")
+    logger.info("Joining queue")
     q.join()
     for th in threading.enumerate():
         if th.daemon:
@@ -334,14 +336,14 @@ def download_documentation(
         filename, extension = file["filename"].rsplit(".", 1)
         filename = f"{filename}@{file['datetime']:%Y%m%d}.{extension}"
         filepath = destdir / filename
-        print(f"{i: >5}", file["full_path"], "->", filepath)
+        logger.debug(f"{i: >5}", file["full_path"], "->", filepath)
         t0 = time.time()
         fetch_file(ftp, file["full_path"], filepath)
         tt = time.time() - t0
         sha256 = calculate_sha256(filepath)
         filesize_kb = f"{file['size'] / 1024:.2f} kB"
         download_speed_kbps = f"{file['size'] / tt / 1024:.2f} kB/s"
-        print(f"      {sha256} {tt:.2f} s {filesize_kb} {download_speed_kbps}")
+        logger.debug(f"      {sha256} {tt:.2f} s {filesize_kb} {download_speed_kbps}")
 
         file_metadata = {
             "url": f"ftp://{FTP_HOST}/{file['full_path']}",
