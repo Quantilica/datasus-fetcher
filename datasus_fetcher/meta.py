@@ -265,6 +265,17 @@ datasets = {
         ],
         "partition": ["year"],
     },
+    "sim-dorext-cid10": {
+        "periods": [
+            {
+                "dir": BASE_PATH + "/SIM/CID10/DOFET",
+                "filename_prefix": "DOREXT",
+                "filename_pattern": year2_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["year"],
+    },
     "cnes-dc": {
         "periods": [
             {
