@@ -1,4 +1,5 @@
 import argparse
+import logging
 from pathlib import Path
 
 from datasus_fetcher import fetcher
@@ -35,6 +36,18 @@ def get_args():
 
 
 def main():
+    logger = logging.getLogger("datasus_fetcher")
+    logger.setLevel(logging.DEBUG)
+    logger.propagate = False
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.INFO)
+    handler.setFormatter(
+        logging.Formatter(
+            fmt="%(asctime)s %(levelname)s %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
+    )
+    logger.addHandler(handler)
     args = get_args()
     datasets = args.datasets
     destdir = args.destdir
