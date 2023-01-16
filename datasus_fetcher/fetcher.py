@@ -18,7 +18,6 @@ logger = logging.getLogger(__name__)
 
 
 class Fetcher(threading.Thread):
-
     def __init__(self, q: queue.Queue, dest_dir: Path, callback: Callable = None):
         super().__init__()
         self.daemon = True
@@ -274,8 +273,7 @@ def list_dataset_files(ftp: ftplib.FTP, dataset: str) -> list[RemoteFile]:
     dataset_files = []
     for period in meta.datasets[dataset]["periods"]:
         files = [
-            RemoteFile(**f)
-            for f in list_files(ftp, directory=period["dir"], retries=3)
+            RemoteFile(**f) for f in list_files(ftp, directory=period["dir"], retries=3)
         ]
         fn_prefix = period["filename_prefix"]
         fn_pattern = period["filename_pattern"]
