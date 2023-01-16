@@ -152,13 +152,7 @@ datasets = {
     "sinasc-dn-preliminar": {
         "periods": [
             {
-                "dir": BASE_PATH + "/SINASC/PRELIM19/DNRES",
-                "filename_prefix": "DNP",
-                "filename_pattern": uf_year_pattern,
-                "extension": "dbc",
-            },
-            {
-                "dir": BASE_PATH + "/SINASC/PRELIM20/DNRES",
+                "dir": BASE_PATH + "/SINASC/PRELIM/DNRES",
                 "filename_prefix": "DN",
                 "filename_pattern": uf_year_pattern,
                 "extension": "dbc",
