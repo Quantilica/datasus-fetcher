@@ -8,16 +8,12 @@ Online queries: https://datasus.saude.gov.br/informacoes-de-saude-tabnet/
 Microdata: https://datasus.saude.gov.br/transferencia-de-arquivos/
 
 - SIM: Sistema de Informação de Mortalidade
-  - SIM-DO
-  - SIM-DO-PRELIMINAR
-  - SIM-DOFET
-  - SIM-DOFET-PRELIMINAR
-  - SIM-DOEXT
-  - SIM-DOEXT-PRELIMINAR
-  - SIM-DOINF
-  - SIM-DOINF-PRELIMINAR
-  - SIM-DOMAT
-  - SIM-DOMAT-PRELIMINAR
+  - SIM-DO: Declarações de Óbito
+  - SIM-DOEXT: Declarações de Óbitos por causas externas
+  - SIM-DOFET: Declarações de Óbitos fetais
+  - SIM-DOINF: Declarações de Óbitos infantis
+  - SIM-DOMAT: Declarações de Óbitos maternos
+  - SIM-DOREXT: Mortalidade de residentes no exterior
 - SIH: Sistema de Informação Hospitalar (Descentralizado)
   - SIH-RD: AIH Reduzida
   - SIH-RJ: AIH Rejeitadas
