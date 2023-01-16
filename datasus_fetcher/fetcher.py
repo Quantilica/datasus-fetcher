@@ -53,7 +53,7 @@ class Fetcher(threading.Thread):
                 fetch_file(self.ftp, file.full_path, filepath)
                 tt = time.time() - t0
                 sha256 = calculate_sha256(filepath)
-                log_download(tt, file.size, sha256)
+                log_download(tt, file.size, filepath.name)
 
                 file_metadata = {
                     "url": f"ftp://{FTP_HOST}/{file.full_path}",
@@ -73,12 +73,12 @@ class Fetcher(threading.Thread):
                 self.q.task_done()
 
 
-def log_download(tt: float, size: int, sha256: str = ""):
+def log_download(tt: float, size: int, filename: str):
     filesize_mb = size / MEGA
     download_speed_mbps = (size * 8) / tt / MEGA
     log = " ".join(
         [
-            f"{sha256: >46}",
+            f"{filename: <40}",
             f"{filesize_mb: >6.2f} MB",
             f"{tt: >5.2f} s",
             f"{download_speed_mbps: >5.2f} Mb/s",
