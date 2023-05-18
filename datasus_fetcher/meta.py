@@ -182,6 +182,17 @@ datasets = {
         ],
         "partition": ["uf", "year"],
     },
+    "sim-do-cid10-preliminar": {
+        "periods": [
+            {
+                "dir": BASE_PATH + "/SIM/PRELIM/DORES",
+                "filename_prefix": "DO",
+                "filename_pattern": uf_year_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "year"],
+    },
     "sim-doext-cid09": {
         "periods": [
             {
