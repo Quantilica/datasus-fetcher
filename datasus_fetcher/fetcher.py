@@ -2,7 +2,6 @@ import datetime as dt
 import ftplib
 import logging
 import queue
-import re
 import threading
 import time
 from functools import lru_cache
@@ -10,8 +9,14 @@ from pathlib import Path
 from typing import Callable, Iterable
 
 from . import meta
-from .remote_names import parse_filename
-from .storage import DataPartition, RemoteFile, calculate_sha256, get_filename
+from .remote_names import get_pattern, parse_filename
+from .storage import (
+    DataPartition,
+    RemoteFile,
+    calculate_sha256,
+    get_filename,
+    get_partition_dir,
+)
 
 FTP_HOST = "ftp.datasus.gov.br"
 MEGA = 1_000_000
@@ -34,13 +39,8 @@ class Fetcher(threading.Thread):
         while True:
             file: RemoteFile = self.q.get()
             dataset = file.dataset
+            partition_dir = get_partition_dir(file)
             filename = get_filename(file)
-
-            partition_dir = ""
-            if "year" in file.partition:
-                partition_dir += f"{file.partition['year']}"
-            if "month" in file.partition:
-                partition_dir += f"{file.partition['month']:02d}"
 
             filepath: Path = self.dest_dir / dataset / partition_dir / filename
             if filepath.exists() and filepath.stat().st_size == file.size:
@@ -175,12 +175,11 @@ def list_dataset_files(ftp: ftplib.FTP, dataset: str) -> list[RemoteFile]:
     dataset_files = []
     for period in meta.datasets[dataset]["periods"]:
         files = [
-            RemoteFile(**f) for f in list_files(ftp, directory=period["dir"], retries=3)
+            RemoteFile(**f)
+            for f in list_files(ftp, directory=period["dir"], retries=3)
         ]
-        fn_prefix = period["filename_prefix"]
         fn_pattern = period["filename_pattern"]
-        fn_ext = period["extension"]
-        pattern = re.compile(f"^{fn_prefix}{fn_pattern}\\.{fn_ext}$".lower())
+        pattern = get_pattern(period=period)
         for file in files:
             m = pattern.match(file.filename.lower())
             if m:

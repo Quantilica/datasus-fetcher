@@ -78,6 +78,14 @@ def _parse_uf_year2_month_filename_sia_pa(m: re.Match) -> dict:
     }
 
 
+def get_pattern(period: dict) -> re.Pattern:
+    fn_prefix = period["filename_prefix"]
+    fn_pattern = period["filename_pattern"]
+    fn_ext = period["extension"]
+    pattern = re.compile(f"^{fn_prefix}{fn_pattern}\\.{fn_ext}$".lower())
+    return pattern
+
+
 def parse_filename(m: re.Match, pattern: str) -> dict:
     """Parse remote file name and returns a dictionary with metadata for data
     partitioning.
