@@ -62,6 +62,15 @@ def calculate_sha256(filepath: Path) -> str:
     return h.hexdigest()
 
 
+def get_partition_dir(remote_file: RemoteFile) -> str:
+    partition_dir = ""
+    if remote_file.partition.year is not None:
+        partition_dir += f"{remote_file.partition.year}"
+    if remote_file.partition.month is not None:
+        partition_dir += f"{remote_file.partition.month:02d}"
+    return partition_dir
+
+
 def get_filename(remote_file: RemoteFile) -> str:
     """Returns the filename for the given file info and partition."""
     dataset = remote_file.dataset
