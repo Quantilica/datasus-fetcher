@@ -11,7 +11,7 @@ from typing import Callable, Iterable
 
 from . import meta
 from .remote_names import parse_filename
-from .storage import RemoteFile, calculate_sha256, get_filename
+from .storage import DataPartition, RemoteFile, calculate_sha256, get_filename
 
 FTP_HOST = "ftp.datasus.gov.br"
 MEGA = 1_000_000
@@ -185,7 +185,7 @@ def list_dataset_files(ftp: ftplib.FTP, dataset: str) -> list[RemoteFile]:
             m = pattern.match(file.filename.lower())
             if m:
                 file.dataset = dataset
-                file.partition |= parse_filename(m, fn_pattern)
+                file.partition = DataPartition(**parse_filename(m, fn_pattern))
                 dataset_files.append(file)
     return dataset_files
 

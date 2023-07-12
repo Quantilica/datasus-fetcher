@@ -4,8 +4,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable
 
-from .meta import datasets
-
 
 @dataclass
 class File:
@@ -20,6 +18,31 @@ class File:
 
 
 @dataclass
+class DataPartition:
+    uf: str = None
+    year: int = None
+    month: int = None
+    version: str = None
+
+    def __str__(self) -> str:
+        uf, year, month = self.uf, self.year, self.month
+        match (uf, year, month):
+            case (None, int(), None):
+                partition = f"{year}"
+            case (str(), None, None):
+                partition = f"{uf}"
+            case (str(), int(), None):
+                partition = f"{year}-{uf}"
+            case (str(), int(), int()):
+                partition = f"{year}{month:02}-{uf}"
+            case _:
+                partition = ""
+        if version := self.version:
+            partition += f"-{version}"
+        return partition.lower()
+
+
+@dataclass
 class RemoteFile:
     filename: str
     full_path: str
@@ -27,7 +50,7 @@ class RemoteFile:
     extension: str
     size: int
     dataset: str = None
-    partition: dict = field(default_factory=dict)
+    partition: DataPartition = field(default_factory=DataPartition)
 
 
 def calculate_sha256(filepath: Path) -> str:
@@ -44,27 +67,7 @@ def get_filename(remote_file: RemoteFile) -> str:
     dataset = remote_file.dataset
     extension = remote_file.extension
     file_datetime = remote_file.datetime.strftime("%Y%m%d")
-    metadata_partition = datasets[dataset]["partition"]
-    match metadata_partition:
-        case ["uf"]:
-            uf = remote_file.partition["uf"].lower()
-            partition = f"{uf}"
-        case ["year"]:
-            year = remote_file.partition["year"]
-            partition = f"{year}"
-        case ["uf", "year"]:
-            uf = remote_file.partition["uf"].lower()
-            year = remote_file.partition["year"]
-            partition = f"{year}-{uf}"
-        case ["uf", "yearmonth"]:
-            uf = remote_file.partition["uf"].lower()
-            year = remote_file.partition["year"]
-            month = remote_file.partition["month"]
-            partition = f"{year}{month:02}-{uf}"
-        case _:
-            partition = ""
-    if version := remote_file.partition.get("version"):
-        partition += f"-{version}"
+    partition = str(remote_file.partition)
     filename = "_".join([s for s in (dataset, partition, file_datetime) if s])
     return f"{filename}.{extension}"
 
