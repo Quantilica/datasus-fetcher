@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Callable, Iterable
 
 from . import meta
+from .remote_names import parse_filename
 from .storage import RemoteFile, calculate_sha256, get_filename
 
 FTP_HOST = "ftp.datasus.gov.br"
@@ -168,105 +169,6 @@ def fetch_file(
             dest_filepath.unlink(missing_ok=True)
             retries -= 1
             time.sleep(5)
-
-
-def get_year2(year_: str) -> int:
-    if year_[0] in "789":
-        year = 1900 + int(year_)
-    else:
-        year = 2000 + int(year_)
-    return year
-
-
-def parse_uf_year2_month_filename(m: re.Match) -> dict:
-    uf = m.group(1)
-    year_ = m.group(2)
-    year = get_year2(year_)
-    month = int(m.group(3))
-    return {
-        "uf": uf,
-        "year": year,
-        "month": month,
-    }
-
-
-def parse_year_filename(m: re.Match) -> dict:
-    year = int(m.group(1))
-    return {
-        "year": year,
-    }
-
-
-def parse_year2_filename(m: re.Match) -> dict:
-    year_ = m.group(1)
-    year = get_year2(year_)
-    return {
-        "year": year,
-    }
-
-
-def parse_uf_year_filename(m: re.Match) -> dict:
-    uf = m.group(1)
-    year = int(m.group(2))
-    return {
-        "uf": uf,
-        "year": year,
-    }
-
-
-def parse_uf_year2_filename(m: re.Match) -> dict:
-    uf = m.group(1)
-    year_ = m.group(2)
-    year = get_year2(year_)
-    return {
-        "uf": uf,
-        "year": year,
-    }
-
-
-def parse_uf_filename(m: re.Match) -> dict:
-    uf = m.group(1)
-    return {
-        "uf": uf,
-    }
-
-
-def parse_uf_year2_month_filename_sia_pa(m: re.Match) -> dict:
-    uf = m.group(1)
-    year_ = m.group(2)
-    year = get_year2(year_)
-    month = int(m.group(3))
-    version = m.group(4)
-    return {
-        "uf": uf,
-        "year": year,
-        "month": month,
-        "version": version,
-    }
-
-
-def parse_filename(m: re.Match, pattern: str) -> dict:
-    match pattern:
-        case meta.uf_year_pattern:
-            return parse_uf_year_filename(m)
-        case meta.uf_year2_pattern:
-            return parse_uf_year2_filename(m)
-        case meta.uf_year2_month_pattern:
-            return parse_uf_year2_month_filename(m)
-        case meta.uf_year2_month_pattern_sia_pa:
-            return parse_uf_year2_month_filename_sia_pa(m)
-        case meta.year_pattern:
-            return parse_year_filename(m)
-        case meta.year2_pattern:
-            return parse_year2_filename(m)
-        case meta.uf_mapas_year_pattern:
-            return parse_uf_year_filename(m)
-        case meta.uf_cnv_pattern:
-            return parse_uf_filename(m)
-        case "base_territorial":
-            return {}
-        case _:
-            raise ValueError(f"Pattern not found: {pattern}")
 
 
 def list_dataset_files(ftp: ftplib.FTP, dataset: str) -> list[RemoteFile]:
