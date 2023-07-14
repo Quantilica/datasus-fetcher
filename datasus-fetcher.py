@@ -3,7 +3,8 @@ import shutil
 from pathlib import Path
 
 from datasus_fetcher import fetcher, meta
-from datasus_fetcher.storage import File, get_filename, get_files_metadata
+from datasus_fetcher.slicer import Slicer
+from datasus_fetcher.storage import File, get_files_metadata
 
 
 def list_files(args: argparse.Namespace):
@@ -66,7 +67,13 @@ def fetch_data(args: argparse.Namespace):
     else:
         datasets = args.datasets
 
-    fetcher.download_data(datasets, data_dir, threads)
+    slicer = Slicer(
+        start_time=args.start,
+        end_time=args.end,
+        regions=args.regions,
+    )
+
+    fetcher.download_data(datasets, data_dir, threads, slicer=slicer)
 
 
 def fetch_docs(args: argparse.Namespace):
@@ -148,6 +155,9 @@ def get_args():
         default=2,
         help="Number of concurrent fetchers",
     )
+    subparser_fetch.add_argument("--start")
+    subparser_fetch.add_argument("--end")
+    subparser_fetch.add_argument("--regions", nargs="+")
     subparser_fetch.set_defaults(func=fetch_data)
 
     # * fetch docs ------------------------------------------------------------

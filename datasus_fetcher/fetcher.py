@@ -6,7 +6,9 @@ import threading
 import time
 from functools import lru_cache
 from pathlib import Path
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Self
+
+from datasus_fetcher.slicer import Slicer
 
 from . import meta
 from .remote_names import get_pattern, parse_filename
@@ -24,7 +26,12 @@ logger = logging.getLogger(__name__)
 
 
 class Fetcher(threading.Thread):
-    def __init__(self, q: queue.Queue, dest_dir: Path, callback: Callable = None):
+    def __init__(
+        self: Self,
+        q: queue.Queue,
+        dest_dir: Path,
+        callback: Callable = None,
+    ):
         super().__init__()
         self.daemon = True
         self.ftp = connect()
@@ -194,6 +201,7 @@ def download_data(
     destdir: Path,
     threads: int = 2,
     callback: Callable = print,
+    slicer: Slicer = None,
 ):
     """Multithreaded download data files"""
     logger.info(f"Starting download with {threads} threads")
@@ -209,6 +217,8 @@ def download_data(
     for dataset in datasets_:
         logger.info(f"Getting files of {dataset}")
         for remote_file in list_dataset_files(ftp0, dataset):
+            if slicer is not None and not slicer(remote_file):
+                continue
             q.put(remote_file)
     ftp0.close()
     logger.info("Joining queue")
