@@ -15,27 +15,45 @@ def list_files(args: argparse.Namespace):
     ftp = fetcher.connect()
 
     total_size = 0
-    total_files = 0
+    total_n_files = 0
 
     for dataset in datasets:
-        dataset_size = 0
-        dataset_files = 0
-        for file in fetcher.list_dataset_files(ftp, dataset):
-            total_size += file.size
-            total_files += 1
-            dataset_size += file.size
-            dataset_files += 1
+        dataset_files_list = fetcher.list_dataset_files(ftp, dataset)
+        dataset_size = sum(f.size for f in dataset_files_list)
+        dataset_n_files = len(dataset_files_list)
+        total_size += dataset_size
+        total_n_files += dataset_n_files
+        if dataset_files_list:
+            if "year" in meta.datasets[dataset]["partition"]:
+                first = min(dataset_files_list, key=lambda x: x.partition.year)
+                first = f"{first.partition.year}"
+                last = max(dataset_files_list, key=lambda x: x.partition.year)
+                last = f"{last.partition.year}"
+            elif "yearmonth" in meta.datasets[dataset]["partition"]:
+                first = min(
+                    dataset_files_list,
+                    key=lambda x: f"{x.partition.year}{x.partition.month:02}",
+                )
+                first = f"{first.partition.year}-{first.partition.month:02}"
+                last = max(
+                    dataset_files_list,
+                    key=lambda x: f"{x.partition.year}{x.partition.month:02}",
+                )
+                last = f"{last.partition.year}-{last.partition.month:02}"
+        else:
+            first = last = "----"
         msg = " ".join(
             [
                 f"{dataset: <27}",
-                f"{dataset_files: >6} files ",
+                f"{dataset_n_files: >6} files ",
                 f"{dataset_size / 2**20: >9.1f} MB",
+                f"from {first} to {last}",
             ]
         )
         print(msg)
 
     print(f"Total size: {total_size / 2**30:.1f} GB")
-    print(f"Total files: {total_files} files")
+    print(f"Total files: {total_n_files} files")
 
     ftp.close()
 
