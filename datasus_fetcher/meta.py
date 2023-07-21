@@ -1607,13 +1607,299 @@ datasets = {
         ],
         "partition": ["uf"],
     },
+    "pce": {
+        "periods": [
+            {
+                "dir": "/PCE/DADOS",
+                "filename_prefix": "PCE",
+                "filename_pattern": uf_year2_pattern,
+                "extension": "dbc",
+            }
+        ],
+        "partition": ["uf", "year"],
+    },
+    "po": {
+        "periods": [
+            {
+                "dir": "/PAINEL_ONCOLOGIA/DADOS",
+                "filename_prefix": "PO",
+                "filename_pattern": uf_year_pattern,
+                "extension": "dbc",
+            }
+        ],
+        "partition": ["uf", "year"],
+    },
+    "siscolo-cc": {
+        "periods": [
+            {
+                "dir": "/SISCAN/SISCOLO4/Dados",
+                "filename_prefix": "CC",
+                "filename_pattern": uf_year2_month_pattern,
+                "extension": "dbc",
+            }
+        ],
+        "partition": ["uf", "yearmonth"],
+    },
+    "siscolo-hc": {
+        "periods": [
+            {
+                "dir": "/SISCAN/SISCOLO4/Dados",
+                "filename_prefix": "HC",
+                "filename_pattern": uf_year2_month_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "yearmonth"],
+    },
+    "sismama-cm": {
+        "periods": [
+            {
+                "dir": "/SISCAN/SISMAMA/Dados",
+                "filename_prefix": "CM",
+                "filename_pattern": uf_year2_month_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "yearmonth"],
+    },
+    "sismama-hm": {
+        "periods": [
+            {
+                "dir": "/SISCAN/SISMAMA/Dados",
+                "filename_prefix": "HM",
+                "filename_pattern": uf_year2_month_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "yearmonth"],
+    },
+    "sinan-exan": {
+        "periods": [
+            {
+                "dir": BASE_PATH + "/SINAN/DADOS/FINAIS",
+                "filename_prefix": "EXAN",
+                "filename_pattern": uf_year2_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "year"],
+    },
+    "sinan-exan-preliminar": {
+        "periods": [
+            {
+                "dir": BASE_PATH + "/SINAN/DADOS/PRELIM",
+                "filename_prefix": "EXAN",
+                "filename_pattern": uf_year2_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "year"],
+    },
+    "sinan-ntra": {
+        "periods": [
+            {
+                "dir": BASE_PATH + "/SINAN/DADOS/FINAIS",
+                "filename_prefix": "NTRA",
+                "filename_pattern": uf_year2_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "year"],
+    },
+    "sinan-ntra-preliminar": {
+        "periods": [
+            {
+                "dir": BASE_PATH + "/SINAN/DADOS/PRELIM",
+                "filename_prefix": "NTRA",
+                "filename_pattern": uf_year2_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "year"],
+    },
+    "sinan-sdta": {
+        "periods": [
+            {
+                "dir": BASE_PATH + "/SINAN/DADOS/FINAIS",
+                "filename_prefix": "SDTA",
+                "filename_pattern": uf_year2_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "year"],
+    },
+    "sinan-sdta-preliminar": {
+        "periods": [
+            {
+                "dir": BASE_PATH + "/SINAN/DADOS/PRELIM",
+                "filename_prefix": "SDTA",
+                "filename_pattern": uf_year2_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "year"],
+    },
+    "sinan-src": {
+        "periods": [
+            {
+                "dir": BASE_PATH + "/SINAN/DADOS/FINAIS",
+                "filename_prefix": "SRC",
+                "filename_pattern": uf_year2_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "year"],
+    },
+    "sinan-src-preliminar": {
+        "periods": [
+            {
+                "dir": BASE_PATH + "/SINAN/DADOS/PRELIM",
+                "filename_prefix": "SRC",
+                "filename_pattern": uf_year2_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "year"],
+    },
+    "sinan-toxc": {
+        "periods": [
+            {
+                "dir": BASE_PATH + "/SINAN/DADOS/FINAIS",
+                "filename_prefix": "TOXC",
+                "filename_pattern": uf_year2_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "year"],
+    },
+    "sinan-toxc-preliminar": {
+        "periods": [
+            {
+                "dir": BASE_PATH + "/SINAN/DADOS/PRELIM",
+                "filename_prefix": "TOXC",
+                "filename_pattern": uf_year2_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "year"],
+    },
+    "sinan-toxg": {
+        "periods": [
+            {
+                "dir": BASE_PATH + "/SINAN/DADOS/FINAIS",
+                "filename_prefix": "TOXG",
+                "filename_pattern": uf_year2_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "year"],
+    },
+    "sinan-toxg-preliminar": {
+        "periods": [
+            {
+                "dir": BASE_PATH + "/SINAN/DADOS/PRELIM",
+                "filename_prefix": "TOXG",
+                "filename_pattern": uf_year2_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "year"],
+    },
+    "sinan-trac": {
+        "periods": [
+            {
+                "dir": BASE_PATH + "/SINAN/DADOS/FINAIS",
+                "filename_prefix": "TRAC",
+                "filename_pattern": uf_year2_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "year"],
+    },
+    "sinan-trac-preliminar": {
+        "periods": [
+            {
+                "dir": BASE_PATH + "/SINAN/DADOS/PRELIM",
+                "filename_prefix": "TRAC",
+                "filename_pattern": uf_year2_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "year"],
+    },
+    "sinan-varc": {
+        "periods": [
+            {
+                "dir": BASE_PATH + "/SINAN/DADOS/FINAIS",
+                "filename_prefix": "VARC",
+                "filename_pattern": uf_year2_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "year"],
+    },
+    "sinan-varc-preliminar": {
+        "periods": [
+            {
+                "dir": BASE_PATH + "/SINAN/DADOS/PRELIM",
+                "filename_prefix": "VARC",
+                "filename_pattern": uf_year2_pattern,
+                "extension": "dbc",
+            },
+        ],
+        "partition": ["uf", "year"],
+    },
 }
 
 
 docs = {
+    "base-populacional-ibge": {
+        "dir": BASE_PATH + "/IBGE/DOC",
+    },
+    "base-territorial": {
+        "dir": "/territorio/doc",
+    },
+    "cmd": {
+        "dir": BASE_PATH + "/CMD/201701_/doc",
+    },
+    "ciha": {
+        "dir": BASE_PATH + "/CIHA/201101_/Doc",
+    },
     "cnes": {
         "dir": BASE_PATH + "/CNES/200508_/doc",
     },
+    "pce": {
+        "dir": BASE_PATH + "/PCE/DOCS/",
+    },
+    "po": {
+        "dir": BASE_PATH + "/PAINEL_ONCOLOGIA/DOC",
+    },
+    "resp": {
+        "dir": BASE_PATH + "/RESP/DOCS",
+    },
+    "sia": {
+        "dir": BASE_PATH + "/SIASUS/200801_/Doc",
+    },
+    "sih": {
+        "dir": BASE_PATH + "/SIHSUS/200801_/Doc",
+    },
+    "sim-cid09": {
+        "dir": BASE_PATH + "/SIM/CID9/DOCS",
+    },
+    "sim-cid10": {
+        "dir": BASE_PATH + "/SIM/CID10/DOCS",
+    },
+    "sinan": {
+        "dir": BASE_PATH + "/SINAN/DOCS",
+    },
+    "sinasc-anterior": {
+        "dir": BASE_PATH + "/SINASC/ANT/DOCS",
+    },
+    "sinasc-nova": {
+        "dir": BASE_PATH + "/SINASC/NOV/DOCS",
+    },
+}
+
     "base-populacional-ibge": {
         "dir": BASE_PATH + "/IBGE/DOC/",
     },
