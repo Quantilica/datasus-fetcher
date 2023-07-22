@@ -124,3 +124,17 @@ Microdata: https://datasus.saude.gov.br/transferencia-de-arquivos/
   - SISMAMA-HC: Histopatológico de Mama
 - SISPRENATAL: Sistema de Monitoramento e Avaliação do Pré-Natal, Parto, Puepério e Criança
   - SISPRENATAL-PN: Pré-Natal
+
+## Development
+
+Install development version from Github running this command:
+
+```sh
+pip install -e git+https://github.com/viridisdata/datasus-fetcher.git
+```
+
+Run unit tests with:
+
+```sh
+python -m unittest discover
+```
