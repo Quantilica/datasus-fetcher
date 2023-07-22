@@ -103,7 +103,11 @@ def connect() -> ftplib.FTP:
 
 
 @lru_cache
-def list_files(ftp: ftplib.FTP, directory: str, retries: int = 3) -> list[dict]:
+def list_files(
+    ftp: ftplib.FTP,
+    directory: str,
+    retries: int = 3,
+) -> list[dict]:
     try:
         ftp.cwd(directory)
     except ftplib.error_perm:
