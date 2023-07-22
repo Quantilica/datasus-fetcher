@@ -1,8 +1,7 @@
 __pycache__/
 build/
 dist/
-
-poetry.lock
+*.egg-info/
 
 # Sublime Text configuration files
 *.sublime-*
