@@ -239,12 +239,14 @@ def download_documentation(
     ftp_dir = meta.docs[dataset]["dir"]
     ftp.cwd(ftp_dir)
 
-    files = list_files(ftp)
+    files = list_files(ftp, directory=ftp_dir)
 
     for i, file in enumerate(files):
         filename, extension = file["filename"].rsplit(".", 1)
         filename = f"{filename}@{file['datetime']:%Y%m%d}.{extension}"
         filepath = destdir / filename
+        if filepath.exists() and filepath.stat().st_size == file["size"]:
+            continue
         logger.debug(f"{i: >5}", file["full_path"], "->", filepath)
         t0 = time.time()
         fetch_file(ftp, file["full_path"], filepath)
@@ -278,12 +280,14 @@ def download_auxiliary_tables(
     ftp_dir = meta.auxiliary_tables[dataset]["dir"]
     ftp.cwd(ftp_dir)
 
-    files = list_files(ftp)
+    files = list_files(ftp, directory=ftp_dir)
 
     for i, file in enumerate(files):
         filename, extension = file["filename"].rsplit(".", 1)
         filename = f"{filename}@{file['datetime']:%Y%m%d}.{extension}"
         filepath = destdir / filename
+        if filepath.exists() and filepath.stat().st_size == file["size"]:
+            continue
         logger.debug(f"{i: >5}", file["full_path"], "->", filepath)
         t0 = time.time()
         fetch_file(ftp, file["full_path"], filepath)

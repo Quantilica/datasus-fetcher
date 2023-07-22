@@ -94,7 +94,8 @@ def fetch_docs(args: argparse.Namespace):
     else:
         datasets_ = meta.docs.keys()
     for dataset in sorted(datasets_):
-        fetcher.download_documentation(ftp, dataset, data_dir)
+        for file in fetcher.download_documentation(ftp, dataset, data_dir):
+            print(file)
     ftp.close()
 
 
@@ -111,7 +112,8 @@ def fetch_aux(args: argparse.Namespace):
     else:
         datasets_ = meta.auxiliary_tables.keys()
     for dataset in sorted(datasets_):
-        fetcher.download_auxiliary_tables(ftp, dataset, data_dir)
+        for file in fetcher.download_auxiliary_tables(ftp, dataset, data_dir):
+            print(file)
     ftp.close()
 
 
@@ -161,8 +163,6 @@ def get_args():
         help="Datasets to download",
     )
     subparser_fetch.add_argument(
-        "-o",
-        "--output",
         "--data-dir",
         dest="data_dir",
         type=Path,
@@ -190,14 +190,27 @@ def get_args():
         help="Datasets documentation to download",
     )
     subparser_docs.add_argument(
-        "-o",
-        "--output",
         "--data-dir",
         dest="data_dir",
         type=Path,
         help="Directory to download to",
     )
     subparser_docs.set_defaults(func=fetch_docs)
+
+    # * fetch aux -------------------------------------------------------------
+    subparser_aux = subparsers.add_parser("aux")
+    subparser_aux.add_argument(
+        "datasets",
+        nargs="*",
+        help="Datasets auxiliary tables to download",
+    )
+    subparser_aux.add_argument(
+        "--data-dir",
+        dest="data_dir",
+        type=Path,
+        help="Directory to download to",
+    )
+    subparser_aux.set_defaults(func=fetch_aux)
 
     # * archive ---------------------------------------------------------------
     subparser_archive = subparsers.add_parser("archive")

@@ -1883,15 +1883,11 @@ auxiliary_tables = {
     "base-populacional-ibge": {
         "dir": BASE_PATH + "/IBGE/Auxiliar",
     },
-    "base-territorial": {
-    },
-    "base-territorial-conversao": {
-    },
     "cih": {
         "dir": BASE_PATH + "/CIH/200801_201012/Auxiliar",
     },
     "ciha": {
-        "dir": BASE_PATH + "CIHA/201101_/Auxiliar",
+        "dir": BASE_PATH + "/CIHA/201101_/Auxiliar",
     },
     "cmd": {
         "dir": BASE_PATH + "/CMD/201701_/Auxiliar",
