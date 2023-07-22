@@ -1,13 +1,25 @@
-[tool.poetry]
+[project]
 name = "datasus-fetcher"
-version = "0.2.0"
+authors = [
+    {name = "Daniel Komesu", email = "danielkomesu@gmail.com"},
+]
 description = "Downloader of DATASUS raw data files"
-license = "MIT"
-authors = ["Daniel Komesu <danielkomesu@gmail.com>"]
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = [
+    "data",
+    "data collection",
+    "open data",
+    "health",
+    "datasus",
+    "microdata",
+]
+license = {text = "MIT"}
+dynamic = ["version"]
 
-[tool.poetry.dependencies]
-python = ">=3.10"
+[project.scripts]
+datasus-fetcher = "datasus_fetcher.cli:main"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
