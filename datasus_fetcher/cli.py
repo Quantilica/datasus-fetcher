@@ -156,7 +156,7 @@ def get_args():
     subparser_list_files.set_defaults(func=list_files)
 
     # * fetch data ------------------------------------------------------------
-    subparser_fetch = subparsers.add_parser("fetch")
+    subparser_fetch = subparsers.add_parser("data")
     subparser_fetch.add_argument(
         "datasets",
         nargs="*",
