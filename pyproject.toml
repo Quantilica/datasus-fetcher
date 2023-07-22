@@ -17,6 +17,9 @@ keywords = [
 license = {text = "MIT"}
 dynamic = ["version"]
 
+[tool.setuptools.dynamic]
+version = {attr = "datasus_fetcher.__version__"}
+
 [project.scripts]
 datasus-fetcher = "datasus_fetcher.cli:main"
 
