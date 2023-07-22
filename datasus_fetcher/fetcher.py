@@ -266,3 +266,42 @@ def download_documentation(
         }
 
         yield file_metadata
+
+
+def download_auxiliary_tables(
+    ftp: ftplib.FTP,
+    dataset: str,
+    destdir: Path,
+):
+    destdir = destdir / f"{dataset}[aux]"
+
+    ftp_dir = meta.auxiliary_tables[dataset]["dir"]
+    ftp.cwd(ftp_dir)
+
+    files = list_files(ftp)
+
+    for i, file in enumerate(files):
+        filename, extension = file["filename"].rsplit(".", 1)
+        filename = f"{filename}@{file['datetime']:%Y%m%d}.{extension}"
+        filepath = destdir / filename
+        logger.debug(f"{i: >5}", file["full_path"], "->", filepath)
+        t0 = time.time()
+        fetch_file(ftp, file["full_path"], filepath)
+        tt = time.time() - t0
+        sha256 = calculate_sha256(filepath)
+        filesize_kb = f"{file['size'] / 1024:.2f} kB"
+        download_speed_kbps = f"{file['size'] / tt / 1024:.2f} kB/s"
+        logger.debug(
+            f"      {sha256} {tt:.2f} s {filesize_kb} {download_speed_kbps}",
+        )
+
+        file_metadata = {
+            "url": f"ftp://{FTP_HOST}/{file['full_path']}",
+            "size": file["size"],
+            "filepath": filepath,
+            "created_at": file["datetime"],
+            "sha256": sha256,
+            "suffix": extension,
+        }
+
+        yield file_metadata

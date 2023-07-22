@@ -98,6 +98,23 @@ def fetch_docs(args: argparse.Namespace):
     ftp.close()
 
 
+def fetch_aux(args: argparse.Namespace):
+    data_dir = args.data_dir
+    if args.datasets is None:
+        datasets = meta.auxiliary_tables
+    else:
+        datasets = args.datasets
+
+    ftp = fetcher.connect()
+    if datasets:
+        datasets_ = set(datasets) & set(meta.auxiliary_tables.keys())
+    else:
+        datasets_ = meta.auxiliary_tables.keys()
+    for dataset in sorted(datasets_):
+        fetcher.download_auxiliary_tables(ftp, dataset, data_dir)
+    ftp.close()
+
+
 def archive(args: argparse.Namespace):
     data_dir = args.data_dir
     archivedatadir = args.archive_data_dir
