@@ -252,7 +252,9 @@ def download_documentation(
         sha256 = calculate_sha256(filepath)
         filesize_kb = f"{file['size'] / 1024:.2f} kB"
         download_speed_kbps = f"{file['size'] / tt / 1024:.2f} kB/s"
-        logger.debug(f"      {sha256} {tt:.2f} s {filesize_kb} {download_speed_kbps}")
+        logger.debug(
+            f"      {sha256} {tt:.2f} s {filesize_kb} {download_speed_kbps}",
+        )
 
         file_metadata = {
             "url": f"ftp://{FTP_HOST}/{file['full_path']}",
