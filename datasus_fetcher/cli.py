@@ -84,7 +84,7 @@ def fetch_data(args: argparse.Namespace):
 def fetch_docs(args: argparse.Namespace):
     data_dir = args.data_dir
     if args.datasets is None:
-        datasets = meta.datasets
+        datasets = meta.docs
     else:
         datasets = args.datasets
 
