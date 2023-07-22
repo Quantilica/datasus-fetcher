@@ -914,28 +914,6 @@ datasets = {
         ],
         "partition": ["uf", "year"],
     },
-    "sinan-fama": {
-        "periods": [
-            {
-                "dir": BASE_PATH + "/SINAN/DADOS/FINAIS",
-                "filename_prefix": "FAMA",
-                "filename_pattern": uf_year2_pattern,
-                "extension": "dbc",
-            },
-        ],
-        "partition": ["uf", "year"],
-    },
-    "sinan-fama-preliminar": {
-        "periods": [
-            {
-                "dir": BASE_PATH + "/SINAN/DADOS/PRELIM",
-                "filename_prefix": "FAMA",
-                "filename_pattern": uf_year2_pattern,
-                "extension": "dbc",
-            },
-        ],
-        "partition": ["uf", "year"],
-    },
     "sinan-fmac": {
         "periods": [
             {
