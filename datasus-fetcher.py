@@ -18,7 +18,7 @@ def list_files(args: argparse.Namespace):
     total_size = 0
     total_n_files = 0
 
-    for dataset in datasets:
+    for dataset in sorted(datasets):
         dataset_files_list = fetcher.list_dataset_files(ftp, dataset)
         dataset_size = sum(f.size for f in dataset_files_list)
         dataset_n_files = len(dataset_files_list)
@@ -73,7 +73,12 @@ def fetch_data(args: argparse.Namespace):
         regions=args.regions,
     )
 
-    fetcher.download_data(datasets, data_dir, threads, slicer=slicer)
+    fetcher.download_data(
+        datasets=sorted(datasets),
+        destdir=data_dir,
+        threads=threads,
+        slicer=slicer,
+    )
 
 
 def fetch_docs(args: argparse.Namespace):
@@ -88,7 +93,7 @@ def fetch_docs(args: argparse.Namespace):
         datasets_ = set(datasets) & set(meta.docs.keys())
     else:
         datasets_ = meta.docs.keys()
-    for dataset in datasets_:
+    for dataset in sorted(datasets_):
         fetcher.download_documentation(ftp, dataset, data_dir)
     ftp.close()
 
