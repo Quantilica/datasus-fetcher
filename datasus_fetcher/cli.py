@@ -2,9 +2,9 @@ import argparse
 import shutil
 from pathlib import Path
 
-from datasus_fetcher import fetcher, meta
-from datasus_fetcher.slicer import Slicer
-from datasus_fetcher.storage import File, get_files_metadata
+from . import fetcher, meta
+from .slicer import Slicer
+from .storage import File, get_files_metadata
 
 
 def list_files(args: argparse.Namespace):
