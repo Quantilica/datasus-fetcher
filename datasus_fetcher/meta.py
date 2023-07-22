@@ -1610,7 +1610,7 @@ datasets = {
     "pce": {
         "periods": [
             {
-                "dir": "/PCE/DADOS",
+                "dir": BASE_PATH + "/PCE/DADOS",
                 "filename_prefix": "PCE",
                 "filename_pattern": uf_year2_pattern,
                 "extension": "dbc",
@@ -1621,7 +1621,7 @@ datasets = {
     "po": {
         "periods": [
             {
-                "dir": "/PAINEL_ONCOLOGIA/DADOS",
+                "dir": BASE_PATH + "/PAINEL_ONCOLOGIA/DADOS",
                 "filename_prefix": "PO",
                 "filename_pattern": uf_year_pattern,
                 "extension": "dbc",
@@ -1632,7 +1632,7 @@ datasets = {
     "siscolo-cc": {
         "periods": [
             {
-                "dir": "/SISCAN/SISCOLO4/Dados",
+                "dir": BASE_PATH + "/SISCAN/SISCOLO4/Dados",
                 "filename_prefix": "CC",
                 "filename_pattern": uf_year2_month_pattern,
                 "extension": "dbc",
@@ -1643,7 +1643,7 @@ datasets = {
     "siscolo-hc": {
         "periods": [
             {
-                "dir": "/SISCAN/SISCOLO4/Dados",
+                "dir": BASE_PATH + "/SISCAN/SISCOLO4/Dados",
                 "filename_prefix": "HC",
                 "filename_pattern": uf_year2_month_pattern,
                 "extension": "dbc",
@@ -1654,7 +1654,7 @@ datasets = {
     "sismama-cm": {
         "periods": [
             {
-                "dir": "/SISCAN/SISMAMA/Dados",
+                "dir": BASE_PATH + "/SISCAN/SISMAMA/Dados",
                 "filename_prefix": "CM",
                 "filename_pattern": uf_year2_month_pattern,
                 "extension": "dbc",
@@ -1665,7 +1665,7 @@ datasets = {
     "sismama-hm": {
         "periods": [
             {
-                "dir": "/SISCAN/SISMAMA/Dados",
+                "dir": BASE_PATH + "/SISCAN/SISMAMA/Dados",
                 "filename_prefix": "HM",
                 "filename_pattern": uf_year2_month_pattern,
                 "extension": "dbc",
