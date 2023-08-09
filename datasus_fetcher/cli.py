@@ -157,10 +157,24 @@ def get_args():
 
     # * fetch data ------------------------------------------------------------
     subparser_fetch = subparsers.add_parser("data")
-    subparser_fetch.add_argument(
+    subparser_fetch_group = subparser_fetch.add_argument_group("dataset")
+    subparser_fetch_group.add_argument(
         "datasets",
         nargs="*",
-        help="Datasets to download",
+        help="Datasets to download (eg.: sih-rd, cnes-dc, ...)",
+    )
+    subparser_fetch_group.add_argument(
+        "--start",
+        help="Start period to download (eg.: 2001 OR 2001-01)",
+    )
+    subparser_fetch_group.add_argument(
+        "--end",
+        help="End period to download (eg.: 2020 OR 2020-12)",
+    )
+    subparser_fetch_group.add_argument(
+        "--regions",
+        nargs="+",
+        help="Regions to download (eg.: br, ac, am, ce, ...)",
     )
     subparser_fetch.add_argument(
         "--data-dir",
@@ -177,9 +191,6 @@ def get_args():
         default=2,
         help="Number of concurrent fetchers",
     )
-    subparser_fetch.add_argument("--start")
-    subparser_fetch.add_argument("--end")
-    subparser_fetch.add_argument("--regions", nargs="+")
     subparser_fetch.set_defaults(func=fetch_data)
 
     # * fetch docs ------------------------------------------------------------
