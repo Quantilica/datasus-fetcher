@@ -7,7 +7,7 @@ from .slicer import Slicer
 from .storage import File, get_files_metadata
 
 
-def list_files(args: argparse.Namespace):
+def list_datasets(args: argparse.Namespace):
     if not args.datasets:
         datasets = meta.datasets
     else:
@@ -146,14 +146,14 @@ def get_args():
     )
     subparsers = parser.add_subparsers(required=True)
 
-    # * list-files ------------------------------------------------------------
-    subparser_list_files = subparsers.add_parser("list-files")
-    subparser_list_files.add_argument(
+    # * list-datasets ---------------------------------------------------------
+    subparser_list_datasets = subparsers.add_parser("list-datasets")
+    subparser_list_datasets.add_argument(
         "datasets",
         nargs="*",
         help="Datasets to list",
     )
-    subparser_list_files.set_defaults(func=list_files)
+    subparser_list_datasets.set_defaults(func=list_datasets)
 
     # * fetch data ------------------------------------------------------------
     subparser_fetch = subparsers.add_parser("data")
