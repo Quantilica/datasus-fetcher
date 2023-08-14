@@ -18,6 +18,17 @@ def list_datasets(args: argparse.Namespace):
     total_size = 0
     total_n_files = 0
 
+    print(
+        "|".join(
+            (
+                "-----------Dataset----------",
+                "---Nº files---",
+                "--Total size--",
+                "------Period range------",
+            )
+        )
+    )
+
     for dataset in sorted(datasets):
         if dataset not in meta.datasets:
             print("Dataset", dataset, "not recognized.")
@@ -46,12 +57,13 @@ def list_datasets(args: argparse.Namespace):
                 last = f"{last.partition.year}-{last.partition.month:02}"
         else:
             first = last = "----"
-        msg = " ".join(
+        date_range = f"{first: <7} to {last: <7}"
+        msg = " | ".join(
             [
                 f"{dataset: <27}",
-                f"{dataset_n_files: >6} files ",
+                f"{dataset_n_files: >6} files",
                 f"{dataset_size / 2**20: >9.1f} MB",
-                f"from {first} to {last}",
+                f"from {date_range: ^18}",
             ]
         )
         print(msg)
