@@ -19,6 +19,9 @@ def list_datasets(args: argparse.Namespace):
     total_n_files = 0
 
     for dataset in sorted(datasets):
+        if dataset not in meta.datasets:
+            print("Dataset", dataset, "not recognized.")
+            continue
         dataset_files_list = fetcher.list_dataset_files(ftp, dataset)
         dataset_size = sum(f.size for f in dataset_files_list)
         dataset_n_files = len(dataset_files_list)
