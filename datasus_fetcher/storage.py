@@ -98,9 +98,9 @@ def get_file_metadata(file: Path) -> File:
     )
 
 
-def get_files_metadata(dirpath: Path, extension: str) -> File:
+def get_files_metadata(dirpath: Path) -> File:
     files = {}
-    for f in dirpath.glob(f"*.{extension}"):
+    for f in dirpath.glob("*.*"):
         file = get_file_metadata(f)
         if file.partition not in files:
             files[file.partition] = []

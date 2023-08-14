@@ -123,20 +123,15 @@ def fetch_aux(args: argparse.Namespace):
 def archive(args: argparse.Namespace):
     data_dir = args.data_dir
     archivedatadir = args.archive_data_dir
-    extension = args.extension
-    dry_run = args.dry_run
-
     for datasetdir in data_dir.iterdir():
         print(datasetdir)
         datasetname = datasetdir.name
         for datepartitiondir in datasetdir.iterdir():
-            files = get_files_metadata(datepartitiondir, extension=extension)
+            files = get_files_metadata(datepartitiondir)
             for file in files:
                 file: File
                 if not file.is_most_recent:
                     print(file)
-                    if dry_run:
-                        continue
                     archivedatasetdir: Path = archivedatadir / datasetname
                     archivedatasetdir.mkdir(parents=True, exist_ok=True)
                     archivefilepath = archivedatasetdir / file.filepath.name
@@ -234,8 +229,6 @@ def get_args():
         type=Path,
         required=True,
     )
-    subparser_archive.add_argument("--extension", required=True)
-    subparser_archive.add_argument("--dry-run", action="store_true")
     subparser_archive.set_defaults(func=archive)
 
     args = parser.parse_args()
