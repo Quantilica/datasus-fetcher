@@ -1,3 +1,6 @@
+"""Command Line Interface for datasus-fetcher package."""
+
+
 import argparse
 import shutil
 from pathlib import Path
