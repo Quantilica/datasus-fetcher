@@ -4,6 +4,7 @@
 import argparse
 import logging
 import shutil
+import threading
 from pathlib import Path
 from typing import Any
 
@@ -109,13 +110,20 @@ def fetch_data(args: argparse.Namespace):
         )
         logger.info(message)
 
-    fetcher.download_data(
-        datasets=sorted(datasets),
-        destdir=data_dir,
-        threads=threads,
-        callback=log_fetch_data,
-        slicer=slicer,
-    )
+    try:
+        fetcher.download_data(
+            datasets=sorted(datasets),
+            destdir=data_dir,
+            threads=threads,
+            callback=log_fetch_data,
+            slicer=slicer,
+        )
+    except KeyboardInterrupt:
+        for th in threading.enumerate():
+            if th.daemon:
+                th.ftp.close()
+                th.kill()
+        logger.warning("KeyboardInterrupt: closing FTP connections")
 
 
 def fetch_docs(args: argparse.Namespace):

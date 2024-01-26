@@ -41,9 +41,10 @@ class Fetcher(threading.Thread):
             self.callback = callback
         else:
             self.callback = lambda _: None
+        self._kill_event = threading.Event()
 
     def run(self):
-        while True:
+        while not self.dead():
             file: RemoteFile = self.q.get()
             dataset = file.dataset
             partition_dir = get_partition_dir(file)
@@ -79,6 +80,12 @@ class Fetcher(threading.Thread):
                 logger.exception("Exception %s", e)
             finally:
                 self.q.task_done()
+
+    def kill(self) -> None:
+        self._kill_event.set()
+
+    def dead(self) -> bool:
+        return self._kill_event.is_set()
 
 
 def log_download(tt: float, size: int, filename: str):
