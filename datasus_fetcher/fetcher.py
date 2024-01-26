@@ -56,7 +56,7 @@ class Fetcher(threading.Thread):
             filepath.parent.mkdir(parents=True, exist_ok=True)
 
             try:
-                logger.debug(file.full_path, "->", filepath)
+                logger.debug(f"%s -> %s", file.full_path, filepath)
                 t0 = time.time()
                 fetch_file(self.ftp, file.full_path, filepath)
                 tt = time.time() - t0
@@ -76,7 +76,7 @@ class Fetcher(threading.Thread):
                 self.callback(file_metadata)
 
             except Exception as e:
-                logger.debug(f"Exception {e}")
+                logger.exception("Exception %s", e)
             finally:
                 self.q.task_done()
 
@@ -171,12 +171,12 @@ def fetch_file(
             break
         # File not found exception
         except ftplib.error_perm:
-            logger.exception(f"File {path} not found.")
+            logger.exception("File %s not found.", path)
             dest_filepath.unlink(missing_ok=True)
             break
         # Timeout exception
         except (ftplib.error_temp, TimeoutError):
-            logger.exception(f"Timeout exception for {path}.")
+            logger.exception("Timeout exception for %s.", path)
             dest_filepath.unlink(missing_ok=True)
             retries -= 1
             time.sleep(5)
@@ -208,7 +208,7 @@ def download_data(
     slicer: Slicer = None,
 ):
     """Multithreaded download data files"""
-    logger.info(f"Starting download with {threads} threads")
+    logger.info("Starting download with %s threads", threads)
     if datasets:
         datasets_ = set(datasets) & set(meta.datasets.keys())
     else:
@@ -219,7 +219,7 @@ def download_data(
         _w = Fetcher(q, destdir, callback=callback)
         _w.start()
     for dataset in datasets_:
-        logger.info(f"Getting files of {dataset}")
+        logger.info("Listing files of %s", dataset)
         for remote_file in list_dataset_files(ftp0, dataset):
             if slicer is not None and not slicer(remote_file):
                 continue
@@ -237,7 +237,6 @@ def download_documentation(
     dataset: str,
     destdir: Path,
 ):
-
     destdir = destdir / f"{dataset}[doc]"
 
     ftp_dir = meta.docs[dataset]["dir"]
@@ -251,7 +250,7 @@ def download_documentation(
         filepath = destdir / filename
         if filepath.exists() and filepath.stat().st_size == file["size"]:
             continue
-        logger.debug(f"{i: >5}", file["full_path"], "->", filepath)
+        logger.debug(f"{i: >5} {file['full_path']} -> {filepath}")
         t0 = time.time()
         fetch_file(ftp, file["full_path"], filepath)
         tt = time.time() - t0
@@ -292,7 +291,7 @@ def download_auxiliary_tables(
         filepath = destdir / filename
         if filepath.exists() and filepath.stat().st_size == file["size"]:
             continue
-        logger.debug(f"{i: >5}", file["full_path"], "->", filepath)
+        logger.debug(f"{i: >5} {file['full_path']} -> {filepath}")
         t0 = time.time()
         fetch_file(ftp, file["full_path"], filepath)
         tt = time.time() - t0
