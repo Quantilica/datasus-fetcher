@@ -2,12 +2,21 @@
 
 
 import argparse
+import logging
 import shutil
 from pathlib import Path
+from typing import Any
 
 from . import fetcher, meta
 from .slicer import Slicer
 from .storage import File, get_files_metadata
+
+logger = logging.getLogger(__name__)
+
+if Path("logging.ini").exists():
+    import logging.config
+
+    logging.config.fileConfig("logging.ini")
 
 
 def list_datasets(args: argparse.Namespace):
@@ -91,10 +100,20 @@ def fetch_data(args: argparse.Namespace):
         regions=args.regions,
     )
 
+    def log_fetch_data(file_metadata: dict[str, Any]):
+        message = (
+            "Downloaded "
+            f"{file_metadata['dataset']: <27} "
+            f"{str(file_metadata['filepath']): <20} "
+            f"{file_metadata['size'] / 2**20: >9.1f} MB"
+        )
+        logger.info(message)
+
     fetcher.download_data(
         datasets=sorted(datasets),
         destdir=data_dir,
         threads=threads,
+        callback=log_fetch_data,
         slicer=slicer,
     )
 
