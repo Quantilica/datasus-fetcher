@@ -18,6 +18,10 @@ if Path("logging.ini").exists():
     import logging.config
 
     logging.config.fileConfig("logging.ini")
+else:
+    from .constants import default_logging_config
+
+    logging.config.dictConfig(default_logging_config)
 
 
 def list_datasets(args: argparse.Namespace):
