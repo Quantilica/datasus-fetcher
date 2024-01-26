@@ -112,8 +112,8 @@ def fetch_docs(args: argparse.Namespace):
     else:
         datasets_ = meta.docs.keys()
     for dataset in sorted(datasets_):
-        for file in fetcher.download_documentation(ftp, dataset, data_dir):
-            print(file)
+        for _ in fetcher.download_documentation(ftp, dataset, data_dir):
+            pass
     ftp.close()
 
 
@@ -130,8 +130,8 @@ def fetch_aux(args: argparse.Namespace):
     else:
         datasets_ = meta.auxiliary_tables.keys()
     for dataset in sorted(datasets_):
-        for file in fetcher.download_auxiliary_tables(ftp, dataset, data_dir):
-            print(file)
+        for _ in fetcher.download_auxiliary_tables(ftp, dataset, data_dir):
+            pass
     ftp.close()
 
 
@@ -139,14 +139,12 @@ def archive(args: argparse.Namespace):
     data_dir = args.data_dir
     archivedatadir = args.archive_data_dir
     for datasetdir in data_dir.iterdir():
-        print(datasetdir)
         datasetname = datasetdir.name
         for datepartitiondir in datasetdir.iterdir():
             files = get_files_metadata(datepartitiondir)
             for file in files:
                 file: File
                 if not file.is_most_recent:
-                    print(file)
                     archivedatasetdir: Path = archivedatadir / datasetname
                     archivedatasetdir.mkdir(parents=True, exist_ok=True)
                     archivefilepath = archivedatasetdir / file.filepath.name

@@ -204,7 +204,7 @@ def download_data(
     datasets: Iterable[str],
     destdir: Path,
     threads: int = 2,
-    callback: Callable = print,
+    callback: Callable = None,
     slicer: Slicer = None,
 ):
     """Multithreaded download data files"""
