@@ -1,5 +1,4 @@
 import datetime as dt
-import hashlib
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable
@@ -51,15 +50,6 @@ class RemoteFile:
     size: int
     dataset: str = None
     partition: DataPartition = field(default_factory=DataPartition)
-
-
-def calculate_sha256(filepath: Path) -> str:
-    """Returns the SHA256 hash of a file."""
-    h = hashlib.sha256()
-    with open(filepath, "rb") as f:
-        while chunk := f.read(8192):
-            h.update(chunk)
-    return h.hexdigest()
 
 
 def get_partition_dir(remote_file: RemoteFile) -> str:

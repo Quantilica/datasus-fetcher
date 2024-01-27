@@ -15,7 +15,6 @@ from .remote_names import get_pattern, parse_filename
 from .storage import (
     DataPartition,
     RemoteFile,
-    calculate_sha256,
     get_filename,
     get_partition_dir,
 )
@@ -61,7 +60,6 @@ class Fetcher(threading.Thread):
                 t0 = time.time()
                 fetch_file(self.ftp, file.full_path, filepath)
                 tt = time.time() - t0
-                sha256 = calculate_sha256(filepath)
                 log_download(tt, file.size, filepath.name)
 
                 file_metadata = {
@@ -69,7 +67,6 @@ class Fetcher(threading.Thread):
                     "size": file.size,
                     "filepath": filepath,
                     "suffix": file.extension,
-                    "sha256": sha256,
                     "dataset": dataset,
                     "created_at": file.datetime,
                 }
@@ -193,8 +190,7 @@ def list_dataset_files(ftp: ftplib.FTP, dataset: str) -> list[RemoteFile]:
     dataset_files = []
     for period in meta.datasets[dataset]["periods"]:
         files = [
-            RemoteFile(**f)
-            for f in list_files(ftp, directory=period["dir"], retries=3)
+            RemoteFile(**f) for f in list_files(ftp, directory=period["dir"], retries=3)
         ]
         fn_pattern = period["filename_pattern"]
         pattern = get_pattern(period=period)
@@ -261,11 +257,10 @@ def download_documentation(
         t0 = time.time()
         fetch_file(ftp, file["full_path"], filepath)
         tt = time.time() - t0
-        sha256 = calculate_sha256(filepath)
         filesize_kb = f"{file['size'] / 1024:.2f} kB"
         download_speed_kbps = f"{file['size'] / tt / 1024:.2f} kB/s"
         logger.debug(
-            f"      {sha256} {tt:.2f} s {filesize_kb} {download_speed_kbps}",
+            f"      {filename} {tt:.2f} s {filesize_kb} {download_speed_kbps}",
         )
 
         file_metadata = {
@@ -273,7 +268,6 @@ def download_documentation(
             "size": file["size"],
             "filepath": filepath,
             "created_at": file["datetime"],
-            "sha256": sha256,
             "suffix": extension,
         }
 
@@ -302,11 +296,10 @@ def download_auxiliary_tables(
         t0 = time.time()
         fetch_file(ftp, file["full_path"], filepath)
         tt = time.time() - t0
-        sha256 = calculate_sha256(filepath)
         filesize_kb = f"{file['size'] / 1024:.2f} kB"
         download_speed_kbps = f"{file['size'] / tt / 1024:.2f} kB/s"
         logger.debug(
-            f"      {sha256} {tt:.2f} s {filesize_kb} {download_speed_kbps}",
+            f"      {filename} {tt:.2f} s {filesize_kb} {download_speed_kbps}",
         )
 
         file_metadata = {
@@ -314,7 +307,6 @@ def download_auxiliary_tables(
             "size": file["size"],
             "filepath": filepath,
             "created_at": file["datetime"],
-            "sha256": sha256,
             "suffix": extension,
         }
 
