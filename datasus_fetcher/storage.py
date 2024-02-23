@@ -1,7 +1,10 @@
 import datetime as dt
+import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -91,7 +94,11 @@ def get_file_metadata(file: Path) -> File:
 def get_files_metadata(dirpath: Path) -> File:
     files = {}
     for f in dirpath.glob("*.*"):
-        file = get_file_metadata(f)
+        try:
+            file = get_file_metadata(f)
+        except ValueError:
+            logger.warning("Skipping file %s", f.name)
+            continue
         if file.partition not in files:
             files[file.partition] = []
         files[file.partition].append(file)
