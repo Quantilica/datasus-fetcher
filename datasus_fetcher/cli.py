@@ -1,8 +1,8 @@
 """Command Line Interface for datasus-fetcher package."""
 
-
 import argparse
 import logging
+import logging.config
 import shutil
 import threading
 from pathlib import Path
@@ -15,8 +15,6 @@ from .storage import File, get_files_metadata
 logger = logging.getLogger(__name__)
 
 if Path("logging.ini").exists():
-    import logging.config
-
     logging.config.fileConfig("logging.ini")
 else:
     from .constants import default_logging_config
