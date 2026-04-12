@@ -1,6 +1,7 @@
 """Command Line Interface for datasus-fetcher package."""
 
 import argparse
+import logging
 import logging.config
 import shutil
 import threading
@@ -11,12 +12,14 @@ from . import __version__, fetcher, logger, meta
 from .slicer import Slicer
 from .storage import File, get_files_metadata
 
-if Path("logging.ini").exists():
-    logging.config.fileConfig("logging.ini")
-else:
-    from .constants import default_logging_config
 
-    logging.config.dictConfig(default_logging_config)
+def _configure_logging() -> None:
+    if Path("logging.ini").exists():
+        logging.config.fileConfig("logging.ini")
+    else:
+        from .constants import default_logging_config
+
+        logging.config.dictConfig(default_logging_config)
 
 
 def list_datasets(args: argparse.Namespace):
@@ -48,7 +51,7 @@ def list_datasets(args: argparse.Namespace):
         dataset_files_list = fetcher.list_dataset_files(ftp, dataset)
         if len(dataset_files_list) == 0:
             continue
-        dataset_size = sum(f.size for f in dataset_files_list)
+        dataset_size = sum(f.size or 0 for f in dataset_files_list)
         dataset_n_files = len(dataset_files_list)
         total_size += dataset_size
         total_n_files += dataset_n_files
@@ -151,9 +154,8 @@ def fetch_data(args: argparse.Namespace):
     except KeyboardInterrupt:
         for th in threading.enumerate():
             if isinstance(th, fetcher.Fetcher):
-                th.ftp.close()
                 th.kill()
-        logger.warning("KeyboardInterrupt: closing FTP connections")
+        logger.warning("KeyboardInterrupt: stopping fetchers")
 
 
 def fetch_docs(args: argparse.Namespace):
@@ -320,6 +322,7 @@ def get_args():
 
 
 def main():
+    _configure_logging()
     args = get_args()
     args.func(args)
 
