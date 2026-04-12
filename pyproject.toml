@@ -11,9 +11,31 @@ keywords = [
     "health",
     "datasus",
     "microdata",
+    "brazil",
+    "saúde",
 ]
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 dynamic = ["version"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Internet :: File Transfer Protocol (FTP)",
+]
+
+[project.urls]
+Homepage = "https://github.com/dankkom/datasus-fetcher"
+Repository = "https://github.com/dankkom/datasus-fetcher"
+"Bug Tracker" = "https://github.com/dankkom/datasus-fetcher/issues"
 
 [tool.setuptools]
 packages = ["datasus_fetcher"]
