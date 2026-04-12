@@ -4,7 +4,7 @@ import queue
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
 
 from datasus_fetcher import fetcher
 from datasus_fetcher.storage import DataPartition, RemoteFile

@@ -5,7 +5,6 @@ from pathlib import Path
 
 from datasus_fetcher.storage import (
     DataPartition,
-    File,
     RemoteFile,
     get_data_filepath,
     get_file_metadata,
