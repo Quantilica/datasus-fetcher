@@ -7,7 +7,7 @@ import threading
 from pathlib import Path
 from typing import Any
 
-from . import fetcher, logger, meta
+from . import __version__, fetcher, logger, meta
 from .slicer import Slicer
 from .storage import File, get_files_metadata
 
@@ -96,6 +96,7 @@ def list_datasets(args: argparse.Namespace):
 def fetch_data(args: argparse.Namespace):
     data_dir = args.data_dir
     threads = args.threads
+    dry_run = args.dry_run
     if not args.datasets:
         datasets = meta.datasets
     else:
@@ -106,6 +107,29 @@ def fetch_data(args: argparse.Namespace):
         end_time=args.end,
         regions=args.regions,
     )
+
+    if dry_run:
+        ftp = fetcher.connect()
+        total_size = 0
+        total_files = 0
+        for dataset in sorted(datasets):
+            if dataset not in meta.datasets:
+                print(f"Dataset {dataset!r} not recognized.")
+                continue
+            for remote_file in fetcher.list_dataset_files(ftp, dataset):
+                if slicer is not None and not slicer(remote_file):
+                    continue
+                print(
+                    f"{remote_file.dataset: <27} "
+                    f"{str(remote_file.partition): <20} "
+                    f"{remote_file.size / 2**20: >9.1f} MB  "
+                    f"{remote_file.full_path}"
+                )
+                total_size += remote_file.size
+                total_files += 1
+        ftp.close()
+        print(f"\nTotal: {total_files} files, {total_size / 2**30:.2f} GB")
+        return
 
     def log_fetch_data(file_metadata: dict[str, Any]):
         message = (
@@ -188,6 +212,11 @@ def get_args():
     parser = argparse.ArgumentParser(
         description="Download raw data files from DATASUS",
     )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+    )
     subparsers = parser.add_subparsers(required=True)
 
     # * list-datasets ---------------------------------------------------------
@@ -236,6 +265,13 @@ def get_args():
         type=int,
         default=2,
         help="Number of concurrent fetchers",
+    )
+    subparser_fetch.add_argument(
+        "--dry-run",
+        dest="dry_run",
+        action="store_true",
+        default=False,
+        help="List files that would be downloaded without downloading them",
     )
     subparser_fetch.set_defaults(func=fetch_data)
 
