@@ -181,8 +181,7 @@ def fetch_file(
 
     if isinstance(dest_filepath, str):
         dest_filepath = Path(dest_filepath.lower())
-    if not dest_filepath.parent.exists():
-        dest_filepath.parent.mkdir(parents=True)
+    dest_filepath.parent.mkdir(parents=True, exist_ok=True)
 
     while retries > 0:
         try:
@@ -262,12 +261,48 @@ def download_data(
             th.ftp.close()
 
 
-def list_documentation_files(ftp: ftplib.FTP, dataset: str) -> list[dict]:
+def _list_support_files(ftp: ftplib.FTP, ftp_dirs: list[str]) -> list[dict]:
     files = []
-    for ftp_dir in meta.docs[dataset]["dir"]:
+    for ftp_dir in ftp_dirs:
         ftp.cwd(ftp_dir)
         files.extend(list_files(ftp, directory=ftp_dir))
     return files
+
+
+def _download_support_files(
+    ftp: ftplib.FTP,
+    files: list[dict],
+    destdir: Path,
+):
+    for i, file in enumerate(files):
+        filename, extension = file["filename"].rsplit(".", 1)
+        filename = f"{filename}@{file['datetime']:%Y%m%d}.{extension}"
+        filepath = destdir / filename
+
+        if filepath.exists() and filepath.stat().st_size == file["size"]:
+            continue
+
+        logger.debug(f"{i: >5} {file['full_path']} -> {filepath}")
+        t0 = time.time()
+        fetch_file(ftp, file["full_path"], filepath)
+        tt = time.time() - t0
+        filesize_kb = f"{file['size'] / 1024:.2f} kB"
+        download_speed_kbps = f"{file['size'] / tt / 1024:.2f} kB/s"
+        logger.debug(
+            f"      {filename} {tt:.2f} s {filesize_kb} {download_speed_kbps}",
+        )
+
+        yield {
+            "url": f"ftp://{FTP_HOST}/{file['full_path']}",
+            "size": file["size"],
+            "filepath": filepath,
+            "created_at": file["datetime"],
+            "suffix": extension,
+        }
+
+
+def list_documentation_files(ftp: ftplib.FTP, dataset: str) -> list[dict]:
+    return _list_support_files(ftp, meta.docs[dataset]["dir"])
 
 
 def download_documentation(
@@ -275,46 +310,12 @@ def download_documentation(
     dataset: str,
     destdir: Path,
 ):
-    destdir = destdir / f"{dataset}[doc]"
-
     files = list_documentation_files(ftp, dataset)
-
-    for i, file in enumerate(files):
-        filename, extension = file["filename"].rsplit(".", 1)
-        filename = f"{filename}@{file['datetime']:%Y%m%d}.{extension}"
-        filepath = destdir / filename
-
-        # Check if file already exists and has the same size
-        if filepath.exists() and filepath.stat().st_size == file["size"]:
-            continue
-
-        logger.debug(f"{i: >5} {file['full_path']} -> {filepath}")
-        t0 = time.time()
-        fetch_file(ftp, file["full_path"], filepath)
-        tt = time.time() - t0
-        filesize_kb = f"{file['size'] / 1024:.2f} kB"
-        download_speed_kbps = f"{file['size'] / tt / 1024:.2f} kB/s"
-        logger.debug(
-            f"      {filename} {tt:.2f} s {filesize_kb} {download_speed_kbps}",
-        )
-
-        file_metadata = {
-            "url": f"ftp://{FTP_HOST}/{file['full_path']}",
-            "size": file["size"],
-            "filepath": filepath,
-            "created_at": file["datetime"],
-            "suffix": extension,
-        }
-
-        yield file_metadata
+    yield from _download_support_files(ftp, files, destdir / f"{dataset}[doc]")
 
 
 def list_auxiliary_tables_files(ftp: ftplib.FTP, dataset: str) -> list[dict]:
-    files = []
-    for ftp_dir in meta.auxiliary_tables[dataset]["dir"]:
-        ftp.cwd(ftp_dir)
-        files.extend(list_files(ftp, directory=ftp_dir))
-    return files
+    return _list_support_files(ftp, meta.auxiliary_tables[dataset]["dir"])
 
 
 def download_auxiliary_tables(
@@ -322,32 +323,5 @@ def download_auxiliary_tables(
     dataset: str,
     destdir: Path,
 ):
-    destdir = destdir / f"{dataset}[aux]"
-
     files = list_auxiliary_tables_files(ftp, dataset)
-
-    for i, file in enumerate(files):
-        filename, extension = file["filename"].rsplit(".", 1)
-        filename = f"{filename}@{file['datetime']:%Y%m%d}.{extension}"
-        filepath = destdir / filename
-        if filepath.exists() and filepath.stat().st_size == file["size"]:
-            continue
-        logger.debug(f"{i: >5} {file['full_path']} -> {filepath}")
-        t0 = time.time()
-        fetch_file(ftp, file["full_path"], filepath)
-        tt = time.time() - t0
-        filesize_kb = f"{file['size'] / 1024:.2f} kB"
-        download_speed_kbps = f"{file['size'] / tt / 1024:.2f} kB/s"
-        logger.debug(
-            f"      {filename} {tt:.2f} s {filesize_kb} {download_speed_kbps}",
-        )
-
-        file_metadata = {
-            "url": f"ftp://{FTP_HOST}/{file['full_path']}",
-            "size": file["size"],
-            "filepath": filepath,
-            "created_at": file["datetime"],
-            "suffix": extension,
-        }
-
-        yield file_metadata
+    yield from _download_support_files(ftp, files, destdir / f"{dataset}[aux]")
