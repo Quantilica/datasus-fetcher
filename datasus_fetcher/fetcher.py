@@ -18,6 +18,7 @@ from .storage import (
 )
 
 FTP_HOST = "ftp.datasus.gov.br"
+FTP_TIMEOUT = 30.0
 MEGA = 1_000_000
 
 
@@ -30,7 +31,7 @@ class Fetcher(threading.Thread):
     ):
         super().__init__()
         self.daemon = True
-        self.ftp = connect()
+        self.ftp: ftplib.FTP | None = None
         self.q = q
         self.dest_dir = dest_dir
         if callable(callback):
@@ -40,37 +41,41 @@ class Fetcher(threading.Thread):
         self._kill_event = threading.Event()
 
     def run(self):
-        while not self.dead():
-            file: RemoteFile = self.q.get()
+        self.ftp = connect()
+        try:
+            while not self.dead():
+                file: RemoteFile = self.q.get()
 
-            filepath: Path = get_data_filepath(data_dir=self.dest_dir, file=file)
-            if filepath.exists() and filepath.stat().st_size == file.size:
-                self.q.task_done()
-                continue
-            filepath.parent.mkdir(parents=True, exist_ok=True)
+                filepath: Path = get_data_filepath(data_dir=self.dest_dir, file=file)
+                if filepath.exists() and filepath.stat().st_size == file.size:
+                    self.q.task_done()
+                    continue
+                filepath.parent.mkdir(parents=True, exist_ok=True)
 
-            try:
-                logger.debug("%s -> %s", file.full_path, filepath)
-                t0 = time.time()
-                fetch_file(self.ftp, file.full_path, filepath)
-                tt = time.time() - t0
-                log_download(tt, file.size, filepath.name)
+                try:
+                    logger.debug("%s -> %s", file.full_path, filepath)
+                    t0 = time.time()
+                    fetch_file(self.ftp, file.full_path, filepath)
+                    tt = time.time() - t0
+                    log_download(tt, file.size, filepath.name)
 
-                file_metadata = {
-                    "url": f"ftp://{FTP_HOST}/{file.full_path}",
-                    "size": file.size,
-                    "filepath": filepath,
-                    "suffix": file.extension,
-                    "dataset": file.dataset,
-                    "created_at": file.datetime,
-                }
+                    file_metadata = {
+                        "url": f"ftp://{FTP_HOST}/{file.full_path}",
+                        "size": file.size,
+                        "filepath": filepath,
+                        "suffix": file.extension,
+                        "dataset": file.dataset,
+                        "created_at": file.datetime,
+                    }
 
-                self.callback(file_metadata)
+                    self.callback(file_metadata)
 
-            except Exception as e:
-                logger.exception("Exception %s", e)
-            finally:
-                self.q.task_done()
+                except Exception as e:
+                    logger.exception("Exception %s", e)
+                finally:
+                    self.q.task_done()
+        finally:
+            self.ftp.close()
 
     def kill(self) -> None:
         self._kill_event.set()
@@ -93,9 +98,9 @@ def log_download(tt: float, size: int, filename: str):
     logger.info(log)
 
 
-def connect() -> ftplib.FTP:
+def connect(timeout: float = FTP_TIMEOUT) -> ftplib.FTP:
     """Connects to the FTP server."""
-    ftp = ftplib.FTP(FTP_HOST, encoding="latin-1")
+    ftp = ftplib.FTP(FTP_HOST, encoding="latin-1", timeout=timeout)
     ftp.login()
     return ftp
 
@@ -110,7 +115,8 @@ def list_files(
     try:
         ftp.cwd(directory)
     except ftplib.error_perm:
-        logger.exception(f"Directory not found. {directory}")
+        logger.exception("Directory not found: %s", directory)
+        return []
 
     files: list[str] = []
     while retries > 0:
@@ -135,7 +141,8 @@ def list_files(
         try:
             size = int(size)
         except ValueError:
-            size = None
+            logger.warning("Could not parse size for file %s in %s", name, directory)
+            size = 0
         return {
             "datetime": datetime,
             "size": size,
@@ -256,9 +263,7 @@ def download_data(
     ftp0.close()
     logger.info("Joining queue")
     q.join()
-    for th in threading.enumerate():
-        if isinstance(th, Fetcher):
-            th.ftp.close()
+    # Fetcher threads close their own FTP connections in run()'s finally block
 
 
 def _list_support_files(ftp: ftplib.FTP, ftp_dirs: list[str]) -> list[dict]:
