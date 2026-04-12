@@ -21,7 +21,6 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
@@ -43,12 +42,12 @@ packages = ["datasus_fetcher"]
 [tool.setuptools.dynamic]
 version = { attr = "datasus_fetcher.__version__" }
 
-[tool.uv]
-dev-dependencies = ["build>=1.2.2.post1", "wheel>=0.45.0", "twine>=5.1.1"]
+[dependency-groups]
+dev = ["build>=1.2.2.post1", "wheel>=0.45.0", "twine>=5.1.1"]
 
 [project.scripts]
 datasus-fetcher = "datasus_fetcher.cli:main"
 
 [build-system]
-requires = ["setuptools", "setuptools-scm"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
