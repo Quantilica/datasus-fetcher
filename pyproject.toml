@@ -1,6 +1,6 @@
 [project]
 name = "datasus-fetcher"
-authors = [{ name = "Daniel Komesu", email = "danielkomesu@gmail.com" }]
+authors = [{ name = "Komesu, D.K.", email = "komesudk@dkko.me" }]
 description = "Downloader of DATASUS raw data files"
 readme = "README.md"
 requires-python = ">=3.10"
