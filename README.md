@@ -74,6 +74,7 @@ datasus-fetcher data --data-dir <DIR> [DATASETS...] [OPTIONS]
 | `--end PERIOD` | End of the date filter. Format: `YYYY` or `YYYY-MM`. |
 | `--regions UF ...` | One or more state codes in lowercase (e.g. `sp rj mg ba`). |
 | `-t, --threads N` | Number of concurrent download threads (default: `2`). |
+| `--dry-run` | List the files that would be downloaded (with sizes and totals) without downloading them. |
 
 **Examples:**
 
