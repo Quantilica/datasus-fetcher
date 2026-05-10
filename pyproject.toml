@@ -1,9 +1,12 @@
 [project]
 name = "datasus-fetcher"
-authors = [{ name = "Komesu, D.K.", email = "komesudk@dkko.me" }]
+version = "0.4.1"
 description = "Downloader of DATASUS raw data files"
 readme = "README.md"
-requires-python = ">=3.10"
+authors = [
+    { name = "Komesu, D.K.", email = "daniel@dkko.me" },
+]
+license = { file = "LICENSE" }
 keywords = [
     "data",
     "open data",
@@ -14,40 +17,43 @@ keywords = [
     "brazil",
     "saúde",
 ]
-license = "MIT"
-license-files = ["LICENSE"]
-dynamic = ["version"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Information Analysis",
     "Topic :: Internet :: File Transfer Protocol (FTP)",
 ]
+dependencies = [
+    "quantilica-core @ git+https://github.com/Quantilica/quantilica-core.git",
+]
 
 [project.urls]
-Homepage = "https://github.com/dankkom/datasus-fetcher"
-Repository = "https://github.com/dankkom/datasus-fetcher"
-"Bug Tracker" = "https://github.com/dankkom/datasus-fetcher/issues"
-
-[tool.setuptools]
-packages = ["datasus_fetcher"]
-
-[tool.setuptools.dynamic]
-version = { attr = "datasus_fetcher.__version__" }
-
-[dependency-groups]
-dev = ["build>=1.2.2.post1", "wheel>=0.45.0", "twine>=5.1.1"]
+Homepage = "https://github.com/Quantilica/datasus-fetcher"
+Repository = "https://github.com/Quantilica/datasus-fetcher"
+Issues = "https://github.com/Quantilica/datasus-fetcher/issues"
 
 [project.scripts]
 datasus-fetcher = "datasus_fetcher.cli:main"
 
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.9.0",
+    "pytest>=8.0.0",
+]
+
+[tool.ruff]
+line-length = 79
+lint.select = ["E", "F", "I", "UP", "B"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
