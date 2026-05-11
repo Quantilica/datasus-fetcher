@@ -1,149 +1,151 @@
-# datasus-fetcher
+# datasus-fetcher: Download de microdados do DATASUS
 
-**datasus-fetcher** is a Python package and command-line tool to bulk-download raw microdata files (`.dbc`) from [DATASUS](https://datasus.saude.gov.br)'s public FTP server (`ftp.datasus.gov.br`). It does **not** parse or read files — it is a pure, reliable downloader that gives you organized local copies of Brazil's largest public health database.
+![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square) ![Python](https://img.shields.io/badge/python-3.10+-blue.svg?style=flat-square)
 
-## Why datasus-fetcher?
+**datasus-fetcher** é um pacote Python e ferramenta de linha de comando para baixar em massa arquivos brutos de microdados (`.dbc`) do servidor FTP público do [DATASUS](https://datasus.saude.gov.br) (`ftp.datasus.gov.br`). Não lê nem analisa os arquivos — é um downloader confiável que organiza cópias locais do maior banco de dados de saúde pública do Brasil.
 
-- **113 datasets** across all major Brazilian health information systems
-- **320+ GB** of historical microdata, some series going back to 1979
-- **Multi-threaded downloads** — configurable parallel connections for faster retrieval
-- **Smart filtering** — slice by date range and/or Brazilian state (UF) before downloading
-- **File integrity checks** — skips already-downloaded files by comparing sizes
-- **Automatic retries** — up to 3 retries on transient FTP errors
-- **File versioning** — stores every downloaded version with a date-stamped filename; archive old ones automatically
-- **Documentation & auxiliary tables** — download codebooks and reference tables alongside data
-- **No external dependencies** — pure Python 3.10+, just `pip install`
+## Por que usar datasus-fetcher?
 
-## Installation
+- **113 datasets** cobrindo todos os principais sistemas de informação de saúde do Brasil
+- **320+ GB** de microdados históricos, com séries que remontam a 1979
+- **Downloads multi-thread** — conexões paralelas configuráveis para maior velocidade
+- **Filtros precisos** — recorte por intervalo de datas e/ou UF antes de baixar
+- **Verificação de integridade** — pula arquivos já baixados comparando tamanhos
+- **Retentativas automáticas** — até 3 tentativas em erros de FTP
+- **Versionamento de arquivos** — armazena cada versão baixada com nome datado; arquiva versões antigas automaticamente
+- **Documentação e tabelas auxiliares** — baixe dicionários de dados e tabelas de referência junto com os microdados
+- **Sem dependências externas** — Python puro 3.10+
 
-```sh
+## Instalação
+
+```bash
 pip install datasus-fetcher
 ```
 
-For isolated global installation (recommended for CLI-only use):
+Para instalação global isolada (recomendado para uso apenas como CLI):
 
-```sh
+```bash
 pipx install datasus-fetcher
 ```
 
-## Quick start
+## Uso Rápido
 
-Download SIH-RD (Hospital Admissions) for São Paulo, Rio de Janeiro, and Minas Gerais from 2020 to 2023:
+Baixar SIH-RD (Internações Hospitalares) para São Paulo, Rio de Janeiro e Minas Gerais, de 2020 a 2023:
 
 ```sh
-datasus-fetcher data --data-dir /path/to/data sih-rd \
+datasus-fetcher data --data-dir /caminho/para/dados sih-rd \
     --start 2020-01 \
     --end 2023-12 \
     --regions sp rj mg
 ```
 
-Download all datasets (warning: 320+ GB total):
+Baixar todos os datasets (atenção: 320+ GB no total):
 
 ```sh
-datasus-fetcher data --data-dir /path/to/data
+datasus-fetcher data --data-dir /caminho/para/dados
 ```
 
-## Command reference
+## CLI
 
-datasus-fetcher exposes five subcommands:
+O `datasus-fetcher` expõe cinco subcomandos:
 
 ```
 datasus-fetcher <subcommand> [options]
 
 Subcommands:
-  data            Download microdata files
-  list-datasets   Inspect available datasets on the FTP server
-  docs            Download official documentation files (codebooks)
-  aux             Download auxiliary reference tables
-  archive         Move non-latest file versions to an archive directory
+  data            Baixa arquivos de microdados
+  list-datasets   Inspeciona datasets disponíveis no FTP
+  docs            Baixa arquivos de documentação (dicionários)
+  aux             Baixa tabelas auxiliares de referência
+  archive         Move versões antigas para um diretório de arquivo
 ```
 
 ---
 
-### `data` — Download microdata files
+### `data` — Baixar microdados
 
 ```sh
 datasus-fetcher data --data-dir <DIR> [DATASETS...] [OPTIONS]
 ```
 
-| Argument | Description |
+| Argumento | Descrição |
 |---|---|
-| `DATASETS` | One or more dataset codes (e.g. `sih-rd cnes-st`). Omit to download all datasets. |
-| `--data-dir DIR` | **Required.** Local directory where files will be stored. |
-| `--start PERIOD` | Start of the date filter. Format: `YYYY` or `YYYY-MM`. |
-| `--end PERIOD` | End of the date filter. Format: `YYYY` or `YYYY-MM`. |
-| `--regions UF ...` | One or more state codes in lowercase (e.g. `sp rj mg ba`). |
-| `-t, --threads N` | Number of concurrent download threads (default: `2`). |
-| `--dry-run` | List the files that would be downloaded (with sizes and totals) without downloading them. |
+| `DATASETS` | Um ou mais códigos de dataset (ex: `sih-rd cnes-st`). Omita para baixar todos. |
+| `--data-dir DIR` | **Obrigatório.** Diretório local onde os arquivos serão armazenados. |
+| `--start PERIOD` | Início do filtro de datas. Formato: `YYYY` ou `YYYY-MM`. |
+| `--end PERIOD` | Fim do filtro de datas. Formato: `YYYY` ou `YYYY-MM`. |
+| `--regions UF ...` | Um ou mais códigos de UF em minúsculas (ex: `sp rj mg ba`). |
+| `-t, --threads N` | Número de threads de download paralelas (padrão: `2`). |
+| `--dry-run` | Lista os arquivos que seriam baixados (com tamanhos e totais) sem baixar. |
 
-**Examples:**
+**Exemplos:**
 
 ```sh
-# Dengue notifications from SINAN — all years, all states
+# Notificações de Dengue (SINAN) — todos os anos, todos os estados
 datasus-fetcher data --data-dir ./data sinan-deng
 
-# CNES establishments for the entire Northeast, from 2015 onwards
+# Estabelecimentos CNES para o Nordeste inteiro, a partir de 2015
 datasus-fetcher data --data-dir ./data cnes-st \
     --start 2015-01 \
     --regions al ba ce ma pb pe pi rn se
 
-# SIM death records (ICD-10) from 2000 to 2023
+# Declarações de óbito SIM (CID-10) de 2000 a 2023
 datasus-fetcher data --data-dir ./data sim-do-cid10 \
     --start 2000 --end 2023
 
-# Speed up downloads with more parallel threads
+# Accelerar downloads com mais threads paralelas
 datasus-fetcher data --data-dir ./data sih-rd --threads 4
 
-# Multiple datasets in one call
+# Múltiplos datasets em uma chamada
 datasus-fetcher data --data-dir ./data \
     sinasc-dn sim-do-cid10 sih-rd \
     --start 2010-01 --end 2023-12
 
-# HIV surveillance: adults, children, and pregnant women — full history
+# HIV: adultos, crianças e gestantes — histórico completo
 datasus-fetcher data --data-dir ./data \
     sinan-hiva sinan-hivc sinan-hivg sinan-hive
 
-# Maternal and infant mortality — both CID versions
+# Mortalidade materna e infantil — ambas versões CID
 datasus-fetcher data --data-dir ./data \
     sim-domat-cid10 sim-doinf-cid09 sim-doinf-cid10
 
-# Complete CNES snapshot for São Paulo state, latest years
+# CNES completo para São Paulo, anos recentes
 datasus-fetcher data --data-dir ./data \
     cnes-st cnes-pf cnes-lt cnes-eq cnes-ep \
     --start 2020-01 \
     --regions sp
 
-# Syphilis triad: acquired, congenital, and in pregnant women
+# Tríade da sífilis: adquirida, congênita e em gestante
 datasus-fetcher data --data-dir ./data \
     sinan-sifa sinan-sifc sinan-sifg \
     --start 2010 --end 2023
 
-# Hospital admissions (SIH-RD) for the South region — recent 5 years
+# AIH Reduzida (SIH-RD) para o Sul — últimos 5 anos
 datasus-fetcher data --data-dir ./data sih-rd \
     --start 2019-01 --end 2023-12 \
     --regions pr rs sc
 
-# Outpatient production (SIA-PA) for a single state — high volume, use more threads
+# Produção ambulatorial (SIA-PA) para um estado — alto volume, usar mais threads
 datasus-fetcher data --data-dir ./data sia-pa \
     --start 2010-01 --end 2023-12 \
     --regions sp \
     --threads 6
 
-# Cancer-related: oncology panel + chemotherapy + radiotherapy APACs
+# Oncologia: painel + quimioterapia + radioterapia (APACs)
 datasus-fetcher data --data-dir ./data \
     po sia-aq sia-ar \
     --start 2013 --end 2023
 
-# Tuberculosis and leprosy notifications — nationwide, full history
+# Tuberculose e hanseníase — nacional, histórico completo
 datasus-fetcher data --data-dir ./data \
     sinan-tube sinan-hans
 
-# Arbovirus trio: dengue, Zika, and Chikungunya — Northeast only
+# Arboviroses: Dengue, Zika e Chikungunya — apenas Nordeste
 datasus-fetcher data --data-dir ./data \
     sinan-deng sinan-zika sinan-chik \
     --regions al ba ce ma pb pe pi rn se
 
-# Live births and infant deaths side by side — all states
+# Nascidos vivos e mortalidade infantil lado a lado — todos os estados
 datasus-fetcher data --data-dir ./data \
     sinasc-dn sim-doinf-cid10 \
     --start 2010 --end 2023
@@ -151,18 +153,18 @@ datasus-fetcher data --data-dir ./data \
 
 ---
 
-### `list-datasets` — Inspect available datasets
+### `list-datasets` — Inspecionar datasets disponíveis
 
-Connects to the DATASUS FTP server and prints file counts, sizes, and date ranges for each dataset:
+Conecta ao FTP do DATASUS e exibe contagem de arquivos, tamanhos e intervalos de datas de cada dataset:
 
 ```sh
 datasus-fetcher list-datasets
 
-# Inspect specific datasets only
+# Inspecionar datasets específicos
 datasus-fetcher list-datasets sih-rd sia-pa cnes-pf
 ```
 
-Sample output:
+Exemplo de saída:
 
 ```
 -----------Dataset----------|---Nº files---|--Total size--|------Period range------
@@ -173,37 +175,37 @@ sinan-deng                  |    26 files  |   1229.0 MB  | from 2000    to 2025
 
 ---
 
-### `docs` — Download documentation files
+### `docs` — Baixar documentação
 
-Downloads the official documentation files (data dictionaries, codebooks) for each system:
+Baixa os arquivos oficiais de documentação (dicionários de dados, manuais) de cada sistema:
 
 ```sh
-# Download docs for specific systems
+# Documentação para sistemas específicos
 datasus-fetcher docs --data-dir ./docs sih cnes sia sim sinan
 
-# Download docs for all systems
+# Documentação de todos os sistemas
 datasus-fetcher docs --data-dir ./docs
 ```
 
 ---
 
-### `aux` — Download auxiliary reference tables
+### `aux` — Baixar tabelas auxiliares
 
-Downloads lookup/reference tables (ICD codes, municipality codes, procedure tables, occupation codes, etc.):
+Baixa tabelas de referência (CID, municípios, procedimentos, CBO, etc.):
 
 ```sh
-# Download auxiliary tables for specific systems
+# Tabelas auxiliares para sistemas específicos
 datasus-fetcher aux --data-dir ./aux sih cnes
 
-# Download auxiliary tables for all systems
+# Tabelas auxiliares de todos os sistemas
 datasus-fetcher aux --data-dir ./aux
 ```
 
 ---
 
-### `archive` — Move old file versions to an archive
+### `archive` — Arquivar versões antigas
 
-DATASUS periodically updates its files. datasus-fetcher stores every downloaded version with a date-stamped filename. Use `archive` to move non-latest versions to a separate directory:
+O DATASUS atualiza seus arquivos periodicamente. O datasus-fetcher armazena cada versão com nome datado. Use `archive` para mover versões não mais recentes para um diretório separado:
 
 ```sh
 datasus-fetcher archive \
@@ -213,15 +215,15 @@ datasus-fetcher archive \
 
 ---
 
-## File storage structure
+## Estrutura de Armazenamento
 
-Downloaded files are organized into a structured directory tree:
+Os arquivos baixados são organizados em uma árvore de diretórios estruturada:
 
 ```
 data/
 └── sih-rd/
-    ├── 199201/                              ← YYYYMM partition directory
-    │   └── sih-rd_sp_199201_20250218.dbc   ← dataset_uf_period_downloaddate.dbc
+    ├── 199201/                              ← partição YYYYMM
+    │   └── sih-rd_sp_199201_20250218.dbc   ← dataset_uf_periodo_datadownload.dbc
     ├── 202001/
     │   ├── sih-rd_sp_202001_20250218.dbc
     │   └── sih-rd_rj_202001_20250218.dbc
@@ -229,7 +231,7 @@ data/
         └── sih-rd_mg_202312_20250218.dbc
 ```
 
-For year-only datasets (e.g. SIM, SINASC):
+Para datasets anuais (ex: SIM, SINASC):
 
 ```
 data/
@@ -239,11 +241,11 @@ data/
         └── sim-do-cid10_rj_2023_20250218.dbc
 ```
 
-Each filename encodes: **dataset** + **state (UF)** + **period** + **download date**.
+Cada nome de arquivo codifica: **dataset** + **UF** + **período** + **data do download**.
 
 ## Logging
 
-datasus-fetcher logs download progress to the console by default. You can override this by placing a `logging.ini` file in your working directory. Example:
+O datasus-fetcher registra o progresso dos downloads no console por padrão. Para personalizar, coloque um arquivo `logging.ini` no diretório de trabalho:
 
 ```ini
 [loggers]
@@ -281,12 +283,12 @@ args=('datasus-fetcher.log', 'a')
 format=%(asctime)s %(levelname)s %(message)s
 ```
 
-## Brazilian states (UF codes)
+## Códigos de UF
 
-Use lowercase two-letter codes with `--regions`. You can also use `br` for national-level files where available.
+Use códigos de duas letras em minúsculas com `--regions`. Use `br` para arquivos de abrangência nacional, quando disponíveis.
 
-| Code | State | Code | State |
-|------|-------|------|-------|
+| Código | Estado | Código | Estado |
+|--------|--------|--------|--------|
 | `ac` | Acre | `pb` | Paraíba |
 | `al` | Alagoas | `pe` | Pernambuco |
 | `am` | Amazonas | `pi` | Piauí |
@@ -300,138 +302,138 @@ Use lowercase two-letter codes with `--regions`. You can also use `br` for natio
 | `mg` | Minas Gerais | `se` | Sergipe |
 | `ms` | Mato Grosso do Sul | `sp` | São Paulo |
 | `mt` | Mato Grosso | `to` | Tocantins |
-| `pa` | Pará | `br` | Brasil (national files) |
+| `pa` | Pará | `br` | Brasil (arquivos nacionais) |
 
-## Available datasets
+## Datasets Disponíveis
 
-Statistics generated on **2025-02-18**.
+Estatísticas geradas em **18 de fevereiro de 2025**.
 
-| Dataset | Nº files | Total size | Period range |
+| Dataset | Nº arquivos | Tamanho total | Período |
 | --- | ---: | ---: | --- |
-| base-populacional-ibge-pop | 33 files | 150.4 MB | from 1980 to 2012 |
-| base-populacional-ibge-pops | 25 files | 81.3 MB | from 2000 to 2024 |
-| base-populacional-ibge-popt | 32 files | 2.4 MB | from 1992 to 2024 |
-| base-territorial | 14 files | 20.9 MB | — |
-| base-territorial-conversao | 28 files | 35.7 MB | — |
-| base-territorial-mapas | 83 files | 122.2 MB | from 1991 to 2013 |
-| cih-cr | 868 files | 157.5 MB | from 2008-01 to 2011-04 |
-| ciha | 4201 files | 4354.5 MB | from 2011-01 to 2024-09 |
-| cnes-dc | 6318 files | 115.4 MB | from 2005-08 to 2025-01 |
-| cnes-ee | 3201 files | 4.3 MB | from 2007-03 to 2021-07 |
-| cnes-ef | 5374 files | 10.0 MB | from 2007-03 to 2025-01 |
-| cnes-ep | 5778 files | 498.8 MB | from 2007-04 to 2025-01 |
-| cnes-eq | 6317 files | 1329.2 MB | from 2005-08 to 2025-01 |
-| cnes-gm | 5459 files | 11.9 MB | from 2007-03 to 2025-01 |
-| cnes-hb | 5805 files | 122.2 MB | from 2007-03 to 2025-01 |
-| cnes-in | 5520 files | 36.4 MB | from 2007-10 to 2025-01 |
-| cnes-lt | 6264 files | 131.3 MB | from 2005-10 to 2025-01 |
-| cnes-pf | 6318 files | 38238.1 MB | from 2005-08 to 2025-01 |
-| cnes-rc | 5744 files | 67.2 MB | from 2007-03 to 2025-01 |
-| cnes-sr | 6316 files | 1389.8 MB | from 2005-08 to 2025-01 |
-| cnes-st | 6310 files | 2805.5 MB | from 2005-08 to 2025-01 |
-| pce | 409 files | 14.1 MB | from 1995 to 2021 |
-| po | 12 files | 129.5 MB | from 2013 to 2024 |
-| resp | 280 files | 3.4 MB | from 2015 to 2024 |
-| sia-ab | 544 files | 13.9 MB | from 2008-01 to 2017-04 |
-| sia-abo | 1352 files | 32.2 MB | from 2014-01 to 2024-12 |
-| sia-acf | 3263 files | 26.7 MB | from 2014-08 to 2024-12 |
-| sia-ad | 5506 files | 2683.1 MB | from 2008-01 to 2024-12 |
-| sia-am | 5447 files | 14762.8 MB | from 2008-01 to 2024-12 |
-| sia-an | 2145 files | 437.6 MB | from 2008-01 to 2014-10 |
-| sia-aq | 5466 files | 4202.1 MB | from 2008-01 to 2024-12 |
-| sia-ar | 4982 files | 318.9 MB | from 2008-01 to 2024-12 |
-| sia-atd | 3371 files | 855.0 MB | from 2014-08 to 2024-12 |
-| sia-pa | 10193 files | 163258.4 MB | from 1994-07 to 2024-12 |
-| sia-ps | 3881 files | 2543.1 MB | from 2012-11 to 2024-12 |
-| sia-sad | 1088 files | 51.0 MB | from 2012-04 to 2018-10 |
-| sih-er | 4419 files | 270.4 MB | from 2011-01 to 2024-12 |
-| sih-rd | 10673 files | 22639.1 MB | from 1992-01 to 2024-12 |
-| sih-rj | 5348 files | 815.8 MB | from 2008-01 to 2024-12 |
-| sih-sp | 8928 files | 48377.4 MB | from 1997-06 to 2024-12 |
-| sim-do-cid09 | 466 files | 722.2 MB | from 1979 to 1995 |
-| sim-do-cid10 | 784 files | 4307.5 MB | from 1996 to 2023 |
-| sim-doext-cid09 | 17 files | 42.0 MB | from 1979 to 1995 |
-| sim-doext-cid10 | 28 files | 260.2 MB | from 1996 to 2023 |
-| sim-dofet-cid09 | 17 files | 23.0 MB | from 1979 to 1995 |
-| sim-dofet-cid10 | 28 files | 60.9 MB | from 1996 to 2023 |
-| sim-doinf-cid09 | 17 files | 58.0 MB | from 1979 to 1995 |
-| sim-doinf-cid10 | 28 files | 92.0 MB | from 1996 to 2023 |
-| sim-domat-cid10 | 28 files | 4.1 MB | from 1996 to 2023 |
-| sim-dorext-cid10 | 11 files | 0.4 MB | from 2013 to 2023 |
-| sinan-acbi | 19 files | 44.2 MB | from 2006 to 2024 |
-| sinan-acgr | 19 files | 112.4 MB | from 2006 to 2024 |
-| sinan-aida | 17 files | 17.1 MB | from 2007 to 2023 |
-| sinan-aidc | 17 files | 0.3 MB | from 2007 to 2023 |
-| sinan-anim | 17 files | 127.5 MB | from 2007 to 2023 |
-| sinan-antr | 19 files | 432.7 MB | from 2006 to 2024 |
-| sinan-botu | 18 files | 0.1 MB | from 2007 to 2024 |
-| sinan-canc | 18 files | 0.3 MB | from 2007 to 2024 |
-| sinan-chag | 24 files | 4.0 MB | from 2000 to 2023 |
-| sinan-chik | 11 files | 70.7 MB | from 2015 to 2025 |
-| sinan-cole | 18 files | 0.0 MB | from 2007 to 2024 |
-| sinan-coqu | 19 files | 9.1 MB | from 2007 to 2025 |
-| sinan-deng | 26 files | 1229.0 MB | from 2000 to 2025 |
-| sinan-derm | 19 files | 0.5 MB | from 2006 to 2024 |
-| sinan-dift | 16 files | 0.1 MB | from 2007 to 2022 |
-| sinan-espo | 10 files | 0.4 MB | from 2013 to 2022 |
-| sinan-esqu | 17 files | 7.6 MB | from 2007 to 2023 |
-| sinan-exan | 18 files | 14.0 MB | from 2007 to 2024 |
-| sinan-fmac | 17 files | 3.9 MB | from 2007 to 2023 |
-| sinan-ftif | 18 files | 0.8 MB | from 2007 to 2024 |
-| sinan-hans | 24 files | 53.6 MB | from 2001 to 2024 |
-| sinan-hant | 25 files | 2.1 MB | from 1999 to 2023 |
-| sinan-hepa | 17 files | 28.1 MB | from 2007 to 2023 |
-| sinan-hiva | 17 files | 15.3 MB | from 2007 to 2023 |
-| sinan-hivc | 17 files | 0.1 MB | from 2007 to 2023 |
-| sinan-hive | 9 files | 1.0 MB | from 2015 to 2023 |
-| sinan-hivg | 17 files | 3.4 MB | from 2007 to 2023 |
-| sinan-iexo | 19 files | 150.3 MB | from 2006 to 2024 |
-| sinan-leiv | 25 files | 12.1 MB | from 2000 to 2024 |
-| sinan-lept | 18 files | 21.5 MB | from 2007 to 2024 |
-| sinan-lerd | 19 files | 6.5 MB | from 2006 to 2024 |
-| sinan-ltan | 25 files | 36.2 MB | from 2000 to 2024 |
-| sinan-mala | 20 files | 2.5 MB | from 2004 to 2023 |
-| sinan-meni | 18 files | 40.9 MB | from 2007 to 2024 |
-| sinan-ment | 19 files | 1.2 MB | from 2006 to 2024 |
-| sinan-ntra | 13 files | 0.6 MB | from 2010 to 2022 |
-| sinan-pair | 19 files | 0.5 MB | from 2006 to 2024 |
-| sinan-pest | 14 files | 0.0 MB | from 2007 to 2020 |
-| sinan-pfan | 10 files | 0.5 MB | from 2012 to 2021 |
-| sinan-pneu | 19 files | 0.3 MB | from 2006 to 2024 |
-| sinan-raiv | 15 files | 0.1 MB | from 2007 to 2021 |
-| sinan-rota | 16 files | 1.2 MB | from 2009 to 2024 |
-| sinan-sdta | 14 files | 0.8 MB | from 2007 to 2021 |
-| sinan-sifa | 15 files | 28.3 MB | from 2010 to 2024 |
-| sinan-sifc | 18 files | 13.3 MB | from 2007 to 2024 |
-| sinan-sifg | 17 files | 16.7 MB | from 2007 to 2023 |
-| sinan-src | 16 files | 0.2 MB | from 2007 to 2022 |
-| sinan-teta | 16 files | 0.6 MB | from 2007 to 2022 |
-| sinan-tetn | 8 files | 0.0 MB | from 2014 to 2021 |
-| sinan-toxc | 6 files | 0.8 MB | from 2019 to 2024 |
-| sinan-toxg | 6 files | 2.3 MB | from 2019 to 2024 |
-| sinan-trac | 14 files | 1.6 MB | from 2009 to 2022 |
-| sinan-tube | 23 files | 97.8 MB | from 2001 to 2023 |
-| sinan-varc | 17 files | 33.2 MB | from 2007 to 2023 |
-| sinan-viol | 15 files | 242.4 MB | from 2009 to 2023 |
-| sinan-zika | 10 files | 8.9 MB | from 2016 to 2025 |
-| sinasc-dn | 838 files | 6114.7 MB | from 1994 to 2023 |
-| sinasc-dnex | 10 files | 0.5 MB | from 2014 to 2023 |
-| siscolo-cc | 2858 files | 2380.9 MB | from 2006-01 to 2015-10 |
-| siscolo-hc | 2858 files | 38.9 MB | from 2006-01 to 2015-10 |
-| sismama-cm | 1675 files | 4.8 MB | from 2009-01 to 2015-07 |
-| sismama-hm | 1674 files | 5.7 MB | from 2009-01 to 2015-07 |
-| sisprenatal-pn | 944 files | 221.6 MB | from 2012-01 to 2014-12 |
+| base-populacional-ibge-pop | 33 | 150,4 MB | de 1980 a 2012 |
+| base-populacional-ibge-pops | 25 | 81,3 MB | de 2000 a 2024 |
+| base-populacional-ibge-popt | 32 | 2,4 MB | de 1992 a 2024 |
+| base-territorial | 14 | 20,9 MB | — |
+| base-territorial-conversao | 28 | 35,7 MB | — |
+| base-territorial-mapas | 83 | 122,2 MB | de 1991 a 2013 |
+| cih-cr | 868 | 157,5 MB | de 2008-01 a 2011-04 |
+| ciha | 4201 | 4354,5 MB | de 2011-01 a 2024-09 |
+| cnes-dc | 6318 | 115,4 MB | de 2005-08 a 2025-01 |
+| cnes-ee | 3201 | 4,3 MB | de 2007-03 a 2021-07 |
+| cnes-ef | 5374 | 10,0 MB | de 2007-03 a 2025-01 |
+| cnes-ep | 5778 | 498,8 MB | de 2007-04 a 2025-01 |
+| cnes-eq | 6317 | 1329,2 MB | de 2005-08 a 2025-01 |
+| cnes-gm | 5459 | 11,9 MB | de 2007-03 a 2025-01 |
+| cnes-hb | 5805 | 122,2 MB | de 2007-03 a 2025-01 |
+| cnes-in | 5520 | 36,4 MB | de 2007-10 a 2025-01 |
+| cnes-lt | 6264 | 131,3 MB | de 2005-10 a 2025-01 |
+| cnes-pf | 6318 | 38238,1 MB | de 2005-08 a 2025-01 |
+| cnes-rc | 5744 | 67,2 MB | de 2007-03 a 2025-01 |
+| cnes-sr | 6316 | 1389,8 MB | de 2005-08 a 2025-01 |
+| cnes-st | 6310 | 2805,5 MB | de 2005-08 a 2025-01 |
+| pce | 409 | 14,1 MB | de 1995 a 2021 |
+| po | 12 | 129,5 MB | de 2013 a 2024 |
+| resp | 280 | 3,4 MB | de 2015 a 2024 |
+| sia-ab | 544 | 13,9 MB | de 2008-01 a 2017-04 |
+| sia-abo | 1352 | 32,2 MB | de 2014-01 a 2024-12 |
+| sia-acf | 3263 | 26,7 MB | de 2014-08 a 2024-12 |
+| sia-ad | 5506 | 2683,1 MB | de 2008-01 a 2024-12 |
+| sia-am | 5447 | 14762,8 MB | de 2008-01 a 2024-12 |
+| sia-an | 2145 | 437,6 MB | de 2008-01 a 2014-10 |
+| sia-aq | 5466 | 4202,1 MB | de 2008-01 a 2024-12 |
+| sia-ar | 4982 | 318,9 MB | de 2008-01 a 2024-12 |
+| sia-atd | 3371 | 855,0 MB | de 2014-08 a 2024-12 |
+| sia-pa | 10193 | 163258,4 MB | de 1994-07 a 2024-12 |
+| sia-ps | 3881 | 2543,1 MB | de 2012-11 a 2024-12 |
+| sia-sad | 1088 | 51,0 MB | de 2012-04 a 2018-10 |
+| sih-er | 4419 | 270,4 MB | de 2011-01 a 2024-12 |
+| sih-rd | 10673 | 22639,1 MB | de 1992-01 a 2024-12 |
+| sih-rj | 5348 | 815,8 MB | de 2008-01 a 2024-12 |
+| sih-sp | 8928 | 48377,4 MB | de 1997-06 a 2024-12 |
+| sim-do-cid09 | 466 | 722,2 MB | de 1979 a 1995 |
+| sim-do-cid10 | 784 | 4307,5 MB | de 1996 a 2023 |
+| sim-doext-cid09 | 17 | 42,0 MB | de 1979 a 1995 |
+| sim-doext-cid10 | 28 | 260,2 MB | de 1996 a 2023 |
+| sim-dofet-cid09 | 17 | 23,0 MB | de 1979 a 1995 |
+| sim-dofet-cid10 | 28 | 60,9 MB | de 1996 a 2023 |
+| sim-doinf-cid09 | 17 | 58,0 MB | de 1979 a 1995 |
+| sim-doinf-cid10 | 28 | 92,0 MB | de 1996 a 2023 |
+| sim-domat-cid10 | 28 | 4,1 MB | de 1996 a 2023 |
+| sim-dorext-cid10 | 11 | 0,4 MB | de 2013 a 2023 |
+| sinan-acbi | 19 | 44,2 MB | de 2006 a 2024 |
+| sinan-acgr | 19 | 112,4 MB | de 2006 a 2024 |
+| sinan-aida | 17 | 17,1 MB | de 2007 a 2023 |
+| sinan-aidc | 17 | 0,3 MB | de 2007 a 2023 |
+| sinan-anim | 17 | 127,5 MB | de 2007 a 2023 |
+| sinan-antr | 19 | 432,7 MB | de 2006 a 2024 |
+| sinan-botu | 18 | 0,1 MB | de 2007 a 2024 |
+| sinan-canc | 18 | 0,3 MB | de 2007 a 2024 |
+| sinan-chag | 24 | 4,0 MB | de 2000 a 2023 |
+| sinan-chik | 11 | 70,7 MB | de 2015 a 2025 |
+| sinan-cole | 18 | 0,0 MB | de 2007 a 2024 |
+| sinan-coqu | 19 | 9,1 MB | de 2007 a 2025 |
+| sinan-deng | 26 | 1229,0 MB | de 2000 a 2025 |
+| sinan-derm | 19 | 0,5 MB | de 2006 a 2024 |
+| sinan-dift | 16 | 0,1 MB | de 2007 a 2022 |
+| sinan-espo | 10 | 0,4 MB | de 2013 a 2022 |
+| sinan-esqu | 17 | 7,6 MB | de 2007 a 2023 |
+| sinan-exan | 18 | 14,0 MB | de 2007 a 2024 |
+| sinan-fmac | 17 | 3,9 MB | de 2007 a 2023 |
+| sinan-ftif | 18 | 0,8 MB | de 2007 a 2024 |
+| sinan-hans | 24 | 53,6 MB | de 2001 a 2024 |
+| sinan-hant | 25 | 2,1 MB | de 1999 a 2023 |
+| sinan-hepa | 17 | 28,1 MB | de 2007 a 2023 |
+| sinan-hiva | 17 | 15,3 MB | de 2007 a 2023 |
+| sinan-hivc | 17 | 0,1 MB | de 2007 a 2023 |
+| sinan-hive | 9 | 1,0 MB | de 2015 a 2023 |
+| sinan-hivg | 17 | 3,4 MB | de 2007 a 2023 |
+| sinan-iexo | 19 | 150,3 MB | de 2006 a 2024 |
+| sinan-leiv | 25 | 12,1 MB | de 2000 a 2024 |
+| sinan-lept | 18 | 21,5 MB | de 2007 a 2024 |
+| sinan-lerd | 19 | 6,5 MB | de 2006 a 2024 |
+| sinan-ltan | 25 | 36,2 MB | de 2000 a 2024 |
+| sinan-mala | 20 | 2,5 MB | de 2004 a 2023 |
+| sinan-meni | 18 | 40,9 MB | de 2007 a 2024 |
+| sinan-ment | 19 | 1,2 MB | de 2006 a 2024 |
+| sinan-ntra | 13 | 0,6 MB | de 2010 a 2022 |
+| sinan-pair | 19 | 0,5 MB | de 2006 a 2024 |
+| sinan-pest | 14 | 0,0 MB | de 2007 a 2020 |
+| sinan-pfan | 10 | 0,5 MB | de 2012 a 2021 |
+| sinan-pneu | 19 | 0,3 MB | de 2006 a 2024 |
+| sinan-raiv | 15 | 0,1 MB | de 2007 a 2021 |
+| sinan-rota | 16 | 1,2 MB | de 2009 a 2024 |
+| sinan-sdta | 14 | 0,8 MB | de 2007 a 2021 |
+| sinan-sifa | 15 | 28,3 MB | de 2010 a 2024 |
+| sinan-sifc | 18 | 13,3 MB | de 2007 a 2024 |
+| sinan-sifg | 17 | 16,7 MB | de 2007 a 2023 |
+| sinan-src | 16 | 0,2 MB | de 2007 a 2022 |
+| sinan-teta | 16 | 0,6 MB | de 2007 a 2022 |
+| sinan-tetn | 8 | 0,0 MB | de 2014 a 2021 |
+| sinan-toxc | 6 | 0,8 MB | de 2019 a 2024 |
+| sinan-toxg | 6 | 2,3 MB | de 2019 a 2024 |
+| sinan-trac | 14 | 1,6 MB | de 2009 a 2022 |
+| sinan-tube | 23 | 97,8 MB | de 2001 a 2023 |
+| sinan-varc | 17 | 33,2 MB | de 2007 a 2023 |
+| sinan-viol | 15 | 242,4 MB | de 2009 a 2023 |
+| sinan-zika | 10 | 8,9 MB | de 2016 a 2025 |
+| sinasc-dn | 838 | 6114,7 MB | de 1994 a 2023 |
+| sinasc-dnex | 10 | 0,5 MB | de 2014 a 2023 |
+| siscolo-cc | 2858 | 2380,9 MB | de 2006-01 a 2015-10 |
+| siscolo-hc | 2858 | 38,9 MB | de 2006-01 a 2015-10 |
+| sismama-cm | 1675 | 4,8 MB | de 2009-01 a 2015-07 |
+| sismama-hm | 1674 | 5,7 MB | de 2009-01 a 2015-07 |
+| sisprenatal-pn | 944 | 221,6 MB | de 2012-01 a 2014-12 |
 
-**Total: 320.7 GB across 170,543 files**
+**Total: 320,7 GB em 170.543 arquivos**
 
-### Datasets by system
+### Datasets por sistema
 
-- **Base Populacional - IBGE** — Population estimates from Census and TCU
+- **Base Populacional - IBGE** — Estimativas populacionais do Censo e TCU
   - `base-populacional-ibge-pop`: Censo e Estimativas
   - `base-populacional-ibge-pops`: Estimativas por Sexo e Idade
   - `base-populacional-ibge-popt`: Estimativas TCU
 
-- **Base Territorial** — Geographic boundaries and conversion tables
+- **Base Territorial** — Limites geográficos e tabelas de conversão
   - `base-territorial`: Base Territoriais
   - `base-territorial-mapas`: Mapas
   - `base-territorial-conversao`: Conversões
@@ -488,7 +490,7 @@ Statistics generated on **2025-02-18**.
 
 - **SIM** — Sistema de Informação de Mortalidade
   - `sim-do-cid09`: Declarações de Óbito (CID-9, 1979–1995)
-  - `sim-do-cid10`: Declarações de Óbito (CID-10, 1996–present)
+  - `sim-do-cid10`: Declarações de Óbito (CID-10, 1996–presente)
   - `sim-doext-cid09`: Declarações de Óbitos por causas externas (CID-9)
   - `sim-doext-cid10`: Declarações de Óbitos por causas externas (CID-10)
   - `sim-dofet-cid09`: Declarações de Óbitos fetais (CID-9)
@@ -571,46 +573,28 @@ Statistics generated on **2025-02-18**.
 - **SISPRENATAL** — Sistema de Monitoramento e Avaliação do Pré-Natal, Parto, Puerpério e Criança
   - `sisprenatal-pn`: Pré-Natal
 
-## Data sources
+## Fontes de Dados
 
-Online queries (TabNet): https://datasus.saude.gov.br/informacoes-de-saude-tabnet/
+- Consultas online (TabNet): https://datasus.saude.gov.br/informacoes-de-saude-tabnet/
+- Transferência de microdados (FTP): https://datasus.saude.gov.br/transferencia-de-arquivos/
 
-Microdata transfer (FTP): https://datasus.saude.gov.br/transferencia-de-arquivos/
+## Lendo arquivos DBC
 
-## Reading DBC files
-
-datasus-fetcher downloads `.dbc` files, which is a compressed format used by DATASUS. To read these files in Python, you can use packages such as:
+O datasus-fetcher baixa arquivos `.dbc`, formato compactado utilizado pelo DATASUS. Para lê-los em Python, use um dos pacotes abaixo:
 
 - [PySUS](https://github.com/AlertaDengue/PySUS)
 - [read.dbc](https://github.com/dankkom/read.dbc) (R)
-- [dbf2dbc](https://github.com/AlertaDengue/dbf2dbc) (conversion tool)
+- [dbf2dbc](https://github.com/AlertaDengue/dbf2dbc) (ferramenta de conversão)
 
-## Development
+## Desenvolvimento
 
-Install an editable development version from GitHub:
-
-```sh
-pip install -e git+https://github.com/dankkom/datasus-fetcher.git
-```
-
-Run unit tests with:
-
-```sh
+```bash
+git clone https://github.com/Quantilica/datasus-fetcher.git
+cd datasus-fetcher
+uv sync --dev
 python -m unittest discover
 ```
 
-### Build and publish package
+## Licença
 
-Build the package with:
-
-```sh
-python -m build
-```
-
-Publish to PyPI with:
-
-```sh
-python -m twine upload dist/*
-```
-
-See [Python Packaging User Guide: The Packaging Workflow](https://packaging.python.org/en/latest/flow/) for more information.
+MIT — veja [LICENSE](LICENSE).
