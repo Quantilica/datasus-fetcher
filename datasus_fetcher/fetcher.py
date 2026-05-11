@@ -7,15 +7,17 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Callable, Iterable
 
+import quantilica_core.metadata as core_meta
+from quantilica_core.exceptions import FetchError
+from quantilica_core.ftp import FTP_TRANSIENT_ERRORS, ftp_connect
+from quantilica_core.manifests import DownloadManifest
+from quantilica_core.retry import exponential_delay
+
 from datasus_fetcher.slicer import Slicer
 
 from . import logger, meta
 from .remote_names import get_pattern, parse_filename
-from .storage import (
-    DataPartition,
-    RemoteFile,
-    get_data_filepath,
-)
+from .storage import DataPartition, DataRepository, RemoteFile
 
 FTP_HOST = "ftp.datasus.gov.br"
 FTP_TIMEOUT = 30.0
@@ -33,7 +35,7 @@ class Fetcher(threading.Thread):
         self.daemon = True
         self.ftp: ftplib.FTP | None = None
         self.q = q
-        self.dest_dir = dest_dir
+        self.repo = DataRepository(dest_dir)
         if callable(callback):
             self.callback = callback
         else:
@@ -46,11 +48,10 @@ class Fetcher(threading.Thread):
             while not self.dead():
                 file: RemoteFile = self.q.get()
 
-                filepath: Path = get_data_filepath(data_dir=self.dest_dir, file=file)
+                filepath: Path = self.repo.get_data_filepath(file=file)
                 if filepath.exists() and filepath.stat().st_size == file.size:
                     self.q.task_done()
                     continue
-                filepath.parent.mkdir(parents=True, exist_ok=True)
 
                 try:
                     logger.debug("%s -> %s", file.full_path, filepath)
@@ -59,19 +60,54 @@ class Fetcher(threading.Thread):
                     tt = time.time() - t0
                     log_download(tt, file.size, filepath.name)
 
+                    url = f"ftp://{FTP_HOST}/{file.full_path}"
+                    manifest = _write_manifest(
+                        filepath,
+                        url,
+                        file.dataset,
+                        metadata={
+                            "partition": str(file.partition),
+                            "preliminary": file.preliminary,
+                            "remote_datetime": file.datetime.isoformat(),
+                        },
+                    )
+
                     file_metadata = {
-                        "url": f"ftp://{FTP_HOST}/{file.full_path}",
+                        "url": url,
                         "size": file.size,
                         "filepath": filepath,
                         "suffix": file.extension,
                         "dataset": file.dataset,
                         "created_at": file.datetime,
+                        "manifest": manifest,
                     }
 
                     self.callback(file_metadata)
 
-                except Exception as e:
-                    logger.exception("Exception %s", e)
+                except ftplib.error_perm:
+                    logger.exception(
+                        "Permanent FTP error for %s — skipping.",
+                        file.full_path,
+                    )
+                except FTP_TRANSIENT_ERRORS as exc:
+                    logger.warning(
+                        "Transient error for %s: %s. Reconnecting...",
+                        file.full_path,
+                        exc,
+                    )
+                    try:
+                        self.ftp.close()
+                    except Exception:
+                        pass
+                    try:
+                        self.ftp = connect()
+                    except FetchError:
+                        logger.exception("Reconnect failed — stopping thread.")
+                        self.kill()
+                except Exception:
+                    logger.exception(
+                        "Unexpected error for %s — skipping.", file.full_path
+                    )
                 finally:
                     self.q.task_done()
         finally:
@@ -98,11 +134,16 @@ def log_download(tt: float, size: int, filename: str):
     logger.info(log)
 
 
-def connect(timeout: float = FTP_TIMEOUT) -> ftplib.FTP:
-    """Connects to the FTP server."""
-    ftp = ftplib.FTP(FTP_HOST, encoding="latin-1", timeout=timeout)
-    ftp.login()
-    return ftp
+def connect(timeout: float = FTP_TIMEOUT, attempts: int = 3) -> ftplib.FTP:
+    return ftp_connect(
+        FTP_HOST,
+        encoding="latin-1",
+        timeout=timeout,
+        attempts=attempts,
+        base_delay=2.0,
+        max_delay=30.0,
+        jitter=1.0,
+    )
 
 
 @lru_cache
@@ -119,16 +160,27 @@ def list_files(
         return []
 
     files: list[str] = []
+    max_retries = retries
+    attempt = 0
     while retries > 0:
+        attempt += 1
         files.clear()
         try:
             ftp.retrlines("LIST", files.append)
             break
-        # Timeout exception
-        except (ftplib.error_temp, TimeoutError):
-            logger.exception("Timeout exception while listing files.")
+        except FTP_TRANSIENT_ERRORS:
+            logger.exception(
+                "Transient error listing files (attempt %d/%d).",
+                attempt,
+                max_retries,
+            )
             retries -= 1
-            time.sleep(5)
+            if retries > 0:
+                time.sleep(
+                    exponential_delay(
+                        attempt, base_delay=2.0, max_delay=30.0, jitter=1.0
+                    )
+                )
 
     # parse files' date, size and name
     def parse_line(line: str) -> dict[str, str | int | dt.datetime | None]:
@@ -141,7 +193,9 @@ def list_files(
         try:
             size = int(size)
         except ValueError:
-            logger.warning("Could not parse size for file %s in %s", name, directory)
+            logger.warning(
+                "Could not parse size for file %s in %s", name, directory
+            )
             size = 0
         return {
             "datetime": datetime,
@@ -190,22 +244,55 @@ def fetch_file(
         dest_filepath = Path(dest_filepath.lower())
     dest_filepath.parent.mkdir(parents=True, exist_ok=True)
 
+    max_retries = retries
+    attempt = 0
     while retries > 0:
+        attempt += 1
         try:
             with open(dest_filepath, "wb") as f:
                 ftp.retrbinary("RETR " + path, f.write)
-            break
-        # File not found exception
+            return
         except ftplib.error_perm:
             logger.exception("File %s not found.", path)
             dest_filepath.unlink(missing_ok=True)
-            break
-        # Timeout exception
-        except (ftplib.error_temp, TimeoutError):
-            logger.exception("Timeout exception for %s.", path)
+            return
+        except FTP_TRANSIENT_ERRORS:
+            logger.exception(
+                "Transient error for %s (attempt %d/%d).",
+                path,
+                attempt,
+                max_retries,
+            )
             dest_filepath.unlink(missing_ok=True)
             retries -= 1
-            time.sleep(5)
+            if retries > 0:
+                time.sleep(
+                    exponential_delay(
+                        attempt, base_delay=2.0, max_delay=60.0, jitter=1.0
+                    )
+                )
+
+    raise FetchError(f"Download of {path} failed after {max_retries} attempts")
+
+
+def _write_manifest(
+    filepath: Path,
+    url: str,
+    dataset_id: str,
+    metadata: dict,
+) -> DownloadManifest:
+    manifest = DownloadManifest.from_file(
+        source_id="datasus",
+        dataset_id=dataset_id,
+        url=url,
+        file_path=filepath,
+        producer="datasus-fetcher",
+        metadata=metadata,
+    )
+    manifest.write_json(
+        filepath.with_suffix(filepath.suffix + ".manifest.json")
+    )
+    return manifest
 
 
 def list_dataset_files(ftp: ftplib.FTP, dataset: str) -> list[RemoteFile]:
@@ -297,12 +384,21 @@ def _download_support_files(
             f"      {filename} {tt:.2f} s {filesize_kb} {download_speed_kbps}",
         )
 
+        url = f"ftp://{FTP_HOST}/{file['full_path']}"
+        manifest = _write_manifest(
+            filepath,
+            url,
+            destdir.name,
+            metadata={"remote_datetime": file["datetime"].isoformat()},
+        )
+
         yield {
-            "url": f"ftp://{FTP_HOST}/{file['full_path']}",
+            "url": url,
             "size": file["size"],
             "filepath": filepath,
             "created_at": file["datetime"],
             "suffix": extension,
+            "manifest": manifest,
         }
 
 
@@ -330,3 +426,55 @@ def download_auxiliary_tables(
 ):
     files = list_auxiliary_tables_files(ftp, dataset)
     yield from _download_support_files(ftp, files, destdir / f"{dataset}[aux]")
+
+
+def generate_catalog(
+    downloaded_files: list[dict],
+) -> core_meta.MetadataCatalog:
+    """Generate a validated MetadataCatalog from a list of downloaded files."""
+    source_id = "datasus"
+    source = core_meta.Source(
+        id=source_id,
+        name="DATASUS - Departamento de Informática do SUS",
+        homepage_url="https://datasus.saude.gov.br",
+    )
+
+    datasets_map = {}
+    resources = []
+
+    for file in downloaded_files:
+        dataset_id = file.get("dataset", "unknown")
+        if dataset_id not in datasets_map:
+            datasets_map[dataset_id] = core_meta.Dataset(
+                id=dataset_id,
+                source_id=source_id,
+                name=meta.datasets.get(dataset_id, {}).get("nome", dataset_id),
+            )
+
+        # Extract filename as resource id/name
+        filename = file["filepath"].name
+        resource_id = filename.replace(".", "_")
+
+        resources.append(
+            core_meta.Resource(
+                id=resource_id,
+                dataset_id=dataset_id,
+                name=filename,
+                url=file["url"],
+                format=file["suffix"],
+                path=str(file["filepath"].absolute()),
+                metadata={
+                    "created_at": file["created_at"].isoformat()
+                    if isinstance(file["created_at"], dt.datetime)
+                    else str(file["created_at"]),
+                },
+            )
+        )
+
+    catalog = core_meta.MetadataCatalog(
+        sources=[source],
+        datasets=list(datasets_map.values()),
+        resources=resources,
+    )
+    catalog.validate_references()
+    return catalog
