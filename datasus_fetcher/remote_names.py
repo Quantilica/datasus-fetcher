@@ -1,5 +1,7 @@
 import re
 
+from quantilica_core.exceptions import ParseError
+
 from . import meta
 
 
@@ -114,4 +116,4 @@ def parse_filename(m: re.Match, pattern: str) -> dict:
         case "base_territorial":
             return {}
         case _:
-            raise ValueError(f"Pattern not found: {pattern}")
+            raise ParseError(f"Pattern not found: {pattern}")
