@@ -10,7 +10,9 @@ from datasus_fetcher import fetcher
 from datasus_fetcher.storage import DataPartition, RemoteFile
 
 
-def make_remote_file(uf="sp", year=2020, month=1, size=1024, dataset="sih-rd") -> RemoteFile:
+def make_remote_file(
+    uf="sp", year=2020, month=1, size=1024, dataset="sih-rd"
+) -> RemoteFile:
     return RemoteFile(
         filename="RDSP2001.dbc",
         full_path="/SIHSUS/200801_/Dados/RDSP2001.dbc",
@@ -44,6 +46,7 @@ class TestFetcherSkipsExistingFile(unittest.TestCase):
 
             # Write a local file with the same size at the expected path
             from datasus_fetcher.storage import get_data_filepath
+
             local_path = get_data_filepath(data_dir, remote_file)
             local_path.parent.mkdir(parents=True, exist_ok=True)
             local_path.write_bytes(b"x" * 42)
@@ -60,6 +63,7 @@ class TestFetcherSkipsExistingFile(unittest.TestCase):
 
             # Run the core logic manually (simulate one loop iteration)
             from datasus_fetcher.storage import get_data_filepath
+
             filepath = get_data_filepath(data_dir, remote_file)
             self.assertTrue(filepath.exists())
             self.assertEqual(filepath.stat().st_size, remote_file.size)
@@ -72,7 +76,9 @@ class TestFetchFile(unittest.TestCase):
             self.assertFalse(dest.parent.exists())
 
             mock_ftp = MagicMock(spec=ftplib.FTP)
-            mock_ftp.retrbinary.side_effect = lambda cmd, callback: callback(b"data")
+            mock_ftp.retrbinary.side_effect = lambda cmd, callback: callback(
+                b"data"
+            )
 
             fetcher.fetch_file(mock_ftp, "/remote/file.dbc", dest)
 
@@ -84,7 +90,9 @@ class TestFetchFile(unittest.TestCase):
             payload = b"binary content"
 
             mock_ftp = MagicMock(spec=ftplib.FTP)
-            mock_ftp.retrbinary.side_effect = lambda cmd, callback: callback(payload)
+            mock_ftp.retrbinary.side_effect = lambda cmd, callback: callback(
+                payload
+            )
 
             fetcher.fetch_file(mock_ftp, "/remote/file.dbc", dest)
 
@@ -104,7 +112,9 @@ class TestFetchFile(unittest.TestCase):
             ]
 
             with patch("datasus_fetcher.fetcher.time.sleep"):
-                fetcher.fetch_file(mock_ftp, "/remote/file.dbc", dest, retries=3)
+                fetcher.fetch_file(
+                    mock_ftp, "/remote/file.dbc", dest, retries=3
+                )
 
             self.assertEqual(mock_ftp.retrbinary.call_count, 3)
 
@@ -113,9 +123,13 @@ class TestFetchFile(unittest.TestCase):
             dest = Path(tmpdir) / "file.dbc"
 
             mock_ftp = MagicMock(spec=ftplib.FTP)
-            mock_ftp.retrbinary.side_effect = ftplib.error_perm("550 not found")
+            mock_ftp.retrbinary.side_effect = ftplib.error_perm(
+                "550 not found"
+            )
 
-            fetcher.fetch_file(mock_ftp, "/remote/missing.dbc", dest, retries=3)
+            fetcher.fetch_file(
+                mock_ftp, "/remote/missing.dbc", dest, retries=3
+            )
 
             # Should not retry on permission error — only one attempt
             self.assertEqual(mock_ftp.retrbinary.call_count, 1)
@@ -126,7 +140,9 @@ class TestFetchFile(unittest.TestCase):
             dest_str = str(Path(tmpdir) / "file.dbc")
 
             mock_ftp = MagicMock(spec=ftplib.FTP)
-            mock_ftp.retrbinary.side_effect = lambda cmd, callback: callback(b"ok")
+            mock_ftp.retrbinary.side_effect = lambda cmd, callback: callback(
+                b"ok"
+            )
 
             # Should not raise even when dest is a string
             fetcher.fetch_file(mock_ftp, "/remote/file.dbc", dest_str)
@@ -164,9 +180,15 @@ class TestListFiles(unittest.TestCase):
         fetcher.list_files.cache_clear()
 
         # Patch recursive call to avoid extra ftp.cwd side effects
-        with patch.object(fetcher, "list_files", wraps=fetcher.list_files) as mock_lf:
-            mock_ftp2 = self._make_ftp(["01-15-24  09:30AM             512 file.dbc"])
-            result = fetcher.list_files(mock_ftp2, "/some/dir", max_recursive_depth=0)
+        with patch.object(
+            fetcher, "list_files", wraps=fetcher.list_files
+        ) as mock_lf:
+            mock_ftp2 = self._make_ftp(
+                ["01-15-24  09:30AM             512 file.dbc"]
+            )
+            result = fetcher.list_files(
+                mock_ftp2, "/some/dir", max_recursive_depth=0
+            )
 
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]["filename"], "file.dbc")
