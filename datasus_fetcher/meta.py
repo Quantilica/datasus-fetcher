@@ -33,36 +33,21 @@ states = [
 ]
 
 uf_pattern = "{}".format("|".join(states).lower())
-month_pattern = "|".join((f"{i:02}" for i in range(1, 12 + 1)))
+month_pattern = "|".join(f"{i:02}" for i in range(1, 12 + 1))
 year_4digit_pattern = r"\d{4}"  # 1997
 year_2digit_pattern = r"\d{2}"  # 97
 
 # 9701, 9702, ... 9712, 9801, ...
-year_pattern = r"({yearly})".format(
-    yearly=year_4digit_pattern,
-)
-year2_pattern = r"({yearly})".format(
-    yearly=year_2digit_pattern,
-)
-uf_year_pattern = r"({uf})({yearly})".format(
-    uf=uf_pattern,
-    yearly=year_4digit_pattern,
-)
-uf_year2_pattern = r"({uf})({yearly})".format(
-    uf=uf_pattern,
-    yearly=year_2digit_pattern,
-)
-uf_year2_month_pattern = r"({uf})({year})({month})".format(
-    uf=uf_pattern,
-    year=year_2digit_pattern,
-    month=month_pattern,
+year_pattern = rf"({year_4digit_pattern})"
+year2_pattern = rf"({year_2digit_pattern})"
+uf_year_pattern = rf"({uf_pattern})({year_4digit_pattern})"
+uf_year2_pattern = rf"({uf_pattern})({year_2digit_pattern})"
+uf_year2_month_pattern = (
+    rf"({uf_pattern})({year_2digit_pattern})({month_pattern})"
 )
 uf_year2_month_pattern_sia_pa = uf_year2_month_pattern + r"(|[a-z])"
-uf_mapas_year_pattern = r"({uf})_mapas_({year})".format(
-    uf=uf_pattern,
-    year=year_4digit_pattern,
-)
-uf_cnv_pattern = r"({uf})_cnv".format(uf=uf_pattern)
+uf_mapas_year_pattern = rf"({uf_pattern})_mapas_({year_4digit_pattern})"
+uf_cnv_pattern = rf"({uf_pattern})_cnv"
 
 BASE_PATH = "/dissemin/publicos"
 
