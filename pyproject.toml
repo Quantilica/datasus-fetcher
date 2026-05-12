@@ -7,6 +7,7 @@ authors = [
     { name = "Komesu, D.K.", email = "daniel@dkko.me" },
 ]
 license = { file = "LICENSE" }
+requires-python = ">=3.12"
 keywords = [
     "data",
     "open data",
@@ -50,6 +51,9 @@ dev = [
 [tool.ruff]
 line-length = 79
 lint.select = ["E", "F", "I", "UP", "B"]
+
+[tool.uv.sources]
+quantilica-core = { path = "../quantilica-core", editable = true }
 
 [tool.hatch.metadata]
 allow-direct-references = true
