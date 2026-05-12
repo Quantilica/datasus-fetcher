@@ -412,7 +412,7 @@ def download_documentation(
     destdir: Path,
 ):
     files = list_documentation_files(ftp, dataset)
-    yield from _download_support_files(ftp, files, destdir / f"{dataset}[doc]")
+    yield from _download_support_files(ftp, files, destdir / "_documentacao" / dataset)
 
 
 def list_auxiliary_tables_files(ftp: ftplib.FTP, dataset: str) -> list[dict]:
@@ -425,7 +425,7 @@ def download_auxiliary_tables(
     destdir: Path,
 ):
     files = list_auxiliary_tables_files(ftp, dataset)
-    yield from _download_support_files(ftp, files, destdir / f"{dataset}[aux]")
+    yield from _download_support_files(ftp, files, destdir / "_auxiliar" / dataset)
 
 
 def generate_catalog(
