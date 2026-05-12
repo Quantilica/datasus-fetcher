@@ -97,12 +97,11 @@ class TestGetPartitionDir(unittest.TestCase):
 class TestGetFilename(unittest.TestCase):
     def test_uf_year_month_partition(self):
         f = make_remote_file(uf="sp", year=2020, month=1)
-        self.assertEqual(get_filename(f), "sih-rd_202001-sp_20240115.dbc")
+        self.assertEqual(get_filename(f), "sih-rd_202001-sp@20240115.dbc")
 
     def test_year_only_partition(self):
         f = make_remote_file(year=2023, dataset="sinasc-dn")
-        # DataPartition(year=2023) → "2023"
-        self.assertEqual(get_filename(f), "sinasc-dn_2023_20240115.dbc")
+        self.assertEqual(get_filename(f), "sinasc-dn_2023@20240115.dbc")
 
     def test_preliminary_flag_adds_suffix(self):
         f = make_remote_file(uf="sp", year=2024, month=1, preliminary=True)
@@ -111,7 +110,7 @@ class TestGetFilename(unittest.TestCase):
 
     def test_with_version(self):
         f = make_remote_file(uf="sp", year=2008, month=1, version="a")
-        self.assertEqual(get_filename(f), "sih-rd_200801-sp-a_20240115.dbc")
+        self.assertEqual(get_filename(f), "sih-rd_200801-sp-a@20240115.dbc")
 
     def test_extension_preserved(self):
         f = make_remote_file(year=2020)
@@ -119,9 +118,10 @@ class TestGetFilename(unittest.TestCase):
 
     def test_date_format_yyyymmdd(self):
         f = make_remote_file(year=2020)
-        # download date portion must be YYYYMMDD
-        parts = get_filename(f).rsplit(".", 1)[0].split("_")
-        self.assertEqual(parts[-1], "20240115")
+        # download date portion must be YYYYMMDD after the '@' separator
+        stem = get_filename(f).rsplit(".", 1)[0]
+        _, _, date_part = stem.rpartition("@")
+        self.assertEqual(date_part, "20240115")
 
 
 class TestGetDataFilepath(unittest.TestCase):
@@ -129,14 +129,14 @@ class TestGetDataFilepath(unittest.TestCase):
         f = make_remote_file(uf="sp", year=2020, month=1)
         result = get_data_filepath(Path("/data"), f)
         self.assertEqual(
-            result, Path("/data/sih-rd/202001/sih-rd_202001-sp_20240115.dbc")
+            result, Path("/data/sih-rd/202001/sih-rd_202001-sp@20240115.dbc")
         )
 
     def test_year_only_partition(self):
         f = make_remote_file(year=2023, dataset="sinasc-dn")
         result = get_data_filepath(Path("/data"), f)
         self.assertEqual(
-            result, Path("/data/sinasc-dn/2023/sinasc-dn_2023_20240115.dbc")
+            result, Path("/data/sinasc-dn/2023/sinasc-dn_2023@20240115.dbc")
         )
 
     def test_data_dir_is_prefix(self):
@@ -162,7 +162,7 @@ class TestGetFileMetadata(unittest.TestCase):
     def test_yearmonth_uf_partition(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             f = self._write_temp_file(
-                tmpdir, "sih-rd_202001-sp_20240115.dbc", b"abc"
+                tmpdir, "sih-rd_202001-sp@20240115.dbc", b"abc"
             )
             result = get_file_metadata(f)
             self.assertEqual(result.dataset, "sih-rd")
@@ -173,7 +173,7 @@ class TestGetFileMetadata(unittest.TestCase):
 
     def test_year_only_partition(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            f = self._write_temp_file(tmpdir, "sinasc-dn_2023-sp_20240101.dbc")
+            f = self._write_temp_file(tmpdir, "sinasc-dn_2023-sp@20240101.dbc")
             result = get_file_metadata(f)
             self.assertEqual(result.dataset, "sinasc-dn")
             self.assertEqual(result.partition, "2023-sp")
@@ -187,7 +187,7 @@ class TestGetFileMetadata(unittest.TestCase):
 
     def test_filepath_preserved(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            f = self._write_temp_file(tmpdir, "sih-rd_202001-sp_20240115.dbc")
+            f = self._write_temp_file(tmpdir, "sih-rd_202001-sp@20240115.dbc")
             result = get_file_metadata(f)
             self.assertEqual(result.filepath, f)
 
@@ -201,7 +201,7 @@ class TestGetFilesMetadata(unittest.TestCase):
     def test_single_file_is_most_recent(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             d = Path(tmpdir)
-            self._write(d, "sih-rd_202001-sp_20240101.dbc")
+            self._write(d, "sih-rd_202001-sp@20240101.dbc")
             files = list(get_files_metadata(d))
             self.assertEqual(len(files), 1)
             self.assertTrue(files[0].is_most_recent)
@@ -209,8 +209,8 @@ class TestGetFilesMetadata(unittest.TestCase):
     def test_two_versions_marks_latest_as_most_recent(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             d = Path(tmpdir)
-            self._write(d, "sih-rd_202001-sp_20230101.dbc")
-            self._write(d, "sih-rd_202001-sp_20240115.dbc")
+            self._write(d, "sih-rd_202001-sp@20230101.dbc")
+            self._write(d, "sih-rd_202001-sp@20240115.dbc")
             files = list(get_files_metadata(d))
             self.assertEqual(len(files), 2)
             older = next(f for f in files if "20230101" in f.filepath.name)
@@ -222,8 +222,8 @@ class TestGetFilesMetadata(unittest.TestCase):
         # sp and rj are separate partitions; each gets its own most_recent flag
         with tempfile.TemporaryDirectory() as tmpdir:
             d = Path(tmpdir)
-            self._write(d, "sih-rd_202001-sp_20240101.dbc")
-            self._write(d, "sih-rd_202001-rj_20240101.dbc")
+            self._write(d, "sih-rd_202001-sp@20240101.dbc")
+            self._write(d, "sih-rd_202001-rj@20240101.dbc")
             files = list(get_files_metadata(d))
             self.assertEqual(len(files), 2)
             self.assertTrue(all(f.is_most_recent for f in files))
@@ -231,7 +231,7 @@ class TestGetFilesMetadata(unittest.TestCase):
     def test_invalid_filename_is_skipped(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             d = Path(tmpdir)
-            self._write(d, "sih-rd_202001-sp_20240101.dbc")
+            self._write(d, "sih-rd_202001-sp@20240101.dbc")
             self._write(d, "garbage.dbc")
             files = list(get_files_metadata(d))
             self.assertEqual(len(files), 1)
@@ -245,9 +245,9 @@ class TestGetFilesMetadata(unittest.TestCase):
     def test_three_versions_only_last_is_most_recent(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             d = Path(tmpdir)
-            self._write(d, "sih-rd_202001-sp_20220101.dbc")
-            self._write(d, "sih-rd_202001-sp_20230601.dbc")
-            self._write(d, "sih-rd_202001-sp_20240115.dbc")
+            self._write(d, "sih-rd_202001-sp@20220101.dbc")
+            self._write(d, "sih-rd_202001-sp@20230601.dbc")
+            self._write(d, "sih-rd_202001-sp@20240115.dbc")
             files = list(get_files_metadata(d))
             self.assertEqual(len(files), 3)
             most_recent = [f for f in files if f.is_most_recent]

@@ -1,6 +1,8 @@
 import re
 import unittest
 
+from quantilica_core.exceptions import ParseError
+
 from datasus_fetcher import meta
 from datasus_fetcher.remote_names import get_pattern, parse_filename
 
@@ -177,10 +179,10 @@ class TestParseFilenameUfYear2MonthSiaPa(unittest.TestCase):
 
 
 class TestParseFilenameUnknownPatternRaises(unittest.TestCase):
-    def test_unknown_pattern_raises_value_error(self):
+    def test_unknown_pattern_raises_parse_error(self):
         # Build a dummy match object using a simple regex
         m = re.match(r"(sp)(08)(01)", "sp0801")
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ParseError):
             parse_filename(m, "nonexistent_pattern")
 
 
