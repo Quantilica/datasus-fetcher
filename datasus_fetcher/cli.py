@@ -97,7 +97,7 @@ def list_datasets(args: argparse.Namespace):
 
 
 def fetch_data(args: argparse.Namespace):
-    data_dir = args.data_dir
+    data_dir = args.output
     threads = args.threads
     dry_run = args.dry_run
     if not args.datasets:
@@ -159,7 +159,7 @@ def fetch_data(args: argparse.Namespace):
 
 
 def fetch_docs(args: argparse.Namespace):
-    data_dir = args.data_dir
+    data_dir = args.output
     if args.datasets is None:
         datasets = meta.docs
     else:
@@ -177,7 +177,7 @@ def fetch_docs(args: argparse.Namespace):
 
 
 def fetch_aux(args: argparse.Namespace):
-    data_dir = args.data_dir
+    data_dir = args.output
     if args.datasets is None:
         datasets = meta.auxiliary_tables
     else:
@@ -195,7 +195,7 @@ def fetch_aux(args: argparse.Namespace):
 
 
 def archive(args: argparse.Namespace):
-    data_dir: Path = args.data_dir
+    data_dir: Path = args.output
     archivedatadir: Path = args.archive_data_dir
     for datasetdir in data_dir.iterdir():
         for datepartitiondir in datasetdir.iterdir():
@@ -254,11 +254,12 @@ def get_args():
         help="Regions to download (eg.: br, ac, am, ce, ...)",
     )
     subparser_fetch.add_argument(
-        "--data-dir",
-        dest="data_dir",
+        "-o",
+        "--output",
+        dest="output",
         type=Path,
-        required=True,
-        help="Directory to download to",
+        default=Path("/data/datasus"),
+        help="Output directory (default: /data/datasus)",
     )
     subparser_fetch.add_argument(
         "-t",
@@ -285,10 +286,12 @@ def get_args():
         help="Datasets documentation to download",
     )
     subparser_docs.add_argument(
-        "--data-dir",
-        dest="data_dir",
+        "-o",
+        "--output",
+        dest="output",
         type=Path,
-        help="Directory to download to",
+        default=Path("/data/datasus"),
+        help="Output directory (default: /data/datasus)",
     )
     subparser_docs.set_defaults(func=fetch_docs)
 
@@ -300,20 +303,30 @@ def get_args():
         help="Datasets auxiliary tables to download",
     )
     subparser_aux.add_argument(
-        "--data-dir",
-        dest="data_dir",
+        "-o",
+        "--output",
+        dest="output",
         type=Path,
-        help="Directory to download to",
+        default=Path("/data/datasus"),
+        help="Output directory (default: /data/datasus)",
     )
     subparser_aux.set_defaults(func=fetch_aux)
 
     # * archive ---------------------------------------------------------------
     subparser_archive = subparsers.add_parser("archive")
-    subparser_archive.add_argument("--data-dir", type=Path, required=True)
+    subparser_archive.add_argument(
+        "-o",
+        "--output",
+        dest="output",
+        type=Path,
+        default=Path("/data/datasus"),
+        help="Source data directory (default: /data/datasus)",
+    )
     subparser_archive.add_argument(
         "--archive-data-dir",
         type=Path,
         required=True,
+        help="Directory to move outdated files to",
     )
     subparser_archive.set_defaults(func=archive)
 
