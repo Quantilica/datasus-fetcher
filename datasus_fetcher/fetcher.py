@@ -1,3 +1,4 @@
+import contextlib
 import datetime as dt
 import ftplib
 import queue
@@ -6,6 +7,8 @@ import time
 from functools import lru_cache
 from pathlib import Path
 from typing import Callable, Iterable
+
+from tqdm import tqdm as _tqdm
 
 import quantilica_core.metadata as core_meta
 from quantilica_core.exceptions import FetchError
@@ -17,11 +20,15 @@ from datasus_fetcher.slicer import Slicer
 
 from . import logger, meta
 from .remote_names import get_pattern, parse_filename
-from .storage import DataPartition, DataRepository, RemoteFile
+from .storage import DataPartition, DataRepository, RemoteFile, get_data_filepath
 
 FTP_HOST = "ftp.datasus.gov.br"
 FTP_TIMEOUT = 30.0
 MEGA = 1_000_000
+
+
+class _Aborted(Exception):
+    """Raised when an in-flight download is interrupted by the user."""
 
 
 class Fetcher(threading.Thread):
@@ -45,8 +52,21 @@ class Fetcher(threading.Thread):
     def run(self):
         self.ftp = connect()
         try:
-            while not self.dead():
-                file: RemoteFile = self.q.get()
+            while True:
+                try:
+                    file: RemoteFile | None = self.q.get(timeout=0.5)
+                except queue.Empty:
+                    if self.dead():
+                        return
+                    continue
+
+                if file is None:
+                    self.q.task_done()
+                    return
+
+                if self.dead():
+                    self.q.task_done()
+                    continue
 
                 filepath: Path = self.repo.get_data_filepath(file=file)
                 if filepath.exists() and filepath.stat().st_size == file.size:
@@ -56,7 +76,12 @@ class Fetcher(threading.Thread):
                 try:
                     logger.debug("%s -> %s", file.full_path, filepath)
                     t0 = time.time()
-                    fetch_file(self.ftp, file.full_path, filepath)
+                    fetch_file(
+                        self.ftp,
+                        file.full_path,
+                        filepath,
+                        abort_check=self.dead,
+                    )
                     tt = time.time() - t0
                     log_download(tt, file.size, filepath.name)
 
@@ -84,6 +109,9 @@ class Fetcher(threading.Thread):
 
                     self.callback(file_metadata)
 
+                except _Aborted:
+                    logger.info("Aborted download of %s", file.full_path)
+                    return
                 except ftplib.error_perm:
                     logger.exception(
                         "Permanent FTP error for %s — skipping.",
@@ -95,10 +123,8 @@ class Fetcher(threading.Thread):
                         file.full_path,
                         exc,
                     )
-                    try:
+                    with contextlib.suppress(Exception):
                         self.ftp.close()
-                    except Exception:
-                        pass
                     try:
                         self.ftp = connect()
                     except FetchError:
@@ -111,7 +137,9 @@ class Fetcher(threading.Thread):
                 finally:
                     self.q.task_done()
         finally:
-            self.ftp.close()
+            if self.ftp is not None:
+                with contextlib.suppress(Exception):
+                    self.ftp.close()
 
     def kill(self) -> None:
         self._kill_event.set()
@@ -232,12 +260,17 @@ def fetch_file(
     path: str,
     dest_filepath: Path | str,
     retries: int = 3,
+    *,
+    abort_check: Callable[[], bool] | None = None,
 ):
     """Fetch a file from a remote FTP server.
 
     :param path: The path to the file.
     :param dest_filepath: The destination file path.
     :param ftp: The FTP connection.
+    :param abort_check: Optional callable polled per data chunk; if it
+        returns truthy, the download is aborted, the partial file is
+        removed, and :class:`_Aborted` is raised (no retries).
     """
 
     if isinstance(dest_filepath, str):
@@ -250,8 +283,15 @@ def fetch_file(
         attempt += 1
         try:
             with open(dest_filepath, "wb") as f:
-                ftp.retrbinary("RETR " + path, f.write)
+                def _write(chunk: bytes, _f=f) -> None:
+                    if abort_check is not None and abort_check():
+                        raise _Aborted
+                    _f.write(chunk)
+                ftp.retrbinary("RETR " + path, _write)
             return
+        except _Aborted:
+            dest_filepath.unlink(missing_ok=True)
+            raise
         except ftplib.error_perm:
             logger.exception("File %s not found.", path)
             dest_filepath.unlink(missing_ok=True)
@@ -266,6 +306,8 @@ def fetch_file(
             dest_filepath.unlink(missing_ok=True)
             retries -= 1
             if retries > 0:
+                if abort_check is not None and abort_check():
+                    raise _Aborted from None
                 time.sleep(
                     exponential_delay(
                         attempt, base_delay=2.0, max_delay=60.0, jitter=1.0
@@ -329,27 +371,103 @@ def download_data(
     threads: int = 2,
     callback: Callable | None = None,
     slicer: Slicer | None = None,
+    show_progress: bool = False,
 ):
-    """Multithreaded download data files"""
+    """Multithreaded download data files, dataset by dataset."""
     logger.info("Starting download with %s threads", threads)
-    if datasets:
-        datasets_ = set(datasets) & set(meta.datasets.keys())
-    else:
-        datasets_ = meta.datasets.keys()
+    datasets_ = (
+        set(datasets) & set(meta.datasets.keys())
+        if datasets
+        else set(meta.datasets.keys())
+    )
+
     ftp0 = connect()
-    q = queue.Queue()
+    q: queue.Queue = queue.Queue()
+
+    # Mutable callback reference — swapped per dataset after each q.join()
+    _cb_ref: list[Callable | None] = [callback]
+
+    def _shared_cb(file_metadata: dict) -> None:
+        if _cb_ref[0]:
+            _cb_ref[0](file_metadata)
+
+    workers: list[Fetcher] = []
     for _ in range(threads):
-        _w = Fetcher(q, destdir, callback=callback)
-        _w.start()
-    for dataset in datasets_:
-        logger.info("Listing files of %s", dataset)
-        for remote_file in list_dataset_files(ftp0, dataset):
-            if slicer is not None and not slicer(remote_file):
+        w = Fetcher(q, destdir, callback=_shared_cb)
+        w.start()
+        workers.append(w)
+
+    current_pbar: list[_tqdm | None] = [None]
+
+    try:
+        for dataset in sorted(datasets_):
+            logger.info("Listing files of %s", dataset)
+            def _needs_download(f: RemoteFile) -> bool:
+                fp = get_data_filepath(destdir, f)
+                return not (fp.exists() and fp.stat().st_size == f.size)
+
+            dataset_files = [
+                f for f in list_dataset_files(ftp0, dataset)
+                if (slicer is None or slicer(f)) and _needs_download(f)
+            ]
+            if not dataset_files:
                 continue
-            q.put(remote_file)
-    ftp0.close()
-    logger.info("Joining queue")
-    q.join()
+
+            if show_progress:
+                pbar = _tqdm(
+                    total=len(dataset_files),
+                    desc=dataset,
+                    unit=" arquivo",
+                    leave=True,
+                )
+                current_pbar[0] = pbar
+
+                def _dataset_cb(fm: dict, _pbar: _tqdm = pbar) -> None:
+                    _pbar.update(1)
+                    if callback:
+                        callback(fm)
+
+                _cb_ref[0] = _dataset_cb
+            else:
+                _cb_ref[0] = callback
+
+            for f in dataset_files:
+                q.put(f)
+            while q.unfinished_tasks:
+                time.sleep(0.05)
+
+            if show_progress:
+                pbar.close()
+                current_pbar[0] = None
+
+    except KeyboardInterrupt:
+        for w in workers:
+            w.kill()
+        # Drain queued-but-not-started items so q.unfinished_tasks unblocks
+        # and surviving workers don't keep pulling from a stale backlog.
+        while True:
+            try:
+                q.get_nowait()
+            except queue.Empty:
+                break
+            q.task_done()
+        _tqdm.write("\nDownload interrompido pelo usuário.")
+    finally:
+        if current_pbar[0] is not None:
+            with contextlib.suppress(Exception):
+                current_pbar[0].close()
+            current_pbar[0] = None
+        # Send shutdown sentinels — wakes workers blocked on get(timeout).
+        for _ in workers:
+            q.put(None)
+        for w in workers:
+            w.join(timeout=5)
+            if w.is_alive():
+                logger.warning(
+                    "Worker %s did not exit within timeout.", w.name
+                )
+        with contextlib.suppress(Exception):
+            ftp0.close()
     # Fetcher threads close their own FTP connections in run()'s finally block
 
 

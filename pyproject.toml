@@ -42,6 +42,9 @@ Issues = "https://github.com/Quantilica/datasus-fetcher/issues"
 [project.scripts]
 datasus-fetcher = "datasus_fetcher.cli:main"
 
+[project.entry-points."quantilica.fetchers"]
+datasus = "datasus_fetcher.plugin:app"
+
 [project.optional-dependencies]
 dev = [
     "ruff>=0.9.0",

@@ -4,7 +4,6 @@ import argparse
 import logging
 import logging.config
 import shutil
-import threading
 from pathlib import Path
 from typing import Any
 
@@ -134,6 +133,9 @@ def fetch_data(args: argparse.Namespace):
         print(f"\nTotal: {total_files} files, {total_size / 2**30:.2f} GB")
         return
 
+    if not args.verbose:
+        logging.getLogger("datasus_fetcher").setLevel(logging.WARNING)
+
     def log_fetch_data(file_metadata: dict[str, Any]):
         message = (
             "Downloaded "
@@ -143,19 +145,14 @@ def fetch_data(args: argparse.Namespace):
         )
         logger.info(message)
 
-    try:
-        fetcher.download_data(
-            datasets=sorted(datasets),
-            destdir=data_dir,
-            threads=threads,
-            callback=log_fetch_data,
-            slicer=slicer,
-        )
-    except KeyboardInterrupt:
-        for th in threading.enumerate():
-            if isinstance(th, fetcher.Fetcher):
-                th.kill()
-        logger.warning("KeyboardInterrupt: stopping fetchers")
+    fetcher.download_data(
+        datasets=sorted(datasets),
+        destdir=data_dir,
+        threads=threads,
+        callback=log_fetch_data if args.verbose else None,
+        slicer=slicer,
+        show_progress=not args.verbose,
+    )
 
 
 def fetch_docs(args: argparse.Namespace):
@@ -275,6 +272,12 @@ def get_args():
         action="store_true",
         default=False,
         help="List files that would be downloaded without downloading them",
+    )
+    subparser_fetch.add_argument(
+        "--verbose",
+        action="store_true",
+        default=False,
+        help="Exibir logs detalhados em vez de barra de progresso",
     )
     subparser_fetch.set_defaults(func=fetch_data)
 
