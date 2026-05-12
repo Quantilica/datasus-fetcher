@@ -181,12 +181,6 @@ def list_files(
     retries: int = 3,
     max_recursive_depth: int = 3,
 ) -> list[dict]:
-    try:
-        ftp.cwd(directory)
-    except ftplib.error_perm:
-        logger.exception("Directory not found: %s", directory)
-        return []
-
     files: list[str] = []
     max_retries = retries
     attempt = 0
@@ -194,8 +188,12 @@ def list_files(
         attempt += 1
         files.clear()
         try:
+            ftp.cwd(directory)
             ftp.retrlines("LIST", files.append)
             break
+        except ftplib.error_perm:
+            logger.exception("Directory not found: %s", directory)
+            return []
         except FTP_TRANSIENT_ERRORS:
             logger.exception(
                 "Transient error listing files (attempt %d/%d).",
@@ -203,12 +201,13 @@ def list_files(
                 max_retries,
             )
             retries -= 1
-            if retries > 0:
-                time.sleep(
-                    exponential_delay(
-                        attempt, base_delay=2.0, max_delay=30.0, jitter=1.0
-                    )
+            if retries <= 0:
+                raise
+            time.sleep(
+                exponential_delay(
+                    attempt, base_delay=2.0, max_delay=30.0, jitter=1.0
                 )
+            )
 
     # parse files' date, size and name
     def parse_line(line: str) -> dict[str, str | int | dt.datetime | None]:
@@ -402,14 +401,30 @@ def download_data(
     try:
         for dataset in sorted(datasets_):
             logger.info("Listing files of %s", dataset)
+
             def _needs_download(f: RemoteFile) -> bool:
                 fp = get_data_filepath(destdir, f)
                 return not (fp.exists() and fp.stat().st_size == f.size)
 
-            dataset_files = [
-                f for f in list_dataset_files(ftp0, dataset)
-                if (slicer is None or slicer(f)) and _needs_download(f)
-            ]
+            attempts = 3
+            while attempts > 0:
+                try:
+                    dataset_files = [
+                        f for f in list_dataset_files(ftp0, dataset)
+                        if (slicer is None or slicer(f)) and _needs_download(f)
+                    ]
+                    break
+                except FTP_TRANSIENT_ERRORS:
+                    attempts -= 1
+                    if attempts <= 0:
+                        raise
+                    logger.warning(
+                        "Transient error listing %s. Reconnecting...", dataset
+                    )
+                    with contextlib.suppress(Exception):
+                        ftp0.close()
+                    ftp0 = connect()
+
             if not dataset_files:
                 continue
 
@@ -474,7 +489,6 @@ def download_data(
 def _list_support_files(ftp: ftplib.FTP, ftp_dirs: list[str]) -> list[dict]:
     files = []
     for ftp_dir in ftp_dirs:
-        ftp.cwd(ftp_dir)
         files.extend(list_files(ftp, directory=ftp_dir))
     return files
 
