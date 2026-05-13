@@ -51,6 +51,9 @@ dev = [
     "pytest>=8.0.0",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/datasus_fetcher"]
+
 [tool.ruff]
 line-length = 79
 lint.select = ["E", "F", "I", "UP", "B"]
