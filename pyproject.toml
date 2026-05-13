@@ -56,7 +56,10 @@ packages = ["src/datasus_fetcher"]
 
 [tool.ruff]
 line-length = 79
-lint.select = ["E", "F", "I", "UP", "B"]
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
 
 [tool.hatch.metadata]
 allow-direct-references = true
