@@ -5,7 +5,6 @@ import logging
 import logging.config
 import shutil
 from pathlib import Path
-from typing import Any
 
 from . import __version__, fetcher, logger, meta
 from .slicer import Slicer
@@ -95,12 +94,10 @@ def list_datasets(args: argparse.Namespace):
     ftp.close()
 
 
-def fetch_data(args: argparse.Namespace):
+def sync_data(args: argparse.Namespace):
     data_dir = args.output
-    threads = args.threads
-    dry_run = args.dry_run
     if not args.datasets:
-        datasets = meta.datasets
+        datasets = list(meta.datasets.keys())
     else:
         datasets = args.datasets
 
@@ -110,7 +107,7 @@ def fetch_data(args: argparse.Namespace):
         regions=args.regions,
     )
 
-    if dry_run:
+    if args.dry_run:
         ftp = fetcher.connect()
         total_size = 0
         total_files = 0
@@ -136,59 +133,31 @@ def fetch_data(args: argparse.Namespace):
     if not args.verbose:
         logging.getLogger("datasus_fetcher").setLevel(logging.WARNING)
 
-    def log_fetch_data(file_metadata: dict[str, Any]):
-        message = (
-            "Downloaded "
-            f"{file_metadata['dataset']: <27} "
-            f"{str(file_metadata['filepath']): <20} "
-            f"{file_metadata['size'] / 2**20: >9.1f} MB"
-        )
-        logger.info(message)
-
     fetcher.download_data(
         datasets=sorted(datasets),
         destdir=data_dir,
-        threads=threads,
-        callback=log_fetch_data if args.verbose else None,
+        threads=args.threads,
         slicer=slicer,
         show_progress=not args.verbose,
     )
 
+    if args.docs:
+        ftp = fetcher.connect()
+        doc_targets = set(datasets) & set(meta.docs.keys())
+        for dataset in sorted(doc_targets):
+            for _ in fetcher.download_documentation(ftp, dataset, data_dir):
+                pass
+        ftp.close()
 
-def fetch_docs(args: argparse.Namespace):
-    data_dir = args.output
-    if args.datasets is None:
-        datasets = meta.docs
-    else:
-        datasets = args.datasets
-
-    ftp = fetcher.connect()
-    if datasets:
-        datasets_ = set(datasets) & set(meta.docs.keys())
-    else:
-        datasets_ = meta.docs.keys()
-    for dataset in sorted(datasets_):
-        for _ in fetcher.download_documentation(ftp, dataset, data_dir):
-            pass
-    ftp.close()
-
-
-def fetch_aux(args: argparse.Namespace):
-    data_dir = args.output
-    if args.datasets is None:
-        datasets = meta.auxiliary_tables
-    else:
-        datasets = args.datasets
-
-    ftp = fetcher.connect()
-    if datasets:
-        datasets_ = set(datasets) & set(meta.auxiliary_tables.keys())
-    else:
-        datasets_ = meta.auxiliary_tables.keys()
-    for dataset in sorted(datasets_):
-        for _ in fetcher.download_auxiliary_tables(ftp, dataset, data_dir):
-            pass
-    ftp.close()
+    if args.aux:
+        ftp = fetcher.connect()
+        aux_targets = set(datasets) & set(meta.auxiliary_tables.keys())
+        for dataset in sorted(aux_targets):
+            for _ in fetcher.download_auxiliary_tables(
+                ftp, dataset, data_dir
+            ):
+                pass
+        ftp.close()
 
 
 def archive(args: argparse.Namespace):
@@ -202,13 +171,16 @@ def archive(args: argparse.Namespace):
                 if not file.is_most_recent:
                     rel_filepath = file.filepath.relative_to(data_dir)
                     archivefilepath = archivedatadir / rel_filepath
-                    logger.info(f"Moving {file.filepath} to {archivefilepath}")
+                    logger.info(
+                        f"Moving {file.filepath} to {archivefilepath}"
+                    )
                     archivefilepath.parent.mkdir(parents=True, exist_ok=True)
                     shutil.move(file.filepath, archivefilepath)
 
 
 def get_args():
     parser = argparse.ArgumentParser(
+        prog="datasus-fetcher",
         description="Download raw data files from DATASUS",
     )
     parser.add_argument(
@@ -216,41 +188,50 @@ def get_args():
         action="version",
         version=f"%(prog)s {__version__}",
     )
-    subparsers = parser.add_subparsers(required=True)
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        default=False,
+        help="Exibir logs detalhados em vez de barra de progresso",
+    )
+    subparsers = parser.add_subparsers(dest="command", required=True)
 
-    # * list-datasets ---------------------------------------------------------
-    subparser_list_datasets = subparsers.add_parser("list-datasets")
-    subparser_list_datasets.add_argument(
+    # * list ------------------------------------------------------------------
+    subparser_list = subparsers.add_parser(
+        "list", help="Listar datasets disponíveis"
+    )
+    subparser_list.add_argument(
         "datasets",
         nargs="*",
         help="Datasets to list",
     )
-    subparser_list_datasets.set_defaults(func=list_datasets)
+    subparser_list.set_defaults(func=list_datasets)
 
-    # * fetch data ------------------------------------------------------------
-    subparser_fetch = subparsers.add_parser("data")
-    subparser_fetch_group = subparser_fetch.add_argument_group("dataset")
-    subparser_fetch_group.add_argument(
+    # * sync ------------------------------------------------------------------
+    subparser_sync = subparsers.add_parser(
+        "sync", help="Sincronizar dados brutos do DATASUS"
+    )
+    subparser_sync.add_argument(
         "datasets",
         nargs="*",
         help="Datasets to download (eg.: sih-rd, cnes-dc, ...)",
     )
-    subparser_fetch_group.add_argument(
+    subparser_sync.add_argument(
         "--start",
         default="",
         help="Start period to download (eg.: 2001 OR 2001-01)",
     )
-    subparser_fetch_group.add_argument(
+    subparser_sync.add_argument(
         "--end",
         default="",
         help="End period to download (eg.: 2020 OR 2020-12)",
     )
-    subparser_fetch_group.add_argument(
+    subparser_sync.add_argument(
         "--regions",
         nargs="+",
         help="Regions to download (eg.: br, ac, am, ce, ...)",
     )
-    subparser_fetch.add_argument(
+    subparser_sync.add_argument(
         "-o",
         "--output",
         dest="output",
@@ -258,7 +239,7 @@ def get_args():
         default=Path("/data/datasus"),
         help="Output directory (default: /data/datasus)",
     )
-    subparser_fetch.add_argument(
+    subparser_sync.add_argument(
         "-t",
         "--threads",
         dest="threads",
@@ -266,54 +247,26 @@ def get_args():
         default=2,
         help="Number of concurrent fetchers",
     )
-    subparser_fetch.add_argument(
+    subparser_sync.add_argument(
+        "--docs",
+        action="store_true",
+        default=False,
+        help="Também baixar a documentação",
+    )
+    subparser_sync.add_argument(
+        "--aux",
+        action="store_true",
+        default=False,
+        help="Também baixar as tabelas auxiliares",
+    )
+    subparser_sync.add_argument(
         "--dry-run",
         dest="dry_run",
         action="store_true",
         default=False,
         help="List files that would be downloaded without downloading them",
     )
-    subparser_fetch.add_argument(
-        "--verbose",
-        action="store_true",
-        default=False,
-        help="Exibir logs detalhados em vez de barra de progresso",
-    )
-    subparser_fetch.set_defaults(func=fetch_data)
-
-    # * fetch docs ------------------------------------------------------------
-    subparser_docs = subparsers.add_parser("docs")
-    subparser_docs.add_argument(
-        "datasets",
-        nargs="*",
-        help="Datasets documentation to download",
-    )
-    subparser_docs.add_argument(
-        "-o",
-        "--output",
-        dest="output",
-        type=Path,
-        default=Path("/data/datasus"),
-        help="Output directory (default: /data/datasus)",
-    )
-    subparser_docs.set_defaults(func=fetch_docs)
-
-    # * fetch aux -------------------------------------------------------------
-    subparser_aux = subparsers.add_parser("aux")
-    subparser_aux.add_argument(
-        "datasets",
-        nargs="*",
-        help="Datasets auxiliary tables to download",
-    )
-    subparser_aux.add_argument(
-        "-o",
-        "--output",
-        dest="output",
-        type=Path,
-        default=Path("/data/datasus"),
-        help="Output directory (default: /data/datasus)",
-    )
-    subparser_aux.set_defaults(func=fetch_aux)
+    subparser_sync.set_defaults(func=sync_data)
 
     # * archive ---------------------------------------------------------------
     subparser_archive = subparsers.add_parser("archive")

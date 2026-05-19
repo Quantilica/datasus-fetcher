@@ -33,7 +33,7 @@ pipx install datasus-fetcher
 Baixar SIH-RD (Internações Hospitalares) para São Paulo, Rio de Janeiro e Minas Gerais, de 2020 a 2023:
 
 ```sh
-datasus-fetcher data --data-dir /caminho/para/dados sih-rd \
+datasus-fetcher sync sih-rd -o /caminho/para/dados \
     --start 2020-01 \
     --end 2023-12 \
     --regions sp rj mg
@@ -42,126 +42,126 @@ datasus-fetcher data --data-dir /caminho/para/dados sih-rd \
 Baixar todos os datasets (atenção: 320+ GB no total):
 
 ```sh
-datasus-fetcher data --data-dir /caminho/para/dados
+datasus-fetcher sync -o /caminho/para/dados
 ```
 
 ## CLI
 
-O `datasus-fetcher` expõe cinco subcomandos:
+O `datasus-fetcher` expõe três subcomandos:
 
 ```
 datasus-fetcher <subcommand> [options]
 
 Subcommands:
-  data            Baixa arquivos de microdados
-  list-datasets   Inspeciona datasets disponíveis no FTP
-  docs            Baixa arquivos de documentação (dicionários)
-  aux             Baixa tabelas auxiliares de referência
-  archive         Move versões antigas para um diretório de arquivo
+  sync     Baixa arquivos de microdados (e, com flags, docs e tabelas auxiliares)
+  list     Inspeciona datasets disponíveis no FTP
+  archive  Move versões antigas para um diretório de arquivo
 ```
 
 ---
 
-### `data` — Baixar microdados
+### `sync` — Baixar microdados
 
 ```sh
-datasus-fetcher data --data-dir <DIR> [DATASETS...] [OPTIONS]
+datasus-fetcher sync [DATASETS...] -o <DIR> [OPTIONS]
 ```
 
 | Argumento | Descrição |
 |---|---|
 | `DATASETS` | Um ou mais códigos de dataset (ex: `sih-rd cnes-st`). Omita para baixar todos. |
-| `--data-dir DIR` | **Obrigatório.** Diretório local onde os arquivos serão armazenados. |
+| `-o, --output DIR` | Diretório local onde os arquivos serão armazenados (padrão: `/data/datasus`). |
 | `--start PERIOD` | Início do filtro de datas. Formato: `YYYY` ou `YYYY-MM`. |
 | `--end PERIOD` | Fim do filtro de datas. Formato: `YYYY` ou `YYYY-MM`. |
 | `--regions UF ...` | Um ou mais códigos de UF em minúsculas (ex: `sp rj mg ba`). |
 | `-t, --threads N` | Número de threads de download paralelas (padrão: `2`). |
+| `--docs` | Também baixa a documentação oficial dos datasets. |
+| `--aux` | Também baixa as tabelas de referência auxiliares. |
 | `--dry-run` | Lista os arquivos que seriam baixados (com tamanhos e totais) sem baixar. |
 
 **Exemplos:**
 
 ```sh
 # Notificações de Dengue (SINAN) — todos os anos, todos os estados
-datasus-fetcher data --data-dir ./data sinan-deng
+datasus-fetcher sync -o ./data sinan-deng
 
 # Estabelecimentos CNES para o Nordeste inteiro, a partir de 2015
-datasus-fetcher data --data-dir ./data cnes-st \
+datasus-fetcher sync -o ./data cnes-st \
     --start 2015-01 \
     --regions al ba ce ma pb pe pi rn se
 
 # Declarações de óbito SIM (CID-10) de 2000 a 2023
-datasus-fetcher data --data-dir ./data sim-do-cid10 \
+datasus-fetcher sync -o ./data sim-do-cid10 \
     --start 2000 --end 2023
 
 # Accelerar downloads com mais threads paralelas
-datasus-fetcher data --data-dir ./data sih-rd --threads 4
+datasus-fetcher sync -o ./data sih-rd --threads 4
 
 # Múltiplos datasets em uma chamada
-datasus-fetcher data --data-dir ./data \
+datasus-fetcher sync -o ./data \
     sinasc-dn sim-do-cid10 sih-rd \
     --start 2010-01 --end 2023-12
 
 # HIV: adultos, crianças e gestantes — histórico completo
-datasus-fetcher data --data-dir ./data \
+datasus-fetcher sync -o ./data \
     sinan-hiva sinan-hivc sinan-hivg sinan-hive
 
 # Mortalidade materna e infantil — ambas versões CID
-datasus-fetcher data --data-dir ./data \
+datasus-fetcher sync -o ./data \
     sim-domat-cid10 sim-doinf-cid09 sim-doinf-cid10
 
 # CNES completo para São Paulo, anos recentes
-datasus-fetcher data --data-dir ./data \
+datasus-fetcher sync -o ./data \
     cnes-st cnes-pf cnes-lt cnes-eq cnes-ep \
     --start 2020-01 \
     --regions sp
 
 # Tríade da sífilis: adquirida, congênita e em gestante
-datasus-fetcher data --data-dir ./data \
+datasus-fetcher sync -o ./data \
     sinan-sifa sinan-sifc sinan-sifg \
     --start 2010 --end 2023
 
 # AIH Reduzida (SIH-RD) para o Sul — últimos 5 anos
-datasus-fetcher data --data-dir ./data sih-rd \
+datasus-fetcher sync -o ./data sih-rd \
     --start 2019-01 --end 2023-12 \
     --regions pr rs sc
 
 # Produção ambulatorial (SIA-PA) para um estado — alto volume, usar mais threads
-datasus-fetcher data --data-dir ./data sia-pa \
+datasus-fetcher sync -o ./data sia-pa \
     --start 2010-01 --end 2023-12 \
     --regions sp \
     --threads 6
 
 # Oncologia: painel + quimioterapia + radioterapia (APACs)
-datasus-fetcher data --data-dir ./data \
+datasus-fetcher sync -o ./data \
     po sia-aq sia-ar \
     --start 2013 --end 2023
 
 # Tuberculose e hanseníase — nacional, histórico completo
-datasus-fetcher data --data-dir ./data \
+datasus-fetcher sync -o ./data \
     sinan-tube sinan-hans
 
 # Arboviroses: Dengue, Zika e Chikungunya — apenas Nordeste
-datasus-fetcher data --data-dir ./data \
+datasus-fetcher sync -o ./data \
     sinan-deng sinan-zika sinan-chik \
     --regions al ba ce ma pb pe pi rn se
 
 # Nascidos vivos e mortalidade infantil lado a lado — todos os estados
-datasus-fetcher data --data-dir ./data \
+datasus-fetcher sync -o ./data \
     sinasc-dn sim-doinf-cid10 \
     --start 2010 --end 2023
 ```
 
 ---
 
-### `list-datasets` — Inspecionar datasets disponíveis
+### `list` — Inspecionar datasets disponíveis
 
 Conecta ao FTP do DATASUS e exibe contagem de arquivos, tamanhos e intervalos de datas de cada dataset:
 
 ```sh
-datasus-fetcher list-datasets
+datasus-fetcher list
 
 # Inspecionar datasets específicos
-datasus-fetcher list-datasets sih-rd sia-pa cnes-pf
+datasus-fetcher list sih-rd sia-pa cnes-pf
 ```
 
 Exemplo de saída:
@@ -175,30 +175,18 @@ sinan-deng                  |    26 files  |   1229.0 MB  | from 2000    to 2025
 
 ---
 
-### `docs` — Baixar documentação
+### Documentação e tabelas auxiliares
 
-Baixa os arquivos oficiais de documentação (dicionários de dados, manuais) de cada sistema:
-
-```sh
-# Documentação para sistemas específicos
-datasus-fetcher docs --data-dir ./docs sih cnes sia sim sinan
-
-# Documentação de todos os sistemas
-datasus-fetcher docs --data-dir ./docs
-```
-
----
-
-### `aux` — Baixar tabelas auxiliares
-
-Baixa tabelas de referência (CID, municípios, procedimentos, CBO, etc.):
+A documentação oficial (dicionários de dados, manuais) e as tabelas de
+referência (CID, municípios, procedimentos, CBO, etc.) são baixadas pelo
+próprio `sync` através das flags `--docs` e `--aux`:
 
 ```sh
-# Tabelas auxiliares para sistemas específicos
-datasus-fetcher aux --data-dir ./aux sih cnes
+# Microdados + documentação + tabelas auxiliares
+datasus-fetcher sync -o ./data sim-do-cid10 --docs --aux
 
-# Tabelas auxiliares de todos os sistemas
-datasus-fetcher aux --data-dir ./aux
+# Apenas microdados, sem extras
+datasus-fetcher sync -o ./data sim-do-cid10
 ```
 
 ---
@@ -209,7 +197,7 @@ O DATASUS atualiza seus arquivos periodicamente. O datasus-fetcher armazena cada
 
 ```sh
 datasus-fetcher archive \
-    --data-dir ./data \
+    -o ./data \
     --archive-data-dir ./data-archive
 ```
 
