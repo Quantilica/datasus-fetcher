@@ -637,7 +637,9 @@ datasets = {
         "partition": ["uf", "yearmonth"],
     },
     "ciha": {
-        "name": "Sistema de Comunicação de Informação Hospitalar e Ambulatorial",
+        "name": (
+            "Sistema de Comunicação de Informação Hospitalar e Ambulatorial"
+        ),
         "group": "ciha",
         "periods": [
             {
@@ -2072,7 +2074,10 @@ datasets_groups = {
         "name": "CIH: Sistema de Comunicação de Informação Hospitalar",
     },
     "ciha": {
-        "name": "CIHA: Sistema de Comunicação de Informação Hospitalar e Ambulatorial",
+        "name": (
+            "CIHA: Sistema de Comunicação de Informação Hospitalar e"
+            " Ambulatorial"
+        ),
     },
     "cnes": {
         "name": "CNES: Cadastro Nacional de Estabelecimentos de Saúde",
@@ -2108,6 +2113,9 @@ datasets_groups = {
         "name": "SISMAMA: Sistema de Informações de Cânceres de Mama",
     },
     "sisprenatal": {
-        "name": "SISPRENATAL: Sistema de Monitoramento e Avaliação do Pré-Natal, Parto, Puepério e Criança",
+        "name": (
+            "SISPRENATAL: Sistema de Monitoramento e Avaliação do"
+            " Pré-Natal, Parto, Puepério e Criança"
+        ),
     },
 }

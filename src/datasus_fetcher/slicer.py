@@ -20,7 +20,8 @@ class Slicer:
         """
         Filter a remote file by time.
         """
-        # If no start or end time is provided, there is no need to filter, return True
+        # If no start or end time is provided, there is no need to
+        # filter, return True
         if self.start_time == "" and self.end_time == "":
             return True
 

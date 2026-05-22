@@ -1,7 +1,7 @@
 import datetime as dt
+from collections.abc import Generator
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Generator, Optional
 
 from quantilica_core.exceptions import ParseError
 from quantilica_core.storage import LocalStorage, stamp_filename
@@ -22,10 +22,10 @@ class File:
 
 @dataclass
 class DataPartition:
-    uf: Optional[str] = None
-    year: Optional[int] = None
-    month: Optional[int] = None
-    version: Optional[str] = None
+    uf: str | None = None
+    year: int | None = None
+    month: int | None = None
+    version: str | None = None
 
     def __str__(self) -> str:
         uf, year, month = self.uf, self.year, self.month
@@ -68,7 +68,7 @@ def get_partition_dir(remote_file: RemoteFile) -> str:
 
 
 def get_filename(remote_file: RemoteFile) -> str:
-    """Return the stamped filename ``{dataset}[_{partition}]@{YYYYMMDD}.{ext}``."""
+    """Return ``{dataset}[_{partition}]@{YYYYMMDD}.{ext}`` filename."""
     dataset = remote_file.dataset
     if remote_file.preliminary:
         dataset += "-preliminar"
