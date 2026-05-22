@@ -4,27 +4,39 @@ import ftplib
 import queue
 import threading
 import time
+from collections.abc import Callable, Iterable
 from functools import lru_cache
 from pathlib import Path
-from typing import Callable, Iterable
-
-from tqdm import tqdm as _tqdm
 
 import quantilica_core.metadata as core_meta
 from quantilica_core.exceptions import FetchError
 from quantilica_core.ftp import FTP_TRANSIENT_ERRORS, ftp_connect
 from quantilica_core.manifests import DownloadManifest
 from quantilica_core.retry import exponential_delay
+from tqdm import tqdm as _tqdm
 
 from datasus_fetcher.slicer import Slicer
 
 from . import logger, meta
 from .remote_names import get_pattern, parse_filename
-from .storage import DataPartition, DataRepository, RemoteFile, get_data_filepath
+from .storage import (
+    DataPartition,
+    DataRepository,
+    RemoteFile,
+    get_data_filepath,
+)
 
 FTP_HOST = "ftp.datasus.gov.br"
-FTP_TIMEOUT = 30.0
+FTP_TIMEOUT = 60.0
 MEGA = 1_000_000
+
+# Erros que justificam reconectar e re-tentar o arquivo no nível do worker.
+# fetch_file converte o esgotamento de transitórios em FetchError, então
+# precisamos incluí-lo aqui (FetchError não é um FTP_TRANSIENT_ERRORS).
+_RETRYABLE_DOWNLOAD_ERRORS: tuple[type[BaseException], ...] = (
+    FetchError,
+    *FTP_TRANSIENT_ERRORS,
+)
 
 
 class _Aborted(Exception):
@@ -37,6 +49,7 @@ class Fetcher(threading.Thread):
         q: queue.Queue,
         dest_dir: Path,
         callback: Callable | None = None,
+        failed_files: list[str] | None = None,
     ):
         super().__init__()
         self.daemon = True
@@ -48,6 +61,9 @@ class Fetcher(threading.Thread):
         else:
             self.callback = lambda _: None
         self._kill_event = threading.Event()
+        self._failed_files: list[str] = (
+            failed_files if failed_files is not None else []
+        )
 
     def run(self):
         self.ftp = connect()
@@ -74,41 +90,7 @@ class Fetcher(threading.Thread):
                     continue
 
                 try:
-                    logger.debug("%s -> %s", file.full_path, filepath)
-                    t0 = time.time()
-                    fetch_file(
-                        self.ftp,
-                        file.full_path,
-                        filepath,
-                        abort_check=self.dead,
-                    )
-                    tt = time.time() - t0
-                    log_download(tt, file.size, filepath.name)
-
-                    url = f"ftp://{FTP_HOST}/{file.full_path}"
-                    manifest = _write_manifest(
-                        filepath,
-                        url,
-                        file.dataset,
-                        metadata={
-                            "partition": str(file.partition),
-                            "preliminary": file.preliminary,
-                            "remote_datetime": file.datetime.isoformat(),
-                        },
-                    )
-
-                    file_metadata = {
-                        "url": url,
-                        "size": file.size,
-                        "filepath": filepath,
-                        "suffix": file.extension,
-                        "dataset": file.dataset,
-                        "created_at": file.datetime,
-                        "manifest": manifest,
-                    }
-
-                    self.callback(file_metadata)
-
+                    self._download_one(file, filepath)
                 except _Aborted:
                     logger.info("Aborted download of %s", file.full_path)
                     return
@@ -117,7 +99,7 @@ class Fetcher(threading.Thread):
                         "Permanent FTP error for %s — skipping.",
                         file.full_path,
                     )
-                except FTP_TRANSIENT_ERRORS as exc:
+                except _RETRYABLE_DOWNLOAD_ERRORS as exc:
                     logger.warning(
                         "Transient error for %s: %s. Reconnecting...",
                         file.full_path,
@@ -129,17 +111,75 @@ class Fetcher(threading.Thread):
                         self.ftp = connect()
                     except FetchError:
                         logger.exception("Reconnect failed — stopping thread.")
+                        self._failed_files.append(file.full_path)
                         self.kill()
+                    else:
+                        if not self.dead():
+                            logger.info(
+                                "Reconnected. Retrying %s...", file.full_path
+                            )
+                            try:
+                                self._download_one(file, filepath)
+                            except _Aborted:
+                                logger.info(
+                                    "Aborted retry of %s", file.full_path
+                                )
+                                return
+                            except Exception:
+                                logger.exception(
+                                    "Retry after reconnect failed for %s —"
+                                    " recording as failed.",
+                                    file.full_path,
+                                )
+                                self._failed_files.append(file.full_path)
                 except Exception:
                     logger.exception(
                         "Unexpected error for %s — skipping.", file.full_path
                     )
+                    self._failed_files.append(file.full_path)
                 finally:
                     self.q.task_done()
         finally:
             if self.ftp is not None:
                 with contextlib.suppress(Exception):
                     self.ftp.close()
+
+    def _download_one(self, file: RemoteFile, filepath: Path) -> None:
+        logger.debug("%s -> %s", file.full_path, filepath)
+        t0 = time.time()
+        fetch_file(
+            self.ftp,
+            file.full_path,
+            filepath,
+            retries=5,
+            abort_check=self.dead,
+        )
+        tt = time.time() - t0
+        log_download(tt, file.size, filepath.name)
+
+        url = f"ftp://{FTP_HOST}/{file.full_path}"
+        manifest = _write_manifest(
+            filepath,
+            url,
+            file.dataset,
+            metadata={
+                "partition": str(file.partition),
+                "preliminary": file.preliminary,
+                "remote_datetime": file.datetime.isoformat(),
+            },
+        )
+
+        self.callback(
+            {
+                "url": url,
+                "size": file.size,
+                "filepath": filepath,
+                "suffix": file.extension,
+                "dataset": file.dataset,
+                "created_at": file.datetime,
+                "manifest": manifest,
+            }
+        )
 
     def kill(self) -> None:
         self._kill_event.set()
@@ -282,10 +322,12 @@ def fetch_file(
         attempt += 1
         try:
             with open(dest_filepath, "wb") as f:
+
                 def _write(chunk: bytes, _f=f) -> None:
                     if abort_check is not None and abort_check():
                         raise _Aborted
                     _f.write(chunk)
+
                 ftp.retrbinary("RETR " + path, _write)
             return
         except _Aborted:
@@ -382,6 +424,7 @@ def download_data(
 
     ftp0 = connect()
     q: queue.Queue = queue.Queue()
+    failed_files: list[str] = []
 
     # Mutable callback reference — swapped per dataset after each q.join()
     _cb_ref: list[Callable | None] = [callback]
@@ -392,7 +435,7 @@ def download_data(
 
     workers: list[Fetcher] = []
     for _ in range(threads):
-        w = Fetcher(q, destdir, callback=_shared_cb)
+        w = Fetcher(q, destdir, callback=_shared_cb, failed_files=failed_files)
         w.start()
         workers.append(w)
 
@@ -410,7 +453,8 @@ def download_data(
             while attempts > 0:
                 try:
                     dataset_files = [
-                        f for f in list_dataset_files(ftp0, dataset)
+                        f
+                        for f in list_dataset_files(ftp0, dataset)
                         if (slicer is None or slicer(f)) and _needs_download(f)
                     ]
                     break
@@ -483,6 +527,13 @@ def download_data(
                 )
         with contextlib.suppress(Exception):
             ftp0.close()
+        if failed_files:
+            logger.warning(
+                "%d arquivo(s) falharam permanentemente após todas as"
+                " tentativas:\n%s",
+                len(failed_files),
+                "\n".join(f"  {p}" for p in sorted(failed_files)),
+            )
     # Fetcher threads close their own FTP connections in run()'s finally block
 
 
@@ -497,41 +548,73 @@ def _download_support_files(
     ftp: ftplib.FTP,
     files: list[dict],
     destdir: Path,
+    *,
+    connect_fn: Callable[[], ftplib.FTP] = connect,
 ):
-    for i, file in enumerate(files):
-        filename, extension = file["filename"].rsplit(".", 1)
-        filename = f"{filename}@{file['datetime']:%Y%m%d}.{extension}"
-        filepath = destdir / filename
+    owns_ftp = False  # o caller é dono do ftp inicial; reconnects são nossos
+    try:
+        for i, file in enumerate(files):
+            filename, extension = file["filename"].rsplit(".", 1)
+            filename = f"{filename}@{file['datetime']:%Y%m%d}.{extension}"
+            filepath = destdir / filename
 
-        if filepath.exists() and filepath.stat().st_size == file["size"]:
-            continue
+            if filepath.exists() and filepath.stat().st_size == file["size"]:
+                continue
 
-        logger.debug(f"{i: >5} {file['full_path']} -> {filepath}")
-        t0 = time.time()
-        fetch_file(ftp, file["full_path"], filepath)
-        tt = time.time() - t0
-        filesize_kb = f"{file['size'] / 1024:.2f} kB"
-        download_speed_kbps = f"{file['size'] / tt / 1024:.2f} kB/s"
-        logger.debug(
-            f"      {filename} {tt:.2f} s {filesize_kb} {download_speed_kbps}",
-        )
+            logger.debug(f"{i: >5} {file['full_path']} -> {filepath}")
+            t0 = time.time()
 
-        url = f"ftp://{FTP_HOST}/{file['full_path']}"
-        manifest = _write_manifest(
-            filepath,
-            url,
-            destdir.name,
-            metadata={"remote_datetime": file["datetime"].isoformat()},
-        )
+            for attempt in range(1, 3):  # até 2 tentativas
+                try:
+                    fetch_file(ftp, file["full_path"], filepath, retries=5)
+                    break
+                except FetchError as exc:
+                    if attempt >= 2:
+                        logger.error(
+                            "Support file failed after reconnect: %s",
+                            file["full_path"],
+                        )
+                        raise
+                    logger.warning(
+                        "Transient error for support file %s: %s."
+                        " Reconnecting...",
+                        file["full_path"],
+                        exc,
+                    )
+                    if owns_ftp:
+                        with contextlib.suppress(Exception):
+                            ftp.close()
+                    ftp = connect_fn()
+                    owns_ftp = True
 
-        yield {
-            "url": url,
-            "size": file["size"],
-            "filepath": filepath,
-            "created_at": file["datetime"],
-            "suffix": extension,
-            "manifest": manifest,
-        }
+            tt = time.time() - t0
+            filesize_kb = f"{file['size'] / 1024:.2f} kB"
+            download_speed_kbps = f"{file['size'] / tt / 1024:.2f} kB/s"
+            logger.debug(
+                f"      {filename} {tt:.2f} s"
+                f" {filesize_kb} {download_speed_kbps}",
+            )
+
+            url = f"ftp://{FTP_HOST}/{file['full_path']}"
+            manifest = _write_manifest(
+                filepath,
+                url,
+                destdir.name,
+                metadata={"remote_datetime": file["datetime"].isoformat()},
+            )
+
+            yield {
+                "url": url,
+                "size": file["size"],
+                "filepath": filepath,
+                "created_at": file["datetime"],
+                "suffix": extension,
+                "manifest": manifest,
+            }
+    finally:
+        if owns_ftp:
+            with contextlib.suppress(Exception):
+                ftp.close()
 
 
 def list_documentation_files(ftp: ftplib.FTP, dataset: str) -> list[dict]:
@@ -544,7 +627,9 @@ def download_documentation(
     destdir: Path,
 ):
     files = list_documentation_files(ftp, dataset)
-    yield from _download_support_files(ftp, files, destdir / "_documentacao" / dataset)
+    yield from _download_support_files(
+        ftp, files, destdir / "_documentacao" / dataset
+    )
 
 
 def list_auxiliary_tables_files(ftp: ftplib.FTP, dataset: str) -> list[dict]:
@@ -557,7 +642,9 @@ def download_auxiliary_tables(
     destdir: Path,
 ):
     files = list_auxiliary_tables_files(ftp, dataset)
-    yield from _download_support_files(ftp, files, destdir / "_auxiliar" / dataset)
+    yield from _download_support_files(
+        ftp, files, destdir / "_auxiliar" / dataset
+    )
 
 
 def generate_catalog(

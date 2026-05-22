@@ -39,7 +39,7 @@ class TestLogDownload(unittest.TestCase):
 
 class TestFetcherSkipsExistingFile(unittest.TestCase):
     def test_skips_file_with_matching_size(self):
-        """If local file exists and size matches, the file should not be downloaded."""
+        """If local file exists and size matches, skip the download."""
         with tempfile.TemporaryDirectory() as tmpdir:
             data_dir = Path(tmpdir)
             remote_file = make_remote_file(size=42)
@@ -51,7 +51,7 @@ class TestFetcherSkipsExistingFile(unittest.TestCase):
             local_path.parent.mkdir(parents=True, exist_ok=True)
             local_path.write_bytes(b"x" * 42)
 
-            # Create a Fetcher with a mocked FTP and a queue containing the file
+            # Create a Fetcher with a mocked FTP and a queue with the file
             q = queue.Queue()
             q.put(remote_file)
 
@@ -59,7 +59,7 @@ class TestFetcherSkipsExistingFile(unittest.TestCase):
 
             with patch.object(fetcher, "connect", return_value=mock_ftp):
                 worker = fetcher.Fetcher(q=q, dest_dir=data_dir)
-                worker.kill()  # prevent the run() loop from continuing after the item
+                worker.kill()  # stop the run() loop after this item
 
             # Run the core logic manually (simulate one loop iteration)
             from datasus_fetcher.storage import get_data_filepath
@@ -179,16 +179,10 @@ class TestListFiles(unittest.TestCase):
         mock_ftp = self._make_ftp(lines)
         fetcher.list_files.cache_clear()
 
-        # Patch recursive call to avoid extra ftp.cwd side effects
-        with patch.object(
-            fetcher, "list_files", wraps=fetcher.list_files
-        ) as mock_lf:
-            mock_ftp2 = self._make_ftp(
-                ["01-15-24  09:30AM             512 file.dbc"]
-            )
-            result = fetcher.list_files(
-                mock_ftp2, "/some/dir", max_recursive_depth=0
-            )
+        # max_recursive_depth=0 evita recursão no <DIR>; só o arquivo conta
+        result = fetcher.list_files(
+            mock_ftp, "/some/dir", max_recursive_depth=0
+        )
 
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]["filename"], "file.dbc")
@@ -221,6 +215,146 @@ class TestListFiles(unittest.TestCase):
 
     def tearDown(self):
         fetcher.list_files.cache_clear()
+
+
+class TestFetcherReconnectsAndRetries(unittest.TestCase):
+    def test_reconnects_and_retries_file(self):
+        """Transient FetchError → reconnect → retry succeeds; file kept."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            data_dir = Path(tmpdir)
+            remote_file = make_remote_file(size=999)
+            q = queue.Queue()
+            q.put(remote_file)
+            q.put(None)  # sentinela para encerrar o loop
+
+            failed: list[str] = []
+            mock_ftp = MagicMock(spec=ftplib.FTP)
+            with (
+                patch.object(
+                    fetcher, "connect", return_value=mock_ftp
+                ) as mock_connect,
+                patch.object(
+                    fetcher.Fetcher,
+                    "_download_one",
+                    side_effect=[fetcher.FetchError("boom"), None],
+                ) as mock_dl,
+            ):
+                worker = fetcher.Fetcher(
+                    q=q, dest_dir=data_dir, failed_files=failed
+                )
+                worker.run()
+
+            self.assertEqual(mock_dl.call_count, 2)
+            # 1 conexão inicial + 1 reconexão
+            self.assertGreaterEqual(mock_connect.call_count, 2)
+            self.assertEqual(failed, [])
+
+
+class TestFetcherRecordsPermanentFailure(unittest.TestCase):
+    def test_retry_also_fails_records_failure(self):
+        """Retry após reconexão também falha → registrado em failed_files."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            data_dir = Path(tmpdir)
+            remote_file = make_remote_file(size=999)
+            q = queue.Queue()
+            q.put(remote_file)
+            q.put(None)
+
+            failed: list[str] = []
+            mock_ftp = MagicMock(spec=ftplib.FTP)
+            with (
+                patch.object(fetcher, "connect", return_value=mock_ftp),
+                patch.object(
+                    fetcher.Fetcher,
+                    "_download_one",
+                    side_effect=[
+                        fetcher.FetchError("boom1"),
+                        fetcher.FetchError("boom2"),
+                    ],
+                ),
+            ):
+                worker = fetcher.Fetcher(
+                    q=q, dest_dir=data_dir, failed_files=failed
+                )
+                worker.run()
+
+            self.assertIn(remote_file.full_path, failed)
+
+
+class TestFetcherReconnectFailureStopsThread(unittest.TestCase):
+    def test_reconnect_failure_kills_worker(self):
+        """connect() falha na reconexão → worker morre e registra falha."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            data_dir = Path(tmpdir)
+            remote_file = make_remote_file(size=999)
+            q = queue.Queue()
+            q.put(remote_file)
+            q.put(None)
+
+            failed: list[str] = []
+            mock_ftp = MagicMock(spec=ftplib.FTP)
+            # 1ª chamada (inicial) ok; 2ª (reconexão) levanta FetchError
+            mock_connect = MagicMock(
+                side_effect=[mock_ftp, fetcher.FetchError("no connect")]
+            )
+            with (
+                patch.object(fetcher, "connect", mock_connect),
+                patch.object(
+                    fetcher.Fetcher,
+                    "_download_one",
+                    side_effect=[fetcher.FetchError("boom")],
+                ),
+            ):
+                worker = fetcher.Fetcher(
+                    q=q, dest_dir=data_dir, failed_files=failed
+                )
+                worker.run()
+
+            self.assertTrue(worker.dead())
+            self.assertIn(remote_file.full_path, failed)
+
+
+class TestDownloadSupportFilesReconnect(unittest.TestCase):
+    def test_reconnects_on_transient(self):
+        """FetchError no support file → reconecta via connect_fn e segue."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            destdir = Path(tmpdir) / "docs"
+            files = [
+                {
+                    "filename": "doc.pdf",
+                    "datetime": datetime.datetime(2024, 1, 1),
+                    "size": 10,
+                    "full_path": "/docs/doc.pdf",
+                }
+            ]
+            orig_ftp = MagicMock(spec=ftplib.FTP)
+            new_ftp = MagicMock(spec=ftplib.FTP)
+            connect_fn = MagicMock(return_value=new_ftp)
+
+            with (
+                patch.object(
+                    fetcher,
+                    "fetch_file",
+                    side_effect=[fetcher.FetchError("boom"), None],
+                ) as mock_fetch,
+                patch.object(
+                    fetcher, "_write_manifest", return_value=MagicMock()
+                ),
+                # tempos distintos para evitar divisão por zero no cálculo
+                patch.object(
+                    fetcher.time, "time", side_effect=[1000.0, 1000.5]
+                ),
+            ):
+                results = list(
+                    fetcher._download_support_files(
+                        orig_ftp, files, destdir, connect_fn=connect_fn
+                    )
+                )
+
+            self.assertEqual(len(results), 1)
+            self.assertEqual(connect_fn.call_count, 1)
+            self.assertEqual(mock_fetch.call_count, 2)
+            new_ftp.close.assert_called_once()  # conexão criada é fechada
 
 
 if __name__ == "__main__":
