@@ -5,14 +5,12 @@
 
 from __future__ import annotations
 
-import logging
 import shutil
 from pathlib import Path
 from typing import Annotated
 
 import typer
-from rich.console import Console
-from rich.logging import RichHandler
+from quantilica_core.cli import get_console, setup_rich_logging
 from rich.table import Table
 
 from datasus_fetcher import fetcher, meta
@@ -22,22 +20,7 @@ from datasus_fetcher.storage import get_files_metadata
 app = typer.Typer(help="Dados brutos do DATASUS (SIH, SIM, CNES, etc.).")
 
 _DEFAULT_OUTPUT = Path("/data/datasus")
-console = Console()
-
-
-def _setup_logging(verbose: bool) -> None:
-    """Configura logging via RichHandler para não quebrar barras de progresso.
-
-    verbose=False → WARNING apenas; verbose=True → DEBUG via Rich console.
-    """
-    level = logging.DEBUG if verbose else logging.WARNING
-    logging.basicConfig(
-        level=level,
-        format="%(message)s",
-        datefmt="[%X]",
-        handlers=[RichHandler(console=console, show_path=False)],
-        force=True,
-    )
+console = get_console()
 
 
 @app.command("list")
@@ -51,7 +34,7 @@ def cmd_list(
     ] = False,
 ) -> None:
     """Listar datasets disponíveis no DATASUS."""
-    _setup_logging(verbose)
+    setup_rich_logging(verbose, console=console)
     targets = datasets if datasets else list(meta.datasets.keys())
     with console.status("[cyan]Conectando ao FTP do DATASUS...[/cyan]"):
         ftp = fetcher.connect()
@@ -125,7 +108,7 @@ def cmd_sync(
     ] = False,
 ) -> None:
     """Sincronizar dados brutos do DATASUS."""
-    _setup_logging(verbose)
+    setup_rich_logging(verbose, console=console)
     targets = datasets if datasets else list(meta.datasets.keys())
     slicer = Slicer(start_time=start, end_time=end, regions=regions)
 
@@ -215,7 +198,7 @@ def cmd_archive(
     ] = False,
 ) -> None:
     """Mover arquivos desatualizados para diretório de arquivo."""
-    _setup_logging(verbose)
+    setup_rich_logging(verbose, console=console)
     for datasetdir in output.iterdir():
         for datepartitiondir in datasetdir.iterdir():
             for file in get_files_metadata(datepartitiondir):

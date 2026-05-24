@@ -10,6 +10,7 @@ from pathlib import Path
 
 import quantilica_core.metadata as core_meta
 from quantilica_core.exceptions import FetchError
+from quantilica_core.files import is_complete_file
 from quantilica_core.ftp import FTP_TRANSIENT_ERRORS, ftp_connect
 from quantilica_core.manifests import DownloadManifest
 from quantilica_core.retry import exponential_delay
@@ -85,7 +86,7 @@ class Fetcher(threading.Thread):
                     continue
 
                 filepath: Path = self.repo.get_data_filepath(file=file)
-                if filepath.exists() and filepath.stat().st_size == file.size:
+                if is_complete_file(filepath, file.size):
                     self.q.task_done()
                     continue
 
@@ -447,7 +448,7 @@ def download_data(
 
             def _needs_download(f: RemoteFile) -> bool:
                 fp = get_data_filepath(destdir, f)
-                return not (fp.exists() and fp.stat().st_size == f.size)
+                return not is_complete_file(fp, f.size)
 
             attempts = 3
             while attempts > 0:
@@ -558,7 +559,7 @@ def _download_support_files(
             filename = f"{filename}@{file['datetime']:%Y%m%d}.{extension}"
             filepath = destdir / filename
 
-            if filepath.exists() and filepath.stat().st_size == file["size"]:
+            if is_complete_file(filepath, file["size"]):
                 continue
 
             logger.debug(f"{i: >5} {file['full_path']} -> {filepath}")

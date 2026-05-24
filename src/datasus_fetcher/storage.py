@@ -3,8 +3,9 @@ from collections.abc import Generator
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from quantilica_core.dates import year_month_partition
 from quantilica_core.exceptions import ParseError
-from quantilica_core.storage import LocalStorage, stamp_filename
+from quantilica_core.storage import LocalStorage, build_stamped_filename
 
 from . import logger
 
@@ -59,12 +60,10 @@ class RemoteFile:
 
 def get_partition_dir(remote_file: RemoteFile) -> str:
     """Return the partition directory string (``YYYY`` or ``YYYYMM``)."""
-    partition_dir = ""
-    if remote_file.partition.year is not None:
-        partition_dir += f"{remote_file.partition.year}"
-    if remote_file.partition.month is not None:
-        partition_dir += f"{remote_file.partition.month:02d}"
-    return partition_dir
+    year = remote_file.partition.year
+    if year is None:
+        return ""
+    return year_month_partition(year, remote_file.partition.month)
 
 
 def get_filename(remote_file: RemoteFile) -> str:
@@ -72,10 +71,13 @@ def get_filename(remote_file: RemoteFile) -> str:
     dataset = remote_file.dataset
     if remote_file.preliminary:
         dataset += "-preliminar"
-    extension = remote_file.extension
     partition = str(remote_file.partition)
-    base = "_".join(s for s in (dataset, partition) if s)
-    return stamp_filename(base, extension, remote_file.datetime.date())
+    return build_stamped_filename(
+        dataset,
+        partition,
+        ext=remote_file.extension,
+        timestamp=remote_file.datetime.date(),
+    )
 
 
 def get_data_filepath(data_dir: Path | str, remote_file: RemoteFile) -> Path:
