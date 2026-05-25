@@ -62,9 +62,7 @@ class Fetcher(threading.Thread):
         else:
             self.callback = lambda _: None
         self._kill_event = threading.Event()
-        self._failed_files: list[str] = (
-            failed_files if failed_files is not None else []
-        )
+        self._failed_files: list[str] = failed_files if failed_files is not None else []
 
     def run(self):
         self.ftp = connect()
@@ -116,15 +114,11 @@ class Fetcher(threading.Thread):
                         self.kill()
                     else:
                         if not self.dead():
-                            logger.info(
-                                "Reconnected. Retrying %s...", file.full_path
-                            )
+                            logger.info("Reconnected. Retrying %s...", file.full_path)
                             try:
                                 self._download_one(file, filepath)
                             except _Aborted:
-                                logger.info(
-                                    "Aborted retry of %s", file.full_path
-                                )
+                                logger.info("Aborted retry of %s", file.full_path)
                                 return
                             except Exception:
                                 logger.exception(
@@ -245,9 +239,7 @@ def list_files(
             if retries <= 0:
                 raise
             time.sleep(
-                exponential_delay(
-                    attempt, base_delay=2.0, max_delay=30.0, jitter=1.0
-                )
+                exponential_delay(attempt, base_delay=2.0, max_delay=30.0, jitter=1.0)
             )
 
     # parse files' date, size and name
@@ -261,9 +253,7 @@ def list_files(
         try:
             size = int(size)
         except ValueError:
-            logger.warning(
-                "Could not parse size for file %s in %s", name, directory
-            )
+            logger.warning("Could not parse size for file %s in %s", name, directory)
             size = 0
         return {
             "datetime": datetime,
@@ -373,9 +363,7 @@ def _write_manifest(
         producer="datasus-fetcher",
         metadata=metadata,
     )
-    manifest.write_json(
-        filepath.with_suffix(filepath.suffix + ".manifest.json")
-    )
+    manifest.write_json(filepath.with_suffix(filepath.suffix + ".manifest.json"))
     return manifest
 
 
@@ -523,15 +511,12 @@ def download_data(
         for w in workers:
             w.join(timeout=5)
             if w.is_alive():
-                logger.warning(
-                    "Worker %s did not exit within timeout.", w.name
-                )
+                logger.warning("Worker %s did not exit within timeout.", w.name)
         with contextlib.suppress(Exception):
             ftp0.close()
         if failed_files:
             logger.warning(
-                "%d arquivo(s) falharam permanentemente após todas as"
-                " tentativas:\n%s",
+                "%d arquivo(s) falharam permanentemente após todas as tentativas:\n%s",
                 len(failed_files),
                 "\n".join(f"  {p}" for p in sorted(failed_files)),
             )
@@ -577,8 +562,7 @@ def _download_support_files(
                         )
                         raise
                     logger.warning(
-                        "Transient error for support file %s: %s."
-                        " Reconnecting...",
+                        "Transient error for support file %s: %s. Reconnecting...",
                         file["full_path"],
                         exc,
                     )
@@ -592,8 +576,7 @@ def _download_support_files(
             filesize_kb = f"{file['size'] / 1024:.2f} kB"
             download_speed_kbps = f"{file['size'] / tt / 1024:.2f} kB/s"
             logger.debug(
-                f"      {filename} {tt:.2f} s"
-                f" {filesize_kb} {download_speed_kbps}",
+                f"      {filename} {tt:.2f} s {filesize_kb} {download_speed_kbps}",
             )
 
             url = f"ftp://{FTP_HOST}/{file['full_path']}"
@@ -628,9 +611,7 @@ def download_documentation(
     destdir: Path,
 ):
     files = list_documentation_files(ftp, dataset)
-    yield from _download_support_files(
-        ftp, files, destdir / "_documentacao" / dataset
-    )
+    yield from _download_support_files(ftp, files, destdir / "_documentacao" / dataset)
 
 
 def list_auxiliary_tables_files(ftp: ftplib.FTP, dataset: str) -> list[dict]:
@@ -643,9 +624,7 @@ def download_auxiliary_tables(
     destdir: Path,
 ):
     files = list_auxiliary_tables_files(ftp, dataset)
-    yield from _download_support_files(
-        ftp, files, destdir / "_auxiliar" / dataset
-    )
+    yield from _download_support_files(ftp, files, destdir / "_auxiliar" / dataset)
 
 
 def generate_catalog(

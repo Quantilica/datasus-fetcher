@@ -30,9 +30,7 @@ def make_remote_file(
         size=1024,
         dataset=dataset,
         preliminary=preliminary,
-        partition=DataPartition(
-            uf=uf, year=year, month=month, version=version
-        ),
+        partition=DataPartition(uf=uf, year=year, month=month, version=version),
     )
 
 
@@ -47,14 +45,10 @@ class TestDataPartitionStr(unittest.TestCase):
         self.assertEqual(str(DataPartition(uf="RJ", year=2020)), "2020-rj")
 
     def test_uf_year_month(self):
-        self.assertEqual(
-            str(DataPartition(uf="MG", year=2020, month=6)), "202006-mg"
-        )
+        self.assertEqual(str(DataPartition(uf="MG", year=2020, month=6)), "202006-mg")
 
     def test_uf_year_month_zero_padded(self):
-        self.assertEqual(
-            str(DataPartition(uf="SP", year=2020, month=1)), "202001-sp"
-        )
+        self.assertEqual(str(DataPartition(uf="SP", year=2020, month=1)), "202001-sp")
 
     def test_with_version(self):
         self.assertEqual(
@@ -67,9 +61,7 @@ class TestDataPartitionStr(unittest.TestCase):
         self.assertEqual(str(DataPartition()), "")
 
     def test_none_year_none_month_none_uf(self):
-        self.assertEqual(
-            str(DataPartition(uf=None, year=None, month=None)), ""
-        )
+        self.assertEqual(str(DataPartition(uf=None, year=None, month=None)), "")
 
     def test_lowercase_conversion(self):
         # All output must be lowercase regardless of input
@@ -152,18 +144,14 @@ class TestGetDataFilepath(unittest.TestCase):
 
 
 class TestGetFileMetadata(unittest.TestCase):
-    def _write_temp_file(
-        self, tmpdir: str, name: str, content: bytes = b"x"
-    ) -> Path:
+    def _write_temp_file(self, tmpdir: str, name: str, content: bytes = b"x") -> Path:
         p = Path(tmpdir) / name
         p.write_bytes(content)
         return p
 
     def test_yearmonth_uf_partition(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            f = self._write_temp_file(
-                tmpdir, "sih-rd_202001-sp@20240115.dbc", b"abc"
-            )
+            f = self._write_temp_file(tmpdir, "sih-rd_202001-sp@20240115.dbc", b"abc")
             result = get_file_metadata(f)
             self.assertEqual(result.dataset, "sih-rd")
             self.assertEqual(result.partition, "202001-sp")

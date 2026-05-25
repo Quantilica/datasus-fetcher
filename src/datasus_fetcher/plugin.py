@@ -29,9 +29,7 @@ def cmd_list(
         list[str] | None,
         typer.Argument(help="Datasets a listar (omitir para todos)"),
     ] = None,
-    verbose: Annotated[
-        bool, typer.Option("--verbose", help="Logs detalhados")
-    ] = False,
+    verbose: Annotated[bool, typer.Option("--verbose", help="Logs detalhados")] = False,
 ) -> None:
     """Listar datasets disponíveis no DATASUS."""
     setup_rich_logging(verbose, console=console)
@@ -61,8 +59,7 @@ def cmd_list(
     ftp.close()
     console.print(t)
     console.print(
-        f"[bold]Total:[/bold] {total_files} arquivos,"
-        f" {total_size / 2**30:.1f} GB"
+        f"[bold]Total:[/bold] {total_files} arquivos, {total_size / 2**30:.1f} GB"
     )
 
 
@@ -70,9 +67,7 @@ def cmd_list(
 def cmd_sync(
     datasets: Annotated[
         list[str] | None,
-        typer.Argument(
-            help="Datasets (ex: sih-rd, cnes-dc). Omitir para todos."
-        ),
+        typer.Argument(help="Datasets (ex: sih-rd, cnes-dc). Omitir para todos."),
     ] = None,
     output: Annotated[
         Path, typer.Option("-o", "--output", help="Diretório de saída")
@@ -103,9 +98,7 @@ def cmd_sync(
     dry_run: Annotated[
         bool, typer.Option("--dry-run", help="Listar sem baixar")
     ] = False,
-    verbose: Annotated[
-        bool, typer.Option("--verbose", help="Logs detalhados")
-    ] = False,
+    verbose: Annotated[bool, typer.Option("--verbose", help="Logs detalhados")] = False,
 ) -> None:
     """Sincronizar dados brutos do DATASUS."""
     setup_rich_logging(verbose, console=console)
@@ -125,9 +118,7 @@ def cmd_sync(
 
         for dataset in sorted(targets):
             if dataset not in meta.datasets:
-                console.print(
-                    f"[red]Dataset '{dataset}' não reconhecido.[/red]"
-                )
+                console.print(f"[red]Dataset '{dataset}' não reconhecido.[/red]")
                 continue
             for f in fetcher.list_dataset_files(ftp, dataset):
                 if slicer is not None and not slicer(f):
@@ -143,8 +134,7 @@ def cmd_sync(
         ftp.close()
         console.print(t)
         console.print(
-            f"\n[bold]Total:[/bold] {total_n} arquivos,"
-            f" {total_size / 2**30:.2f} GB"
+            f"\n[bold]Total:[/bold] {total_n} arquivos, {total_size / 2**30:.2f} GB"
         )
         return
 
@@ -161,9 +151,7 @@ def cmd_sync(
         with console.status("[cyan]Baixando documentação...[/cyan]"):
             ftp = fetcher.connect()
             for dataset in sorted(doc_targets):
-                for _ in fetcher.download_documentation(
-                    ftp, dataset, output
-                ):
+                for _ in fetcher.download_documentation(ftp, dataset, output):
                     pass
             ftp.close()
         console.print("[green]✓[/green] Documentação sincronizada.")
@@ -173,9 +161,7 @@ def cmd_sync(
         with console.status("[cyan]Baixando tabelas auxiliares...[/cyan]"):
             ftp = fetcher.connect()
             for dataset in sorted(aux_targets):
-                for _ in fetcher.download_auxiliary_tables(
-                    ftp, dataset, output
-                ):
+                for _ in fetcher.download_auxiliary_tables(ftp, dataset, output):
                     pass
             ftp.close()
         console.print("[green]✓[/green] Tabelas auxiliares sincronizadas.")
@@ -193,9 +179,7 @@ def cmd_archive(
     output: Annotated[
         Path, typer.Option("-o", "--output", help="Diretório de dados fonte")
     ] = _DEFAULT_OUTPUT,
-    verbose: Annotated[
-        bool, typer.Option("--verbose", help="Logs detalhados")
-    ] = False,
+    verbose: Annotated[bool, typer.Option("--verbose", help="Logs detalhados")] = False,
 ) -> None:
     """Mover arquivos desatualizados para diretório de arquivo."""
     setup_rich_logging(verbose, console=console)

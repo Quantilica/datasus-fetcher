@@ -42,9 +42,7 @@ year_pattern = rf"({year_4digit_pattern})"
 year2_pattern = rf"({year_2digit_pattern})"
 uf_year_pattern = rf"({uf_pattern})({year_4digit_pattern})"
 uf_year2_pattern = rf"({uf_pattern})({year_2digit_pattern})"
-uf_year2_month_pattern = (
-    rf"({uf_pattern})({year_2digit_pattern})({month_pattern})"
-)
+uf_year2_month_pattern = rf"({uf_pattern})({year_2digit_pattern})({month_pattern})"
 uf_year2_month_pattern_sia_pa = uf_year2_month_pattern + r"(|[a-z])"
 uf_mapas_year_pattern = rf"({uf_pattern})_mapas_({year_4digit_pattern})"
 uf_cnv_pattern = rf"({uf_pattern})_cnv"
@@ -637,9 +635,7 @@ datasets = {
         "partition": ["uf", "yearmonth"],
     },
     "ciha": {
-        "name": (
-            "Sistema de Comunicação de Informação Hospitalar e Ambulatorial"
-        ),
+        "name": ("Sistema de Comunicação de Informação Hospitalar e Ambulatorial"),
         "group": "ciha",
         "periods": [
             {
@@ -2075,8 +2071,7 @@ datasets_groups = {
     },
     "ciha": {
         "name": (
-            "CIHA: Sistema de Comunicação de Informação Hospitalar e"
-            " Ambulatorial"
+            "CIHA: Sistema de Comunicação de Informação Hospitalar e Ambulatorial"
         ),
     },
     "cnes": {

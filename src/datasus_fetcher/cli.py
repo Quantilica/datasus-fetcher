@@ -153,9 +153,7 @@ def sync_data(args: argparse.Namespace):
         ftp = fetcher.connect()
         aux_targets = set(datasets) & set(meta.auxiliary_tables.keys())
         for dataset in sorted(aux_targets):
-            for _ in fetcher.download_auxiliary_tables(
-                ftp, dataset, data_dir
-            ):
+            for _ in fetcher.download_auxiliary_tables(ftp, dataset, data_dir):
                 pass
         ftp.close()
 
@@ -171,9 +169,7 @@ def archive(args: argparse.Namespace):
                 if not file.is_most_recent:
                     rel_filepath = file.filepath.relative_to(data_dir)
                     archivefilepath = archivedatadir / rel_filepath
-                    logger.info(
-                        f"Moving {file.filepath} to {archivefilepath}"
-                    )
+                    logger.info(f"Moving {file.filepath} to {archivefilepath}")
                     archivefilepath.parent.mkdir(parents=True, exist_ok=True)
                     shutil.move(file.filepath, archivefilepath)
 
@@ -197,9 +193,7 @@ def get_args():
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # * list ------------------------------------------------------------------
-    subparser_list = subparsers.add_parser(
-        "list", help="Listar datasets disponíveis"
-    )
+    subparser_list = subparsers.add_parser("list", help="Listar datasets disponíveis")
     subparser_list.add_argument(
         "datasets",
         nargs="*",

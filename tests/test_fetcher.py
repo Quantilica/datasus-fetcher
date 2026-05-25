@@ -77,9 +77,7 @@ class TestFetchFile(unittest.TestCase):
             self.assertFalse(dest.parent.exists())
 
             mock_ftp = MagicMock(spec=ftplib.FTP)
-            mock_ftp.retrbinary.side_effect = lambda cmd, callback: callback(
-                b"data"
-            )
+            mock_ftp.retrbinary.side_effect = lambda cmd, callback: callback(b"data")
 
             fetcher.fetch_file(mock_ftp, "/remote/file.dbc", dest)
 
@@ -91,9 +89,7 @@ class TestFetchFile(unittest.TestCase):
             payload = b"binary content"
 
             mock_ftp = MagicMock(spec=ftplib.FTP)
-            mock_ftp.retrbinary.side_effect = lambda cmd, callback: callback(
-                payload
-            )
+            mock_ftp.retrbinary.side_effect = lambda cmd, callback: callback(payload)
 
             fetcher.fetch_file(mock_ftp, "/remote/file.dbc", dest)
 
@@ -113,9 +109,7 @@ class TestFetchFile(unittest.TestCase):
             ]
 
             with patch("datasus_fetcher.fetcher.time.sleep"):
-                fetcher.fetch_file(
-                    mock_ftp, "/remote/file.dbc", dest, retries=3
-                )
+                fetcher.fetch_file(mock_ftp, "/remote/file.dbc", dest, retries=3)
 
             self.assertEqual(mock_ftp.retrbinary.call_count, 3)
 
@@ -124,13 +118,9 @@ class TestFetchFile(unittest.TestCase):
             dest = Path(tmpdir) / "file.dbc"
 
             mock_ftp = MagicMock(spec=ftplib.FTP)
-            mock_ftp.retrbinary.side_effect = ftplib.error_perm(
-                "550 not found"
-            )
+            mock_ftp.retrbinary.side_effect = ftplib.error_perm("550 not found")
 
-            fetcher.fetch_file(
-                mock_ftp, "/remote/missing.dbc", dest, retries=3
-            )
+            fetcher.fetch_file(mock_ftp, "/remote/missing.dbc", dest, retries=3)
 
             # Should not retry on permission error — only one attempt
             self.assertEqual(mock_ftp.retrbinary.call_count, 1)
@@ -141,9 +131,7 @@ class TestFetchFile(unittest.TestCase):
             dest_str = str(Path(tmpdir) / "file.dbc")
 
             mock_ftp = MagicMock(spec=ftplib.FTP)
-            mock_ftp.retrbinary.side_effect = lambda cmd, callback: callback(
-                b"ok"
-            )
+            mock_ftp.retrbinary.side_effect = lambda cmd, callback: callback(b"ok")
 
             # Should not raise even when dest is a string
             fetcher.fetch_file(mock_ftp, "/remote/file.dbc", dest_str)
@@ -181,9 +169,7 @@ class TestListFiles(unittest.TestCase):
         fetcher.list_files.cache_clear()
 
         # max_recursive_depth=0 evita recursão no <DIR>; só o arquivo conta
-        result = fetcher.list_files(
-            mock_ftp, "/some/dir", max_recursive_depth=0
-        )
+        result = fetcher.list_files(mock_ftp, "/some/dir", max_recursive_depth=0)
 
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]["filename"], "file.dbc")
@@ -231,18 +217,14 @@ class TestFetcherReconnectsAndRetries(unittest.TestCase):
             failed: list[str] = []
             mock_ftp = MagicMock(spec=ftplib.FTP)
             with (
-                patch.object(
-                    fetcher, "connect", return_value=mock_ftp
-                ) as mock_connect,
+                patch.object(fetcher, "connect", return_value=mock_ftp) as mock_connect,
                 patch.object(
                     fetcher.Fetcher,
                     "_download_one",
                     side_effect=[fetcher.FetchError("boom"), None],
                 ) as mock_dl,
             ):
-                worker = fetcher.Fetcher(
-                    q=q, dest_dir=data_dir, failed_files=failed
-                )
+                worker = fetcher.Fetcher(q=q, dest_dir=data_dir, failed_files=failed)
                 worker.run()
 
             self.assertEqual(mock_dl.call_count, 2)
@@ -274,9 +256,7 @@ class TestFetcherRecordsPermanentFailure(unittest.TestCase):
                     ],
                 ),
             ):
-                worker = fetcher.Fetcher(
-                    q=q, dest_dir=data_dir, failed_files=failed
-                )
+                worker = fetcher.Fetcher(q=q, dest_dir=data_dir, failed_files=failed)
                 worker.run()
 
             self.assertIn(remote_file.full_path, failed)
@@ -306,9 +286,7 @@ class TestFetcherReconnectFailureStopsThread(unittest.TestCase):
                     side_effect=[fetcher.FetchError("boom")],
                 ),
             ):
-                worker = fetcher.Fetcher(
-                    q=q, dest_dir=data_dir, failed_files=failed
-                )
+                worker = fetcher.Fetcher(q=q, dest_dir=data_dir, failed_files=failed)
                 worker.run()
 
             self.assertTrue(worker.dead())
@@ -338,9 +316,7 @@ class TestDownloadSupportFilesReconnect(unittest.TestCase):
                     "fetch_file",
                     side_effect=[fetcher.FetchError("boom"), None],
                 ) as mock_fetch,
-                patch.object(
-                    fetcher, "_write_manifest", return_value=MagicMock()
-                ),
+                patch.object(fetcher, "_write_manifest", return_value=MagicMock()),
                 # patch.object(fetcher.time, ...) afeta time.time
                 # globalmente; em py3.12 logging.LogRecord também o
                 # consome (no logger.warning da reconexão). count()
