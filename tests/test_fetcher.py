@@ -1,5 +1,6 @@
 import datetime
 import ftplib
+import itertools
 import queue
 import tempfile
 import unittest
@@ -340,9 +341,15 @@ class TestDownloadSupportFilesReconnect(unittest.TestCase):
                 patch.object(
                     fetcher, "_write_manifest", return_value=MagicMock()
                 ),
-                # tempos distintos para evitar divisão por zero no cálculo
+                # patch.object(fetcher.time, ...) afeta time.time
+                # globalmente; em py3.12 logging.LogRecord também o
+                # consome (no logger.warning da reconexão). count()
+                # fornece tempos distintos infinitos, evitando divisão
+                # por zero e StopIteration entre versões do Python.
                 patch.object(
-                    fetcher.time, "time", side_effect=[1000.0, 1000.5]
+                    fetcher.time,
+                    "time",
+                    side_effect=itertools.count(1000.0, 0.5),
                 ),
             ):
                 results = list(
