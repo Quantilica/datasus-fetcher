@@ -11,7 +11,7 @@ from pathlib import Path
 import quantilica_core.metadata as core_meta
 from quantilica_core.exceptions import FetchError
 from quantilica_core.files import is_complete_file
-from quantilica_core.ftp import FTP_TRANSIENT_ERRORS, ftp_connect
+from quantilica_core.ftp import FTP_TRANSIENT_ERRORS, MonitoredFTP
 from quantilica_core.manifests import DownloadManifest
 from quantilica_core.retry import exponential_delay
 from tqdm import tqdm as _tqdm
@@ -30,6 +30,7 @@ from .storage import (
 FTP_HOST = "ftp.datasus.gov.br"
 FTP_TIMEOUT = 60.0
 MEGA = 1_000_000
+_IDLE_TIMEOUT = 90.0  # segundos sem bytes recebidos antes de declarar stall
 
 # Erros que justificam reconectar e re-tentar o arquivo no nível do worker.
 # fetch_file converte o esgotamento de transitórios em FetchError, então
@@ -106,6 +107,9 @@ class Fetcher(threading.Thread):
                     )
                     with contextlib.suppress(Exception):
                         self.ftp.close()
+                    if self.dead():
+                        self._failed_files.append(file.full_path)
+                        return
                     try:
                         self.ftp = connect()
                     except FetchError:
@@ -178,6 +182,9 @@ class Fetcher(threading.Thread):
 
     def kill(self) -> None:
         self._kill_event.set()
+        ftp = self.ftp
+        if isinstance(ftp, MonitoredFTP):
+            ftp.interrupt_transfer()
 
     def dead(self) -> bool:
         return self._kill_event.is_set()
@@ -197,16 +204,23 @@ def log_download(tt: float, size: int, filename: str):
     logger.info(log)
 
 
-def connect(timeout: float = FTP_TIMEOUT, attempts: int = 3) -> ftplib.FTP:
-    return ftp_connect(
-        FTP_HOST,
-        encoding="latin-1",
-        timeout=timeout,
-        attempts=attempts,
-        base_delay=2.0,
-        max_delay=30.0,
-        jitter=1.0,
-    )
+def connect(timeout: float = FTP_TIMEOUT, attempts: int = 3) -> MonitoredFTP:
+    last_exc: BaseException | None = None
+    for attempt in range(1, attempts + 1):
+        try:
+            ftp = MonitoredFTP(FTP_HOST, timeout=timeout, encoding="latin-1")
+            ftp.login()
+            return ftp
+        except FTP_TRANSIENT_ERRORS as exc:
+            last_exc = exc
+            if attempt == attempts:
+                break
+            time.sleep(
+                exponential_delay(attempt, base_delay=2.0, max_delay=30.0, jitter=1.0)
+            )
+    raise FetchError(
+        f"Could not connect to {FTP_HOST} after {attempts} attempts"
+    ) from last_exc
 
 
 @lru_cache
