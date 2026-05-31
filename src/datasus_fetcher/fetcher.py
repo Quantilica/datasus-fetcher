@@ -16,6 +16,19 @@ from quantilica_core.manifests import DownloadManifest
 from quantilica_core.retry import exponential_delay
 from tqdm import tqdm as _tqdm
 
+try:
+    from quantilica_core.cli import (
+        get_console,
+        make_batch_progress,
+        make_download_progress,
+    )
+    from rich.console import Group
+    from rich.live import Live
+
+    _RICH_AVAILABLE = True
+except (ModuleNotFoundError, ImportError):  # pragma: no cover
+    _RICH_AVAILABLE = False
+
 from datasus_fetcher.slicer import Slicer
 
 from . import logger, meta
@@ -52,6 +65,7 @@ class Fetcher(threading.Thread):
         dest_dir: Path,
         callback: Callable | None = None,
         failed_files: list[str] | None = None,
+        download_progress=None,
     ):
         super().__init__()
         self.daemon = True
@@ -64,6 +78,7 @@ class Fetcher(threading.Thread):
             self.callback = lambda _: None
         self._kill_event = threading.Event()
         self._failed_files: list[str] = failed_files if failed_files is not None else []
+        self.download_progress = download_progress
 
     def run(self):
         self.ftp = connect()
@@ -146,13 +161,33 @@ class Fetcher(threading.Thread):
     def _download_one(self, file: RemoteFile, filepath: Path) -> None:
         logger.debug("%s -> %s", file.full_path, filepath)
         t0 = time.time()
-        fetch_file(
-            self.ftp,
-            file.full_path,
-            filepath,
-            retries=5,
-            abort_check=self.dead,
-        )
+
+        task_id = None
+        chunk_cb = reset_cb = None
+        if self.download_progress is not None:
+            task_id = self.download_progress.add_task(filepath.name, total=file.size)
+
+            def chunk_cb(n: int, _tid=task_id) -> None:
+                self.download_progress.update(_tid, advance=n)
+
+            def reset_cb(_tid=task_id) -> None:
+                self.download_progress.reset(_tid)
+
+        try:
+            fetch_file(
+                self.ftp,
+                file.full_path,
+                filepath,
+                retries=5,
+                abort_check=self.dead,
+                chunk_callback=chunk_cb,
+                reset_callback=reset_cb,
+            )
+        finally:
+            if task_id is not None:
+                with contextlib.suppress(Exception):
+                    self.download_progress.remove_task(task_id)
+
         tt = time.time() - t0
         log_download(tt, file.size, filepath.name)
 
@@ -306,6 +341,8 @@ def fetch_file(
     retries: int = 3,
     *,
     abort_check: Callable[[], bool] | None = None,
+    chunk_callback: Callable[[int], None] | None = None,
+    reset_callback: Callable[[], None] | None = None,
 ):
     """Fetch a file from a remote FTP server.
 
@@ -315,6 +352,10 @@ def fetch_file(
     :param abort_check: Optional callable polled per data chunk; if it
         returns truthy, the download is aborted, the partial file is
         removed, and :class:`_Aborted` is raised (no retries).
+    :param chunk_callback: Called with the number of bytes received per
+        chunk; used to drive per-file progress bars.
+    :param reset_callback: Called at the start of each retry attempt
+        (attempt 2+); used to reset a progress bar to zero.
     """
 
     if isinstance(dest_filepath, str):
@@ -325,6 +366,8 @@ def fetch_file(
     attempt = 0
     while retries > 0:
         attempt += 1
+        if attempt > 1 and reset_callback is not None:
+            reset_callback()
         try:
             with open(dest_filepath, "wb") as f:
 
@@ -332,6 +375,8 @@ def fetch_file(
                     if abort_check is not None and abort_check():
                         raise _Aborted
                     _f.write(chunk)
+                    if chunk_callback is not None:
+                        chunk_callback(len(chunk))
 
                 ftp.retrbinary("RETR " + path, _write)
             return
@@ -436,9 +481,30 @@ def download_data(
         if _cb_ref[0]:
             _cb_ref[0](file_metadata)
 
+    live = None
+    batch_progress = None
+    file_progress = None
+
+    if show_progress and _RICH_AVAILABLE:
+        console = get_console()
+        batch_progress = make_batch_progress(console)
+        file_progress = make_download_progress(console)
+        live = Live(
+            Group(batch_progress, file_progress),
+            console=console,
+            refresh_per_second=10,
+        )
+        live.start()
+
     workers: list[Fetcher] = []
     for _ in range(threads):
-        w = Fetcher(q, destdir, callback=_shared_cb, failed_files=failed_files)
+        w = Fetcher(
+            q,
+            destdir,
+            callback=_shared_cb,
+            failed_files=failed_files,
+            download_progress=file_progress,
+        )
         w.start()
         workers.append(w)
 
@@ -476,20 +542,39 @@ def download_data(
                 continue
 
             if show_progress:
-                pbar = _tqdm(
-                    total=len(dataset_files),
-                    desc=dataset,
-                    unit=" arquivo",
-                    leave=True,
-                )
-                current_pbar[0] = pbar
+                if batch_progress is not None:
+                    dataset_task = batch_progress.add_task(
+                        f"[cyan]{dataset}[/cyan]", total=len(dataset_files)
+                    )
 
-                def _dataset_cb(fm: dict, _pbar: _tqdm = pbar) -> None:
-                    _pbar.update(1)
-                    if callback:
-                        callback(fm)
+                    def _dataset_cb(
+                        fm: dict,
+                        _prog=batch_progress,
+                        _tid=dataset_task,
+                    ) -> None:
+                        _prog.update(_tid, advance=1)
+                        if callback:
+                            callback(fm)
 
-                _cb_ref[0] = _dataset_cb
+                    _cb_ref[0] = _dataset_cb
+                else:
+                    total_bytes = sum(f.size for f in dataset_files)
+                    pbar = _tqdm(
+                        total=total_bytes,
+                        desc=dataset,
+                        unit="B",
+                        unit_scale=True,
+                        unit_divisor=1024,
+                        leave=True,
+                    )
+                    current_pbar[0] = pbar
+
+                    def _dataset_cb(fm: dict, _pbar: _tqdm = pbar) -> None:
+                        _pbar.update(fm["size"])
+                        if callback:
+                            callback(fm)
+
+                    _cb_ref[0] = _dataset_cb
             else:
                 _cb_ref[0] = callback
 
@@ -498,8 +583,8 @@ def download_data(
             while q.unfinished_tasks:
                 time.sleep(0.05)
 
-            if show_progress:
-                pbar.close()
+            if current_pbar[0] is not None:
+                current_pbar[0].close()
                 current_pbar[0] = None
 
     except KeyboardInterrupt:
@@ -513,12 +598,20 @@ def download_data(
             except queue.Empty:
                 break
             q.task_done()
-        _tqdm.write("\nDownload interrompido pelo usuário.")
+        if live is not None:
+            live.stop()
+            live = None
+        elif current_pbar[0] is not None:
+            current_pbar[0].close()
+            current_pbar[0] = None
+        print("\nDownload interrompido pelo usuário.")
     finally:
+        if live is not None:
+            with contextlib.suppress(Exception):
+                live.stop()
         if current_pbar[0] is not None:
             with contextlib.suppress(Exception):
                 current_pbar[0].close()
-            current_pbar[0] = None
         # Send shutdown sentinels — wakes workers blocked on get(timeout).
         for _ in workers:
             q.put(None)
