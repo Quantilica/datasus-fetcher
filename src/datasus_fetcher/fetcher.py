@@ -1,6 +1,7 @@
 import contextlib
 import datetime as dt
 import ftplib
+import hashlib
 import queue
 import threading
 import time
@@ -174,7 +175,7 @@ class Fetcher(threading.Thread):
                 self.download_progress.reset(_tid)
 
         try:
-            fetch_file(
+            sha256, size_bytes = fetch_file(
                 self.ftp,
                 file.full_path,
                 filepath,
@@ -201,6 +202,8 @@ class Fetcher(threading.Thread):
                 "preliminary": file.preliminary,
                 "remote_datetime": file.datetime.isoformat(),
             },
+            sha256=sha256,
+            size_bytes=size_bytes,
         )
 
         self.callback(
@@ -343,8 +346,10 @@ def fetch_file(
     abort_check: Callable[[], bool] | None = None,
     chunk_callback: Callable[[int], None] | None = None,
     reset_callback: Callable[[], None] | None = None,
-):
+) -> tuple[str, int]:
     """Fetch a file from a remote FTP server.
+
+    Returns ``(sha256_hex, size_bytes)`` computed inline during streaming.
 
     :param path: The path to the file.
     :param dest_filepath: The destination file path.
@@ -366,27 +371,33 @@ def fetch_file(
     attempt = 0
     while retries > 0:
         attempt += 1
+        digest = hashlib.sha256()
+        counter = [0]
         if attempt > 1 and reset_callback is not None:
             reset_callback()
         try:
             with open(dest_filepath, "wb") as f:
 
-                def _write(chunk: bytes, _f=f) -> None:
+                def _write(
+                    chunk: bytes, _f=f, _d=digest, _c=counter
+                ) -> None:
                     if abort_check is not None and abort_check():
                         raise _Aborted
                     _f.write(chunk)
+                    _d.update(chunk)
+                    _c[0] += len(chunk)
                     if chunk_callback is not None:
                         chunk_callback(len(chunk))
 
                 ftp.retrbinary("RETR " + path, _write)
-            return
+            return digest.hexdigest(), counter[0]
         except _Aborted:
             dest_filepath.unlink(missing_ok=True)
             raise
         except ftplib.error_perm:
             logger.exception("File %s not found.", path)
             dest_filepath.unlink(missing_ok=True)
-            return
+            return "", 0
         except FTP_TRANSIENT_ERRORS:
             logger.exception(
                 "Transient error for %s (attempt %d/%d).",
@@ -413,12 +424,17 @@ def _write_manifest(
     url: str,
     dataset_id: str,
     metadata: dict,
+    *,
+    sha256: str,
+    size_bytes: int,
 ) -> DownloadManifest:
-    manifest = DownloadManifest.from_file(
+    manifest = DownloadManifest.from_digest(
         source_id="datasus",
         dataset_id=dataset_id,
         url=url,
-        file_path=filepath,
+        sha256=sha256,
+        size_bytes=size_bytes,
+        path=str(filepath.absolute()),
         producer="datasus-fetcher",
         metadata=metadata,
     )
@@ -657,9 +673,12 @@ def _download_support_files(
             logger.debug(f"{i: >5} {file['full_path']} -> {filepath}")
             t0 = time.time()
 
+            sha256 = size_bytes = None
             for attempt in range(1, 3):  # até 2 tentativas
                 try:
-                    fetch_file(ftp, file["full_path"], filepath, retries=5)
+                    sha256, size_bytes = fetch_file(
+                        ftp, file["full_path"], filepath, retries=5
+                    )
                     break
                 except FetchError as exc:
                     if attempt >= 2:
@@ -692,6 +711,8 @@ def _download_support_files(
                 url,
                 destdir.name,
                 metadata={"remote_datetime": file["datetime"].isoformat()},
+                sha256=sha256 or "",
+                size_bytes=size_bytes or 0,
             )
 
             yield {

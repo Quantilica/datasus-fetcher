@@ -314,7 +314,7 @@ class TestDownloadSupportFilesReconnect(unittest.TestCase):
                 patch.object(
                     fetcher,
                     "fetch_file",
-                    side_effect=[fetcher.FetchError("boom"), None],
+                    side_effect=[fetcher.FetchError("boom"), ("", 0)],
                 ) as mock_fetch,
                 patch.object(fetcher, "_write_manifest", return_value=MagicMock()),
                 # patch.object(fetcher.time, ...) afeta time.time
