@@ -105,66 +105,70 @@ def cmd_sync(
     targets = datasets if datasets else list(meta.datasets.keys())
     slicer = Slicer(start_time=start, end_time=end, regions=regions)
 
-    if dry_run:
-        with console.status("[cyan]Conectando ao FTP do DATASUS...[/cyan]"):
-            ftp = fetcher.connect()
-        total_size = total_n = 0
+    try:
+        if dry_run:
+            with console.status("[cyan]Conectando ao FTP do DATASUS...[/cyan]"):
+                ftp = fetcher.connect()
+            total_size = total_n = 0
 
-        t = Table(show_header=True, header_style="bold")
-        t.add_column("Dataset", style="cyan")
-        t.add_column("Partição")
-        t.add_column("Tamanho", justify="right")
-        t.add_column("Path")
+            t = Table(show_header=True, header_style="bold")
+            t.add_column("Dataset", style="cyan")
+            t.add_column("Partição")
+            t.add_column("Tamanho", justify="right")
+            t.add_column("Path")
 
-        for dataset in sorted(targets):
-            if dataset not in meta.datasets:
-                console.print(f"[red]Dataset '{dataset}' não reconhecido.[/red]")
-                continue
-            for f in fetcher.list_dataset_files(ftp, dataset):
-                if slicer is not None and not slicer(f):
+            for dataset in sorted(targets):
+                if dataset not in meta.datasets:
+                    console.print(f"[red]Dataset '{dataset}' não reconhecido.[/red]")
                     continue
-                t.add_row(
-                    f.dataset,
-                    str(f.partition),
-                    f"{f.size / 2**20:.1f} MB",
-                    f.full_path,
-                )
-                total_size += f.size
-                total_n += 1
-        ftp.close()
-        console.print(t)
-        console.print(
-            f"\n[bold]Total:[/bold] {total_n} arquivos, {total_size / 2**30:.2f} GB"
+                for f in fetcher.list_dataset_files(ftp, dataset):
+                    if slicer is not None and not slicer(f):
+                        continue
+                    t.add_row(
+                        f.dataset,
+                        str(f.partition),
+                        f"{f.size / 2**20:.1f} MB",
+                        f.full_path,
+                    )
+                    total_size += f.size
+                    total_n += 1
+            ftp.close()
+            console.print(t)
+            console.print(
+                f"\n[bold]Total:[/bold] {total_n} arquivos, {total_size / 2**30:.2f} GB"
+            )
+            return
+
+        fetcher.download_data(
+            datasets=sorted(targets),
+            destdir=output,
+            threads=threads,
+            slicer=slicer,
+            show_progress=not verbose,
         )
-        return
 
-    fetcher.download_data(
-        datasets=sorted(targets),
-        destdir=output,
-        threads=threads,
-        slicer=slicer,
-        show_progress=not verbose,
-    )
+        if docs:
+            doc_targets = set(targets) & set(meta.docs.keys())
+            with console.status("[cyan]Baixando documentação...[/cyan]"):
+                ftp = fetcher.connect()
+                for dataset in sorted(doc_targets):
+                    for _ in fetcher.download_documentation(ftp, dataset, output):
+                        pass
+                ftp.close()
+            console.print("[green]✓[/green] Documentação sincronizada.")
 
-    if docs:
-        doc_targets = set(targets) & set(meta.docs.keys())
-        with console.status("[cyan]Baixando documentação...[/cyan]"):
-            ftp = fetcher.connect()
-            for dataset in sorted(doc_targets):
-                for _ in fetcher.download_documentation(ftp, dataset, output):
-                    pass
-            ftp.close()
-        console.print("[green]✓[/green] Documentação sincronizada.")
-
-    if aux:
-        aux_targets = set(targets) & set(meta.auxiliary_tables.keys())
-        with console.status("[cyan]Baixando tabelas auxiliares...[/cyan]"):
-            ftp = fetcher.connect()
-            for dataset in sorted(aux_targets):
-                for _ in fetcher.download_auxiliary_tables(ftp, dataset, output):
-                    pass
-            ftp.close()
-        console.print("[green]✓[/green] Tabelas auxiliares sincronizadas.")
+        if aux:
+            aux_targets = set(targets) & set(meta.auxiliary_tables.keys())
+            with console.status("[cyan]Baixando tabelas auxiliares...[/cyan]"):
+                ftp = fetcher.connect()
+                for dataset in sorted(aux_targets):
+                    for _ in fetcher.download_auxiliary_tables(ftp, dataset, output):
+                        pass
+                ftp.close()
+            console.print("[green]✓[/green] Tabelas auxiliares sincronizadas.")
+    except KeyboardInterrupt:
+        console.print("[yellow]Download cancelado pelo usuário.[/yellow]")
+        raise typer.Exit(code=130)
 
 
 @app.command("archive")
