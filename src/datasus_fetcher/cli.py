@@ -1,23 +1,17 @@
-"""Command Line Interface for datasus-fetcher package."""
+"""CLI standalone para datasus-fetcher."""
+
+from __future__ import annotations
 
 import argparse
 import logging
-import logging.config
 import shutil
 from pathlib import Path
+
+from quantilica_core.logging import configure_cli_logging
 
 from . import __version__, fetcher, logger, meta
 from .slicer import Slicer
 from .storage import File, get_files_metadata
-
-
-def _configure_logging() -> None:
-    if Path("logging.ini").exists():
-        logging.config.fileConfig("logging.ini")
-    else:
-        from .constants import default_logging_config
-
-        logging.config.dictConfig(default_logging_config)
 
 
 def list_datasets(args: argparse.Namespace):
@@ -130,9 +124,6 @@ def sync_data(args: argparse.Namespace):
         print(f"\nTotal: {total_files} files, {total_size / 2**30:.2f} GB")
         return
 
-    if not args.verbose:
-        logging.getLogger("datasus_fetcher").setLevel(logging.WARNING)
-
     fetcher.download_data(
         datasets=sorted(datasets),
         destdir=data_dir,
@@ -174,10 +165,10 @@ def archive(args: argparse.Namespace):
                     shutil.move(file.filepath, archivefilepath)
 
 
-def get_args():
+def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="datasus-fetcher",
-        description="Download raw data files from DATASUS",
+        description="Baixar dados brutos do DATASUS.",
     )
     parser.add_argument(
         "--version",
@@ -190,40 +181,41 @@ def get_args():
         default=False,
         help="Exibir logs detalhados em vez de barra de progresso",
     )
-    subparsers = parser.add_subparsers(dest="command", required=True)
+    parser.set_defaults(func=lambda _: parser.print_help())
+    subparsers = parser.add_subparsers(dest="command")
 
-    # * list ------------------------------------------------------------------
+    # list
     subparser_list = subparsers.add_parser("list", help="Listar datasets disponíveis")
     subparser_list.add_argument(
         "datasets",
         nargs="*",
-        help="Datasets to list",
+        help="Datasets a listar (ex: sih-rd, cnes-dc)",
     )
     subparser_list.set_defaults(func=list_datasets)
 
-    # * sync ------------------------------------------------------------------
+    # sync
     subparser_sync = subparsers.add_parser(
         "sync", help="Sincronizar dados brutos do DATASUS"
     )
     subparser_sync.add_argument(
         "datasets",
         nargs="*",
-        help="Datasets to download (eg.: sih-rd, cnes-dc, ...)",
+        help="Datasets a baixar (ex: sih-rd, cnes-dc). Omitir para todos.",
     )
     subparser_sync.add_argument(
         "--start",
         default="",
-        help="Start period to download (eg.: 2001 OR 2001-01)",
+        help="Período inicial (ex: 2001 ou 2001-01)",
     )
     subparser_sync.add_argument(
         "--end",
         default="",
-        help="End period to download (eg.: 2020 OR 2020-12)",
+        help="Período final (ex: 2020 ou 2020-12)",
     )
     subparser_sync.add_argument(
         "--regions",
         nargs="+",
-        help="Regions to download (eg.: br, ac, am, ce, ...)",
+        help="Regiões a baixar (ex: br, ac, am, ce)",
     )
     subparser_sync.add_argument(
         "-o",
@@ -231,7 +223,7 @@ def get_args():
         dest="output",
         type=Path,
         default=Path("/data/datasus"),
-        help="Output directory (default: /data/datasus)",
+        help="Diretório de saída (padrão: /data/datasus)",
     )
     subparser_sync.add_argument(
         "-t",
@@ -239,7 +231,7 @@ def get_args():
         dest="threads",
         type=int,
         default=2,
-        help="Number of concurrent fetchers",
+        help="Downloads simultâneos (padrão: 2)",
     )
     subparser_sync.add_argument(
         "--docs",
@@ -258,35 +250,40 @@ def get_args():
         dest="dry_run",
         action="store_true",
         default=False,
-        help="List files that would be downloaded without downloading them",
+        help="Listar arquivos sem baixar",
     )
     subparser_sync.set_defaults(func=sync_data)
 
-    # * archive ---------------------------------------------------------------
-    subparser_archive = subparsers.add_parser("archive")
+    # archive
+    subparser_archive = subparsers.add_parser(
+        "archive", help="Mover arquivos desatualizados para diretório de histórico"
+    )
     subparser_archive.add_argument(
         "-o",
         "--output",
         dest="output",
         type=Path,
         default=Path("/data/datasus"),
-        help="Source data directory (default: /data/datasus)",
+        help="Diretório de origem (padrão: /data/datasus)",
     )
     subparser_archive.add_argument(
         "--archive-data-dir",
         type=Path,
         required=True,
-        help="Directory to move outdated files to",
+        help="Diretório de destino para arquivos arquivados",
     )
     subparser_archive.set_defaults(func=archive)
 
-    args = parser.parse_args()
-    return args
+    return parser
 
 
-def main():
-    _configure_logging()
-    args = get_args()
+def main(argv: list[str] | None = None) -> None:
+    parser = get_parser()
+    args = parser.parse_args(argv)
+    configure_cli_logging(verbose=args.verbose)
+    if not args.verbose:
+        logging.getLogger("quantilica_core").setLevel(logging.WARNING)
+        logging.getLogger("datasus_fetcher").setLevel(logging.WARNING)
     args.func(args)
 
 
