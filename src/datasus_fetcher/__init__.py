@@ -1,6 +1,6 @@
 from importlib.metadata import PackageNotFoundError, version
 
-from quantilica_core.logging import get_logger
+from quantilica.core.logging import get_logger
 
 try:
     __version__ = version("datasus-fetcher")

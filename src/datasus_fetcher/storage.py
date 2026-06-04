@@ -3,9 +3,9 @@ from collections.abc import Generator
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from quantilica_core.dates import year_month_partition
-from quantilica_core.exceptions import ParseError
-from quantilica_core.storage import LocalStorage, build_stamped_filename
+from quantilica.core.dates import year_month_partition
+from quantilica.core.exceptions import ParseError
+from quantilica.core.storage import LocalStorage, build_stamped_filename
 
 from . import logger
 

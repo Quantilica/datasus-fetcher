@@ -9,16 +9,16 @@ from collections.abc import Callable, Iterable
 from functools import lru_cache
 from pathlib import Path
 
-import quantilica_core.metadata as core_meta
-from quantilica_core.exceptions import FetchError
-from quantilica_core.files import is_complete_file
-from quantilica_core.ftp import FTP_TRANSIENT_ERRORS, MonitoredFTP
-from quantilica_core.manifests import DownloadManifest
-from quantilica_core.retry import exponential_delay
+import quantilica.core.metadata as core_meta
+from quantilica.core.exceptions import FetchError
+from quantilica.core.files import is_complete_file
+from quantilica.core.ftp import FTP_TRANSIENT_ERRORS, MonitoredFTP
+from quantilica.core.manifests import DownloadManifest
+from quantilica.core.retry import exponential_delay
 from tqdm import tqdm as _tqdm
 
 try:
-    from quantilica_core.cli import (
+    from quantilica.core.cli import (
         get_console,
         make_batch_progress,
         make_download_progress,
@@ -378,9 +378,7 @@ def fetch_file(
         try:
             with open(dest_filepath, "wb") as f:
 
-                def _write(
-                    chunk: bytes, _f=f, _d=digest, _c=counter
-                ) -> None:
+                def _write(chunk: bytes, _f=f, _d=digest, _c=counter) -> None:
                     if abort_check is not None and abort_check():
                         raise _Aborted
                     _f.write(chunk)

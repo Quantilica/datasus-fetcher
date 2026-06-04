@@ -8,7 +8,7 @@ import shutil
 import sys
 from pathlib import Path
 
-from quantilica_core.logging import configure_cli_logging
+from quantilica.core.logging import configure_cli_logging
 
 from . import __version__, fetcher, logger, meta
 from .slicer import Slicer
@@ -283,7 +283,7 @@ def main(argv: list[str] | None = None) -> None:
     args = parser.parse_args(argv)
     configure_cli_logging(verbose=args.verbose)
     if not args.verbose:
-        logging.getLogger("quantilica_core").setLevel(logging.WARNING)
+        logging.getLogger("quantilica.core").setLevel(logging.WARNING)
         logging.getLogger("datasus_fetcher").setLevel(logging.WARNING)
     try:
         args.func(args)

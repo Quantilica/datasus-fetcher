@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Annotated
 
 import typer
-from quantilica_core.cli import get_console, setup_rich_logging
+from quantilica.core.cli import get_console, setup_rich_logging
 from rich.table import Table
 
 from datasus_fetcher import fetcher, meta

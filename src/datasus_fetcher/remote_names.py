@@ -1,6 +1,6 @@
 import re
 
-from quantilica_core.exceptions import ParseError
+from quantilica.core.exceptions import ParseError
 
 from . import meta
 
