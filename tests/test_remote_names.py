@@ -1,9 +1,10 @@
 import re
 import unittest
 
+from quantilica.core.exceptions import ParseError
+
 from datasus_fetcher import meta
 from datasus_fetcher.remote_names import get_pattern, parse_filename
-from quantilica.core.exceptions import ParseError
 
 
 def _match(period: dict, filename: str) -> re.Match | None:

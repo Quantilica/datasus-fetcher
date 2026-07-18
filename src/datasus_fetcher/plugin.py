@@ -168,7 +168,7 @@ def cmd_sync(
             console.print("[green]✓[/green] Tabelas auxiliares sincronizadas.")
     except KeyboardInterrupt:
         console.print("[yellow]Download cancelado pelo usuário.[/yellow]")
-        raise typer.Exit(code=130)
+        raise typer.Exit(code=130) from None
 
 
 @app.command("archive")

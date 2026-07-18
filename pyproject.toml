@@ -1,12 +1,13 @@
 [project]
 name = "datasus-fetcher"
-version = "0.6.0"
+version = "0.7.0"
 description = "Downloader of DATASUS raw data files"
 readme = "README.md"
 authors = [
     { name = "Komesu, D.K.", email = "daniel@dkko.me" },
 ]
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.12"
 keywords = [
     "data",
@@ -29,9 +30,10 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Information Analysis",
     "Topic :: Internet :: File Transfer Protocol (FTP)",
+    "Typing :: Typed",
 ]
 dependencies = [
-    "quantilica-core @ git+https://github.com/Quantilica/quantilica-core.git",
+    "quantilica-core>=0.3.1",
 ]
 
 [project.urls]
@@ -51,12 +53,19 @@ dev = [
     "pytest>=8.0.0",
 ]
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["-p", "no:cacheprovider"]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/datasus_fetcher"]
 
-[tool.hatch.metadata]
-allow-direct-references = true
-
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
