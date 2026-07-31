@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
-# Formata os arquivos Python staged com `ruff format` antes do commit.
+# Formata e verifica os arquivos Python staged com `ruff check --fix` e `ruff format` antes do commit.
 #
 # Instalação (uma vez por clone):
 #   git config core.hooksPath .githooks
 #
-# Reformata os arquivos com `ruff format` e os re-adiciona ao stage; se
-# `ruff format` falhar (ex.: erro de sintaxe), o commit é abortado.
 set -euo pipefail
 
 cd "$(git rev-parse --show-toplevel)"
@@ -14,6 +12,11 @@ mapfile -t files < <(git diff --cached --name-only --diff-filter=ACMR -- '*.py')
 
 if [ "${#files[@]}" -eq 0 ]; then
     exit 0
+fi
+
+if ! uv run ruff check --fix "${files[@]}"; then
+    echo "pre-commit: ruff check falhou — commit abortado." >&2
+    exit 1
 fi
 
 if ! uv run ruff format "${files[@]}"; then
