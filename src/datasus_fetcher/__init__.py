@@ -8,3 +8,5 @@ except PackageNotFoundError:
     __version__ = "0.0.0"
 
 logger = get_logger(__name__)
+
+__all__ = ["__version__"]
