@@ -1,4 +1,4 @@
-name: Publish to PyPI
+name: Release to GitHub & Notify Index
 
 on:
   push:
@@ -6,9 +6,12 @@ on:
       - "v*"
 
 jobs:
-  build:
-    name: Build distribution
+  release:
+    name: Create Release & Dispatch
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -18,49 +21,17 @@ jobs:
       - name: Build sdist and wheel
         run: uv build
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: dist
-          path: dist/
+          files: dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  publish-testpypi:
-    name: Publish to TestPyPI
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: testpypi
-      url: https://test.pypi.org/p/datasus-fetcher
-    permissions:
-      id-token: write
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
+      - name: Dispatch Event to quantilica-index
+        uses: peter-evans/repository-dispatch@v3
         with:
-          name: dist
-          path: dist/
-
-      - name: Publish to TestPyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
-          skip-existing: true
-
-  publish-pypi:
-    name: Publish to PyPI
-    needs: publish-testpypi
-    runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/datasus-fetcher
-    permissions:
-      id-token: write
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist/
-
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+          token: ${{ secrets.INDEX_DISPATCH_TOKEN }}
+          repository: Quantilica/quantilica-index
+          event-type: fetcher_released
+          client-payload: '{"repository": "${{ github.repository }}", "tag": "${{ github.ref_name }}"}'
