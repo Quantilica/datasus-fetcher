@@ -187,7 +187,7 @@ class Fetcher(threading.Thread):
         finally:
             if task_id is not None:
                 with contextlib.suppress(Exception):
-                    self.download_progress.remove_task(task_id)
+                    pass
 
         tt = time.time() - t0
         log_download(tt, file.size, filepath.name)
