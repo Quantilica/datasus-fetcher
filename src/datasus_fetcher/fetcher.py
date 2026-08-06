@@ -2,7 +2,6 @@ import contextlib
 import datetime as dt
 import ftplib
 import hashlib
-import queue
 import threading
 import time
 from collections.abc import Callable, Iterable
@@ -10,6 +9,7 @@ from functools import lru_cache
 from pathlib import Path
 
 import quantilica.core.metadata as core_meta
+import typer
 from quantilica.core.exceptions import FetchError
 from quantilica.core.files import is_complete_file
 from quantilica.core.ftp import FTP_TRANSIENT_ERRORS, MonitoredFTP
@@ -19,7 +19,9 @@ from tqdm import tqdm as _tqdm
 
 try:
     from quantilica.core.cli import (
+        ProgressPool,
         get_console,
+        graceful_executor,
         make_batch_progress,
         make_download_progress,
     )
@@ -36,7 +38,6 @@ from . import logger, meta
 from .remote_names import get_pattern, parse_filename
 from .storage import (
     DataPartition,
-    DataRepository,
     RemoteFile,
     get_data_filepath,
 )
@@ -57,186 +58,6 @@ _RETRYABLE_DOWNLOAD_ERRORS: tuple[type[BaseException], ...] = (
 
 class _Aborted(Exception):
     """Raised when an in-flight download is interrupted by the user."""
-
-
-class Fetcher(threading.Thread):
-    def __init__(
-        self,
-        q: queue.Queue,
-        dest_dir: Path,
-        callback: Callable | None = None,
-        failed_files: list[str] | None = None,
-        download_progress=None,
-        task_id: int | None = None,
-    ):
-        super().__init__()
-        self.daemon = True
-        self.ftp: ftplib.FTP | None = None
-        self.q = q
-        self.repo = DataRepository(dest_dir)
-        if callable(callback):
-            self.callback = callback
-        else:
-            self.callback = lambda _: None
-        self._kill_event = threading.Event()
-        self._failed_files: list[str] = failed_files if failed_files is not None else []
-        self.download_progress = download_progress
-        self.task_id = task_id
-
-    def run(self):
-        self.ftp = connect()
-        try:
-            while True:
-                try:
-                    file: RemoteFile | None = self.q.get(timeout=0.5)
-                except queue.Empty:
-                    if self.dead():
-                        return
-                    continue
-
-                if file is None:
-                    self.q.task_done()
-                    return
-
-                if self.dead():
-                    self.q.task_done()
-                    continue
-
-                filepath: Path = self.repo.get_data_filepath(file=file)
-                if is_complete_file(filepath, file.size):
-                    self.q.task_done()
-                    continue
-
-                try:
-                    self._download_one(file, filepath)
-                except _Aborted:
-                    logger.info("Aborted download of %s", file.full_path)
-                    return
-                except ftplib.error_perm:
-                    logger.exception(
-                        "Permanent FTP error for %s — skipping.",
-                        file.full_path,
-                    )
-                except _RETRYABLE_DOWNLOAD_ERRORS as exc:
-                    logger.warning(
-                        "Transient error for %s: %s. Reconnecting...",
-                        file.full_path,
-                        exc,
-                    )
-                    with contextlib.suppress(Exception):
-                        self.ftp.close()
-                    if self.dead():
-                        self._failed_files.append(file.full_path)
-                        return
-                    try:
-                        self.ftp = connect()
-                    except FetchError:
-                        logger.exception("Reconnect failed — stopping thread.")
-                        self._failed_files.append(file.full_path)
-                        self.kill()
-                    else:
-                        if not self.dead():
-                            logger.info("Reconnected. Retrying %s...", file.full_path)
-                            try:
-                                self._download_one(file, filepath)
-                            except _Aborted:
-                                logger.info("Aborted retry of %s", file.full_path)
-                                return
-                            except Exception:
-                                logger.exception(
-                                    "Retry after reconnect failed for %s —"
-                                    " recording as failed.",
-                                    file.full_path,
-                                )
-                                self._failed_files.append(file.full_path)
-                except Exception:
-                    logger.exception(
-                        "Unexpected error for %s — skipping.", file.full_path
-                    )
-                    self._failed_files.append(file.full_path)
-                finally:
-                    self.q.task_done()
-        finally:
-            if self.ftp is not None:
-                with contextlib.suppress(Exception):
-                    self.ftp.close()
-
-    def _download_one(self, file: RemoteFile, filepath: Path) -> None:
-        logger.debug("%s -> %s", file.full_path, filepath)
-        t0 = time.time()
-
-        chunk_cb = reset_cb = None
-        if self.download_progress is not None and self.task_id is not None:
-            self.download_progress.update(
-                self.task_id,
-                description=f"[cyan]{filepath.name}[/cyan]",
-                completed=0,
-                total=file.size,
-            )
-
-            def chunk_cb(n: int, _tid=self.task_id) -> None:
-                self.download_progress.update(_tid, advance=n)
-
-            def reset_cb(_tid=self.task_id) -> None:
-                self.download_progress.reset(_tid)
-
-        try:
-            sha256, size_bytes = fetch_file(
-                self.ftp,
-                file.full_path,
-                filepath,
-                retries=5,
-                abort_check=self.dead,
-                chunk_callback=chunk_cb,
-                reset_callback=reset_cb,
-            )
-        finally:
-            if self.download_progress is not None and self.task_id is not None:
-                with contextlib.suppress(Exception):
-                    self.download_progress.update(
-                        self.task_id,
-                        description="[dim]Inativo[/dim]",
-                        completed=0,
-                        total=1,
-                    )
-
-        tt = time.time() - t0
-        log_download(tt, file.size, filepath.name)
-
-        url = f"ftp://{FTP_HOST}/{file.full_path}"
-        manifest = _write_manifest(
-            filepath,
-            url,
-            file.dataset,
-            metadata={
-                "partition": str(file.partition),
-                "preliminary": file.preliminary,
-                "remote_datetime": file.datetime.isoformat(),
-            },
-            sha256=sha256,
-            size_bytes=size_bytes,
-        )
-
-        self.callback(
-            {
-                "url": url,
-                "size": file.size,
-                "filepath": filepath,
-                "suffix": file.extension,
-                "dataset": file.dataset,
-                "created_at": file.datetime,
-                "manifest": manifest,
-            }
-        )
-
-    def kill(self) -> None:
-        self._kill_event.set()
-        ftp = self.ftp
-        if isinstance(ftp, MonitoredFTP):
-            ftp.interrupt_transfer()
-
-    def dead(self) -> bool:
-        return self._kill_event.is_set()
 
 
 def log_download(tt: float, size: int, filename: str):
@@ -496,160 +317,212 @@ def download_data(
     )
 
     ftp0 = connect()
-    q: queue.Queue = queue.Queue()
     failed_files: list[str] = []
-
-    # Mutable callback reference — swapped per dataset after each q.join()
-    _cb_ref: list[Callable | None] = [callback]
-
-    def _shared_cb(file_metadata: dict) -> None:
-        if _cb_ref[0]:
-            _cb_ref[0](file_metadata)
 
     live = None
     batch_progress = None
     file_progress = None
+    pool = None
 
-    task_ids = []
     if show_progress and _RICH_AVAILABLE:
         console = get_console()
         batch_progress = make_batch_progress(console)
         file_progress = make_download_progress(console)
+        pool = ProgressPool(workers=threads, file_prog=file_progress)
         live = Live(
             Group(batch_progress, file_progress),
             console=console,
             refresh_per_second=10,
         )
         live.start()
-        task_ids = [
-            file_progress.add_task("[dim]Inativo[/dim]", total=1)
-            for _ in range(threads)
-        ]
 
-    workers: list[Fetcher] = []
-    for i in range(threads):
-        w = Fetcher(
-            q,
-            destdir,
-            callback=_shared_cb,
-            failed_files=failed_files,
-            download_progress=file_progress,
-            task_id=task_ids[i] if task_ids else None,
+    thread_local = threading.local()
+
+    def get_ftp() -> ftplib.FTP:
+        if not hasattr(thread_local, "ftp"):
+            thread_local.ftp = connect()
+        return thread_local.ftp
+
+    def _worker(file: RemoteFile) -> dict | None:
+        filepath: Path = get_data_filepath(destdir, file)
+        if is_complete_file(filepath, file.size):
+            return None
+
+        ftp = get_ftp()
+        ctx = (
+            pool.acquire(description=f"[cyan]{filepath.name}[/cyan]")
+            if pool
+            else contextlib.nullcontext()
         )
-        w.start()
-        workers.append(w)
+        try:
+            with ctx as cb:
+                downloaded_bytes = 0
 
-    current_pbar: list[_tqdm | None] = [None]
+                def chunk_cb(n: int) -> None:
+                    nonlocal downloaded_bytes
+                    downloaded_bytes += n
+                    if cb is not None:
+                        cb(downloaded_bytes, file.size)
+
+                def reset_cb() -> None:
+                    nonlocal downloaded_bytes
+                    downloaded_bytes = 0
+                    if cb is not None:
+                        cb(0, file.size)
+
+                t0 = time.time()
+                for attempt in range(1, 4):
+                    try:
+                        sha256, size_bytes = fetch_file(
+                            ftp,
+                            file.full_path,
+                            filepath,
+                            retries=3,
+                            chunk_callback=chunk_cb,
+                            reset_callback=reset_cb,
+                        )
+                        break
+                    except ftplib.error_perm:
+                        logger.exception(
+                            "Permanent FTP error for %s — skipping.", file.full_path
+                        )
+                        return None
+                    except _RETRYABLE_DOWNLOAD_ERRORS as exc:
+                        if attempt == 3:
+                            logger.error(
+                                "Download failed after 3 attempts: %s", file.full_path
+                            )
+                            failed_files.append(file.full_path)
+                            return None
+                        logger.warning(
+                            "Transient error for %s: %s. Reconnecting...",
+                            file.full_path,
+                            exc,
+                        )
+                        with contextlib.suppress(Exception):
+                            ftp.close()
+                        try:
+                            thread_local.ftp = ftp = connect()
+                        except Exception:
+                            logger.exception("Reconnect failed")
+                            failed_files.append(file.full_path)
+                            return None
+                    except Exception:
+                        logger.exception(
+                            "Unexpected error for %s — skipping.", file.full_path
+                        )
+                        failed_files.append(file.full_path)
+                        return None
+
+                tt = time.time() - t0
+                log_download(tt, file.size, filepath.name)
+
+                url = f"ftp://{FTP_HOST}/{file.full_path}"
+                manifest = _write_manifest(
+                    filepath,
+                    url,
+                    file.dataset,
+                    metadata={
+                        "partition": str(file.partition),
+                        "preliminary": file.preliminary,
+                        "remote_datetime": file.datetime.isoformat(),
+                    },
+                    sha256=sha256,
+                    size_bytes=size_bytes,
+                )
+
+                res = {
+                    "url": url,
+                    "size": file.size,
+                    "filepath": filepath,
+                    "suffix": file.extension,
+                    "dataset": file.dataset,
+                    "created_at": file.datetime,
+                    "manifest": manifest,
+                }
+                if callback:
+                    callback(res)
+                return res
+        except Exception as exc:
+            logger.error("Worker failed for %s: %s", file.full_path, exc)
+            return None
 
     try:
-        for dataset in sorted(datasets_):
-            logger.info("Listing files of %s", dataset)
+        import concurrent.futures
 
-            def _needs_download(f: RemoteFile) -> bool:
-                fp = get_data_filepath(destdir, f)
-                return not is_complete_file(fp, f.size)
+        exec_ctx = (
+            graceful_executor(max_workers=threads)
+            if _RICH_AVAILABLE
+            else concurrent.futures.ThreadPoolExecutor(max_workers=threads)
+        )
 
-            attempts = 3
-            while attempts > 0:
-                try:
-                    dataset_files = [
-                        f
-                        for f in list_dataset_files(ftp0, dataset)
-                        if (slicer is None or slicer(f)) and _needs_download(f)
-                    ]
-                    break
-                except FTP_TRANSIENT_ERRORS:
-                    attempts -= 1
-                    if attempts <= 0:
-                        raise
-                    logger.warning(
-                        "Transient error listing %s. Reconnecting...", dataset
-                    )
-                    with contextlib.suppress(Exception):
-                        ftp0.close()
-                    ftp0 = connect()
+        with exec_ctx as executor:
+            for dataset in sorted(datasets_):
+                logger.info("Listing files of %s", dataset)
 
-            if not dataset_files:
-                continue
+                def _needs_download(f: RemoteFile) -> bool:
+                    fp = get_data_filepath(destdir, f)
+                    return not is_complete_file(fp, f.size)
 
-            if show_progress:
-                if batch_progress is not None:
-                    dataset_task = batch_progress.add_task(
-                        f"[cyan]{dataset}[/cyan]", total=len(dataset_files)
-                    )
+                attempts = 3
+                while attempts > 0:
+                    try:
+                        dataset_files = [
+                            f
+                            for f in list_dataset_files(ftp0, dataset)
+                            if (slicer is None or slicer(f)) and _needs_download(f)
+                        ]
+                        break
+                    except FTP_TRANSIENT_ERRORS:
+                        attempts -= 1
+                        if attempts <= 0:
+                            raise
+                        logger.warning(
+                            "Transient error listing %s. Reconnecting...", dataset
+                        )
+                        with contextlib.suppress(Exception):
+                            ftp0.close()
+                        ftp0 = connect()
 
-                    def _dataset_cb(
-                        fm: dict,
-                        _prog=batch_progress,
-                        _tid=dataset_task,
-                    ) -> None:
-                        _prog.update(_tid, advance=1)
-                        if callback:
-                            callback(fm)
+                if not dataset_files:
+                    continue
 
-                    _cb_ref[0] = _dataset_cb
-                else:
-                    total_bytes = sum(f.size for f in dataset_files)
-                    pbar = _tqdm(
-                        total=total_bytes,
-                        desc=dataset,
-                        unit="B",
-                        unit_scale=True,
-                        unit_divisor=1024,
-                        leave=True,
-                    )
-                    current_pbar[0] = pbar
+                batch_task = None
+                pbar = None
+                if show_progress:
+                    if batch_progress is not None:
+                        batch_task = batch_progress.add_task(
+                            f"[cyan]{dataset}[/cyan]", total=len(dataset_files)
+                        )
+                    else:
+                        total_bytes = sum(f.size for f in dataset_files)
+                        pbar = _tqdm(
+                            total=total_bytes,
+                            desc=dataset,
+                            unit="B",
+                            unit_scale=True,
+                            unit_divisor=1024,
+                            leave=True,
+                        )
 
-                    def _dataset_cb(fm: dict, _pbar: _tqdm = pbar) -> None:
-                        _pbar.update(fm["size"])
-                        if callback:
-                            callback(fm)
+                futures = [executor.submit(_worker, f) for f in dataset_files]
+                for future in concurrent.futures.as_completed(futures):
+                    res = future.result()
+                    if batch_task is not None:
+                        batch_progress.update(batch_task, advance=1)
+                    if pbar is not None and res is not None:
+                        pbar.update(res["size"])
 
-                    _cb_ref[0] = _dataset_cb
-            else:
-                _cb_ref[0] = callback
-
-            for f in dataset_files:
-                q.put(f)
-            while q.unfinished_tasks:
-                time.sleep(0.05)
-
-            if current_pbar[0] is not None:
-                current_pbar[0].close()
-                current_pbar[0] = None
+                if pbar is not None:
+                    pbar.close()
 
     except KeyboardInterrupt:
-        for w in workers:
-            w.kill()
-        # Drain queued-but-not-started items so q.unfinished_tasks unblocks
-        # and surviving workers don't keep pulling from a stale backlog.
-        while True:
-            try:
-                q.get_nowait()
-            except queue.Empty:
-                break
-            q.task_done()
-        if live is not None:
-            live.stop()
-            live = None
-        elif current_pbar[0] is not None:
-            current_pbar[0].close()
-            current_pbar[0] = None
         print("\nDownload interrompido pelo usuário.")
+        raise typer.Exit(code=130) from None
     finally:
         if live is not None:
             with contextlib.suppress(Exception):
                 live.stop()
-        if current_pbar[0] is not None:
-            with contextlib.suppress(Exception):
-                current_pbar[0].close()
-        # Send shutdown sentinels — wakes workers blocked on get(timeout).
-        for _ in workers:
-            q.put(None)
-        for w in workers:
-            w.join(timeout=5)
-            if w.is_alive():
-                logger.warning("Worker %s did not exit within timeout.", w.name)
         with contextlib.suppress(Exception):
             ftp0.close()
         if failed_files:
@@ -658,7 +531,6 @@ def download_data(
                 len(failed_files),
                 "\n".join(f"  {p}" for p in sorted(failed_files)),
             )
-    # Fetcher threads close their own FTP connections in run()'s finally block
 
 
 def _list_support_files(ftp: ftplib.FTP, ftp_dirs: list[str]) -> list[dict]:
