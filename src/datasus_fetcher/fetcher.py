@@ -67,6 +67,7 @@ class Fetcher(threading.Thread):
         callback: Callable | None = None,
         failed_files: list[str] | None = None,
         download_progress=None,
+        task_id: int | None = None,
     ):
         super().__init__()
         self.daemon = True
@@ -80,6 +81,7 @@ class Fetcher(threading.Thread):
         self._kill_event = threading.Event()
         self._failed_files: list[str] = failed_files if failed_files is not None else []
         self.download_progress = download_progress
+        self.task_id = task_id
 
     def run(self):
         self.ftp = connect()
@@ -163,15 +165,19 @@ class Fetcher(threading.Thread):
         logger.debug("%s -> %s", file.full_path, filepath)
         t0 = time.time()
 
-        task_id = None
         chunk_cb = reset_cb = None
-        if self.download_progress is not None:
-            task_id = self.download_progress.add_task(filepath.name, total=file.size)
+        if self.download_progress is not None and self.task_id is not None:
+            self.download_progress.update(
+                self.task_id,
+                description=f"[cyan]{filepath.name}[/cyan]",
+                completed=0,
+                total=file.size,
+            )
 
-            def chunk_cb(n: int, _tid=task_id) -> None:
+            def chunk_cb(n: int, _tid=self.task_id) -> None:
                 self.download_progress.update(_tid, advance=n)
 
-            def reset_cb(_tid=task_id) -> None:
+            def reset_cb(_tid=self.task_id) -> None:
                 self.download_progress.reset(_tid)
 
         try:
@@ -185,9 +191,14 @@ class Fetcher(threading.Thread):
                 reset_callback=reset_cb,
             )
         finally:
-            if task_id is not None:
+            if self.download_progress is not None and self.task_id is not None:
                 with contextlib.suppress(Exception):
-                    pass
+                    self.download_progress.update(
+                        self.task_id,
+                        description="[dim]Inativo[/dim]",
+                        completed=0,
+                        total=1,
+                    )
 
         tt = time.time() - t0
         log_download(tt, file.size, filepath.name)
@@ -499,6 +510,7 @@ def download_data(
     batch_progress = None
     file_progress = None
 
+    task_ids = []
     if show_progress and _RICH_AVAILABLE:
         console = get_console()
         batch_progress = make_batch_progress(console)
@@ -509,15 +521,20 @@ def download_data(
             refresh_per_second=10,
         )
         live.start()
+        task_ids = [
+            file_progress.add_task("[dim]Inativo[/dim]", total=1)
+            for _ in range(threads)
+        ]
 
     workers: list[Fetcher] = []
-    for _ in range(threads):
+    for i in range(threads):
         w = Fetcher(
             q,
             destdir,
             callback=_shared_cb,
             failed_files=failed_files,
             download_progress=file_progress,
+            task_id=task_ids[i] if task_ids else None,
         )
         w.start()
         workers.append(w)
