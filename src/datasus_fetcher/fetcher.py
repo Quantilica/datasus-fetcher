@@ -8,7 +8,7 @@ from collections.abc import Callable, Iterable
 from functools import lru_cache
 from pathlib import Path
 
-import quantilica.core.metadata as core_meta
+import quantilica.catalog.metadata as core_meta
 import typer
 from quantilica.core.exceptions import FetchError
 from quantilica.core.files import is_complete_file
@@ -18,7 +18,7 @@ from quantilica.core.retry import exponential_delay
 from tqdm import tqdm as _tqdm
 
 try:
-    from quantilica.core.cli import (
+    from quantilica.cli.ui import (
         ProgressPool,
         get_console,
         graceful_executor,
