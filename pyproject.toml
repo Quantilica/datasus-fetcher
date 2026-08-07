@@ -1,6 +1,6 @@
 [project]
 name = "datasus-fetcher"
-version = "0.8.2"
+version = "0.9.0"
 description = "Downloader of DATASUS raw data files"
 readme = "README.md"
 authors = [
@@ -34,8 +34,6 @@ classifiers = [
 ]
 dependencies = [
     "quantilica-core>=0.4.0",
-    "quantilica-cli>=0.2.0",
-    "quantilica-catalog>=0.2.0",
 ]
 
 [project.urls]

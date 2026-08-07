@@ -8,8 +8,6 @@ from collections.abc import Callable, Iterable
 from functools import lru_cache
 from pathlib import Path
 
-import quantilica.catalog.metadata as core_meta
-import typer
 from quantilica.core.exceptions import FetchError
 from quantilica.core.files import is_complete_file
 from quantilica.core.ftp import FTP_TRANSIENT_ERRORS, MonitoredFTP
@@ -517,8 +515,10 @@ def download_data(
                     pbar.close()
 
     except KeyboardInterrupt:
+        import sys
+
         print("\nDownload interrompido pelo usuário.")
-        raise typer.Exit(code=130) from None
+        sys.exit(130)
     finally:
         if live is not None:
             with contextlib.suppress(Exception):
@@ -640,55 +640,3 @@ def download_auxiliary_tables(
 ):
     files = list_auxiliary_tables_files(ftp, dataset)
     yield from _download_support_files(ftp, files, destdir / "_auxiliar" / dataset)
-
-
-def generate_catalog(
-    downloaded_files: list[dict],
-) -> core_meta.MetadataCatalog:
-    """Generate a validated MetadataCatalog from a list of downloaded files."""
-    source_id = "datasus"
-    source = core_meta.Source(
-        id=source_id,
-        name="DATASUS - Departamento de Informática do SUS",
-        homepage_url="https://datasus.saude.gov.br",
-    )
-
-    datasets_map = {}
-    resources = []
-
-    for file in downloaded_files:
-        dataset_id = file.get("dataset", "unknown")
-        if dataset_id not in datasets_map:
-            datasets_map[dataset_id] = core_meta.Dataset(
-                id=dataset_id,
-                source_id=source_id,
-                name=meta.datasets.get(dataset_id, {}).get("nome", dataset_id),
-            )
-
-        # Extract filename as resource id/name
-        filename = file["filepath"].name
-        resource_id = filename.replace(".", "_")
-
-        resources.append(
-            core_meta.Resource(
-                id=resource_id,
-                dataset_id=dataset_id,
-                name=filename,
-                url=file["url"],
-                format=file["suffix"],
-                path=str(file["filepath"].absolute()),
-                metadata={
-                    "created_at": file["created_at"].isoformat()
-                    if isinstance(file["created_at"], dt.datetime)
-                    else str(file["created_at"]),
-                },
-            )
-        )
-
-    catalog = core_meta.MetadataCatalog(
-        sources=[source],
-        datasets=list(datasets_map.values()),
-        resources=resources,
-    )
-    catalog.validate_references()
-    return catalog
