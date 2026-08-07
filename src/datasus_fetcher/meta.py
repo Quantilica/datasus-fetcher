@@ -46,6 +46,7 @@ uf_year2_month_pattern = rf"({uf_pattern})({year_2digit_pattern})({month_pattern
 uf_year2_month_pattern_sia_pa = uf_year2_month_pattern + r"(|[a-z])"
 uf_mapas_year_pattern = rf"({uf_pattern})_mapas_({year_4digit_pattern})"
 uf_cnv_pattern = rf"({uf_pattern})_cnv"
+any_pattern = r"(.*)"
 
 BASE_PATH = "/dissemin/publicos"
 
@@ -1532,11 +1533,11 @@ datasets = {
             {
                 "dir": "/territorio/tabelas",
                 "filename_prefix": "",
-                "filename_pattern": "",
+                "filename_pattern": any_pattern,
                 "extension": "zip",
             },
         ],
-        "partition": [],
+        "partition": ["version"],
     },
     "base-territorial-conversao": {
         "name": "Base Territorial - Conversão",

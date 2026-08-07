@@ -42,7 +42,7 @@ class DataPartition:
             case _:
                 partition = ""
         if version := self.version:
-            partition += f"-{version}"
+            partition = f"{partition}-{version}" if partition else version
         return partition.lower()
 
 

@@ -1,6 +1,6 @@
 [project]
 name = "datasus-fetcher"
-version = "0.8.1"
+version = "0.8.2"
 description = "Downloader of DATASUS raw data files"
 readme = "README.md"
 authors = [

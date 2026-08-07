@@ -66,6 +66,12 @@ def _parse_uf_filename(m: re.Match) -> dict:
     }
 
 
+def _parse_any_filename(m: re.Match) -> dict:
+    return {
+        "version": m.group(1),
+    }
+
+
 def _parse_uf_year2_month_filename_sia_pa(m: re.Match) -> dict:
     uf = m.group(1)
     year_ = m.group(2)
@@ -113,6 +119,8 @@ def parse_filename(m: re.Match, pattern: str) -> dict:
             return _parse_uf_year_filename(m)
         case meta.uf_cnv_pattern:
             return _parse_uf_filename(m)
+        case meta.any_pattern:
+            return _parse_any_filename(m)
         case "base_territorial":
             return {}
         case _:

@@ -5,6 +5,12 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [0.8.2] - 2026-08-07
+
+### Corrigido
+
+- Corrigido o download do dataset `base-territorial`, onde arquivos submetidos no mesmo dia colidiam de nome local e eram rebaixados repetidamente a cada sincronização. A "versão" da partição (nome original) agora é extraída e preservada no nome do arquivo local.
+
 ## [0.7.0] - 2026-07-17
 
 Primeiro release publicado no PyPI desde a migração para `quantilica-core`
