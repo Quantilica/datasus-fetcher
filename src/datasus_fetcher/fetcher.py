@@ -1,7 +1,6 @@
 import contextlib
 import datetime as dt
 import ftplib
-import hashlib
 import threading
 import time
 from collections.abc import Callable, Iterable
@@ -10,7 +9,7 @@ from pathlib import Path
 
 from quantilica.core.exceptions import FetchError
 from quantilica.core.files import is_complete_file
-from quantilica.core.ftp import FTP_TRANSIENT_ERRORS, MonitoredFTP
+from quantilica.core.ftp import FTP_TRANSIENT_ERRORS, FtpClient, MonitoredFTP
 from quantilica.core.manifests import DownloadManifest
 from quantilica.core.retry import exponential_delay
 from tqdm import tqdm as _tqdm
@@ -167,109 +166,6 @@ def list_files(
     return parsed_files
 
 
-def fetch_file(
-    ftp: ftplib.FTP,
-    path: str,
-    dest_filepath: Path | str,
-    retries: int = 3,
-    *,
-    abort_check: Callable[[], bool] | None = None,
-    chunk_callback: Callable[[int], None] | None = None,
-    reset_callback: Callable[[], None] | None = None,
-) -> tuple[str, int]:
-    """Fetch a file from a remote FTP server.
-
-    Returns ``(sha256_hex, size_bytes)`` computed inline during streaming.
-
-    :param path: The path to the file.
-    :param dest_filepath: The destination file path.
-    :param ftp: The FTP connection.
-    :param abort_check: Optional callable polled per data chunk; if it
-        returns truthy, the download is aborted, the partial file is
-        removed, and :class:`_Aborted` is raised (no retries).
-    :param chunk_callback: Called with the number of bytes received per
-        chunk; used to drive per-file progress bars.
-    :param reset_callback: Called at the start of each retry attempt
-        (attempt 2+); used to reset a progress bar to zero.
-    """
-
-    if isinstance(dest_filepath, str):
-        dest_filepath = Path(dest_filepath.lower())
-    dest_filepath.parent.mkdir(parents=True, exist_ok=True)
-
-    max_retries = retries
-    attempt = 0
-    while retries > 0:
-        attempt += 1
-        digest = hashlib.sha256()
-        counter = [0]
-        if attempt > 1 and reset_callback is not None:
-            reset_callback()
-        try:
-            with open(dest_filepath, "wb") as f:
-
-                def _write(chunk: bytes, _f=f, _d=digest, _c=counter) -> None:
-                    if abort_check is not None and abort_check():
-                        raise _Aborted
-                    _f.write(chunk)
-                    _d.update(chunk)
-                    _c[0] += len(chunk)
-                    if chunk_callback is not None:
-                        chunk_callback(len(chunk))
-
-                ftp.retrbinary("RETR " + path, _write)
-            return digest.hexdigest(), counter[0]
-        except _Aborted:
-            dest_filepath.unlink(missing_ok=True)
-            raise
-        except ftplib.error_perm:
-            logger.exception("File %s not found.", path)
-            dest_filepath.unlink(missing_ok=True)
-            return "", 0
-        except FTP_TRANSIENT_ERRORS:
-            logger.exception(
-                "Transient error for %s (attempt %d/%d).",
-                path,
-                attempt,
-                max_retries,
-            )
-            dest_filepath.unlink(missing_ok=True)
-            retries -= 1
-            if retries > 0:
-                if abort_check is not None and abort_check():
-                    raise _Aborted from None
-                time.sleep(
-                    exponential_delay(
-                        attempt, base_delay=2.0, max_delay=60.0, jitter=1.0
-                    )
-                )
-
-    raise FetchError(f"Download of {path} failed after {max_retries} attempts")
-
-
-def _write_manifest(
-    filepath: Path,
-    url: str,
-    dataset_id: str,
-    metadata: dict,
-    *,
-    sha256: str,
-    size_bytes: int,
-) -> DownloadManifest:
-    manifest = DownloadManifest.from_digest(
-        source_id="datasus",
-        dataset_id=dataset_id,
-        url=url,
-        sha256=sha256,
-        size_bytes=size_bytes,
-        path=str(filepath.absolute()),
-        producer="datasus-fetcher",
-        metadata=metadata,
-    )
-    manifest.write_json(filepath.with_suffix(filepath.suffix + ".manifest.json"))
-    return manifest
-
-
 def list_dataset_files(ftp: ftplib.FTP, dataset: str) -> list[RemoteFile]:
     dataset_files = []
     for period in meta.datasets[dataset]["periods"]:
@@ -346,7 +242,6 @@ def download_data(
         if is_complete_file(filepath, file.size):
             return None
 
-        ftp = get_ftp()
         ctx = (
             pool.acquire(description=f"[cyan]{filepath.name}[/cyan]")
             if pool
@@ -362,72 +257,33 @@ def download_data(
                     if cb is not None:
                         cb(downloaded_bytes, file.size)
 
-                def reset_cb() -> None:
-                    nonlocal downloaded_bytes
-                    downloaded_bytes = 0
-                    if cb is not None:
-                        cb(0, file.size)
-
                 t0 = time.time()
-                for attempt in range(1, 4):
-                    try:
-                        sha256, size_bytes = fetch_file(
-                            ftp,
-                            file.full_path,
-                            filepath,
-                            retries=3,
-                            chunk_callback=chunk_cb,
-                            reset_callback=reset_cb,
-                        )
-                        break
-                    except ftplib.error_perm:
-                        logger.exception(
-                            "Permanent FTP error for %s — skipping.", file.full_path
-                        )
-                        return None
-                    except _RETRYABLE_DOWNLOAD_ERRORS as exc:
-                        if attempt == 3:
-                            logger.error(
-                                "Download failed after 3 attempts: %s", file.full_path
-                            )
-                            failed_files.append(file.full_path)
-                            return None
-                        logger.warning(
-                            "Transient error for %s: %s. Reconnecting...",
-                            file.full_path,
-                            exc,
-                        )
-                        with contextlib.suppress(Exception):
-                            ftp.close()
-                        try:
-                            thread_local.ftp = ftp = connect()
-                        except Exception:
-                            logger.exception("Reconnect failed")
-                            failed_files.append(file.full_path)
-                            return None
-                    except Exception:
-                        logger.exception(
-                            "Unexpected error for %s — skipping.", file.full_path
-                        )
-                        failed_files.append(file.full_path)
-                        return None
-
-                tt = time.time() - t0
-                log_download(tt, file.size, filepath.name)
-
+                client = FtpClient(FTP_HOST, timeout=FTP_TIMEOUT)
                 url = f"ftp://{FTP_HOST}/{file.full_path}"
-                manifest = _write_manifest(
-                    filepath,
-                    url,
-                    file.dataset,
+                client.download_with_manifest(
+                    url=file.full_path,
+                    target_path=filepath,
+                    source_id="datasus",
+                    dataset_id=file.dataset,
+                    producer="datasus-fetcher",
                     metadata={
                         "partition": str(file.partition),
                         "preliminary": file.preliminary,
                         "remote_datetime": file.datetime.isoformat(),
                     },
-                    sha256=sha256,
-                    size_bytes=size_bytes,
+                    progress=chunk_cb,
                 )
+
+                tt = time.time() - t0
+                log_download(tt, file.size, filepath.name)
+
+                try:
+                    manifest_path = filepath.with_suffix(
+                        filepath.suffix + ".manifest.json"
+                    )
+                    manifest = DownloadManifest.from_file(manifest_path)
+                except Exception:
+                    manifest = None
 
                 res = {
                     "url": url,
@@ -443,6 +299,7 @@ def download_data(
                 return res
         except Exception as exc:
             logger.error("Worker failed for %s: %s", file.full_path, exc)
+            failed_files.append(file.full_path)
             return None
 
     try:
@@ -547,73 +404,49 @@ def _download_support_files(
     *,
     connect_fn: Callable[[], ftplib.FTP] = connect,
 ):
-    owns_ftp = False  # o caller é dono do ftp inicial; reconnects são nossos
-    try:
-        for i, file in enumerate(files):
-            filename, extension = file["filename"].rsplit(".", 1)
-            filename = f"{filename}@{file['datetime']:%Y%m%d}.{extension}"
-            filepath = destdir / filename
+    for i, file in enumerate(files):
+        filename, extension = file["filename"].rsplit(".", 1)
+        filename = f"{filename}@{file['datetime']:%Y%m%d}.{extension}"
+        filepath = destdir / filename
 
-            if is_complete_file(filepath, file["size"]):
-                continue
+        if is_complete_file(filepath, file["size"]):
+            continue
 
-            logger.debug(f"{i: >5} {file['full_path']} -> {filepath}")
-            t0 = time.time()
+        logger.debug(f"{i: >5} {file['full_path']} -> {filepath}")
+        t0 = time.time()
 
-            sha256 = size_bytes = None
-            for attempt in range(1, 3):  # até 2 tentativas
-                try:
-                    sha256, size_bytes = fetch_file(
-                        ftp, file["full_path"], filepath, retries=5
-                    )
-                    break
-                except FetchError as exc:
-                    if attempt >= 2:
-                        logger.error(
-                            "Support file failed after reconnect: %s",
-                            file["full_path"],
-                        )
-                        raise
-                    logger.warning(
-                        "Transient error for support file %s: %s. Reconnecting...",
-                        file["full_path"],
-                        exc,
-                    )
-                    if owns_ftp:
-                        with contextlib.suppress(Exception):
-                            ftp.close()
-                    ftp = connect_fn()
-                    owns_ftp = True
+        client = FtpClient(FTP_HOST, timeout=FTP_TIMEOUT)
+        url = f"ftp://{FTP_HOST}/{file['full_path']}"
+        client.download_with_manifest(
+            url=file["full_path"],
+            target_path=filepath,
+            source_id="datasus",
+            dataset_id=destdir.name,
+            producer="datasus-fetcher",
+            metadata={"remote_datetime": file["datetime"].isoformat()},
+        )
 
-            tt = time.time() - t0
-            filesize_kb = f"{file['size'] / 1024:.2f} kB"
-            download_speed_kbps = f"{file['size'] / tt / 1024:.2f} kB/s"
-            logger.debug(
-                f"      {filename} {tt:.2f} s {filesize_kb} {download_speed_kbps}",
-            )
+        tt = time.time() - t0
+        filesize_kb = f"{file['size'] / 1024:.2f} kB"
+        download_speed_kbps = f"{file['size'] / tt / 1024:.2f} kB/s"
+        logger.debug(
+            f"      {filename} {tt:.2f} s {filesize_kb} {download_speed_kbps}",
+        )
 
-            url = f"ftp://{FTP_HOST}/{file['full_path']}"
-            manifest = _write_manifest(
-                filepath,
-                url,
-                destdir.name,
-                metadata={"remote_datetime": file["datetime"].isoformat()},
-                sha256=sha256 or "",
-                size_bytes=size_bytes or 0,
-            )
+        try:
+            manifest_path = filepath.with_suffix(filepath.suffix + ".manifest.json")
+            manifest = DownloadManifest.from_file(manifest_path)
+        except Exception:
+            manifest = None
 
-            yield {
-                "url": url,
-                "size": file["size"],
-                "filepath": filepath,
-                "created_at": file["datetime"],
-                "suffix": extension,
-                "manifest": manifest,
-            }
-    finally:
-        if owns_ftp:
-            with contextlib.suppress(Exception):
-                ftp.close()
+        yield {
+            "url": url,
+            "size": file["size"],
+            "filepath": filepath,
+            "created_at": file["datetime"],
+            "suffix": extension,
+            "manifest": manifest,
+        }
 
 
 def list_documentation_files(ftp: ftplib.FTP, dataset: str) -> list[dict]:
