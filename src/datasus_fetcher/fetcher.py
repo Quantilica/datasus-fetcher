@@ -1,42 +1,23 @@
-import contextlib
 import datetime as dt
 import ftplib
-import threading
 import time
-from collections.abc import Callable, Iterable
 from functools import lru_cache
-from pathlib import Path
 
 from quantilica.core.exceptions import FetchError
-from quantilica.core.files import is_complete_file
-from quantilica.core.ftp import FTP_TRANSIENT_ERRORS, FtpClient, MonitoredFTP
-from quantilica.core.manifests import DownloadManifest
+from quantilica.core.ftp import FTP_TRANSIENT_ERRORS, MonitoredFTP
 from quantilica.core.retry import exponential_delay
-from tqdm import tqdm as _tqdm
 
 try:
-    from quantilica.cli.ui import (
-        ProgressPool,
-        get_console,
-        graceful_executor,
-        make_batch_progress,
-        make_download_progress,
-    )
-    from rich.console import Group
-    from rich.live import Live
-
     _RICH_AVAILABLE = True
 except (ModuleNotFoundError, ImportError):  # pragma: no cover
     _RICH_AVAILABLE = False
 
-from datasus_fetcher.slicer import Slicer
 
 from . import logger, meta
 from .remote_names import get_pattern, parse_filename
 from .storage import (
     DataPartition,
     RemoteFile,
-    get_data_filepath,
 )
 
 FTP_HOST = "ftp.datasus.gov.br"
@@ -194,202 +175,6 @@ def list_dataset_files(ftp: ftplib.FTP, dataset: str) -> list[RemoteFile]:
     return dataset_files
 
 
-def download_data(
-    datasets: Iterable[str],
-    destdir: Path,
-    threads: int = 2,
-    callback: Callable | None = None,
-    slicer: Slicer | None = None,
-    show_progress: bool = False,
-):
-    """Multithreaded download data files, dataset by dataset."""
-    logger.info("Starting download with %s threads", threads)
-    datasets_ = (
-        set(datasets) & set(meta.datasets.keys())
-        if datasets
-        else set(meta.datasets.keys())
-    )
-
-    ftp0 = connect()
-    failed_files: list[str] = []
-
-    live = None
-    batch_progress = None
-    file_progress = None
-    pool = None
-
-    if show_progress and _RICH_AVAILABLE:
-        console = get_console()
-        batch_progress = make_batch_progress(console)
-        file_progress = make_download_progress(console)
-        pool = ProgressPool(workers=threads, file_prog=file_progress)
-        live = Live(
-            Group(batch_progress, file_progress),
-            console=console,
-            refresh_per_second=10,
-        )
-        live.start()
-
-    thread_local = threading.local()
-
-    def get_ftp() -> ftplib.FTP:
-        if not hasattr(thread_local, "ftp"):
-            thread_local.ftp = connect()
-        return thread_local.ftp
-
-    def _worker(file: RemoteFile) -> dict | None:
-        filepath: Path = get_data_filepath(destdir, file)
-        if is_complete_file(filepath, file.size):
-            return None
-
-        ctx = (
-            pool.acquire(description=f"[cyan]{filepath.name}[/cyan]")
-            if pool
-            else contextlib.nullcontext()
-        )
-        try:
-            with ctx as cb:
-                downloaded_bytes = 0
-
-                def chunk_cb(n: int) -> None:
-                    nonlocal downloaded_bytes
-                    downloaded_bytes += n
-                    if cb is not None:
-                        cb(downloaded_bytes, file.size)
-
-                t0 = time.time()
-                client = FtpClient(FTP_HOST, timeout=FTP_TIMEOUT)
-                url = f"ftp://{FTP_HOST}/{file.full_path}"
-                client.download_with_manifest(
-                    url=file.full_path,
-                    target_path=filepath,
-                    source_id="datasus",
-                    dataset_id=file.dataset,
-                    producer="datasus-fetcher",
-                    metadata={
-                        "partition": str(file.partition),
-                        "preliminary": file.preliminary,
-                        "remote_datetime": file.datetime.isoformat(),
-                    },
-                    progress=chunk_cb,
-                )
-
-                tt = time.time() - t0
-                log_download(tt, file.size, filepath.name)
-
-                try:
-                    manifest_path = filepath.with_suffix(
-                        filepath.suffix + ".manifest.json"
-                    )
-                    manifest = DownloadManifest.from_file(manifest_path)
-                except Exception:
-                    manifest = None
-
-                res = {
-                    "url": url,
-                    "size": file.size,
-                    "filepath": filepath,
-                    "suffix": file.extension,
-                    "dataset": file.dataset,
-                    "created_at": file.datetime,
-                    "manifest": manifest,
-                }
-                if callback:
-                    callback(res)
-                return res
-        except Exception as exc:
-            logger.error("Worker failed for %s: %s", file.full_path, exc)
-            failed_files.append(file.full_path)
-            return None
-
-    try:
-        import concurrent.futures
-
-        exec_ctx = (
-            graceful_executor(max_workers=threads)
-            if _RICH_AVAILABLE
-            else concurrent.futures.ThreadPoolExecutor(max_workers=threads)
-        )
-
-        with exec_ctx as executor:
-            for dataset in sorted(datasets_):
-                logger.info("Listing files of %s", dataset)
-
-                def _needs_download(f: RemoteFile) -> bool:
-                    fp = get_data_filepath(destdir, f)
-                    return not is_complete_file(fp, f.size)
-
-                attempts = 3
-                while attempts > 0:
-                    try:
-                        dataset_files = [
-                            f
-                            for f in list_dataset_files(ftp0, dataset)
-                            if (slicer is None or slicer(f)) and _needs_download(f)
-                        ]
-                        break
-                    except FTP_TRANSIENT_ERRORS:
-                        attempts -= 1
-                        if attempts <= 0:
-                            raise
-                        logger.warning(
-                            "Transient error listing %s. Reconnecting...", dataset
-                        )
-                        with contextlib.suppress(Exception):
-                            ftp0.close()
-                        ftp0 = connect()
-
-                if not dataset_files:
-                    continue
-
-                batch_task = None
-                pbar = None
-                if show_progress:
-                    if batch_progress is not None:
-                        batch_task = batch_progress.add_task(
-                            f"[cyan]{dataset}[/cyan]", total=len(dataset_files)
-                        )
-                    else:
-                        total_bytes = sum(f.size for f in dataset_files)
-                        pbar = _tqdm(
-                            total=total_bytes,
-                            desc=dataset,
-                            unit="B",
-                            unit_scale=True,
-                            unit_divisor=1024,
-                            leave=True,
-                        )
-
-                futures = [executor.submit(_worker, f) for f in dataset_files]
-                for future in concurrent.futures.as_completed(futures):
-                    res = future.result()
-                    if batch_task is not None:
-                        batch_progress.update(batch_task, advance=1)
-                    if pbar is not None and res is not None:
-                        pbar.update(res["size"])
-
-                if pbar is not None:
-                    pbar.close()
-
-    except KeyboardInterrupt:
-        import sys
-
-        print("\nDownload interrompido pelo usuário.")
-        sys.exit(130)
-    finally:
-        if live is not None:
-            with contextlib.suppress(Exception):
-                live.stop()
-        with contextlib.suppress(Exception):
-            ftp0.close()
-        if failed_files:
-            logger.warning(
-                "%d arquivo(s) falharam permanentemente após todas as tentativas:\n%s",
-                len(failed_files),
-                "\n".join(f"  {p}" for p in sorted(failed_files)),
-            )
-
-
 def _list_support_files(ftp: ftplib.FTP, ftp_dirs: list[str]) -> list[dict]:
     files = []
     for ftp_dir in ftp_dirs:
@@ -397,79 +182,9 @@ def _list_support_files(ftp: ftplib.FTP, ftp_dirs: list[str]) -> list[dict]:
     return files
 
 
-def _download_support_files(
-    ftp: ftplib.FTP,
-    files: list[dict],
-    destdir: Path,
-    *,
-    connect_fn: Callable[[], ftplib.FTP] = connect,
-):
-    for i, file in enumerate(files):
-        filename, extension = file["filename"].rsplit(".", 1)
-        filename = f"{filename}@{file['datetime']:%Y%m%d}.{extension}"
-        filepath = destdir / filename
-
-        if is_complete_file(filepath, file["size"]):
-            continue
-
-        logger.debug(f"{i: >5} {file['full_path']} -> {filepath}")
-        t0 = time.time()
-
-        client = FtpClient(FTP_HOST, timeout=FTP_TIMEOUT)
-        url = f"ftp://{FTP_HOST}/{file['full_path']}"
-        client.download_with_manifest(
-            url=file["full_path"],
-            target_path=filepath,
-            source_id="datasus",
-            dataset_id=destdir.name,
-            producer="datasus-fetcher",
-            metadata={"remote_datetime": file["datetime"].isoformat()},
-        )
-
-        tt = time.time() - t0
-        filesize_kb = f"{file['size'] / 1024:.2f} kB"
-        download_speed_kbps = f"{file['size'] / tt / 1024:.2f} kB/s"
-        logger.debug(
-            f"      {filename} {tt:.2f} s {filesize_kb} {download_speed_kbps}",
-        )
-
-        try:
-            manifest_path = filepath.with_suffix(filepath.suffix + ".manifest.json")
-            manifest = DownloadManifest.from_file(manifest_path)
-        except Exception:
-            manifest = None
-
-        yield {
-            "url": url,
-            "size": file["size"],
-            "filepath": filepath,
-            "created_at": file["datetime"],
-            "suffix": extension,
-            "manifest": manifest,
-        }
-
-
 def list_documentation_files(ftp: ftplib.FTP, dataset: str) -> list[dict]:
     return _list_support_files(ftp, meta.docs[dataset]["dir"])
 
 
-def download_documentation(
-    ftp: ftplib.FTP,
-    dataset: str,
-    destdir: Path,
-):
-    files = list_documentation_files(ftp, dataset)
-    yield from _download_support_files(ftp, files, destdir / "_documentacao" / dataset)
-
-
 def list_auxiliary_tables_files(ftp: ftplib.FTP, dataset: str) -> list[dict]:
     return _list_support_files(ftp, meta.auxiliary_tables[dataset]["dir"])
-
-
-def download_auxiliary_tables(
-    ftp: ftplib.FTP,
-    dataset: str,
-    destdir: Path,
-):
-    files = list_auxiliary_tables_files(ftp, dataset)
-    yield from _download_support_files(ftp, files, destdir / "_auxiliar" / dataset)
