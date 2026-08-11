@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.10.1] - 2026-08-10
+### Corrigido
+- Atualizada dependência `quantilica-core` para `>=0.5.0` devido às novas assinaturas requeridas pelo CLI.
+
 ## [0.10.0] - 2026-08-10
 ### Alterado
 - Migração completa da CLI para utilização da SDK unificada (`FetcherApp`).
