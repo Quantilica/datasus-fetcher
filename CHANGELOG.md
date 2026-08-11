@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.10.0] - 2026-08-10
+### Alterado
+- Migração completa da CLI para utilização da SDK unificada (`FetcherApp`).
+- Remoção do gerenciamento manual de cliente FTP (`ftplib`) em favor do `FtpClient` provido pelo `quantilica-core`.
+
 ## [0.9.0] - 2026-08-07
 ### Alterado
 - Refatoração arquitetural: Remoção de dependências (`quantilica-cli` e `quantilica-catalog`) e limpeza de imports. Os fetchers agora são pacotes de extração puros, dependendo estritamente do `quantilica-core`.
