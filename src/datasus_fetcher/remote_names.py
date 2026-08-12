@@ -87,6 +87,14 @@ def _parse_uf_year2_month_filename_sia_pa(m: re.Match) -> dict:
 
 
 def get_pattern(period: dict) -> re.Pattern:
+    """Gets the compiled regular expression pattern for a dataset period.
+
+    Args:
+        period (dict): A dictionary containing the filename pattern definitions.
+
+    Returns:
+        re.Pattern: The compiled regular expression pattern.
+    """
     fn_prefix = period["filename_prefix"]
     fn_pattern = period["filename_pattern"]
     fn_ext = period["extension"]
@@ -95,12 +103,17 @@ def get_pattern(period: dict) -> re.Pattern:
 
 
 def parse_filename(m: re.Match, pattern: str) -> dict:
-    """Parse remote file name and returns a dictionary with metadata for data
-    partitioning.
+    """Parses a remote file name and returns a dictionary with metadata for data partitioning.
 
-    :param m: a re.Match object
-    :param pattern: a string pattern from .meta.datasets
+    Args:
+        m (re.Match): A re.Match object resulting from matching the filename against the pattern.
+        pattern (str): A string pattern from meta.datasets.
 
+    Returns:
+        dict: A dictionary containing the parsed metadata.
+
+    Raises:
+        ParseError: If the pattern is not found.
     """
     match pattern:
         case meta.uf_year_pattern:

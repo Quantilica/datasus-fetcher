@@ -16,6 +16,11 @@ from .storage import File, get_files_metadata
 
 
 def list_datasets(args: argparse.Namespace):
+    """Lists datasets available on the DATASUS FTP server.
+
+    Args:
+        args (argparse.Namespace): The parsed command line arguments.
+    """
     if not args.datasets:
         datasets = meta.datasets
     else:
@@ -90,6 +95,11 @@ def list_datasets(args: argparse.Namespace):
 
 
 def sync_data(args: argparse.Namespace):
+    """Synchronizes raw data from DATASUS to local storage.
+
+    Args:
+        args (argparse.Namespace): The parsed command line arguments.
+    """
     data_dir = args.output
     if not args.datasets:
         datasets = list(meta.datasets.keys())
@@ -151,6 +161,11 @@ def sync_data(args: argparse.Namespace):
 
 
 def archive(args: argparse.Namespace):
+    """Moves outdated files to an archive directory.
+
+    Args:
+        args (argparse.Namespace): The parsed command line arguments.
+    """
     data_dir: Path = args.output
     archivedatadir: Path = args.archive_data_dir
     for datasetdir in data_dir.iterdir():
@@ -167,6 +182,11 @@ def archive(args: argparse.Namespace):
 
 
 def get_parser() -> argparse.ArgumentParser:
+    """Creates and configures the argument parser for the CLI.
+
+    Returns:
+        argparse.ArgumentParser: The configured argument parser.
+    """
     parser = argparse.ArgumentParser(
         prog="datasus-fetcher",
         description="Baixar dados brutos do DATASUS.",
@@ -279,6 +299,11 @@ def get_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> None:
+    """Main entry point for the CLI.
+
+    Args:
+        argv (list[str] | None, optional): The command line arguments. Defaults to None.
+    """
     parser = get_parser()
     args = parser.parse_args(argv)
     configure_cli_logging(verbose=args.verbose)

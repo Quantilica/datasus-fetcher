@@ -34,6 +34,14 @@ def _get_ftp():
 
 
 def datasus_list_datasets(group: str) -> list[dict]:
+    """Lists dataset entries for a specific group (dataset ID).
+
+    Args:
+        group (str): The dataset ID (e.g., 'sih-rd').
+
+    Returns:
+        list[dict]: A list of dataset entries.
+    """
     ftp = _get_ftp()
     entries = []
 
@@ -86,6 +94,16 @@ def datasus_list_datasets(group: str) -> list[dict]:
 
 
 def datasus_path_builder(output_dir: Path, entry: dict, last_modified) -> Path:
+    """Builds the local file path for a dataset entry.
+
+    Args:
+        output_dir (Path): The base output directory.
+        entry (dict): The dataset entry metadata.
+        last_modified: The last modified timestamp.
+
+    Returns:
+        Path: The constructed local file path.
+    """
     if entry["type"] == "data":
         from datasus_fetcher.storage import get_data_filepath
 

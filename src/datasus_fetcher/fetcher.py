@@ -39,6 +39,13 @@ class _Aborted(Exception):
 
 
 def log_download(tt: float, size: int, filename: str):
+    """Logs the download progress and speed.
+
+    Args:
+        tt (float): Time taken for the download in seconds.
+        size (int): Size of the downloaded file in bytes.
+        filename (str): Name of the downloaded file.
+    """
     filesize_mb = size / MEGA
     download_speed_mbps = (size * 8) / tt / MEGA
     log = " ".join(
@@ -53,6 +60,18 @@ def log_download(tt: float, size: int, filename: str):
 
 
 def connect(timeout: float = FTP_TIMEOUT, attempts: int = 3) -> MonitoredFTP:
+    """Connects to the DATASUS FTP server.
+
+    Args:
+        timeout (float, optional): Connection timeout in seconds. Defaults to FTP_TIMEOUT.
+        attempts (int, optional): Number of connection attempts. Defaults to 3.
+
+    Returns:
+        MonitoredFTP: An authenticated and monitored FTP connection object.
+
+    Raises:
+        FetchError: If the connection fails after the specified number of attempts.
+    """
     last_exc: BaseException | None = None
     for attempt in range(1, attempts + 1):
         try:
@@ -78,6 +97,17 @@ def list_files(
     retries: int = 3,
     max_recursive_depth: int = 3,
 ) -> list[dict]:
+    """Lists files in a given FTP directory.
+
+    Args:
+        ftp (ftplib.FTP): The FTP connection object.
+        directory (str): The remote directory path to list.
+        retries (int, optional): Number of retries on transient errors. Defaults to 3.
+        max_recursive_depth (int, optional): Maximum depth for recursive listing. Defaults to 3.
+
+    Returns:
+        list[dict]: A list of dictionaries containing file metadata.
+    """
     files: list[str] = []
     max_retries = retries
     attempt = 0
@@ -148,6 +178,15 @@ def list_files(
 
 
 def list_dataset_files(ftp: ftplib.FTP, dataset: str) -> list[RemoteFile]:
+    """Lists all remote files associated with a specific dataset.
+
+    Args:
+        ftp (ftplib.FTP): The FTP connection object.
+        dataset (str): The dataset identifier.
+
+    Returns:
+        list[RemoteFile]: A list of RemoteFile objects for the dataset.
+    """
     dataset_files = []
     for period in meta.datasets[dataset]["periods"]:
         files = [
@@ -183,8 +222,26 @@ def _list_support_files(ftp: ftplib.FTP, ftp_dirs: list[str]) -> list[dict]:
 
 
 def list_documentation_files(ftp: ftplib.FTP, dataset: str) -> list[dict]:
+    """Lists documentation files for a specific dataset.
+
+    Args:
+        ftp (ftplib.FTP): The FTP connection object.
+        dataset (str): The dataset identifier.
+
+    Returns:
+        list[dict]: A list of dictionaries containing file metadata.
+    """
     return _list_support_files(ftp, meta.docs[dataset]["dir"])
 
 
 def list_auxiliary_tables_files(ftp: ftplib.FTP, dataset: str) -> list[dict]:
+    """Lists auxiliary table files for a specific dataset.
+
+    Args:
+        ftp (ftplib.FTP): The FTP connection object.
+        dataset (str): The dataset identifier.
+
+    Returns:
+        list[dict]: A list of dictionaries containing file metadata.
+    """
     return _list_support_files(ftp, meta.auxiliary_tables[dataset]["dir"])

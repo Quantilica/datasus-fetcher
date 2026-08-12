@@ -4,6 +4,8 @@
 
 **datasus-fetcher** é um pacote Python e ferramenta de linha de comando para baixar em massa arquivos brutos de microdados (`.dbc`) do servidor FTP público do [DATASUS](https://datasus.saude.gov.br) (`ftp.datasus.gov.br`). Não lê nem analisa os arquivos — é um downloader confiável que organiza cópias locais do maior banco de dados de saúde pública do Brasil.
 
+Para a documentação completa, consulte **[https://docs.quantilica.com](https://docs.quantilica.com)**.
+
 ## Por que usar datasus-fetcher?
 
 - **113 datasets** cobrindo todos os principais sistemas de informação de saúde do Brasil
