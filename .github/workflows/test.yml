@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -26,13 +27,29 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
 
+      # O índice Quantilica (GitHub Pages) já deu flake de DNS no runner
+      # (2026-08-23: rtn e inmet). Três tentativas removem o flake sem
+      # esconder erro real de resolução.
       - name: Install dependencies
-        run: uv sync --group dev
+        run: |
+          for i in 1 2 3; do
+            if uv sync --group dev --python ${{ matrix.python-version }} \
+                --index https://index.quantilica.com/simple/ \
+                --index-strategy unsafe-best-match; then
+              exit 0
+            fi
+            echo "::warning::uv sync falhou (tentativa $i/3); nova tentativa em 10s"
+            sleep 10
+          done
+          exit 1
 
+      # Cada `uv run` sem --no-sync re-resolve o lockfile virtual e REMOVE os
+      # extras instalados no passo de sync acima (polars/openpyxl já caíram
+      # assim: anp 2026-08-29). Todos os passos usam --no-sync.
       - name: Lint with ruff
         run: |
-          uv run ruff check src/ tests/
-          uv run ruff format --check src/ tests/
+          uv run --no-sync ruff check src/ tests/
+          uv run --no-sync ruff format --check src/ tests/
 
       - name: Run tests
-        run: uv run pytest
+        run: uv run --no-sync pytest
