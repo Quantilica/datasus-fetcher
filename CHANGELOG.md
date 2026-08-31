@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.10.2] - 2026-08-31
+### Corrigido
+- Quitação de dívida de lint (E501/docstrings longas) herdada dos sweeps de
+  documentação de 2026-08-14; nenhum comportamento alterado.
+
 ## [0.10.1] - 2026-08-10
 ### Corrigido
 - Atualizada dependência `quantilica-core` para `>=0.5.0` devido às novas assinaturas requeridas pelo CLI.
