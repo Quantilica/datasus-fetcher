@@ -13,6 +13,7 @@ from . import logger
 @dataclass
 class File:
     """Data class representing a local file with its metadata."""
+
     filepath: Path
     dataset: str
     partition: str
@@ -25,6 +26,7 @@ class File:
 @dataclass
 class DataPartition:
     """Data class representing a partition in DATASUS datasets."""
+
     uf: str | None = None
     year: int | None = None
     month: int | None = None
@@ -51,6 +53,7 @@ class DataPartition:
 @dataclass
 class RemoteFile:
     """Data class representing a remote file on DATASUS FTP."""
+
     filename: str
     full_path: str
     datetime: dt.datetime

@@ -103,10 +103,12 @@ def get_pattern(period: dict) -> re.Pattern:
 
 
 def parse_filename(m: re.Match, pattern: str) -> dict:
-    """Parses a remote file name and returns a dictionary with metadata for data partitioning.
+    """Parses a remote file name and returns a dictionary with metadata
+    for data partitioning.
 
     Args:
-        m (re.Match): A re.Match object resulting from matching the filename against the pattern.
+        m (re.Match): A re.Match object resulting from matching the
+            filename against the pattern.
         pattern (str): A string pattern from meta.datasets.
 
     Returns:

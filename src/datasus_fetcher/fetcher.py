@@ -63,7 +63,8 @@ def connect(timeout: float = FTP_TIMEOUT, attempts: int = 3) -> MonitoredFTP:
     """Connects to the DATASUS FTP server.
 
     Args:
-        timeout (float, optional): Connection timeout in seconds. Defaults to FTP_TIMEOUT.
+        timeout (float, optional): Connection timeout in seconds. Defaults
+            to FTP_TIMEOUT.
         attempts (int, optional): Number of connection attempts. Defaults to 3.
 
     Returns:
@@ -103,7 +104,8 @@ def list_files(
         ftp (ftplib.FTP): The FTP connection object.
         directory (str): The remote directory path to list.
         retries (int, optional): Number of retries on transient errors. Defaults to 3.
-        max_recursive_depth (int, optional): Maximum depth for recursive listing. Defaults to 3.
+        max_recursive_depth (int, optional): Maximum depth for recursive
+            listing. Defaults to 3.
 
     Returns:
         list[dict]: A list of dictionaries containing file metadata.

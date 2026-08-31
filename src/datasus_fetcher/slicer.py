@@ -15,7 +15,8 @@ class Slicer:
         Args:
             start_time (str, optional): The start time period. Defaults to "".
             end_time (str, optional): The end time period. Defaults to "".
-            regions (list[str] | None, optional): A list of region codes. Defaults to None.
+            regions (list[str] | None, optional): A list of region codes.
+                Defaults to None.
         """
         self.start_time = start_time
         self.end_time = end_time
@@ -68,6 +69,7 @@ class Slicer:
             remote_file (RemoteFile): The remote file to filter.
 
         Returns:
-            bool: True if the file matches both time and region criteria, False otherwise.
+            bool: True if the file matches both time and region criteria,
+                False otherwise.
         """
         return self.by_regions(remote_file) and self.by_time(remote_file)
