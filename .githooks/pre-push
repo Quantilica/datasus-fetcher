@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Barra o push se a árvore inteira não passar em lint/format.
+#
+# Complementa o pre-commit (que só vê .py staged): pega dívida de lint
+# pré-existente e commits que não tocam Python — foi assim que E501 dos
+# sweeps de 2026-08-14 ficou vermelho no CI por semanas e um commit de
+# pyproject re-ativou CI vermelho no inmet (2026-08-31).
+#
+# Instalação (uma vez por clone): git config core.hooksPath .githooks
+# (o bootstrap.sh faz isso automaticamente).
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+[ -d src ] || exit 0
+if [ -d tests ]; then
+    TARGETS="src/ tests/"
+else
+    TARGETS="src/"
+fi
+
+if ! uv run --no-sync ruff --version >/dev/null 2>&1; then
+    echo "pre-push: ruff indisponível no ambiente — rodando uv sync --group dev" >&2
+    uv sync --group dev
+fi
+
+uv run --no-sync ruff check ${TARGETS}
+uv run --no-sync ruff format --check ${TARGETS}
+
+echo "pre-push: lint/format da árvore OK."
