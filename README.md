@@ -2,12 +2,14 @@
 
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square) ![Python](https://img.shields.io/badge/python-3.10+-blue.svg?style=flat-square)
 
-**datasus-fetcher** é um pacote Python e ferramenta de linha de comando para baixar em massa arquivos brutos de microdados (`.dbc`) do servidor FTP público do [DATASUS](https://datasus.saude.gov.br) (`ftp.datasus.gov.br`). Não lê nem analisa os arquivos — é um downloader confiável que organiza cópias locais do maior banco de dados de saúde pública do Brasil.
+**datasus-fetcher** é um pacote Python e ferramenta de linha de comando de alta performance para baixar em massa microdados do [DATASUS](https://datasus.saude.gov.br) (`ftp.datasus.gov.br`), descompactar arquivos `.dbc` nativamente em Rust e converter microdados para formato colunar Parquet otimizado para análise.
 
 Para a documentação completa, consulte **[https://docs.quantilica.com](https://docs.quantilica.com)**.
 
 ## Por que usar datasus-fetcher?
 
+- **Descompactação nativa em Rust** — rotinas de alta performance compiladas in-tree com Maturin e PyO3 (`_datasus_dbc`), liberando a GIL e sem dependência de runtime externo
+- **Tratamento e conversão para Parquet** — extra opcional `analytics` (`polars`, `pyarrow`, `fastdbf`) com saneamento de sentinelas nulos (`\N`, `999999`, etc.), preservação de zeros à esquerda em códigos (município, CID-10, CBO, CNES, procedimento) e parsing de datas
 - **113 datasets** cobrindo todos os principais sistemas de informação de saúde do Brasil
 - **320+ GB** de microdados históricos, com séries que remontam a 1979
 - **Downloads multi-thread** — conexões paralelas configuráveis para maior velocidade
@@ -16,18 +18,25 @@ Para a documentação completa, consulte **[https://docs.quantilica.com](https:/
 - **Retentativas automáticas** — até 3 tentativas em erros de FTP
 - **Versionamento de arquivos** — armazena cada versão baixada com nome datado; arquiva versões antigas automaticamente
 - **Documentação e tabelas auxiliares** — baixe dicionários de dados e tabelas de referência junto com os microdados
-- **Sem dependências externas** — Python puro 3.10+
 
 ## Instalação
+
+Apenas download e descompactação nativa DBC -> DBF (sem dependências analíticas pesadas):
 
 ```bash
 pip install datasus-fetcher
 ```
 
-Para instalação global isolada (recomendado para uso apenas como CLI):
+Para incluir o suporte analítico completo (leitura direta em Polars, limpeza e conversão para Parquet):
 
 ```bash
-pipx install datasus-fetcher
+pip install 'datasus-fetcher[analytics]'
+```
+
+Para instalação global isolada (CLI):
+
+```bash
+pipx install 'datasus-fetcher[analytics]'
 ```
 
 ## Uso Rápido
@@ -49,15 +58,18 @@ datasus-fetcher sync -o /caminho/para/dados
 
 ## CLI
 
-O `datasus-fetcher` expõe três subcomandos:
+O `datasus-fetcher` expõe seis subcomandos:
 
 ```
 datasus-fetcher <subcommand> [options]
 
 Subcommands:
-  sync     Baixa arquivos de microdados (e, com flags, docs e tabelas auxiliares)
-  list     Inspeciona datasets disponíveis no FTP
-  archive  Move versões antigas para um diretório de arquivo
+  sync        Baixa arquivos de microdados (e opcionalmente converte para Parquet)
+  list        Inspeciona datasets disponíveis no FTP
+  archive     Move versões antigas para um diretório de arquivo
+  decompress  Descompacta arquivo .dbc em .dbf nativamente em Rust
+  convert     Converte arquivo ou diretório .dbc/.dbf para Parquet tratado
+  pipeline    Executa download, descompactação e conversão em lote
 ```
 
 ---
@@ -79,6 +91,8 @@ datasus-fetcher sync [DATASETS...] -o <DIR> [OPTIONS]
 | `--docs` | Também baixa a documentação oficial dos datasets. |
 | `--aux` | Também baixa as tabelas de referência auxiliares. |
 | `--dry-run` | Lista os arquivos que seriam baixados (com tamanhos e totais) sem baixar. |
+| `--convert` | Converte os arquivos baixados automaticamente para Parquet tratado (requer `analytics`). |
+| `--parquet-dir DIR` | Diretório de destino para os arquivos Parquet (usado com `--convert`). |
 
 **Exemplos:**
 
@@ -201,6 +215,53 @@ O DATASUS atualiza seus arquivos periodicamente. O datasus-fetcher armazena cada
 datasus-fetcher archive \
     -o ./data \
     --archive-data-dir ./data-archive
+```
+
+---
+
+### `decompress` — Descompactar DBC nativamente (Rust)
+
+Descompacta um arquivo `.dbc` para `.dbf` utilizando o motor de descompressão in-tree compilado em Rust, com zero dependências externas em Python:
+
+```sh
+datasus-fetcher decompress entrada.dbc saida.dbf
+```
+
+---
+
+### `convert` — Converter para Parquet tratado
+
+Converte arquivos `.dbc` ou `.dbf` diretamente em Parquet colunar de alta compressão (ZSTD), higienizando sentinelas nulos, preservando zeros à esquerda em identificadores e tipando datas. Requer a instalação com o extra `analytics`:
+
+```sh
+# Converter um único arquivo DBC para Parquet
+datasus-fetcher convert entrada.dbc saida.parquet
+
+# Converter todos os arquivos DBC de um diretório em paralelo
+datasus-fetcher convert --dir ./dados/dbc --parquet-dir ./dados/parquet --threads 4
+```
+
+| Argumento | Descrição |
+|---|---|
+| `input_path` | Caminho do arquivo de entrada `.dbc` ou `.dbf`. |
+| `output_path` | Caminho do arquivo de saída `.parquet`. |
+| `--dir DIR` | Diretório de entrada contendo arquivos `.dbc` a converter em lote. |
+| `--parquet-dir DIR` | Diretório de destino para os arquivos `.parquet`. |
+| `-t, --threads N` | Quantidade de threads de conversão paralela (padrão: `4`). |
+
+---
+
+### `pipeline` — Pipeline integrado de ponta a ponta
+
+Executa o fluxo completo: sincroniza os arquivos brutos via FTP, descompacta em Rust e converte para Parquet tratado em uma única execução:
+
+```sh
+datasus-fetcher pipeline sih-rd \
+    -o ./data/raw \
+    --parquet-dir ./data/parquet \
+    --start 2023-01 \
+    --end 2023-12 \
+    --regions sp rj
 ```
 
 ---
@@ -568,21 +629,71 @@ Estatísticas geradas em **18 de fevereiro de 2025**.
 - Consultas online (TabNet): https://datasus.saude.gov.br/informacoes-de-saude-tabnet/
 - Transferência de microdados (FTP): https://datasus.saude.gov.br/transferencia-de-arquivos/
 
-## Lendo arquivos DBC
+## Descompactação e Processamento em Python
 
-O datasus-fetcher baixa arquivos `.dbc`, formato compactado utilizado pelo DATASUS. Para lê-los em Python, use um dos pacotes abaixo:
+O `datasus-fetcher` possui rotinas nativas compiladas em Rust (`_datasus_dbc`) para descompactação direta de arquivos `.dbc`, sem necessidade de bibliotecas C legadas externas.
 
-- [PySUS](https://github.com/AlertaDengue/PySUS)
-- [read.dbc](https://github.com/dankkom/read.dbc) (R)
-- [dbf2dbc](https://github.com/AlertaDengue/dbf2dbc) (ferramenta de conversão)
+### 1. Descompactação nativa (Rust)
+
+Disponível diretamente no pacote base, com zero dependências analíticas externas:
+
+```python
+import datasus_fetcher as df
+
+# Descompacta DBC para DBF (libera a GIL internamente, seguro para multithreading)
+df.decompress_dbc("DOSP2023.dbc", "DOSP2023.dbf")
+```
+
+### 2. Leitura e conversão analítica para Parquet
+
+Requer a instalação com o extra opcional: `pip install 'datasus-fetcher[analytics]'`.
+
+```python
+import datasus_fetcher as df
+
+# Lê DBC diretamente para um DataFrame Polars já higienizado:
+df_obitos = df.read_dbc("DOSP2023.dbc")
+
+# Ou lê um DBF já descompactado:
+df_obitos = df.read_dbf("DOSP2023.dbf")
+
+# Higienização customizada de um DataFrame bruto:
+df_limpo = df.wrangle_datasus(df_obitos)
+
+# Gravação atômica em Parquet comprimido com ZSTD:
+df.write_parquet(df_limpo, "DOSP2023.parquet")
+
+# Conversão direta de arquivos ou diretórios:
+from datasus_fetcher.wrangling import convert_directory, convert_file
+
+convert_file("DOSP2023.dbc", "DOSP2023.parquet")
+convert_directory(
+    input_dir="./dados/dbc",
+    output_dir="./dados/parquet",
+    max_workers=4,
+)
+```
+
+### Regras de Tratamento e Saneamento dos Dados
+
+Ao utilizar o extra `analytics`, o pipeline aplica regras canônicas de qualidade:
+- **Sentinelas Nulos:** Converte sequências como `"\N"`, `""`, `"999999"`, `"000000"`, `"NA"` em valores nulos reais (`null`).
+- **Preservação de Códigos:** Colunas de códigos estruturados (ex: `CODMUNRES`, `CODMUNNAT`, `CAUSABAS`, `CID10`, `CBO`, `CNES`, procedimentos SUS) são preservadas estritamente como string com preenchimento correto de zeros à esquerda (`zfill`), impedindo truncamento numérico acidental.
+- **Tipagem de Datas:** Colunas temporais (`DTOBITO`, `DTNASC`, `DTNOTIF`, etc.) são convertidas para o tipo `Date` nativo do Polars (`pl.Date`), tratando formatos brasileiros `DDMMAAAA`.
+- **Registros Deletados:** Filtra marcadores de exclusão lógica nativos do formato dBASE (`_deleted`) e remove a coluna auxiliar.
 
 ## Desenvolvimento
 
 ```bash
-git clone https://github.com/Quantilica/datasus-fetcher.git
-cd datasus-fetcher
-uv sync --dev
-python -m unittest discover
+# Sincronizar ambiente de desenvolvimento uv (compila extensão Rust automaticamente)
+uv sync --all-packages
+
+# Executar a suíte de testes
+uv run --package datasus-fetcher pytest datasus-fetcher/tests/
+
+# Lint e formatação
+uv run ruff check datasus-fetcher/
+uv run ruff format datasus-fetcher/
 ```
 
 ## Licença

@@ -13,6 +13,7 @@ import typer
 from quantilica.cli.sdk import FetcherApp
 from quantilica.cli.ui import get_console, setup_rich_logging
 from quantilica.core.ftp import FtpClient
+from rich.rule import Rule
 from rich.table import Table
 
 from datasus_fetcher import fetcher, meta
@@ -208,6 +209,14 @@ def cmd_sync(
     dry_run: Annotated[
         bool, typer.Option("--dry-run", help="Listar sem baixar")
     ] = False,
+    convert: Annotated[
+        bool,
+        typer.Option("--convert", help="Converter para Parquet após download"),
+    ] = False,
+    parquet_dir: Annotated[
+        Path | None,
+        typer.Option("--parquet-dir", help="Diretório para salvar arquivos Parquet"),
+    ] = None,
     verbose: Annotated[bool, typer.Option("--verbose", help="Logs detalhados")] = False,
 ) -> None:
     """Sincronizar dados brutos do DATASUS."""
@@ -265,9 +274,243 @@ def cmd_sync(
 
         fetcher_app.download_datasets(entries, output, workers=threads)
 
+        if convert:
+            try:
+                from datasus_fetcher import _HAS_ANALYTICS, convert_directory
+
+                if not _HAS_ANALYTICS:
+                    raise ImportError
+            except ImportError:
+                console.print(
+                    "[red]Erro:[/red] --convert requer extras de análise: "
+                    "pip install datasus-fetcher[analytics]"
+                )
+                raise typer.Exit(1) from None
+
+            parquet_out = parquet_dir or output
+            console.print(Rule("[bold]Conversão para Parquet[/bold]"))
+            convert_directory(
+                output,
+                parquet_out,
+                target_format="parquet",
+                workers=threads,
+            )
+            console.print(
+                f"[green]✓[/green] Parquet salvo em [bold]{parquet_out}[/bold]"
+            )
+
     except KeyboardInterrupt:
         console.print("[yellow]Download cancelado pelo usuário.[/yellow]")
         raise typer.Exit(code=130) from None
+
+
+@app.command("decompress")
+def cmd_decompress(
+    input: Annotated[
+        Path,
+        typer.Option(
+            "-i", "--input", help="Arquivo .dbc ou diretório com arquivos .dbc"
+        ),
+    ],
+    output: Annotated[
+        Path | None,
+        typer.Option("-o", "--output", help="Destino do arquivo ou diretório .dbf"),
+    ] = None,
+    workers: Annotated[
+        int, typer.Option("--workers", help="Workers para conversão de pastas")
+    ] = 4,
+    verbose: Annotated[bool, typer.Option("--verbose", help="Logs detalhados")] = False,
+) -> None:
+    """Descompactar arquivo ou pasta .dbc para .dbf nativamente."""
+    setup_rich_logging(verbose, console=console)
+    if input.is_dir():
+        from datasus_fetcher.wrangling import convert_directory
+
+        out_dir = output or input
+        convert_directory(input, out_dir, target_format="dbf", workers=workers)
+        console.print(
+            f"[green]✓[/green] Descompressão concluída em [bold]{out_dir}[/bold]"
+        )
+    else:
+        from datasus_fetcher import decompress_dbc
+
+        dest = decompress_dbc(input, output)
+        console.print(f"[green]✓[/green] Descompactado para [bold]{dest}[/bold]")
+
+
+@app.command("convert")
+def cmd_convert(
+    input: Annotated[
+        Path,
+        typer.Option(
+            "-i",
+            "--input",
+            help="Arquivo ou diretório de origem (.dbc ou .dbf)",
+        ),
+    ],
+    output: Annotated[
+        Path | None,
+        typer.Option(
+            "-o", "--output", help="Destino do arquivo ou diretório convertido"
+        ),
+    ] = None,
+    format: Annotated[
+        str,
+        typer.Option("--format", help="Formato de saída (parquet ou dbf)"),
+    ] = "parquet",
+    compression: Annotated[
+        str,
+        typer.Option("--compression", help="Compressão do Parquet (zstd, snappy)"),
+    ] = "zstd",
+    clean: Annotated[
+        bool,
+        typer.Option("--clean/--no-clean", help="Aplicar limpeza e tipagem canônica"),
+    ] = True,
+    lowercase: Annotated[
+        bool,
+        typer.Option(
+            "--lowercase/--no-lowercase",
+            help="Converter nomes de colunas para minúsculas",
+        ),
+    ] = True,
+    keep_dbf: Annotated[
+        bool,
+        typer.Option("--keep-dbf", help="Manter arquivos intermediários .dbf gerados"),
+    ] = False,
+    workers: Annotated[
+        int, typer.Option("--workers", help="Workers paralelos para diretórios")
+    ] = 4,
+    verbose: Annotated[bool, typer.Option("--verbose", help="Logs detalhados")] = False,
+) -> None:
+    """Converter arquivos .dbc ou .dbf para Parquet ou DBF."""
+    setup_rich_logging(verbose, console=console)
+    if format == "parquet":
+        try:
+            from datasus_fetcher import _HAS_ANALYTICS
+
+            if not _HAS_ANALYTICS:
+                raise ImportError
+        except ImportError:
+            console.print(
+                "[red]Erro:[/red] conversão para Parquet requer extras de análise: "
+                "pip install datasus-fetcher[analytics]"
+            )
+            raise typer.Exit(1) from None
+
+    from datasus_fetcher.wrangling import convert_directory, convert_file
+
+    if input.is_dir():
+        out_dir = output or input
+        convert_directory(
+            input,
+            out_dir,
+            target_format=format,
+            compression=compression,
+            clean=clean,
+            lowercase=lowercase,
+            keep_dbf=keep_dbf,
+            workers=workers,
+        )
+        console.print(f"[green]✓[/green] Conversão concluída em [bold]{out_dir}[/bold]")
+    else:
+        dest = convert_file(
+            input,
+            output,
+            target_format=format,
+            compression=compression,
+            clean=clean,
+            lowercase=lowercase,
+            keep_dbf=keep_dbf,
+        )
+        console.print(f"[green]✓[/green] Arquivo convertido: [bold]{dest}[/bold]")
+
+
+@app.command("pipeline")
+def cmd_pipeline(
+    datasets: Annotated[
+        list[str] | None,
+        typer.Argument(help="Datasets a baixar (omitir para todos)"),
+    ] = None,
+    output: Annotated[
+        Path,
+        typer.Option("-o", "--output", help="Diretório de dados brutos"),
+    ] = _DEFAULT_OUTPUT,
+    parquet_dir: Annotated[
+        Path | None,
+        typer.Option("--parquet-dir", help="Diretório para os Parquets"),
+    ] = None,
+    start: Annotated[
+        str, typer.Option("--start", help="Período inicial (ex: 2024-01)")
+    ] = "",
+    end: Annotated[str, typer.Option("--end", help="Período final (ex: 2024-12)")] = "",
+    regions: Annotated[
+        list[str] | None, typer.Option("--regions", help="Regiões (ex: sp, rj)")
+    ] = None,
+    threads: Annotated[
+        int, typer.Option("-t", "--threads", help="Downloads paralelos")
+    ] = 2,
+    workers: Annotated[
+        int, typer.Option("--workers", help="Workers de conversão Parquet")
+    ] = 4,
+    compression: Annotated[
+        str, typer.Option("--compression", help="Compressão do Parquet")
+    ] = "zstd",
+    clean: Annotated[
+        bool, typer.Option("--clean/--no-clean", help="Aplicar limpeza e tipagem")
+    ] = True,
+    lowercase: Annotated[
+        bool, typer.Option("--lowercase/--no-lowercase", help="Colunas minúsculas")
+    ] = True,
+    docs: Annotated[bool, typer.Option("--docs", help="Baixar documentação")] = False,
+    aux: Annotated[
+        bool, typer.Option("--aux", help="Baixar tabelas auxiliares")
+    ] = False,
+    verbose: Annotated[bool, typer.Option("--verbose", help="Logs detalhados")] = False,
+) -> None:
+    """Pipeline completo do DATASUS (download FTP -> conversão Parquet)."""
+    setup_rich_logging(verbose, console=console)
+    try:
+        from datasus_fetcher import _HAS_ANALYTICS, convert_directory
+
+        if not _HAS_ANALYTICS:
+            raise ImportError
+    except ImportError:
+        console.print(
+            "[red]Erro:[/red] pipeline requer extras de análise: "
+            "pip install datasus-fetcher[analytics]"
+        )
+        raise typer.Exit(1) from None
+
+    console.print(Rule("[bold]Passo 1/2: Download FTP[/bold]"))
+    cmd_sync(
+        datasets=datasets,
+        output=output,
+        start=start,
+        end=end,
+        regions=regions,
+        threads=threads,
+        docs=docs,
+        aux=aux,
+        dry_run=False,
+        convert=False,
+        verbose=verbose,
+    )
+
+    console.print(Rule("[bold]Passo 2/2: Conversão para Parquet[/bold]"))
+    parquet_out = parquet_dir or output
+    convert_directory(
+        output,
+        parquet_out,
+        target_format="parquet",
+        compression=compression,
+        clean=clean,
+        lowercase=lowercase,
+        workers=workers,
+    )
+    console.print(
+        "[green]✓[/green] Pipeline concluído. Parquet salvo em "
+        f"[bold]{parquet_out}[/bold]"
+    )
 
 
 @app.command("archive")

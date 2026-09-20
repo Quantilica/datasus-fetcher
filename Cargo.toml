@@ -1,0 +1,21 @@
+[package]
+name = "datasus-fetcher"
+version = "0.11.0"
+edition = "2021"
+authors = ["Komesu, D.K. <daniel@dkko.me>"]
+description = "High-performance DATASUS .dbc decompression extension in Rust"
+
+[lib]
+name = "_datasus_dbc"
+crate-type = ["cdylib"]
+path = "src/lib.rs"
+
+[dependencies]
+pyo3 = { version = "0.24", features = ["extension-module"] }
+datasus-dbc = "0.1"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true

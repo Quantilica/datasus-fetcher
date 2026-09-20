@@ -222,14 +222,24 @@ def download_data(
 
 # Now replace the Fetcher class and download_data
 
-content = re.sub(r'class Fetcher\(threading\.Thread\):.*?(?=\ndef log_download)', '', content, flags=re.DOTALL)
-content = re.sub(r'def download_data\(.*?(?=\ndef _list_support_files)', new_code + "\n", content, flags=re.DOTALL)
+content = re.sub(
+    r"class Fetcher\(threading\.Thread\):.*?(?=\ndef log_download)",
+    "",
+    content,
+    flags=re.DOTALL,
+)
+content = re.sub(
+    r"def download_data\(.*?(?=\ndef _list_support_files)",
+    new_code + "\n",
+    content,
+    flags=re.DOTALL,
+)
 
 # Let's add ProgressPool and graceful_executor to the rich import if not there
-if 'ProgressPool' not in content:
+if "ProgressPool" not in content:
     content = content.replace(
-        'from quantilica.cli.ui import (',
-        'from quantilica.cli.ui import (\n        ProgressPool,\n        graceful_executor,'
+        "from quantilica.cli.ui import (",
+        "from quantilica.cli.ui import (\n        ProgressPool,\n        graceful_executor,",
     )
 
 Path("src/datasus_fetcher/fetcher.py").write_text(content)

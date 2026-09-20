@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.11.0] - 2026-09-20
+### Adicionado
+- Extensão nativa in-tree em Rust (`_datasus_dbc`) compilada com Maturin e PyO3 para descompactação direta de arquivos `.dbc` em alta performance sem dependências externas em tempo de execução, liberando a GIL do Python (`py.allow_threads`).
+- Função `decompress_dbc(input_path, output_path)` exposta incondicionalmente na raiz do pacote.
+- Subcomando CLI `decompress` para descompactação direta de arquivos `.dbc` para `.dbf`.
+- Extra opcional `analytics` (`datasus-fetcher[analytics]`) integrando `polars`, `pyarrow`, `fastdbf` e `dbfread`.
+- Módulos `reader` e `wrangling` com funções analíticas `read_dbc`, `read_dbf`, `wrangle_datasus`, `write_parquet`, `convert_file` e `convert_directory`.
+- Subcomando CLI `convert` para conversão de arquivos individuais ou diretórios completos para Parquet tratado com compressão ZSTD.
+- Subcomando CLI `pipeline` e flags `--convert`/`--parquet-dir` integradas ao comando `sync`.
+- Regras de higienização de dados: saneamento de sentinelas nulos (`\N`, `999999`, etc.), preservação de zeros à esquerda em códigos estruturados (municípios IBGE, CID-10, CBO, CNES, procedimentos SUS), conversão para tipo de data nativo (`pl.Date`) e descarte automático de registros excluídos no padrão dBASE (`_deleted`).
+
+### Alterado
+- Build backend migrado de `hatchling` para `maturin` (`[build-system] requires = ["maturin>=1.5,<2.0"]`).
+
 ## [0.10.2] - 2026-08-31
 ### Corrigido
 - Quitação de dívida de lint (E501/docstrings longas) herdada dos sweeps de

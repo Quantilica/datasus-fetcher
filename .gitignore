@@ -40,3 +40,9 @@ Thumbs.db
 
 # Específico do repo
 logging.ini
+
+# Rust / Maturin
+target/
+*.so
+*.pyd
+*.dylib
