@@ -53,6 +53,19 @@ class TestSlicerByTime(unittest.TestCase):
         slicer = Slicer(start_time="202001", end_time="202001")
         self.assertTrue(slicer.by_time(make_file(year=2020, month=1)))
 
+    def test_hyphen_normalization(self):
+        slicer = Slicer(start_time="2020-01", end_time="2020-12")
+        self.assertTrue(slicer.by_time(make_file(year=2020, month=6)))
+        self.assertFalse(slicer.by_time(make_file(year=2019, month=12)))
+        self.assertFalse(slicer.by_time(make_file(year=2021, month=1)))
+
+    def test_year_filter_on_monthly_file(self):
+        slicer = Slicer(start_time="2020", end_time="2020")
+        self.assertTrue(slicer.by_time(make_file(year=2020, month=1)))
+        self.assertTrue(slicer.by_time(make_file(year=2020, month=12)))
+        self.assertFalse(slicer.by_time(make_file(year=2019, month=12)))
+        self.assertFalse(slicer.by_time(make_file(year=2021, month=1)))
+
     def test_file_without_date_excluded_by_filter(self):
         slicer = Slicer(start_time="202001", end_time="202012")
         # File with no year/month produces empty string "".

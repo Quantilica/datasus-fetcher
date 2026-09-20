@@ -18,8 +18,8 @@ class Slicer:
             regions (list[str] | None, optional): A list of region codes.
                 Defaults to None.
         """
-        self.start_time = start_time
-        self.end_time = end_time
+        self.start_time = (start_time or "").replace("-", "")
+        self.end_time = (end_time or "").replace("-", "")
         self.regions = regions or []
 
     def by_time(self, remote_file: RemoteFile) -> bool:
@@ -33,7 +33,7 @@ class Slicer:
         """
         # If no start or end time is provided, there is no need to
         # filter, return True
-        if self.start_time == "" and self.end_time == "":
+        if not self.start_time and not self.end_time:
             return True
 
         t = ""
@@ -42,12 +42,30 @@ class Slicer:
         if remote_file.partition.month is not None:
             t += f"{remote_file.partition.month:02d}"
 
-        if self.start_time and not self.end_time:
-            return t >= self.start_time
-        elif not self.start_time and self.end_time:
-            return t <= self.end_time
+        if not t:
+            return False
 
-        return t >= self.start_time and t <= self.end_time
+        start = self.start_time
+        end = self.end_time
+
+        # Harmonize year vs year-month comparisons
+        if len(t) == 6:
+            if len(start) == 4:
+                start = start + "01"
+            if len(end) == 4:
+                end = end + "12"
+        elif len(t) == 4:
+            if len(start) == 6:
+                start = start[:4]
+            if len(end) == 6:
+                end = end[:4]
+
+        if start and not end:
+            return t >= start
+        elif not start and end:
+            return t <= end
+
+        return t >= start and t <= end
 
     def by_regions(self, remote_file: RemoteFile) -> bool:
         """Filters a remote file by region.
