@@ -1,10 +1,13 @@
+import contextlib
 import datetime as dt
 import ftplib
 import time
 from functools import lru_cache
+from pathlib import Path
 
 from quantilica.core.exceptions import FetchError
-from quantilica.core.ftp import FTP_TRANSIENT_ERRORS, MonitoredFTP
+from quantilica.core.files import is_complete_file
+from quantilica.core.ftp import FTP_TRANSIENT_ERRORS, FtpClient, MonitoredFTP
 from quantilica.core.retry import exponential_delay
 
 try:
@@ -15,9 +18,11 @@ except (ModuleNotFoundError, ImportError):  # pragma: no cover
 
 from . import logger, meta
 from .remote_names import get_pattern, parse_filename
+from .slicer import Slicer
 from .storage import (
     DataPartition,
     RemoteFile,
+    get_data_filepath,
 )
 
 FTP_HOST = "ftp.datasus.gov.br"
@@ -247,3 +252,124 @@ def list_auxiliary_tables_files(ftp: ftplib.FTP, dataset: str) -> list[dict]:
         list[dict]: A list of dictionaries containing file metadata.
     """
     return _list_support_files(ftp, meta.auxiliary_tables[dataset]["dir"])
+
+
+def download_data(
+    datasets: list[str],
+    destdir: Path | str,
+    threads: int = 2,
+    slicer: Slicer | None = None,
+    show_progress: bool = True,
+) -> None:
+    """Downloads data files for the specified datasets.
+
+    Args:
+        datasets: List of dataset IDs to download.
+        destdir: Destination directory.
+        threads: Number of parallel download threads.
+        slicer: Optional slicer to filter files.
+        show_progress: Whether to show progress output.
+    """
+    destdir = Path(destdir)
+    ftp0 = connect()
+    client = FtpClient(FTP_HOST, timeout=FTP_TIMEOUT)
+
+    dataset_files: list[RemoteFile] = []
+    try:
+        for dataset in sorted(datasets):
+            if dataset not in meta.datasets:
+                continue
+            logger.info("Listing files of %s", dataset)
+            for f in list_dataset_files(ftp0, dataset):
+                if slicer is not None and not slicer(f):
+                    continue
+                target_fp = get_data_filepath(destdir, f)
+                if not is_complete_file(target_fp, f.size):
+                    dataset_files.append(f)
+    finally:
+        with contextlib.suppress(Exception):
+            ftp0.close()
+
+    if not dataset_files:
+        return
+
+    def _worker(f: RemoteFile) -> None:
+        target_fp = get_data_filepath(destdir, f)
+        t0 = time.time()
+        client.download_with_manifest(
+            url=f.full_path,
+            target_path=target_fp,
+            source_id="datasus",
+            dataset_id=f.dataset,
+            producer="datasus-fetcher",
+            metadata={
+                "partition": str(f.partition) if f.partition else "",
+                "preliminary": f.preliminary,
+                "remote_datetime": f.datetime.isoformat() if f.datetime else "",
+            },
+        )
+        tt = time.time() - t0
+        log_download(tt, f.size, target_fp.name)
+
+    import concurrent.futures
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+        futures = [executor.submit(_worker, f) for f in dataset_files]
+        for future in concurrent.futures.as_completed(futures):
+            future.result()
+
+
+def _download_support_files(
+    files: list[dict],
+    destdir: Path,
+    dataset: str,
+):
+    destdir = Path(destdir)
+    client = FtpClient(FTP_HOST, timeout=FTP_TIMEOUT)
+    for file in files:
+        filename, extension = file["filename"].rsplit(".", 1)
+        dated_name = (
+            f"{filename}@{file['datetime']:%Y%m%d}.{extension}"
+            if file.get("datetime")
+            else file["filename"]
+        )
+        target_path = destdir / dated_name
+        if is_complete_file(target_path, file.get("size", 0)):
+            continue
+        client.download_with_manifest(
+            url=file["full_path"],
+            target_path=target_path,
+            source_id="datasus",
+            dataset_id=dataset,
+            producer="datasus-fetcher",
+            metadata={
+                "remote_datetime": (
+                    file["datetime"].isoformat() if file.get("datetime") else ""
+                )
+            },
+        )
+        yield target_path
+
+
+def download_documentation(
+    ftp: ftplib.FTP,
+    dataset: str,
+    destdir: Path | str,
+):
+    """Downloads documentation files for a dataset."""
+    files = list_documentation_files(ftp, dataset)
+    yield from _download_support_files(
+        files, Path(destdir) / "_documentacao" / dataset, dataset
+    )
+
+
+def download_auxiliary_tables(
+    ftp: ftplib.FTP,
+    dataset: str,
+    destdir: Path | str,
+):
+    """Downloads auxiliary table files for a dataset."""
+    files = list_auxiliary_tables_files(ftp, dataset)
+    yield from _download_support_files(
+        files, Path(destdir) / "_auxiliar" / dataset, dataset
+    )

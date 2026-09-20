@@ -95,10 +95,13 @@ def read_dbf(dbf_path: Path | str, encoding: str = "latin1") -> pl.DataFrame:
             ignore_missing_memofile=True,
             char_decode_errors="replace",
         )
-        records = list(table)
-        if not records:
+        cols: dict[str, list] = {field.name: [] for field in table.fields}
+        for rec in table:
+            for k, v in rec.items():
+                cols[k].append(v)
+        if not cols or all(len(v) == 0 for v in cols.values()):
             return pl.DataFrame()
-        return pl.DataFrame(records)
+        return pl.DataFrame(cols, infer_schema_length=None)
     except ImportError as err:
         raise ImportError(
             "Leitura de arquivos DBF requer extras de análise: "
