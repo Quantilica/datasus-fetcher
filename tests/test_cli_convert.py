@@ -7,14 +7,7 @@ import pytest
 
 from datasus_fetcher.cli import main
 
-FIXTURE_DBC = (
-    Path(__file__).parent.parent.parent
-    / "quantilica-portal"
-    / "tests"
-    / "wasm"
-    / "fixtures"
-    / "DOAC1996.dbc"
-)
+FIXTURE_DBC = Path(__file__).parent / "fixtures" / "DOAC1996.dbc"
 
 
 def test_cli_decompress(tmp_path: Path):

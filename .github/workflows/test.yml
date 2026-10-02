@@ -33,7 +33,7 @@ jobs:
       - name: Install dependencies
         run: |
           for i in 1 2 3; do
-            if uv sync --group dev --python ${{ matrix.python-version }} \
+            if uv sync --group dev --extra analysis --python ${{ matrix.python-version }} \
                 --index https://index.quantilica.com/simple/ \
                 --index-strategy unsafe-best-match; then
               exit 0

@@ -13,14 +13,7 @@ from datasus_fetcher.reader import (
     write_parquet,
 )
 
-FIXTURE_DBC = (
-    Path(__file__).parent.parent.parent
-    / "quantilica-portal"
-    / "tests"
-    / "wasm"
-    / "fixtures"
-    / "DOAC1996.dbc"
-)
+FIXTURE_DBC = Path(__file__).parent / "fixtures" / "DOAC1996.dbc"
 
 
 def test_decompress_dbc(tmp_path: Path):

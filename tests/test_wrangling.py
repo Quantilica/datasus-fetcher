@@ -12,14 +12,7 @@ from datasus_fetcher.wrangling import (
     parse_filename_metadata,
 )
 
-FIXTURE_DBC = (
-    Path(__file__).parent.parent.parent
-    / "quantilica-portal"
-    / "tests"
-    / "wasm"
-    / "fixtures"
-    / "DOAC1996.dbc"
-)
+FIXTURE_DBC = Path(__file__).parent / "fixtures" / "DOAC1996.dbc"
 
 
 def test_parse_filename_metadata():
