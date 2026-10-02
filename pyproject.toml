@@ -1,6 +1,6 @@
 [project]
 name = "datasus-fetcher"
-version = "0.11.1"
+version = "0.11.2"
 description = "Downloader of DATASUS raw data files"
 readme = "README.md"
 authors = [
@@ -38,6 +38,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+analysis = [
+    "polars>=1.0.0",
+    "pyarrow>=14.0.0",
+    "fastdbf>=0.5.2",
+    "dbfread>=2.0.7",
+]
 analytics = [
     "polars>=1.0.0",
     "pyarrow>=14.0.0",
@@ -62,13 +68,6 @@ dev = [
     "pytest>=8.0.0",
     "pytest-mock>=3.12",
     "maturin>=1.5,<2.0",
-    { include-group = "analytics-dev" },
-]
-analytics-dev = [
-    "polars>=1.0.0",
-    "pyarrow>=14.0.0",
-    "fastdbf>=0.5.2",
-    "dbfread>=2.0.7",
 ]
 
 [tool.pytest.ini_options]

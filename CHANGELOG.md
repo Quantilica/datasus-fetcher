@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.11.2] - 2026-10-02
+### Corrigido
+- Padronizado o extra analítico para `[project.optional-dependencies].analysis` conforme normas do ecossistema (`docs/docs/normas/pyproject.md`), mantendo `analytics` como alias retrocompatível.
+- Adicionado `--extra analysis` ao passo de instalação do CI (`.github/workflows/test.yml`), garantindo que dependências analíticas (`polars`, `pyarrow`, `fastdbf`, `dbfread`) sejam provisionadas durante a execução dos testes.
+- Inclusão da fixture de teste `DOAC1996.dbc` em `tests/fixtures/`, garantindo isolamento total do repositório em CI sem referenciar diretórios externos do workspace.
+
 ## [0.11.1] - 2026-10-02
 ### Corrigido
 - Adicionado `pytest.importorskip("typer")` em `tests/test_plugin_systems.py` para permitir que os testes unitários da biblioteca rodem sem falha em ambientes de CI isolados onde `typer` não está instalado.
