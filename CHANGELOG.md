@@ -1,7 +1,11 @@
 # Changelog
 
-## [0.11.0] - 2026-09-20
+## [0.11.0] - 2026-10-02
 ### Adicionado
+- Opção `--system` / `-s` (suporte a múltiplos sistemas, lista separada por vírgula, case-insensitive) nos comandos `list`, `sync` e `pipeline` em `plugin.py` e `cli.py`.
+- Mapeamento dinâmico de 16 subsistemas de saúde em `meta.py` (`SYSTEM_DATASETS`, `get_system_datasets`, `expand_systems`), incluindo `SIM`, `SINASC`, `SIH`, `CNES`, `SIA` e `SINAN`.
+- Modo de sincronização incremental inteligente em `storage.py` e `fetcher.py` (`is_cached_download`): validação prévia de tamanho e manifesto SHA-256 (`.manifest.json`), evitando re-downloads redundantes.
+- Abertura diferida de conexão FTP (evita conexão de rede quando todos os arquivos solicitados já estão em cache).
 - Extensão nativa in-tree em Rust (`_datasus_dbc`) compilada com Maturin e PyO3 para descompactação direta de arquivos `.dbc` em alta performance sem dependências externas em tempo de execução, liberando a GIL do Python (`py.allow_threads`).
 - Função `decompress_dbc(input_path, output_path)` exposta incondicionalmente na raiz do pacote.
 - Subcomando CLI `decompress` para descompactação direta de arquivos `.dbc` para `.dbf`.
@@ -10,6 +14,10 @@
 - Subcomando CLI `convert` para conversão de arquivos individuais ou diretórios completos para Parquet tratado com compressão ZSTD.
 - Subcomando CLI `pipeline` e flags `--convert`/`--parquet-dir` integradas ao comando `sync`.
 - Regras de higienização de dados: saneamento de sentinelas nulos (`\N`, `999999`, etc.), preservação de zeros à esquerda em códigos estruturados (municípios IBGE, CID-10, CBO, CNES, procedimentos SUS), conversão para tipo de data nativo (`pl.Date`) e descarte automático de registros excluídos no padrão dBASE (`_deleted`).
+
+### Corrigido
+- Restauração de `download_data` na API pública e saneamento de sentinelas nulos em fallbacks.
+- Normalização de hifens de datas e suporte a filtro de ano para arquivos mensais no `Slicer`.
 
 ### Alterado
 - Build backend migrado de `hatchling` para `maturin` (`[build-system] requires = ["maturin>=1.5,<2.0"]`).
