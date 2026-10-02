@@ -1,6 +1,6 @@
 [project]
 name = "datasus-fetcher"
-version = "0.11.2"
+version = "0.11.3"
 description = "Downloader of DATASUS raw data files"
 readme = "README.md"
 authors = [
@@ -34,7 +34,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "quantilica-core>=0.5.0",
+    "quantilica-core>=0.8.1",
 ]
 
 [project.optional-dependencies]
@@ -83,7 +83,6 @@ select = ["E", "F", "I", "UP", "B"]
 [tool.ruff.lint.per-file-ignores]
 "src/datasus_fetcher/__init__.py" = ["E402"]
 "src/datasus_fetcher/meta.py" = ["E501"]
-"rewrite_datasus.py" = ["E501"]
 
 [tool.maturin]
 python-source = "src"

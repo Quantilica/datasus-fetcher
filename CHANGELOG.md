@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.11.3] - 2026-10-02
+### Alterado
+- Migração do check incremental (`is_cached_download`) para a política canônica `IncrementalSyncStrategy(policy="strict_manifest")` de `quantilica-core` 0.8.0: a decisão de skip (artefato presente + sidecar `*.manifest.json` válido com `sha256`/`size_bytes` consistentes) agora é delegada inteiramente ao core, mantendo a verificação de tamanho remoto (`is_complete_file`) na borda.
+- `is_manifest_valid` passa a ser reexportada de `quantilica.core.sync` (compatibilidade preservada com testes e código existente).
+- Dependência atualizada para `quantilica-core>=0.8.0`.
+
 ## [0.11.2] - 2026-10-02
 ### Corrigido
 - Padronizado o extra analítico para `[project.optional-dependencies].analysis` conforme normas do ecossistema (`docs/docs/normas/pyproject.md`), mantendo `analytics` como alias retrocompatível.

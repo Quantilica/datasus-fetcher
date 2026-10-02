@@ -1,5 +1,4 @@
 import datetime as dt
-import json
 from collections.abc import Generator
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -8,6 +7,25 @@ from quantilica.core.dates import year_month_partition
 from quantilica.core.exceptions import ParseError
 from quantilica.core.files import is_complete_file
 from quantilica.core.storage import LocalStorage, build_stamped_filename
+from quantilica.core.sync import (
+    IncrementalSyncStrategy,
+    RemoteStat,
+    is_manifest_valid,
+)
+
+__all__ = [
+    "DataPartition",
+    "File",
+    "DataRepository",
+    "RemoteFile",
+    "get_data_filepath",
+    "get_file_metadata",
+    "get_filename",
+    "get_manifest_path",
+    "get_partition_dir",
+    "is_cached_download",
+    "is_manifest_valid",
+]
 
 from . import logger
 
@@ -136,33 +154,6 @@ def get_manifest_path(target_path: Path) -> Path:
     return target_path.with_suffix(target_path.suffix + ".manifest.json")
 
 
-def is_manifest_valid(manifest_path: Path) -> bool:
-    """Checks whether a download manifest sidecar exists and is parseable.
-
-    A valid manifest must be a JSON object carrying non-empty ``sha256`` and
-    ``size_bytes`` fields, as written by ``DownloadManifest.write_json``.
-
-    Args:
-        manifest_path (Path): Path of the manifest sidecar file.
-
-    Returns:
-        bool: True if the manifest exists and parses with required fields.
-    """
-    try:
-        if not manifest_path.is_file():
-            return False
-        data = json.loads(manifest_path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return False
-    if not isinstance(data, dict):
-        return False
-    sha256 = data.get("sha256")
-    size = data.get("size_bytes")
-    if not isinstance(sha256, str) or len(sha256) != 64:
-        return False
-    return isinstance(size, int) and size >= 0
-
-
 def is_cached_download(
     target_path: Path,
     expected_size: int,
@@ -170,12 +161,14 @@ def is_cached_download(
 ) -> bool:
     """Returns True if ``target_path`` is already downloaded and consistent.
 
-    The incremental check requires all of:
+    Incremental check delegating the skip decision to the canonical
+    ``quantilica.core.sync`` policy:
 
-    - the data file exists locally;
-    - its byte size matches the remote ``expected_size``;
-    - the sidecar manifest exists and is well-formed (SHA-256 integrity
-      provenance is preserved from the original download).
+    - the data file exists locally and its byte size matches the remote
+      ``expected_size``;
+    - ``IncrementalSyncStrategy(policy="strict_manifest")`` confirms the
+      sidecar manifest exists and matches the artifact on disk (SHA-256
+      integrity provenance preserved from the original download).
 
     Downloads performed through ``FtpClient.download_with_manifest`` always
     produce the sidecar manifest, so files without one are freed downloads
@@ -185,16 +178,24 @@ def is_cached_download(
         target_path (Path): Local path where the file would be stored.
         expected_size (int): Size (bytes) reported by the remote listing.
         manifest_path (Path | None): Manifest sidecar path; defaults to
-            ``target_path + '.manifest.json'``.
+            ``target_path + '.manifest.json'``. Only used when it differs
+            from the canonical sidecar path computed by the strategy.
 
     Returns:
         bool: True when the download can be skipped (cached and valid).
     """
     if manifest_path is None:
         manifest_path = get_manifest_path(target_path)
-    return is_complete_file(target_path, expected_size) and is_manifest_valid(
-        manifest_path
-    )
+    strategy = IncrementalSyncStrategy(policy="strict_manifest")
+    sidecar_path = get_manifest_path(target_path)
+    if manifest_path == sidecar_path:
+        skipped = strategy.should_skip(
+            target_path,
+            remote_stat=RemoteStat(size=expected_size),
+        )
+    else:
+        skipped = is_manifest_valid(manifest_path)
+    return is_complete_file(target_path, expected_size) and skipped
 
 
 class DataRepository:
