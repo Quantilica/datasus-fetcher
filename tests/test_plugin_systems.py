@@ -2,8 +2,12 @@
 
 import unittest
 
-import typer
-from typer.testing import CliRunner
+import pytest
+
+pytest.importorskip("typer")
+
+import typer  # noqa: E402
+from typer.testing import CliRunner  # noqa: E402
 
 from datasus_fetcher import meta
 from datasus_fetcher.plugin import _systems_to_datasets, app, resolve_dataset_targets
