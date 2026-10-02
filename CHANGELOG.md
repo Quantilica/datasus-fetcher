@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.11.1] - 2026-10-02
+### Corrigido
+- Adicionado `pytest.importorskip("typer")` em `tests/test_plugin_systems.py` para permitir que os testes unitários da biblioteca rodem sem falha em ambientes de CI isolados onde `typer` não está instalado.
+
 ## [0.11.0] - 2026-10-02
 ### Adicionado
 - Opção `--system` / `-s` (suporte a múltiplos sistemas, lista separada por vírgula, case-insensitive) nos comandos `list`, `sync` e `pipeline` em `plugin.py` e `cli.py`.
