@@ -27,6 +27,54 @@ console = get_console()
 _FTP_CONN = None
 
 
+def _systems_to_datasets(systems: list[str] | None) -> list[str] | None:
+    """Expands ``--system`` values (case-insensitive, comma-separated) to datasets.
+
+    Args:
+        systems (list[str] | None): Raw ``--system`` option values.
+
+    Returns:
+        list[str] | None: Unique dataset IDs, or None when nothing requested.
+
+    Raises:
+        typer.BadParameter: On an unrecognized system/dataset name.
+    """
+    if not systems:
+        return None
+    items: list[str] = []
+    for chunk in systems:
+        items.extend(piece.strip() for piece in chunk.split(",") if piece.strip())
+    if not items:
+        return None
+    try:
+        return meta.expand_systems(items)
+    except KeyError as exc:
+        raise typer.BadParameter(str(exc.args[0])) from exc
+
+
+def resolve_dataset_targets(
+    datasets: list[str] | None, systems: list[str] | None
+) -> list[str] | None:
+    """Merges positional datasets with ``--system`` resolution.
+
+    Args:
+        datasets (list[str] | None): Positional dataset IDs.
+        systems (list[str] | None): Dataset IDs expanded from ``--system``.
+
+    Returns:
+        list[str] | None: Effective target datasets; None means 'all'.
+    """
+    if systems:
+        merged = list(systems)
+        if datasets:
+            known = set(systems)
+            for dataset in datasets:
+                if dataset.lower() not in known:
+                    merged.append(dataset)
+        return merged
+    return datasets
+
+
 def _get_ftp():
     global _FTP_CONN
     if _FTP_CONN is None:
@@ -140,11 +188,24 @@ def cmd_list(
         list[str] | None,
         typer.Argument(help="Datasets a listar (omitir para todos)"),
     ] = None,
+    systems: Annotated[
+        list[str] | None,
+        typer.Option(
+            "-s",
+            "--system",
+            help=(
+                "Sistema(is) a listar (ex: sim, sinasc). Aceita valores "
+                "separados por vírgula e múltiplas ocorrências; "
+                "case-insensitive"
+            ),
+        ),
+    ] = None,
     verbose: Annotated[bool, typer.Option("--verbose", help="Logs detalhados")] = False,
 ) -> None:
     """Listar datasets disponíveis no DATASUS."""
     setup_rich_logging(verbose, console=console)
-    targets = datasets if datasets else list(meta.datasets.keys())
+    systems = _systems_to_datasets(systems)
+    targets = resolve_dataset_targets(datasets, systems) or list(meta.datasets.keys())
     with console.status("[cyan]Conectando ao FTP do DATASUS...[/cyan]"):
         _get_ftp()
 
@@ -179,6 +240,18 @@ def cmd_sync(
     datasets: Annotated[
         list[str] | None,
         typer.Argument(help="Datasets (ex: sih-rd, cnes-dc). Omitir para todos."),
+    ] = None,
+    systems: Annotated[
+        list[str] | None,
+        typer.Option(
+            "-s",
+            "--system",
+            help=(
+                "Sistema(is) a sincronizar (ex: sim, sih). Aceita valores "
+                "separados por vírgula e múltiplas ocorrências; "
+                "case-insensitive"
+            ),
+        ),
     ] = None,
     output: Annotated[
         Path, typer.Option("-o", "--output", help="Diretório de saída")
@@ -221,7 +294,8 @@ def cmd_sync(
 ) -> None:
     """Sincronizar dados brutos do DATASUS."""
     setup_rich_logging(verbose, console=console)
-    targets = datasets if datasets else list(meta.datasets.keys())
+    systems = _systems_to_datasets(systems)
+    targets = resolve_dataset_targets(datasets, systems) or list(meta.datasets.keys())
     slicer = Slicer(start_time=start, end_time=end, regions=regions)
 
     try:
@@ -431,6 +505,18 @@ def cmd_pipeline(
         list[str] | None,
         typer.Argument(help="Datasets a baixar (omitir para todos)"),
     ] = None,
+    systems: Annotated[
+        list[str] | None,
+        typer.Option(
+            "-s",
+            "--system",
+            help=(
+                "Sistema(is) a processar (ex: sim, sinasc). Aceita valores "
+                "separados por vírgula e múltiplas ocorrências; "
+                "case-insensitive"
+            ),
+        ),
+    ] = None,
     output: Annotated[
         Path,
         typer.Option("-o", "--output", help="Diretório de dados brutos"),
@@ -484,6 +570,7 @@ def cmd_pipeline(
     console.print(Rule("[bold]Passo 1/2: Download FTP[/bold]"))
     cmd_sync(
         datasets=datasets,
+        systems=systems,
         output=output,
         start=start,
         end=end,

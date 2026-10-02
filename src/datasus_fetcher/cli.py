@@ -22,16 +22,68 @@ from .slicer import Slicer
 from .storage import File, get_files_metadata
 
 
+def parse_systems(system_args: list[str] | None) -> list[str] | None:
+    """Normalizes ``--system`` CLI values into dataset IDs.
+
+    Accepts multiple occurrences (``-s sim -s sinasc``) and comma-separated
+    values (``--system sim,sinasc``), case-insensitive. Returns None when no
+    systems were requested (keeps positional datasets behavior untouched).
+
+    Args:
+        system_args (list[str] | None): Raw ``--system`` values.
+
+    Returns:
+        list[str] | None: Dataset IDs, or None if no systems were requested.
+
+    Raises:
+        SystemExit: On an unrecognized system/dataset name.
+    """
+    if not system_args:
+        return None
+    items: list[str] = []
+    for chunk in system_args:
+        items.extend(piece.strip() for piece in chunk.split(",") if piece.strip())
+    if not items:
+        return None
+    try:
+        return meta.expand_systems(items)
+    except KeyError as exc:
+        raise SystemExit(f"Erro: {exc.args[0]}") from exc
+
+
+def resolve_targets(
+    datasets: list[str] | None, systems: list[str] | None
+) -> list[str] | None:
+    """Merges positional datasets and ``--system`` resolution into targets.
+
+    Args:
+        datasets (list[str] | None): Positional dataset IDs from the CLI.
+        systems (list[str] | None): Dataset IDs already expanded from systems.
+
+    Returns:
+        list[str] | None: Effective target datasets; None means 'all'.
+    """
+    if systems:
+        merged = list(systems)
+        if datasets:
+            known = set(systems)
+            for dataset in datasets:
+                if dataset.lower() not in known:
+                    merged.append(dataset)
+        return merged
+    return datasets
+
+
 def list_datasets(args: argparse.Namespace) -> None:
     """Lists datasets available on the DATASUS FTP server.
 
     Args:
         args (argparse.Namespace): The parsed command line arguments.
     """
-    if not args.datasets:
+    systems = parse_systems(getattr(args, "system", None))
+    datasets = resolve_targets(args.datasets, systems)
+    if not datasets:
         datasets = meta.datasets
-    else:
-        datasets = args.datasets
 
     ftp = fetcher.connect()
 
@@ -108,10 +160,10 @@ def sync_data(args: argparse.Namespace) -> None:
         args (argparse.Namespace): The parsed command line arguments.
     """
     data_dir = args.output
-    if not args.datasets:
+    systems = parse_systems(getattr(args, "system", None))
+    datasets = resolve_targets(args.datasets, systems)
+    if not datasets:
         datasets = list(meta.datasets.keys())
-    else:
-        datasets = args.datasets
 
     slicer = Slicer(
         start_time=args.start,
@@ -321,6 +373,17 @@ def get_parser() -> argparse.ArgumentParser:
         nargs="*",
         help="Datasets a listar (ex: sih-rd, cnes-dc)",
     )
+    subparser_list.add_argument(
+        "-s",
+        "--system",
+        dest="system",
+        action="append",
+        metavar="SISTEMA",
+        help=(
+            "Sistema(is) a listar (ex: sim, sinasc). Aceita valores separados "
+            "por vírgula e múltiplas ocorrências; case-insensitive"
+        ),
+    )
     subparser_list.set_defaults(func=list_datasets)
 
     # sync
@@ -331,6 +394,17 @@ def get_parser() -> argparse.ArgumentParser:
         "datasets",
         nargs="*",
         help="Datasets a baixar (ex: sih-rd, cnes-dc). Omitir para todos.",
+    )
+    subparser_sync.add_argument(
+        "-s",
+        "--system",
+        dest="system",
+        action="append",
+        metavar="SISTEMA",
+        help=(
+            "Sistema(is) a sincronizar (ex: sim, sih). Aceita valores "
+            "separados por vírgula e múltiplas ocorrências; case-insensitive"
+        ),
     )
     subparser_sync.add_argument(
         "--start",
@@ -485,6 +559,17 @@ def get_parser() -> argparse.ArgumentParser:
         "datasets",
         nargs="*",
         help="Datasets a processar. Omitir para todos.",
+    )
+    subparser_pipe.add_argument(
+        "-s",
+        "--system",
+        dest="system",
+        action="append",
+        metavar="SISTEMA",
+        help=(
+            "Sistema(is) a processar (ex: sim, sinasc). Aceita valores "
+            "separados por vírgula e múltiplas ocorrências; case-insensitive"
+        ),
     )
     subparser_pipe.add_argument(
         "--start",

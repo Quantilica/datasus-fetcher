@@ -2115,3 +2115,73 @@ datasets_groups = {
         ),
     },
 }
+
+
+SYSTEM_DATASETS: dict[str, tuple[str, ...]] = {
+    system: tuple(
+        sorted(dataset for dataset, cfg in datasets.items() if cfg["group"] == system)
+    )
+    for system in datasets_groups
+}
+
+
+def get_system_datasets(system: str) -> tuple[str, ...]:
+    """Resolves a system name (e.g. ``sim``, ``SINASC``) to its dataset IDs.
+
+    Args:
+        system (str): System identifier, case-insensitive (e.g. 'SIM', 'sih').
+
+    Returns:
+        tuple[str, ...]: Sorted dataset IDs belonging to the system.
+
+    Raises:
+        KeyError: If the system is not recognized.
+    """
+    normalized = system.strip().lower()
+    if normalized not in SYSTEM_DATASETS:
+        raise KeyError(
+            f"Unknown system {system!r}. "
+            f"Valid systems: {', '.join(sorted(SYSTEM_DATASETS))}"
+        )
+    return SYSTEM_DATASETS[normalized]
+
+
+def expand_systems(systems: list[str] | None) -> list[str]:
+    """Expands a list of system names (or dataset IDs) into dataset IDs.
+
+    Items are matched case-insensitively against ``SYSTEM_DATASETS``. Items
+    that are already valid dataset IDs pass through unchanged, allowing
+    ``--system sin,sih-rd`` style combinations. Duplicates are removed while
+    preserving first-seen order.
+
+    Args:
+        systems (list[str] | None): System names or dataset IDs, or None.
+
+    Returns:
+        list[str]: Sorted list of unique dataset IDs.
+
+    Raises:
+        KeyError: If an item is neither a valid system nor a valid dataset ID.
+    """
+    if not systems:
+        return []
+    resolved: list[str] = []
+    seen: set[str] = set()
+    for item in systems:
+        normalized = item.strip().lower()
+        if not normalized:
+            continue
+        if normalized in SYSTEM_DATASETS:
+            candidates = SYSTEM_DATASETS[normalized]
+        elif normalized in datasets:
+            candidates = (normalized,)
+        else:
+            raise KeyError(
+                f"Unknown system or dataset {item!r}. "
+                f"Valid systems: {', '.join(sorted(SYSTEM_DATASETS))}"
+            )
+        for candidate in candidates:
+            if candidate not in seen:
+                seen.add(candidate)
+                resolved.append(candidate)
+    return sorted(resolved)

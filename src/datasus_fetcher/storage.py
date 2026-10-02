@@ -1,10 +1,12 @@
 import datetime as dt
+import json
 from collections.abc import Generator
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from quantilica.core.dates import year_month_partition
 from quantilica.core.exceptions import ParseError
+from quantilica.core.files import is_complete_file
 from quantilica.core.storage import LocalStorage, build_stamped_filename
 
 from . import logger
@@ -117,6 +119,82 @@ def get_data_filepath(data_dir: Path | str, remote_file: RemoteFile) -> Path:
     if partition_dir:
         return base / partition_dir / filename
     return base / filename
+
+
+def get_manifest_path(target_path: Path) -> Path:
+    """Returns the sidecar manifest path for a downloaded file.
+
+    Matches the convention used by ``DownloadManifest.write_json``: the
+    manifest lives next to the file with a ``.manifest.json`` suffix.
+
+    Args:
+        target_path (Path): Path of the downloaded data file.
+
+    Returns:
+        Path: The corresponding manifest sidecar path.
+    """
+    return target_path.with_suffix(target_path.suffix + ".manifest.json")
+
+
+def is_manifest_valid(manifest_path: Path) -> bool:
+    """Checks whether a download manifest sidecar exists and is parseable.
+
+    A valid manifest must be a JSON object carrying non-empty ``sha256`` and
+    ``size_bytes`` fields, as written by ``DownloadManifest.write_json``.
+
+    Args:
+        manifest_path (Path): Path of the manifest sidecar file.
+
+    Returns:
+        bool: True if the manifest exists and parses with required fields.
+    """
+    try:
+        if not manifest_path.is_file():
+            return False
+        data = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    if not isinstance(data, dict):
+        return False
+    sha256 = data.get("sha256")
+    size = data.get("size_bytes")
+    if not isinstance(sha256, str) or len(sha256) != 64:
+        return False
+    return isinstance(size, int) and size >= 0
+
+
+def is_cached_download(
+    target_path: Path,
+    expected_size: int,
+    manifest_path: Path | None = None,
+) -> bool:
+    """Returns True if ``target_path`` is already downloaded and consistent.
+
+    The incremental check requires all of:
+
+    - the data file exists locally;
+    - its byte size matches the remote ``expected_size``;
+    - the sidecar manifest exists and is well-formed (SHA-256 integrity
+      provenance is preserved from the original download).
+
+    Downloads performed through ``FtpClient.download_with_manifest`` always
+    produce the sidecar manifest, so files without one are freed downloads
+    and will be re-fetched for provenance completeness.
+
+    Args:
+        target_path (Path): Local path where the file would be stored.
+        expected_size (int): Size (bytes) reported by the remote listing.
+        manifest_path (Path | None): Manifest sidecar path; defaults to
+            ``target_path + '.manifest.json'``.
+
+    Returns:
+        bool: True when the download can be skipped (cached and valid).
+    """
+    if manifest_path is None:
+        manifest_path = get_manifest_path(target_path)
+    return is_complete_file(target_path, expected_size) and is_manifest_valid(
+        manifest_path
+    )
 
 
 class DataRepository:

@@ -6,7 +6,9 @@ from functools import lru_cache
 from pathlib import Path
 
 from quantilica.core.exceptions import FetchError
-from quantilica.core.files import is_complete_file
+
+# noqa: F401 — is_complete_file remains importable from fetcher for compat
+from quantilica.core.files import is_complete_file  # noqa: F401
 from quantilica.core.ftp import FTP_TRANSIENT_ERRORS, FtpClient, MonitoredFTP
 from quantilica.core.retry import exponential_delay
 
@@ -23,6 +25,7 @@ from .storage import (
     DataPartition,
     RemoteFile,
     get_data_filepath,
+    is_cached_download,
 )
 
 FTP_HOST = "ftp.datasus.gov.br"
@@ -261,7 +264,11 @@ def download_data(
     slicer: Slicer | None = None,
     show_progress: bool = True,
 ) -> None:
-    """Downloads data files for the specified datasets.
+    """Downloads data files for the specified datasets incrementally.
+
+    Files already present locally with matching byte size and a valid
+    provenance manifest are skipped (logged as ``cached``), so repeated sync
+    runs only transfer new or changed remote files.
 
     Args:
         datasets: List of dataset IDs to download.
@@ -272,7 +279,6 @@ def download_data(
     """
     destdir = Path(destdir)
     ftp0 = connect()
-    client = FtpClient(FTP_HOST, timeout=FTP_TIMEOUT)
 
     dataset_files: list[RemoteFile] = []
     try:
@@ -284,14 +290,23 @@ def download_data(
                 if slicer is not None and not slicer(f):
                     continue
                 target_fp = get_data_filepath(destdir, f)
-                if not is_complete_file(target_fp, f.size):
-                    dataset_files.append(f)
+                if is_cached_download(target_fp, f.size):
+                    logger.info(
+                        "skip cached %s (%s bytes, consistent manifest)",
+                        target_fp,
+                        f.size,
+                    )
+                    continue
+                dataset_files.append(f)
     finally:
         with contextlib.suppress(Exception):
             ftp0.close()
 
     if not dataset_files:
+        logger.info("sync up to date: nothing to download")
         return
+
+    client = FtpClient(FTP_HOST, timeout=FTP_TIMEOUT)
 
     def _worker(f: RemoteFile) -> None:
         target_fp = get_data_filepath(destdir, f)
@@ -334,7 +349,8 @@ def _download_support_files(
             else file["filename"]
         )
         target_path = destdir / dated_name
-        if is_complete_file(target_path, file.get("size", 0)):
+        if is_cached_download(target_path, file.get("size", 0)):
+            logger.info("skip cached %s", target_path)
             continue
         client.download_with_manifest(
             url=file["full_path"],
