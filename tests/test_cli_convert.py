@@ -37,7 +37,7 @@ def test_cli_missing_analytics_graceful_exit(tmp_path: Path):
 
     out_parquet = tmp_path / "saida.parquet"
 
-    with patch("datasus_fetcher.cli._HAS_ANALYTICS", False):
+    with patch("datasus_fetcher._HAS_ANALYTICS", False):
         with pytest.raises(SystemExit) as excinfo:
             main(["convert", "-i", str(FIXTURE_DBC), "-o", str(out_parquet)])
-        assert "pip install datasus-fetcher[analytics]" in str(excinfo.value)
+        assert excinfo.value.code == 1

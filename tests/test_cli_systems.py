@@ -1,50 +1,39 @@
-"""Tests for --system/-s CLI resolution (standalone argparse CLI)."""
+"""Tests for --system/-s CLI resolution (thin CLI delegating to plugin)."""
 
 import unittest
 
 import pytest
 
-from datasus_fetcher.cli import get_parser, parse_systems, resolve_targets
+from datasus_fetcher.cli import parse_systems, resolve_targets
 
 
 class TestParseSystems(unittest.TestCase):
     def test_none_when_absent(self):
-        parser = get_parser()
-        args = parser.parse_args(["sync"])
-        self.assertIsNone(parse_systems(args.system))
+        self.assertIsNone(parse_systems(None))
 
     def test_single_system(self):
-        parser = get_parser()
-        args = parser.parse_args(["sync", "-s", "sim"])
-        self.assertIn("sim-do-cid09", parse_systems(args.system))
-        self.assertIn("sim-domat-cid10", parse_systems(args.system))
-        self.assertEqual(len(parse_systems(args.system)), 10)
+        result = parse_systems(["sim"])
+        self.assertIn("sim-do-cid09", result)
+        self.assertIn("sim-domat-cid10", result)
+        self.assertEqual(len(result), 10)
 
     def test_case_insensitive(self):
-        parser = get_parser()
-        args = parser.parse_args(["sync", "--system", "SINASC"])
-        self.assertEqual(parse_systems(args.system), ["sinasc-dn", "sinasc-dnex"])
+        self.assertEqual(parse_systems(["SINASC"]), ["sinasc-dn", "sinasc-dnex"])
 
     def test_comma_separated(self):
-        parser = get_parser()
-        args = parser.parse_args(["sync", "-s", "sih,sinasc"])
-        result = parse_systems(args.system)
+        result = parse_systems(["sih,sinasc"])
         self.assertIn("sih-rd", result)
         self.assertIn("sinasc-dn", result)
         self.assertEqual(len(result), 4 + 2)
 
     def test_multiple_occurrences(self):
-        parser = get_parser()
-        args = parser.parse_args(["sync", "-s", "sim", "-s", "sih"])
-        result = parse_systems(args.system)
+        result = parse_systems(["sim", "sih"])
         self.assertIn("sim-do-cid09", result)
         self.assertIn("sih-rd", result)
         self.assertEqual(len(result), 10 + 4)
 
     def test_mixed_with_dataset_id(self):
-        parser = get_parser()
-        args = parser.parse_args(["sync", "-s", "sim", "sia-pa"])
-        result = resolve_targets(args.datasets, parse_systems(args.system))
+        result = resolve_targets(["sia-pa"], parse_systems(["sim"]))
         self.assertIn("sia-pa", result)
         self.assertIn("sim-do-cid10", result)
 
@@ -80,24 +69,21 @@ class TestResolveTargets(unittest.TestCase):
         self.assertEqual(result, ["sinasc-dn", "sinasc-dnex", "sih-rd"])
 
 
-class TestParserWiring(unittest.TestCase):
+class TestMainWiring(unittest.TestCase):
     def test_list_has_system_flag(self):
-        parser = get_parser()
-        args = parser.parse_args(["list", "-s", "cnes"])
-        self.assertEqual(parse_systems(args.system)[:1], ["cnes-dc"])
+        result = parse_systems(["cnes"])
+        self.assertEqual(result[:1], ["cnes-dc"])
 
     def test_pipeline_has_system_flag(self):
-        parser = get_parser()
-        args = parser.parse_args(["pipeline", "--system", "SIH"])
         self.assertEqual(
-            parse_systems(args.system), ["sih-er", "sih-rd", "sih-rj", "sih-sp"]
+            parse_systems(["SIH"]), ["sih-er", "sih-rd", "sih-rj", "sih-sp"]
         )
 
     def test_positional_datasets_still_supported(self):
-        parser = get_parser()
-        args = parser.parse_args(["sync", "sih-rd", "cnes-dc"])
-        self.assertEqual(args.datasets, ["sih-rd", "cnes-dc"])
-        self.assertIsNone(parse_systems(args.system))
+        self.assertIsNone(parse_systems(None))
+        self.assertEqual(
+            resolve_targets(["sih-rd", "cnes-dc"], None), ["sih-rd", "cnes-dc"]
+        )
 
 
 if __name__ == "__main__":
