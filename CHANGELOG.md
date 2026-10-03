@@ -1,5 +1,10 @@
 # Changelog
 
+## [Não lançado]
+
+### Alterado
+- Consolidação de `cli.py` em thin wrapper canônico delegando para o plugin Typer/Rich (redução de 691 para 70 LOC), eliminando código duplicado de parsing de sistemas/datasets.
+
 ## [0.11.3] - 2026-10-02
 ### Alterado
 - Migração do check incremental (`is_cached_download`) para a política canônica `IncrementalSyncStrategy(policy="strict_manifest")` de `quantilica-core` 0.8.0: a decisão de skip (artefato presente + sidecar `*.manifest.json` válido com `sha256`/`size_bytes` consistentes) agora é delegada inteiramente ao core, mantendo a verificação de tamanho remoto (`is_complete_file`) na borda.
