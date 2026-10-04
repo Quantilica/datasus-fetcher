@@ -42,6 +42,10 @@ def test_convert_file(tmp_path: Path):
     """Test converting a single file to Parquet and DBF."""
     if not FIXTURE_DBC.exists():
         pytest.skip("Fixture não encontrada")
+    from datasus_fetcher import _HAS_ANALYTICS
+
+    if not _HAS_ANALYTICS:
+        pytest.skip("Requer datasus-fetcher[analytics] (polars + dbfread/fastdbf)")
 
     # 1. Converter para Parquet
     out_parquet = tmp_path / "saida.parquet"
@@ -68,6 +72,10 @@ def test_convert_directory(tmp_path: Path):
     """Test converting all files in a directory hierarchy in parallel."""
     if not FIXTURE_DBC.exists():
         pytest.skip("Fixture não encontrada")
+    from datasus_fetcher import _HAS_ANALYTICS
+
+    if not _HAS_ANALYTICS:
+        pytest.skip("Requer datasus-fetcher[analytics] (polars + dbfread/fastdbf)")
 
     in_dir = tmp_path / "raw" / "sim-do"
     in_dir.mkdir(parents=True)

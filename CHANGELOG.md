@@ -5,6 +5,11 @@
 ### Alterado
 - Consolidação de `cli.py` em thin wrapper canônico delegando para o plugin Typer/Rich (redução de 691 para 70 LOC), eliminando código duplicado de parsing de sistemas/datasets.
 
+### Corrigido
+- Deteção de analytics em `__init__.py`: validação de backend de leitura DBF (`fastdbf` ou `dbfread`) junto ao `polars` para evitar que `_HAS_ANALYTICS` retorne `True` indevidamente quando apenas `polars` estiver no ambiente compartilhado.
+- Testes de conversão DBF/Parquet passam a verificar `_HAS_ANALYTICS` e pular graciosamente caso os backends de DBF não estejam instalados.
+- Inclusão de `dbfread` e `fastdbf` no grupo `dev` de `pyproject.toml`.
+
 ## [0.11.3] - 2026-10-02
 ### Alterado
 - Migração do check incremental (`is_cached_download`) para a política canônica `IncrementalSyncStrategy(policy="strict_manifest")` de `quantilica-core` 0.8.0: a decisão de skip (artefato presente + sidecar `*.manifest.json` válido com `sha256`/`size_bytes` consistentes) agora é delegada inteiramente ao core, mantendo a verificação de tamanho remoto (`is_complete_file`) na borda.

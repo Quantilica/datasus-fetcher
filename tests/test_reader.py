@@ -30,6 +30,10 @@ def test_read_dbf_and_dbc(tmp_path: Path):
     """Test reading DBF and reading DBC with automatic cleanup."""
     if not FIXTURE_DBC.exists():
         pytest.skip("Fixture não encontrada")
+    from datasus_fetcher import _HAS_ANALYTICS
+
+    if not _HAS_ANALYTICS:
+        pytest.skip("Requer datasus-fetcher[analytics] (polars + dbfread/fastdbf)")
 
     # Ler DBF diretamente
     dbf_path = decompress_dbc(FIXTURE_DBC, tmp_path / "temp.dbf")

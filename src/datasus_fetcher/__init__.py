@@ -12,6 +12,13 @@ logger = get_logger(__name__)
 from .reader import decompress_dbc
 
 try:
+    import polars  # noqa: F401
+
+    try:
+        import fastdbf  # noqa: F401
+    except ImportError:
+        import dbfread  # noqa: F401
+
     from .reader import read_dbc, read_dbf, wrangle_datasus, write_parquet
     from .wrangling import convert_directory, convert_file, parse_filename_metadata
 

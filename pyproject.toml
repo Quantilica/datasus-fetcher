@@ -68,6 +68,8 @@ dev = [
     "pytest>=8.0.0",
     "pytest-mock>=3.12",
     "maturin>=1.5,<2.0",
+    "dbfread>=2.0.7",
+    "fastdbf>=0.5.2",
 ]
 
 [tool.pytest.ini_options]

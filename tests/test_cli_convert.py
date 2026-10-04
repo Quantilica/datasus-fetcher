@@ -24,6 +24,10 @@ def test_cli_convert_parquet(tmp_path: Path):
     """Test CLI 'convert' command producing Parquet."""
     if not FIXTURE_DBC.exists():
         pytest.skip("Fixture não encontrada")
+    from datasus_fetcher import _HAS_ANALYTICS
+
+    if not _HAS_ANALYTICS:
+        pytest.skip("Requer datasus-fetcher[analytics] (polars + dbfread/fastdbf)")
 
     out_parquet = tmp_path / "saida.parquet"
     main(["convert", "-i", str(FIXTURE_DBC), "-o", str(out_parquet)])
