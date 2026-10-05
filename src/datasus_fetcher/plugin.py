@@ -17,6 +17,8 @@ from rich.rule import Rule
 from rich.table import Table
 
 from datasus_fetcher import fetcher, meta
+from datasus_fetcher.cli import _systems_to_datasets as _base_systems_to_datasets
+from datasus_fetcher.cli import resolve_dataset_targets
 from datasus_fetcher.fetcher import FTP_HOST
 from datasus_fetcher.slicer import Slicer
 from datasus_fetcher.storage import get_files_metadata
@@ -39,40 +41,10 @@ def _systems_to_datasets(systems: list[str] | None) -> list[str] | None:
     Raises:
         typer.BadParameter: On an unrecognized system/dataset name.
     """
-    if not systems:
-        return None
-    items: list[str] = []
-    for chunk in systems:
-        items.extend(piece.strip() for piece in chunk.split(",") if piece.strip())
-    if not items:
-        return None
     try:
-        return meta.expand_systems(items)
-    except KeyError as exc:
-        raise typer.BadParameter(str(exc.args[0])) from exc
-
-
-def resolve_dataset_targets(
-    datasets: list[str] | None, systems: list[str] | None
-) -> list[str] | None:
-    """Merges positional datasets with ``--system`` resolution.
-
-    Args:
-        datasets (list[str] | None): Positional dataset IDs.
-        systems (list[str] | None): Dataset IDs expanded from ``--system``.
-
-    Returns:
-        list[str] | None: Effective target datasets; None means 'all'.
-    """
-    if systems:
-        merged = list(systems)
-        if datasets:
-            known = set(systems)
-            for dataset in datasets:
-                if dataset.lower() not in known:
-                    merged.append(dataset)
-        return merged
-    return datasets
+        return _base_systems_to_datasets(systems)
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc)) from exc
 
 
 def _get_ftp():

@@ -5,6 +5,8 @@ from unittest.mock import patch
 
 import pytest
 
+pytest.importorskip("typer")
+
 from datasus_fetcher.cli import main
 
 FIXTURE_DBC = Path(__file__).parent / "fixtures" / "DOAC1996.dbc"
