@@ -21,6 +21,32 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+def _normalize_frame(result: pl.DataFrame | pl.Series) -> pl.DataFrame:
+    """Normalizar o retorno de backends Arrow para DataFrame.
+
+    Versões novas do fastdbf devolvem ``StructArray`` em ``to_arrow()``, e
+    ``pl.from_arrow`` converte para ``Series`` de structs (uma linha lógica
+    por registro, sem ``.columns``) em vez de ``DataFrame``. Sem isso,
+    ``wrangle_datasus`` explode com ``'Series' object has no attribute
+    'columns'`` só no ambiente com deps latest (CI conjunto), nunca no
+    workspace pinnado.
+
+    Args:
+        result: Saída de ``pl.from_arrow`` (DataFrame ou Series).
+
+    Returns:
+        DataFrame com uma coluna por campo (unnest no caso struct).
+    """
+    import polars as pl
+
+    if isinstance(result, pl.DataFrame):
+        return result
+    frame = result.to_frame()
+    if result.dtype == pl.Struct:
+        frame = frame.unnest(result.name)
+    return frame
+
+
 def decompress_dbc(dbc_path: Path | str, dbf_path: Path | str | None = None) -> Path:
     """Decompress a .dbc file (PKWARE DCL implode) to a .dbf file.
 
@@ -81,7 +107,7 @@ def read_dbf(dbf_path: Path | str, encoding: str = "latin1") -> pl.DataFrame:
 
         with fastdbf.Table(str(src)).open("r") as table:
             arrow_table = table.to_arrow()
-            return pl.from_arrow(arrow_table)
+            return _normalize_frame(pl.from_arrow(arrow_table))
     except Exception as exc:
         logger.debug("fastdbf falhou (%s), tentando fallback com dbfread", exc)
 

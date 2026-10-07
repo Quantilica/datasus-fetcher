@@ -105,3 +105,28 @@ def test_write_parquet(tmp_path: Path):
 
     df_read = pl.read_parquet(saved_path)
     assert df_read.equals(df)
+
+
+def test_normalize_frame_struct_series():
+    """fastdbf novo devolve StructArray: Series de structs vira DataFrame."""
+    from datasus_fetcher.reader import _normalize_frame
+
+    # Reproduz o que pl.from_arrow retorna com fastdbf>=0.6 (ver run
+    # 37609604005: Series sem nome, shape (2263,), dtype struct[41]).
+    series = pl.Series("", [{"a": 1, "b": "x"}, {"a": 2, "b": "y"}])
+    assert series.dtype == pl.Struct
+
+    df = _normalize_frame(series)
+    assert isinstance(df, pl.DataFrame)
+    assert df.columns == ["a", "b"]
+    assert df["a"].to_list() == [1, 2]
+
+    # Passthrough: DataFrame entra, DataFrame sai (mesmo objeto).
+    raw = pl.DataFrame({"a": [1]})
+    assert _normalize_frame(raw) is raw
+
+    # Series escalar (DBF de coluna única) vira frame de 1 coluna.
+    single = pl.Series("col", [1, 2, 3])
+    framed = _normalize_frame(single)
+    assert isinstance(framed, pl.DataFrame)
+    assert framed.columns == ["col"]
