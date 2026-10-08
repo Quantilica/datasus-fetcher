@@ -12,6 +12,8 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - Remoção do extra opcional duplicado `analytics` (idêntico a `analysis`); a referência canônica passa a ser `datasus-fetcher[analysis]` (README, mensagens de erro e testes atualizados).
 
 ### Corrigido
+- Comando `sync` custom passa a aceitar `--from-plan` (paridade com o `sync` do SDK: lê o plano JSON gerado por `check --json` via `CheckPlan.from_json` e baixa somente as entradas com ação `download`, ignorando a seleção de datasets/sistemas).
+- Veredito `check --json` agora funciona de ponta a ponta com o FTP do DATASUS: probe `check_entry` próprio (heurística local honesta `local-exists`/`not-present`, pois `FtpClient` não implementa HTTP `HEAD`) e entradas do plano serializadas para JSON (`RemoteFile`/`DataPartition`/`datetime` reidratados no `sync --from-plan`).
 - Deteção de analytics em `__init__.py`: validação de backend de leitura DBF (`fastdbf` ou `dbfread`) junto ao `polars` para evitar que `_HAS_ANALYTICS` retorne `True` indevidamente quando apenas `polars` estiver no ambiente compartilhado.
 - Testes de conversão DBF/Parquet passam a verificar `_HAS_ANALYTICS` e pular graciosamente caso os backends de DBF não estejam instalados.
 - Inclusão de `dbfread` e `fastdbf` no grupo `dev` de `pyproject.toml`.

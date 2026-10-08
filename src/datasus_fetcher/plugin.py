@@ -5,23 +5,28 @@
 
 from __future__ import annotations
 
+import datetime as dt
 import shutil
 from pathlib import Path
 from typing import Annotated
 
 import typer
-from quantilica.cli.sdk import FetcherApp
+from quantilica.cli.sdk import CheckPlan, CheckPlanItem, FetcherApp
 from quantilica.cli.ui import get_console, setup_rich_logging
 from quantilica.core.ftp import FtpClient
 from rich.rule import Rule
 from rich.table import Table
 
 from datasus_fetcher import fetcher, meta
-from datasus_fetcher.cli import _systems_to_datasets as _base_systems_to_datasets
-from datasus_fetcher.cli import resolve_dataset_targets
 from datasus_fetcher.fetcher import FTP_HOST
 from datasus_fetcher.slicer import Slicer
-from datasus_fetcher.storage import get_files_metadata
+from datasus_fetcher.storage import DataPartition, RemoteFile, get_files_metadata
+from datasus_fetcher.targets import (
+    _systems_to_datasets as _base_systems_to_datasets,
+)
+from datasus_fetcher.targets import (
+    resolve_dataset_targets,
+)
 
 _DEFAULT_OUTPUT = Path("/data/datasus")
 console = get_console()
@@ -140,6 +145,146 @@ def datasus_path_builder(output_dir: Path, entry: dict, last_modified) -> Path:
     return output_dir / (entry.get("id") or "unknown")
 
 
+def _entry_to_plan_dict(entry: dict) -> dict:
+    """Return a JSON-serializable copy of a dataset entry.
+
+    DATASUS entries carry rich objects (``RemoteFile``/``DataPartition`` and
+    ``datetime`` stamps) that ``CheckPlan.to_json`` cannot serialize. They are
+    converted to tagged dicts that :func:`_entry_from_plan_dict` restores.
+
+    Args:
+        entry (dict): The dataset entry produced by ``datasus_list_datasets``.
+
+    Returns:
+        dict: A JSON-serializable copy of the entry.
+    """
+    return _to_jsonable(entry)
+
+
+def _to_jsonable(obj):
+    """Recursively convert rich DATASUS values to JSON-safe structures."""
+    if isinstance(obj, RemoteFile):
+        return {
+            "__remote_file__": True,
+            "filename": obj.filename,
+            "full_path": obj.full_path,
+            "datetime": _to_jsonable(obj.datetime),
+            "extension": obj.extension,
+            "size": obj.size,
+            "dataset": obj.dataset,
+            "preliminary": obj.preliminary,
+            "partition": _to_jsonable(obj.partition),
+        }
+    if isinstance(obj, DataPartition):
+        return {
+            "__data_partition__": True,
+            "uf": obj.uf,
+            "year": obj.year,
+            "month": obj.month,
+            "version": obj.version,
+        }
+    if isinstance(obj, dt.datetime):
+        return {"__datetime__": True, "value": obj.isoformat()}
+    if isinstance(obj, dt.date):
+        return {"__date__": True, "value": obj.isoformat()}
+    if isinstance(obj, dict):
+        return {key: _to_jsonable(value) for key, value in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_to_jsonable(value) for value in obj]
+    return obj
+
+
+def _entry_from_plan_dict(data: dict) -> dict:
+    """Restore a dataset entry deserialized from a check plan.
+
+    Inverse of :func:`_entry_to_plan_dict`: tagged dicts become
+    ``RemoteFile``/``DataPartition``/``datetime`` objects again so the entry
+    works with the slicer, the path builder and the download path.
+
+    Args:
+        data (dict): The entry payload stored in the plan (``item.entry``).
+
+    Returns:
+        dict: The rehydrated dataset entry.
+    """
+    return _from_jsonable(data)
+
+
+def _from_jsonable(obj):
+    """Recursively restore values serialized by :func:`_to_jsonable`."""
+    if isinstance(obj, dict):
+        if obj.get("__remote_file__"):
+            partition = _from_jsonable(obj.get("partition"))
+            return RemoteFile(
+                filename=obj.get("filename", ""),
+                full_path=obj.get("full_path", ""),
+                datetime=_from_jsonable(obj.get("datetime")),
+                extension=obj.get("extension", ""),
+                size=obj.get("size") or 0,
+                dataset=obj.get("dataset", ""),
+                preliminary=bool(obj.get("preliminary", False)),
+                partition=partition
+                if isinstance(partition, DataPartition)
+                else DataPartition(),
+            )
+        if obj.get("__data_partition__"):
+            return DataPartition(
+                uf=obj.get("uf"),
+                year=obj.get("year"),
+                month=obj.get("month"),
+                version=obj.get("version"),
+            )
+        if obj.get("__datetime__"):
+            return dt.datetime.fromisoformat(obj["value"])
+        if obj.get("__date__"):
+            return dt.date.fromisoformat(obj["value"])
+        return {key: _from_jsonable(value) for key, value in obj.items()}
+    if isinstance(obj, list):
+        return [_from_jsonable(value) for value in obj]
+    return obj
+
+
+def _datasus_check_entry(entry: dict, output_dir: Path) -> CheckPlanItem:
+    """Build a freshness verdict for one DATASUS entry without downloading.
+
+    The generic SDK probe uses HTTP ``HEAD``, which ``FtpClient`` does not
+    implement, so freshness here is the honest local heuristic: an entry
+    whose stamped local file already exists is ``skip-up-to-date``, otherwise
+    ``download``. The stored entry is serialized via
+    :func:`_entry_to_plan_dict` so ``check --json`` round-trips through
+    ``sync --from-plan``.
+
+    Args:
+        entry (dict): Dataset entry from :func:`datasus_list_datasets`.
+        output_dir (Path): Destination directory used for path computation.
+
+    Returns:
+        CheckPlanItem: The freshness verdict for the entry.
+    """
+    dataset = str(
+        entry.get("group") or entry.get("dataset") or entry.get("id") or "datasets"
+    )
+    eid = str(entry.get("id", "unknown"))
+    partition = entry.get("partition")
+    local = datasus_path_builder(output_dir, entry, None)
+    exists = local.exists()
+    size = entry.get("size")
+    return CheckPlanItem(
+        dataset=dataset,
+        id=eid,
+        url=str(entry.get("url", "")),
+        partition=partition if isinstance(partition, str) else None,
+        local_path=str(local),
+        remote_etag=None,
+        remote_last_modified=None,
+        remote_size=size if isinstance(size, int) else None,
+        local_exists=exists,
+        action="skip-up-to-date" if exists else "download",
+        reason="local-exists" if exists else "not-present",
+        entry=_entry_to_plan_dict(entry),
+    )
+
+
 fetcher_app = FetcherApp(
     name="datasus-fetcher",
     help="Dados brutos do DATASUS (SIH, SIM, CNES, etc.).",
@@ -152,6 +297,11 @@ fetcher_app = FetcherApp(
 )
 
 app = fetcher_app.app
+
+# O probe generico do SDK usa HTTP HEAD (inexistente no FtpClient); o probe
+# acima evita o veredito "metadata-unavailable" para tudo e garante entradas
+# serializaveis no plano (``check --json`` -> ``sync --from-plan``).
+fetcher_app.check_entry = _datasus_check_entry  # type: ignore[method-assign]
 
 
 @app.command("list")
@@ -243,6 +393,15 @@ def cmd_sync(
     threads: Annotated[
         int, typer.Option("-t", "--threads", help="Downloads simultâneos")
     ] = 2,
+    from_plan: Annotated[
+        Path | None,
+        typer.Option(
+            "--from-plan",
+            help="Baixar somente as entradas com ação 'download' "
+            "de um plano gerado por 'check' (ignora a seleção "
+            "de grupos).",
+        ),
+    ] = None,
     docs: Annotated[
         bool,
         typer.Option("--docs", help="Também baixar a documentação"),
@@ -266,34 +425,57 @@ def cmd_sync(
 ) -> None:
     """Sincronizar dados brutos do DATASUS."""
     setup_rich_logging(verbose, console=console)
-    systems = _systems_to_datasets(systems)
-    targets = resolve_dataset_targets(datasets, systems) or list(meta.datasets.keys())
-    slicer = Slicer(start_time=start, end_time=end, regions=regions)
+
+    if from_plan is not None:
+        try:
+            plan = CheckPlan.from_json(from_plan.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            console.print(f"[red]Plano inválido: {exc}[/red]")
+            raise typer.Exit(1) from None
+        entries = [
+            _entry_from_plan_dict(dict(item.entry))
+            for item in plan.items
+            if item.action == "download"
+        ]
+        console.print(
+            f"[dim]Plano {from_plan}: {len(entries)} entrada(s) "
+            f"com ação 'download' de {len(plan.items)} verificada(s).[/dim]"
+        )
+    else:
+        systems = _systems_to_datasets(systems)
+        targets = resolve_dataset_targets(datasets, systems) or list(
+            meta.datasets.keys()
+        )
+        slicer = Slicer(start_time=start, end_time=end, regions=regions)
+
+        try:
+            with console.status(
+                "[cyan]Conectando ao FTP do DATASUS para listar arquivos...[/cyan]"
+            ):
+                _get_ftp()
+
+            entries = []
+            for dataset in sorted(targets):
+                if dataset not in meta.datasets:
+                    console.print(f"[red]Dataset '{dataset}' não reconhecido.[/red]")
+                    continue
+
+                for e in fetcher_app.list_datasets(dataset):
+                    if e["type"] == "data":
+                        if slicer is not None and not slicer(e["remote_file"]):
+                            continue
+                        entries.append(e)
+                    elif e["type"] == "doc" and docs:
+                        entries.append(e)
+                    elif e["type"] == "aux" and aux:
+                        entries.append(e)
+
+            _FTP_CONN.close()
+        except KeyboardInterrupt:
+            console.print("[yellow]Download cancelado pelo usuário.[/yellow]")
+            raise typer.Exit(code=130) from None
 
     try:
-        with console.status(
-            "[cyan]Conectando ao FTP do DATASUS para listar arquivos...[/cyan]"
-        ):
-            _get_ftp()
-
-        entries = []
-        for dataset in sorted(targets):
-            if dataset not in meta.datasets:
-                console.print(f"[red]Dataset '{dataset}' não reconhecido.[/red]")
-                continue
-
-            for e in fetcher_app.list_datasets(dataset):
-                if e["type"] == "data":
-                    if slicer is not None and not slicer(e["remote_file"]):
-                        continue
-                    entries.append(e)
-                elif e["type"] == "doc" and docs:
-                    entries.append(e)
-                elif e["type"] == "aux" and aux:
-                    entries.append(e)
-
-        _FTP_CONN.close()
-
         if dry_run:
             total_size = sum(e["size"] or 0 for e in entries)
             t = Table(show_header=True, header_style="bold")
