@@ -44,12 +44,6 @@ analysis = [
     "fastdbf>=0.5.2",
     "dbfread>=2.0.7",
 ]
-analytics = [
-    "polars>=1.0.0",
-    "pyarrow>=14.0.0",
-    "fastdbf>=0.5.2",
-    "dbfread>=2.0.7",
-]
 
 [project.urls]
 Homepage = "https://github.com/Quantilica/datasus-fetcher"

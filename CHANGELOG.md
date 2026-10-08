@@ -1,9 +1,15 @@
 # Changelog
 
+Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
+
+O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
+e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
+
 ## [Não lançado]
 
 ### Alterado
 - Consolidação de `cli.py` em thin wrapper canônico delegando para o plugin Typer/Rich (redução de 691 para 70 LOC), eliminando código duplicado de parsing de sistemas/datasets.
+- Remoção do extra opcional duplicado `analytics` (idêntico a `analysis`); a referência canônica passa a ser `datasus-fetcher[analysis]` (README, mensagens de erro e testes atualizados).
 
 ### Corrigido
 - Deteção de analytics em `__init__.py`: validação de backend de leitura DBF (`fastdbf` ou `dbfread`) junto ao `polars` para evitar que `_HAS_ANALYTICS` retorne `True` indevidamente quando apenas `polars` estiver no ambiente compartilhado.
@@ -65,11 +71,6 @@
 ## [0.9.0] - 2026-08-07
 ### Alterado
 - Refatoração arquitetural: Remoção de dependências (`quantilica-cli` e `quantilica-catalog`) e limpeza de imports. Os fetchers agora são pacotes de extração puros, dependendo estritamente do `quantilica-core`.
-
-Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
-
-O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
-e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [0.8.2] - 2026-08-07
 

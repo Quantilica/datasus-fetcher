@@ -33,7 +33,7 @@ def test_read_dbf_and_dbc(tmp_path: Path):
     from datasus_fetcher import _HAS_ANALYTICS
 
     if not _HAS_ANALYTICS:
-        pytest.skip("Requer datasus-fetcher[analytics] (polars + dbfread/fastdbf)")
+        pytest.skip("Requer datasus-fetcher[analysis] (polars + dbfread/fastdbf)")
 
     # Ler DBF diretamente
     dbf_path = decompress_dbc(FIXTURE_DBC, tmp_path / "temp.dbf")

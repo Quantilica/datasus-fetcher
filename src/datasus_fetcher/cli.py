@@ -6,6 +6,8 @@ import sys
 
 from datasus_fetcher import meta
 
+_HOST_MODULES = {"typer", "rich", "quantilica"}
+
 
 def _systems_to_datasets(systems: list[str] | None) -> list[str] | None:
     """Expands ``--system`` values (case-insensitive, comma-separated) to datasets.
@@ -106,9 +108,13 @@ def main(argv: list[str] | None = None) -> None:
 
     try:
         from .plugin import app
-    except ImportError as exc:
+    except ImportError as exc:  # host (typer/rich/quantilica-cli) ausente
+        if (exc.name or "").split(".")[0] not in _HOST_MODULES:
+            raise
         print(
-            f"Erro: CLI requer 'typer' e 'rich' (via quantilica-cli): {exc}",
+            "Erro: CLI requer 'typer' e 'rich' (via quantilica-cli). "
+            'Instale via "quantilica install datasus". '
+            f"Detalhe: {exc}",
             file=sys.stderr,
         )
         sys.exit(1)

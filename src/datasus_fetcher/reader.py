@@ -131,7 +131,7 @@ def read_dbf(dbf_path: Path | str, encoding: str = "latin1") -> pl.DataFrame:
     except ImportError as err:
         raise ImportError(
             "Leitura de arquivos DBF requer extras de análise: "
-            "pip install datasus-fetcher[analytics]"
+            "pip install datasus-fetcher[analysis]"
         ) from err
 
 

@@ -30,13 +30,13 @@ pip install datasus-fetcher
 Para incluir o suporte analítico completo (leitura direta em Polars, limpeza e conversão para Parquet):
 
 ```bash
-pip install 'datasus-fetcher[analytics]'
+pip install 'datasus-fetcher[analysis]'
 ```
 
 Para instalação global isolada (CLI):
 
 ```bash
-pipx install 'datasus-fetcher[analytics]'
+pipx install 'datasus-fetcher[analysis]'
 ```
 
 ## Uso Rápido
@@ -646,7 +646,7 @@ df.decompress_dbc("DOSP2023.dbc", "DOSP2023.dbf")
 
 ### 2. Leitura e conversão analítica para Parquet
 
-Requer a instalação com o extra opcional: `pip install 'datasus-fetcher[analytics]'`.
+Requer a instalação com o extra opcional: `pip install 'datasus-fetcher[analysis]'`.
 
 ```python
 import datasus_fetcher as df

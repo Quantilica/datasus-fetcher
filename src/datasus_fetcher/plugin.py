@@ -329,7 +329,7 @@ def cmd_sync(
             except ImportError:
                 console.print(
                     "[red]Erro:[/red] --convert requer extras de análise: "
-                    "pip install datasus-fetcher[analytics]"
+                    "pip install datasus-fetcher[analysis]"
                 )
                 raise typer.Exit(1) from None
 
@@ -439,7 +439,7 @@ def cmd_convert(
         except ImportError:
             console.print(
                 "[red]Erro:[/red] conversão para Parquet requer extras de análise: "
-                "pip install datasus-fetcher[analytics]"
+                "pip install datasus-fetcher[analysis]"
             )
             raise typer.Exit(1) from None
 
@@ -535,7 +535,7 @@ def cmd_pipeline(
     except ImportError:
         console.print(
             "[red]Erro:[/red] pipeline requer extras de análise: "
-            "pip install datasus-fetcher[analytics]"
+            "pip install datasus-fetcher[analysis]"
         )
         raise typer.Exit(1) from None
 

@@ -45,7 +45,7 @@ def test_convert_file(tmp_path: Path):
     from datasus_fetcher import _HAS_ANALYTICS
 
     if not _HAS_ANALYTICS:
-        pytest.skip("Requer datasus-fetcher[analytics] (polars + dbfread/fastdbf)")
+        pytest.skip("Requer datasus-fetcher[analysis] (polars + dbfread/fastdbf)")
 
     # 1. Converter para Parquet
     out_parquet = tmp_path / "saida.parquet"
@@ -75,7 +75,7 @@ def test_convert_directory(tmp_path: Path):
     from datasus_fetcher import _HAS_ANALYTICS
 
     if not _HAS_ANALYTICS:
-        pytest.skip("Requer datasus-fetcher[analytics] (polars + dbfread/fastdbf)")
+        pytest.skip("Requer datasus-fetcher[analysis] (polars + dbfread/fastdbf)")
 
     in_dir = tmp_path / "raw" / "sim-do"
     in_dir.mkdir(parents=True)
