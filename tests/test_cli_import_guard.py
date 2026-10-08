@@ -1,5 +1,6 @@
 """Tests for datasus_fetcher.cli import guard (host absent)."""
 
+import importlib
 import importlib.abc
 import importlib.machinery
 import sys
@@ -12,20 +13,19 @@ PLUGIN_MODULE = "datasus_fetcher.plugin"
 
 
 @pytest.fixture
-def host_bloqueado():
-    """Simular host ausente (typer); o import do plugin e feito em main()."""
-    salvo_typer = sys.modules.get("typer")
+def host_bloqueado(monkeypatch):
+    """Simula host ausente (typer) recarregando a CLI fina sem o plugin."""
     salvo_plugin = sys.modules.pop(PLUGIN_MODULE, None)
-    sys.modules["typer"] = None
+    monkeypatch.setitem(sys.modules, "typer", None)
     try:
+        importlib.reload(cli_module)
+        assert cli_module.app is None
         yield cli_module
     finally:
-        sys.modules.pop("typer", None)
-        if salvo_typer is not None:
-            sys.modules["typer"] = salvo_typer
         sys.modules.pop(PLUGIN_MODULE, None)
         if salvo_plugin is not None:
             sys.modules[PLUGIN_MODULE] = salvo_plugin
+        importlib.reload(cli_module)
 
 
 def test_main_sem_host_sai_com_codigo_1_e_mensagem(host_bloqueado, capsys):
@@ -60,9 +60,10 @@ def test_erro_interno_do_plugin_propaga():
     sys.meta_path.insert(0, finder)
     try:
         with pytest.raises(ModuleNotFoundError):
-            cli_module.main(["sync"])
+            importlib.reload(cli_module)
     finally:
         sys.meta_path.remove(finder)
         sys.modules.pop(PLUGIN_MODULE, None)
         if salvo_plugin is not None:
             sys.modules[PLUGIN_MODULE] = salvo_plugin
+        importlib.reload(cli_module)

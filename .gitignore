@@ -39,7 +39,7 @@ Thumbs.db
 .claude/
 
 # Específico do repo
-logging.ini
+(nenhum — logging.ini é versionado como template documentado no README)
 
 # Rust / Maturin
 target/

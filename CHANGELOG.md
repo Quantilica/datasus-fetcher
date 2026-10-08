@@ -8,6 +8,9 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ## [Não lançado]
 
 ### Alterado
+- Helpers de resolução de sistemas/datasets (`_systems_to_datasets`, `resolve_dataset_targets`, `parse_systems`, `resolve_targets`) movidos de `cli.py` para o módulo novo `datasus_fetcher.targets`; `plugin.py` e `cli.py` importam de lá (`cli.py` mantém re-exports para compatibilidade; `plugin.py` não importa mais `cli.py`).
+- `cli.py` padronizado no bloco top-level dos demais fetchers (importe de `app` com guarda de host, `--version`, delegação via `app(argv)`, `KeyboardInterrupt` → exit 130 e `SystemExit` preservados).
+- `.gitignore`: removida a entrada `logging.ini` (arquivo versionado e documentado no README como template de customização de logging).
 - Consolidação de `cli.py` em thin wrapper canônico delegando para o plugin Typer/Rich (redução de 691 para 70 LOC), eliminando código duplicado de parsing de sistemas/datasets.
 - Remoção do extra opcional duplicado `analytics` (idêntico a `analysis`); a referência canônica passa a ser `datasus-fetcher[analysis]` (README, mensagens de erro e testes atualizados).
 
