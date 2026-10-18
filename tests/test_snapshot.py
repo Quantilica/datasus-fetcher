@@ -11,9 +11,7 @@ from unittest import mock
 
 import pytest
 
-pytest.importorskip("typer")
-
-from datasus_fetcher import plugin, snapshot  # noqa: E402
+from datasus_fetcher import snapshot
 
 RECORD = {
     "filename": "RDAC2401.dbc",
@@ -111,6 +109,13 @@ class TestSnapshotLoading(SnapshotTestCase):
 
 
 class TestListDatasetsMetadataFirst(SnapshotTestCase):
+    def setUp(self):
+        super().setUp()
+        pytest.importorskip("typer")
+        from datasus_fetcher import plugin as _plugin
+
+        self.plugin = _plugin
+
     def _env(self):
         return mock.patch.dict(os.environ, {snapshot.ENV_DIR: str(self.base)})
 
@@ -118,10 +123,10 @@ class TestListDatasetsMetadataFirst(SnapshotTestCase):
         self.write("data", "sih-rd", [RECORD])
         with (
             self._env(),
-            mock.patch.object(plugin, "_get_ftp") as get_ftp,
-            mock.patch.object(plugin.fetcher, "list_dataset_files") as ftp_list,
+            mock.patch.object(self.plugin, "_get_ftp") as get_ftp,
+            mock.patch.object(self.plugin.fetcher, "list_dataset_files") as ftp_list,
         ):
-            entries = plugin.datasus_list_datasets("sih-rd")
+            entries = self.plugin.datasus_list_datasets("sih-rd")
         get_ftp.assert_not_called()
         ftp_list.assert_not_called()
         data = [e for e in entries if e["type"] == "data"]
@@ -132,25 +137,25 @@ class TestListDatasetsMetadataFirst(SnapshotTestCase):
         self.write("data", "sih-rd", [RECORD], age_h=40)
         with (
             self._env(),
-            mock.patch.object(plugin, "_get_ftp", return_value="ftp") as get_ftp,
+            mock.patch.object(self.plugin, "_get_ftp", return_value="ftp") as get_ftp,
             mock.patch.object(
-                plugin.fetcher, "list_dataset_files", return_value=[]
+                self.plugin.fetcher, "list_dataset_files", return_value=[]
             ) as ftp_list,
         ):
-            plugin.datasus_list_datasets("sih-rd")
+            self.plugin.datasus_list_datasets("sih-rd")
         get_ftp.assert_called()
         ftp_list.assert_called_once_with("ftp", "sih-rd")
 
     def test_unconfigured_uses_ftp(self):
         with (
             mock.patch.dict(os.environ, {}, clear=False),
-            mock.patch.object(plugin, "_get_ftp", return_value="ftp"),
+            mock.patch.object(self.plugin, "_get_ftp", return_value="ftp"),
             mock.patch.object(
-                plugin.fetcher, "list_dataset_files", return_value=[]
+                self.plugin.fetcher, "list_dataset_files", return_value=[]
             ) as ftp_list,
         ):
             os.environ.pop(snapshot.ENV_DIR, None)
-            plugin.datasus_list_datasets("sih-rd")
+            self.plugin.datasus_list_datasets("sih-rd")
         ftp_list.assert_called_once()
 
 
