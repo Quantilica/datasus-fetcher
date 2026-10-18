@@ -9,7 +9,11 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from datasus_fetcher import plugin, snapshot
+import pytest
+
+pytest.importorskip("typer")
+
+from datasus_fetcher import plugin, snapshot  # noqa: E402
 
 RECORD = {
     "filename": "RDAC2401.dbc",
