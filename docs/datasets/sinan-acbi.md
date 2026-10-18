@@ -1,4 +1,4 @@
-# `sinan-acbi` — Acidente de Trabalho com Exposição a Material Biológico (SINAN)
+# `sinan-acbi` — Acidente de trabalho com material biológico
 
 Notificações de acidentes de trabalho em que o trabalhador foi exposto, de forma direta ou indireta, a material biológico (orgânico) potencialmente contaminado por patógenos, registradas no SINAN. Cada linha representa uma ficha de investigação de acidente com material biológico, alimentada por serviços de saúde públicos e privados de todos os portes.
 
@@ -57,41 +57,72 @@ Principais usos: perfil de exposição ocupacional por categoria profissional e 
 
 ### Variáveis-Chave dos Microdados
 
-Os campos abaixo seguem o dicionário de dados do SINAN Net. A ficha é específica do agravo e os leiautes variam entre anos, portanto o conjunto exato de colunas deve ser conferido nos cabeçalhos do `.dbf` e no dicionário do ano. Por padrão, `wrangle_datasus` converte os nomes de coluna para minúsculas.
+Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo `ACBIBR10.dbc` (leiaute do SINAN Net; fichas e leiautes podem variar entre anos, por isso a lista reflete esse arquivo). Os arquivos públicos não trazem identificadores individuais como número da notificação (`NU_NOTIFIC`) nem data de nascimento completa. Por padrão, `wrangle_datasus` converte os nomes de coluna para minúsculas.
 
 | Coluna (DBF) | Tipo / Formato | Descrição |
 |---|---|---|
-| `NU_NOTIFIC` | String | Número da notificação (identificador da ficha na unidade notificadora; preservar como texto). |
-| `ID_AGRAVO` | String | Código CID-10 do agravo notificado (`Z20.9`). |
+| `TP_NOT` | String | Tipo de notificação (registro da ficha de notificação individual). |
+| `ID_AGRAVO` | String | Código CID-10 do agravo notificado. |
 | `DT_NOTIFIC` | Data (AAAAMMDD) | Data da notificação. |
-| `DT_ACID` / `DT_SIN_PRI` | Data (AAAAMMDD) | Data do acidente (nos agravos da saúde do trabalhador a data dos primeiros sintomas é a data do acidente). |
 | `SEM_NOT` | String | Semana epidemiológica da notificação (AAAASS). |
-| `NU_ANO` | Inteiro | Ano da notificação. |
+| `NU_ANO` | String | Ano da notificação. |
 | `SG_UF_NOT` | String | UF de notificação (código IBGE de 2 dígitos). |
-| `ID_MUNICIP` | String | Município de notificação (código IBGE, 6 dígitos). |
+| `ID_MUNICIP` | String | Município de notificação (código IBGE). |
 | `ID_UNIDADE` | String | Código CNES da unidade de saúde notificadora (7 dígitos). |
-| `DT_NASC` | Data (AAAAMMDD) | Data de nascimento. |
-| `NU_IDADE_N` | Inteiro codificado | Idade no formato `TNNN`: primeiro dígito = unidade (1 hora, 2 dia, 3 mês, 4 ano) e três dígitos = valor. |
+| `DT_ACID` | Data (AAAAMMDD) | Data do acidente. |
+| `SEM_ACID` | String | Semana epidemiológica do acidente (AAAASS). |
+| `ANO_NASC` | String | Ano de nascimento (o arquivo público não traz a data de nascimento completa). |
+| `NU_IDADE_N` | Inteiro | Idade no formato `TNNN`: primeiro dígito = unidade (1 hora, 2 dia, 3 mês, 4 ano) e três dígitos = valor. |
 | `CS_SEXO` | String | Sexo (M, F, I = ignorado). |
 | `CS_RACA` | String | Raça/cor (1 branca, 2 preta, 3 amarela, 4 parda, 5 indígena, 9 ignorado). |
+| `CS_ESCOL_N` | String | Escolaridade. |
+| `SG_UF` | String | UF de residência (código IBGE de 2 dígitos). |
 | `ID_MN_RESI` | String | Município de residência (código IBGE, 6 dígitos). |
-| `ID_OCUPA_N` | String | Ocupação (CBO 2002, 6 dígitos) do trabalhador acidentado. |
-| `SIT_TRAB` | String | Situação no mercado de trabalho (1 registrado, 2 não registrado, 3 autônomo, ... 12 outros, 99 ignorado). |
-| `CNAE` / `ATIV_ECO` | String | Atividade econômica da empresa contratante (CNAE). *Nome e tamanho devem ser conferidos no dicionário vigente.* |
-| `MAT_ORG` | String | Material orgânico envolvido (1 sangue, 2 líquor, 3 líquido pleural, 4 ascítico, 5 amniótico, 6 fluido com sangue, 7 soro/plasma, 8 outros, 9 ignorado). |
-| `TIPO_ACID` | String | Circunstância do acidente (código de 01 a 16: punção, procedimento cirúrgico, reencape, descarte inadequado, etc.). |
-| `TIPO_EXPO` | String | Tipo de exposição (percutânea, mucosa, pele íntegra, pele não íntegra, outros). |
-| `AGENTE_ACID` | String | Agente envolvido (1 agulha com lúmen, 2 agulha sem lúmen, 3 intracath, 4 vidros, 5 lâmina/lanceta, 6 outros). |
-| `EVOLUCAO` | String | Evolução do caso (alta com/sem conversão sorológica, abandono, óbito por acidente ou por outra causa, ignorado). |
-| `CAT` | String | Foi emitida a Comunicação de Acidente do Trabalho? (1 sim, 2 não, 3 não se aplica, 9 ignorado). |
-| `DT_ENCERRA` | Data (AAAAMMDD) | Data de encerramento da investigação. |
+| `ID_OCUPA_N` | String | Ocupação do trabalhador (CBO 2002, 6 dígitos). |
+| `SIT_TRAB` | String | Situação no mercado de trabalho. |
+| `CNAE` | String | Atividade econômica da empresa contratante (CNAE). |
+| `PERCUTANEA` | String | Exposição percutânea (marcação da ficha (padrão SINAN: 1 sim, 2 não, 9 ignorado)). |
+| `PELE_INTEG` | String | Exposição em pele íntegra (marcação da ficha (padrão SINAN: 1 sim, 2 não, 9 ignorado)). |
+| `PELE_NAO_I` | String | Exposição em pele não íntegra (marcação da ficha (padrão SINAN: 1 sim, 2 não, 9 ignorado)). |
+| `OUTRO_EXP` | String | Outro tipo de exposição (descrição em `OUT_EXP_DE`). |
+| `MAT_ORG` | String | Material orgânico envolvido (descrição de outros em `MAT_ORG_DE`). |
+| `TIPO_ACID` | String | Circunstância do acidente. |
+| `AGENTE` | String | Agente (objeto) causador do acidente. |
+| `LUVA` | String | Uso de luvas (marcação da ficha (padrão SINAN: 1 sim, 2 não, 9 ignorado)). |
+| `AVENTAL` | String | Uso de avental (marcação da ficha (padrão SINAN: 1 sim, 2 não, 9 ignorado)). |
+| `OCULOS` | String | Uso de óculos (marcação da ficha (padrão SINAN: 1 sim, 2 não, 9 ignorado)). |
+| `MASCARA` | String | Uso de máscara (marcação da ficha (padrão SINAN: 1 sim, 2 não, 9 ignorado)). |
+| `FACIAL` | String | Uso de protetor facial (marcação da ficha (padrão SINAN: 1 sim, 2 não, 9 ignorado)). |
+| `BOTA` | String | Uso de botas (marcação da ficha (padrão SINAN: 1 sim, 2 não, 9 ignorado)). |
+| `VACINA` | String | Trabalhador vacinado contra hepatite B. |
+| `ANTI_HIV` | String | Resultado do anti-HIV do trabalhador no momento do acidente. |
+| `HBSAG` | String | Resultado do HBsAg do trabalhador. |
+| `ANTI_HBS` | String | Resultado do anti-HBs do trabalhador. |
+| `ANTI_HCV` | String | Resultado do anti-HCV do trabalhador. |
+| `FONTE` | String | Paciente-fonte conhecido. |
+| `FO_HBSAG` | String | HBsAg do paciente-fonte. |
+| `FO_ANT_HIV` | String | Anti-HIV do paciente-fonte. |
+| `FO_ANT_HBC` | String | Anti-HBc do paciente-fonte. |
+| `FO_ANT_HCV` | String | Anti-HCV do paciente-fonte. |
+| `SEM_QUIMIO` | String | Sem quimioprofilaxia (marcação da ficha (padrão SINAN: 1 sim, 2 não, 9 ignorado)). |
+| `RECUSA_QUI` | String | Recusa da quimioprofilaxia (marcação da ficha (padrão SINAN: 1 sim, 2 não, 9 ignorado)). |
+| `AZT3TC` | String | Esquema de quimioprofilaxia AZT+3TC. |
+| `AZT3TC_IND` | String | Esquema AZT+3TC+indinavir. |
+| `AZT3TC_NFV` | String | Esquema AZT+3TC+nelfinavir. |
+| `IMU_HEP_B` | String | Imunoglobulina humana anti-hepatite B. |
+| `VAC_HEP_B` | String | Vacinação contra hepatite B após o acidente. |
+| `OUTRO_ARV` | String | Outro esquema antirretroviral (descrição em `OUT_ARV_ES`). |
+| `EVOLUCAO` | String | Evolução do caso. |
+| `DT_OBITO` | Data (AAAAMMDD) | Data do óbito, quando aplicável. |
+| `CAT` | String | Foi emitida a Comunicação de Acidente do Trabalho (CAT)? |
+| `MUCOSA` | String | Exposição em mucosa (marcação da ficha (padrão SINAN: 1 sim, 2 não, 9 ignorado)). |
 
 ### Observações de Tratamento e Saneamento (`wrangle_datasus`)
 
-- **Preservação de códigos estruturados**: municípios (`ID_MUNICIP`, `ID_MN_RESI`) usam código IBGE de 6 dígitos (sem dígito verificador); `ID_UNIDADE` é CNES de 7 dígitos; `SG_UF_NOT` é código IBGE de 2 dígitos. `ID_AGRAVO` (CID-10), `CBO`/`ID_OCUPA_N` (6 dígitos), `CNAE` e `NU_NOTIFIC` devem ficar como `String`, mantendo zeros à esquerda (`zfill`).
+- **Preservação de códigos estruturados**: municípios (`ID_MUNICIP`, `ID_MN_RESI`) usam código IBGE de 6 dígitos; `ID_UNIDADE` é CNES de 7 dígitos; `SG_UF_NOT` é código IBGE de 2 dígitos. `ID_AGRAVO` (CID-10), `ID_OCUPA_N` (CBO 2002, 6 dígitos), `CNAE`, devem ficar como `String`, mantendo zeros à esquerda (`zfill`).
 - **Datas e competências**: datas `DT_*` são gravadas em `AAAAMMDD` nos DBF e convertidas para `pl.Date`; `SEM_NOT` é semana epidemiológica `AAAASS` e permanece texto. A idade em `NU_IDADE_N` está codificada (`TNNN`) e deve ser decodificada antes de calcular faixas etárias.
 - **Valores ausentes e sentinelas**: o SINAN usa `9`, `99`, `999`, `99` e `I` (ignorado) como categorias válidas no dicionário; elas **não** são nulos automáticos e a decisão de tratá-las como ausente cabe à análise. Espaços em branco e `""` viram nulos, e registros marcados como excluídos no dBASE (`_deleted`) são removidos.
-- **Particularidades do dataset**: a tabela `1` do SINAN tem apenas o agravo específico, mas os campos de ocupação e CNAE podem vir incompletos em notificações de baixa qualidade; o profissional de saúde é a categoria predominante, e o `CBO`/`ID_OCUPA_N` deve ser agregado por grandes grupos. `ID_AGRAVO` é sempre `Z20.9`. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` (notificação) ou `ID_MN_RESI` (residência) conforme a pergunta. Arquivos do diretório PRELIM (2023+) são preliminares e substituídos pelos finais; deduplique por `NU_NOTIFIC` + `ID_UNIDADE` + `NU_ANO` ao combinar as duas fontes.
+- **Particularidades do dataset**: a tabela `1` do SINAN tem apenas o agravo específico, mas os campos de ocupação e CNAE podem vir incompletos em notificações de baixa qualidade; o profissional de saúde é a categoria predominante, e o `ID_OCUPA_N` deve ser agregado por grandes grupos. `ID_AGRAVO` é sempre `Z20.9`. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` (notificação) ou `ID_MN_RESI` (residência) conforme a pergunta. Arquivos do diretório PRELIM (2023+) são preliminares e substituídos pelos finais; como `NU_NOTIFIC` não consta dos arquivos públicos, deduplique por combinação de campos (ex.: `ID_UNIDADE`, `DT_NOTIFIC`, `ID_MN_RESI`, `ANO_NASC`, `CS_SEXO`) ao combinar as duas fontes.
 
 ## 4. Exemplos Práticos
 

@@ -1,4 +1,4 @@
-# `base-populacional-ibge-popt` — POPT: Estimativas TCU
+# `base-populacional-ibge-popt` — POPT - Estimativas TCU
 
 O `base-populacional-ibge-popt` contém as **estimativas anuais de população residente** dos municípios brasileiros, com data de referência de 1º de julho, publicadas pelo IBGE para o **Tribunal de Contas da União (TCU)**. Cada registro (linha) representa a população total estimada de um município em um ano. É a base de denominadores utilizada oficialmente para o cálculo das cotas do **Fundo de Participação dos Estados e Municípios (FPE/FPM)** e, no SUS, como referência para alguns repasses e indicadores.
 

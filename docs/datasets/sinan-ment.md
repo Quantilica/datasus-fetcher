@@ -1,4 +1,4 @@
-# `sinan-ment` — Transtornos Mentais Relacionados ao Trabalho (SINAN)
+# `sinan-ment` — Transtornos mentais relacionados ao trabalho
 
 Notificações de transtornos mentais e do comportamento relacionados ao trabalho, registradas no SINAN. Cada linha representa uma ficha de investigação de um caso de sofrimento ou adoecimento mental associado a fatores psicossociais e organizacionais do trabalho.
 
@@ -49,40 +49,57 @@ Principais usos: vigilância de TMRT por ramo (CNAE) e ocupação (CBO), monitor
 
 ### Variáveis-Chave dos Microdados
 
-Os campos abaixo seguem o dicionário de dados do SINAN Net. A ficha é específica do agravo e os leiautes variam entre anos, portanto o conjunto exato de colunas deve ser conferido nos cabeçalhos do `.dbf` e no dicionário do ano. Por padrão, `wrangle_datasus` converte os nomes de coluna para minúsculas.
+Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo `MENTBR26.dbc` (leiaute do SINAN Net; fichas e leiautes podem variar entre anos, por isso a lista reflete esse arquivo). Os arquivos públicos não trazem identificadores individuais como número da notificação (`NU_NOTIFIC`) nem data de nascimento completa. Por padrão, `wrangle_datasus` converte os nomes de coluna para minúsculas.
 
 | Coluna (DBF) | Tipo / Formato | Descrição |
 |---|---|---|
-| `NU_NOTIFIC` | String | Número da notificação (identificador da ficha na unidade notificadora; preservar como texto). |
-| `ID_AGRAVO` | String | Código CID-10 do agravo notificado (transtorno mental relacionado ao trabalho). |
+| `TP_NOT` | String | Tipo de notificação (registro da ficha de notificação individual). |
+| `ID_AGRAVO` | String | Código CID-10 do agravo notificado. |
 | `DT_NOTIFIC` | Data (AAAAMMDD) | Data da notificação. |
-| `DT_SIN_PRI` / `DT_DIAG` | Data (AAAAMMDD) | Data dos primeiros sintomas / data do diagnóstico (agravo crônico: data do diagnóstico). |
 | `SEM_NOT` | String | Semana epidemiológica da notificação (AAAASS). |
-| `NU_ANO` | Inteiro | Ano da notificação. |
+| `NU_ANO` | String | Ano da notificação. |
 | `SG_UF_NOT` | String | UF de notificação (código IBGE de 2 dígitos). |
-| `ID_MUNICIP` | String | Município de notificação (código IBGE, 6 dígitos). |
+| `ID_MUNICIP` | String | Município de notificação (código IBGE). |
 | `ID_UNIDADE` | String | Código CNES da unidade de saúde notificadora (7 dígitos). |
-| `DT_NASC` | Data (AAAAMMDD) | Data de nascimento. |
-| `NU_IDADE_N` | Inteiro codificado | Idade no formato `TNNN` (unidade = hora/dia/mês/ano + 3 dígitos). |
+| `DT_DIAG` | Data (AAAAMMDD) | Data do diagnóstico. |
+| `SEM_DIAG` | String | Semana epidemiológica do diagnóstico (AAAASS). |
+| `ANO_NASC` | String | Ano de nascimento (o arquivo público não traz a data de nascimento completa). |
+| `NU_IDADE_N` | Inteiro | Idade no formato `TNNN`: primeiro dígito = unidade (1 hora, 2 dia, 3 mês, 4 ano) e três dígitos = valor. |
 | `CS_SEXO` | String | Sexo (M, F, I = ignorado). |
+| `CS_RACA` | String | Raça/cor (1 branca, 2 preta, 3 amarela, 4 parda, 5 indígena, 9 ignorado). |
+| `CS_ESCOL_N` | String | Escolaridade. |
+| `SG_UF` | String | UF de residência (código IBGE de 2 dígitos). |
 | `ID_MN_RESI` | String | Município de residência (código IBGE, 6 dígitos). |
-| `ID_OCUPA_N` | String | Ocupação (CBO 2002, 6 dígitos) do trabalhador. |
-| `SIT_TRAB` | String | Situação no mercado de trabalho (1 a 12, 99 ignorado). |
-| `CNAE` / `ATIV_ECO` | String | Atividade econômica da empresa contratante (CNAE). *Nome a conferir no dicionário.* |
-| `NEXO_TRAB` | String | Relação do agravo com o trabalho (1 sim, 2 não, 9 ignorado) / nexo referido ou comprovado. |
-| `TEMPO_EXP` | String | Tempo de exposição à situação de risco. |
-| `USO_SUBST` | String | Uso de substância psicoativa (1 álcool, 2 outras drogas, 3 álcool e outras, 4 não, 9 ignorado). *Nome a conferir no dicionário.* |
-| `CLASSI_FIN` | String | Classificação final (1 confirmado). |
-| `EVOLUCAO` | String | Evolução do caso (cura, cura não confirmada, incapacidade temporária/parcial/total, óbito pela doença, óbito por outra causa, outro, ignorado). |
-| `CAT` | String | Foi emitida a Comunicação de Acidente do Trabalho (CAT)? (1 sim, 2 não, 3 não se aplica, 9 ignorado). |
-| `DT_ENCERRA` | Data (AAAAMMDD) | Data de encerramento da investigação. |
+| `ID_OCUPA_N` | String | Ocupação do trabalhador (CBO 2002, 6 dígitos). |
+| `SIT_TRAB` | String | Situação no mercado de trabalho. |
+| `CNAE` | String | Atividade econômica da empresa contratante (CNAE). |
+| `DIAG_ESP` | String | Diagnóstico específico (CID-10). |
+| `ALCOOL` | String | Fator associado: uso de álcool. |
+| `PSICO_FARM` | String | Fator associado: uso de psicofármacos. |
+| `DROGAS` | String | Fator associado: uso de outras drogas. |
+| `FUMA` | String | Hábito de fumar (marcação da ficha). |
+| `TEMPO_FUMA` | String | Tempo de tabagismo (valor; unidade em `TP_TEMP_FU`). |
+| `TP_TEMP_FU` | String | Unidade do tempo de tabagismo. |
+| `AFAST_DESG` | String | Conduta: afastamento do trabalho por desgaste. |
+| `INDIVIDUAL` | String | Conduta: ação individual. |
+| `MUDA_TRAB` | String | Conduta: mudança de função/posto de trabalho. |
+| `NENHUM` | String | Conduta: nenhuma ação. |
+| `COLETIVA` | String | Conduta: ação coletiva. |
+| `AFAST_TRAB` | String | Conduta: afastamento do trabalho. |
+| `CONDUTA` | String | Conduta adotada (marcação geral da ficha). |
+| `TRAB_DOE` | String | Outros trabalhadores com a mesma doença no local de trabalho. |
+| `CAPES` | String | Encaminhamento a serviço de saúde mental (CAPS). |
+| `DT_OBITO` | Data (AAAAMMDD) | Data do óbito, quando aplicável. |
+| `CAT` | String | Foi emitida a Comunicação de Acidente do Trabalho (CAT)? |
+| `EVOLUCAO` | String | Evolução do caso. |
+| `CONDUT_DES` | String | Descrição textual de outra conduta. |
 
 ### Observações de Tratamento e Saneamento (`wrangle_datasus`)
 
-- **Preservação de códigos estruturados**: municípios (`ID_MUNICIP`, `ID_MN_RESI`) usam código IBGE de 6 dígitos; `ID_UNIDADE` é CNES de 7 dígitos; `SG_UF_NOT` é código IBGE de 2 dígitos. `ID_AGRAVO` (CID-10), `CBO`/`ID_OCUPA_N` (6 dígitos), `CNAE` (7 dígitos) e `NU_NOTIFIC` devem ficar como `String`, mantendo zeros à esquerda (`zfill`).
+- **Preservação de códigos estruturados**: municípios (`ID_MUNICIP`, `ID_MN_RESI`) usam código IBGE de 6 dígitos; `ID_UNIDADE` é CNES de 7 dígitos; `SG_UF_NOT` é código IBGE de 2 dígitos. `ID_AGRAVO` (CID-10), `ID_OCUPA_N` (CBO 2002, 6 dígitos), `CNAE`, devem ficar como `String`, mantendo zeros à esquerda (`zfill`).
 - **Datas e competências**: datas `DT_*` são gravadas em `AAAAMMDD` nos DBF e convertidas para `pl.Date`; `SEM_NOT` é semana epidemiológica `AAAASS` e permanece texto. A idade em `NU_IDADE_N` está codificada (`TNNN`) e deve ser decodificada antes de calcular faixas etárias.
 - **Valores ausentes e sentinelas**: o SINAN usa `9`, `99`, `999` e `I` (ignorado) como categorias válidas; elas **não** são nulos automáticos. Espaços em branco e `""` viram nulos, e registros marcados como excluídos no dBASE (`_deleted`) são removidos.
-- **Particularidades do dataset**: o estabelecimento do nexo causal é o ponto mais sensível da ficha e a subnotificação é alta, com grande variação entre estados e entre serviços de saúde; muitos casos são classificados com Z-codes. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` (notificação) ou `ID_MN_RESI` (residência) conforme a pergunta. Arquivos do diretório PRELIM (2023+) são preliminares; deduplique por `NU_NOTIFIC` + `ID_UNIDADE` + `NU_ANO` ao combinar as duas fontes.
+- **Particularidades do dataset**: o estabelecimento do nexo causal é o ponto mais sensível da ficha e a subnotificação é alta, com grande variação entre estados e entre serviços de saúde; muitos casos são classificados com Z-codes. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` (notificação) ou `ID_MN_RESI` (residência) conforme a pergunta. Arquivos do diretório PRELIM (2023+) são preliminares; como `NU_NOTIFIC` não consta dos arquivos públicos, deduplique por combinação de campos (ex.: `ID_UNIDADE`, `DT_NOTIFIC`, `ID_MN_RESI`, `ANO_NASC`, `CS_SEXO`) ao combinar as duas fontes.
 
 ## 4. Exemplos Práticos
 
@@ -120,7 +137,7 @@ resumo = (
 )
 
 # Nexo com o trabalho e principais CIDs notificados
-print(frame.group_by("nexo_trab").agg(pl.len().alias("n")).sort("n", descending=True))
+print(frame.group_by("alcool").agg(pl.len().alias("n")).sort("n", descending=True))
 print(frame.group_by("id_agravo").agg(pl.len().alias("n")).sort("n", descending=True).head())
 print(resumo.head())
 ```

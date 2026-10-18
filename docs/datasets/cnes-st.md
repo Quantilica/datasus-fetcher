@@ -12,7 +12,7 @@ O `cnes-st` contém os microdados do arquivo de **Estabelecimentos** do Cadastro
 | **Particionamento** | `uf`, `yearmonth` (um arquivo por UF e competência mensal, além da consolidação `br`) |
 | **Periodicidade** | Mensal (extração por competência) |
 | **Cobertura temporal no FTP** | 2005-08 a 2026-09 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 6858 arquivos (~3,15 GB) |
+| **Volume aproximado no FTP** | 6858 arquivos (~3,4 GB) |
 | **Arquivos preliminares** | Não |
 | **Documentação oficial no FTP** | `/dissemin/publicos/CNES/200508_/doc` (`IT_CNES_1706.pdf`) |
 | **Tabelas auxiliares no FTP** | `/dissemin/publicos/CNES/200508_/Auxiliar` (`TAB_CNES.zip`) |

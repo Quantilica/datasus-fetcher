@@ -1,4 +1,4 @@
-# `sim-do-cid09` — Declarações de Óbito CID-9 (SIM)
+# `sim-do-cid09` — Declarações de Óbito CID-9
 
 Microdados do Sistema de Informação sobre Mortalidade (SIM/SVSA-MS) com os óbitos ocorridos de 1979 a 1995, codificados pela CID-9, organizados por UF de residência. Cada linha representa uma Declaração de Óbito (um óbito) com características do falecido, local de residência/ocorrência e causa básica.
 
@@ -12,7 +12,7 @@ Microdados do Sistema de Informação sobre Mortalidade (SIM/SVSA-MS) com os ób
 | **Particionamento** | `uf / year` |
 | **Periodicidade** | Anual |
 | **Cobertura temporal no FTP** | 1979 a 1995 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 466 arquivos (~757.3 MB); 28 UF(s) na partição; última atualização 2025-01-24 |
+| **Volume aproximado no FTP** | 466 arquivos (~757,3 MB); 28 UF(s) na partição; última atualização 2025-01-24 |
 | **Arquivos preliminares** | Não |
 | **Documentação oficial no FTP** | `/dissemin/publicos/SIM/CID9/DOCS`, `/dissemin/publicos/SIM/CID10/DOCS` |
 | **Tabelas auxiliares no FTP** | `/dissemin/publicos/SIM/CID9/TAB`, `/dissemin/publicos/SIM/CID10/TAB` |

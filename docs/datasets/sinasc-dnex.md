@@ -1,4 +1,4 @@
-# `sinasc-dnex` — Declarações de nascidos vivos no exterior (SINASC)
+# `sinasc-dnex` — Declarações de nascidos vivos no exterior
 
 Microdados do SINASC/SVSA-MS com Declarações de Nascido Vivo de nascimentos ocorridos no exterior, de 2014 a 2024. Cada linha é uma DN registrada para um nascimento fora do Brasil, em um arquivo nacional por ano.
 
@@ -12,7 +12,7 @@ Microdados do SINASC/SVSA-MS com Declarações de Nascido Vivo de nascimentos oc
 | **Particionamento** | `year` |
 | **Periodicidade** | Anual |
 | **Cobertura temporal no FTP** | 2014 a 2024 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 11 arquivos (~0.6 MB); 1 UF(s) na partição; última atualização 2025-12-23 |
+| **Volume aproximado no FTP** | 11 arquivos (~0,6 MB); 1 UF(s) na partição; última atualização 2025-12-23 |
 | **Arquivos preliminares** | Não |
 | **Documentação oficial no FTP** | `/dissemin/publicos/SINASC/ANT/DOCS`, `/dissemin/publicos/SINASC/NOV/DOCS` |
 | **Tabelas auxiliares no FTP** | `/dissemin/publicos/SINASC/1994_1995/Auxiliar`, `/dissemin/publicos/SINASC/1996_/Auxiliar` |
@@ -53,27 +53,41 @@ Uso: reconciliação de totais de nascimentos por ocorrência, estudos de migra�
 
 ### Variáveis-Chave dos Microdados
 
-A lista abaixo é de referência. Confira o layout real de `DNEX` com `frame.columns`, pois ele não foi inspecionado diretamente.
+Nomes verificados contra o arquivo real `DNEX2024.dbc` (61 colunas, layout próprio do `DNEX`, distinto do `DN`). O país de residência da mãe é `CODPAISRES`; não há coluna de país de ocorrência.
 
 | Coluna (DBF) | Tipo / Formato | Descrição |
 |---|---|---|
 | `DTNASC` | String `DDMMAAAA` | Data de nascimento. |
-| `SEXO` | Inteiro | Sexo do recém-nascido. |
-| `PESO` | String / Inteiro (g) | Peso ao nascer em gramas. |
-| `APGAR1 / APGAR5` | String / Inteiro | Apgar no 1º e 5º minuto. |
-| `IDADEMAE` | Inteiro | Idade da mãe. |
-| `ESCMAE` | String | Escolaridade da mãe. |
-| `CODMUNRES` | String (IBGE, 6) | Município de residência da mãe no Brasil, quando informado. |
-| `CODPAISNASC` | String | País de ocorrência do nascimento (nome do campo a confirmar no layout). |
-| `GESTACAO / PARTO` | Inteiro | Duração da gestação e tipo de parto. |
-| `CODANOMAL` | String | Anomalia congênita, em CID-10 (capítulo XVII). |
+| `HORANASC` | String `HHMM` | Hora do nascimento. |
+| `SEXO` | String | Sexo do recém-nascido. |
+| `PESO` | String (g) | Peso ao nascer em gramas. |
+| `APGAR1` / `APGAR5` | String | Apgar no 1º e 5º minuto. |
+| `RACACOR` | String | Raça/cor do recém-nascido. |
+| `CODMUNNASC` | String (IBGE, 7) | Município de ocorrência do nascimento. |
+| `CODESTAB` | String (7) | Estabelecimento de ocorrência. |
+| `LOCNASC` | String | Local de ocorrência do nascimento. |
+| `CODMUNRES` | String (IBGE, 7) | Município de residência da mãe no Brasil, quando informado. |
+| `CODPAISRES` | String (3) | País de residência da mãe. |
+| `IDADEMAE` / `DTNASCMAE` | String | Idade e data de nascimento da mãe. |
+| `ESCMAE` / `ESCMAE2010` / `SERIESCMAE` | String | Escolaridade da mãe (layouts de escolaridade anterior e de 2010, e série). |
+| `ESTCIVMAE` / `RACACORMAE` / `CODOCUPMAE` | String | Estado civil, raça/cor e ocupação (CBO) da mãe. |
+| `NATURALMAE` / `CODMUNNATU` / `CODUFNATU` | String | Naturalidade da mãe (país, município e UF). |
+| `QTDFILVIVO` / `QTDFILMORT` / `QTDGESTANT` / `QTDPARTNOR` / `QTDPARTCES` | String | Histórico obstétrico: filhos vivos e mortos, gestações e partos normais e cesáreos anteriores. |
+| `GESTACAO` / `SEMAGESTAC` / `TPMETESTIM` / `DTULTMENST` | String | Duração da gestação, semanas de gestação, método de estimativa e data da última menstruação. |
+| `GRAVIDEZ` / `PARTO` / `TPAPRESENT` / `STTRABPART` / `STCESPARTO` | String | Tipo de gravidez, tipo de parto, apresentação fetal, trabalho de parto induzido e cesárea antes do trabalho de parto. |
+| `CONSULTAS` / `CONSPRENAT` / `MESPRENAT` | String | Consultas de pré-natal (faixa e número) e mês de início do pré-natal. |
+| `TPROBSON` / `PARIDADE` / `KOTELCHUCK` | String | Classificação de Robson, paridade e índice de Kotelchuck. |
+| `IDANOMAL` / `CODANOMAL` | String | Indicador de anomalia congênita e anomalia em CID-10 (capítulo XVII). |
+| `IDADEPAI` | String | Idade do pai. |
+| `DTCADASTRO` / `DTRECEBIM` / `DTRECORIGA` / `DTDECLARAC` | String `DDMMAAAA` | Datas de cadastro, recebimento, recebimento original e declaração. |
+| `NUMEROLOTE` / `VERSAOSIST` / `CONTADOR` / `DIFDATA` | String | Controle do sistema: lote, versão, contador e diferença de datas. |
 
 ### Observações de Tratamento e Saneamento (`wrangle_datasus`)
 
-- **Preservação de códigos estruturados**: `CODMUNRES`, `CODMUNOCOR` e `CODMUNNASC` devem ser tratados como `String`; a base usa o código IBGE de 6 dígitos (sem dígito verificador) — mantenha o texto original e use `zfill(6)` apenas se algum arquivo trouxer o código truncado. `CAUSABAS`, `LINHAA`–`LINHAD` e `LINHAII` (CID-10 ou CID-9 conforme o período) e `OCUP`/`CODOCUPMAE` (CBO) são códigos e nunca devem ser convertidos para número. No `wrangle_datasus`, `CODMUNRES` não consta em `CODE_COLUMNS`, mas permanece `String` porque campos caractere do DBF são lidos como texto; `CAUSABAS` e `CAUSABAS_O` constam em `CODE_COLUMNS` e são preservados como `String` limpa.
-- **Datas e competências**: nos DBF do SIM e do SINASC as datas (`DTOBITO`, `DTNASC`, `DTCADASTRO`, `DTRECEBIM`, `DTINVESTIG`) vêm como texto `DDMMAAAA`, e `HORAOBITO`/`HORANASC` como `HHMM`. Os nomes sem sublinhado **não** estão em `DATE_COLUMNS` (que cobre `DT_OBITO`, `DT_NASC` etc.), portanto permanecem `String`; converta explicitamente com `pl.col("dtobito").str.to_date("%d%m%Y", strict=False)`.
-- **Valores ausentes e sentinelas**: o `wrangle_datasus` faz `strip` das strings e converte em nulo os sentinelas `""`, `" "`, `"999999"`, `"99999999"` e `"00000000"` (data zerada). Códigos categóricos de "ignorado" (`9`, `99`, `999`) **não** viram nulo automaticamente e precisam ser tratados conforme o dicionário de cada variável. Colunas listadas em `INTEGER_COLUMNS` (`IDADE`, `SEXO`, `ESTCIV`, `GRAVIDEZ`, `GESTACAO`, `PARTO`, `CONSULTAS`, `QTDFILVIVO`, `QTDFILMORT`, `ANO`, `MES`) são convertidas para `Int64` com `strict=False`: valores não numéricos (como `M`/`F`/`I` em layouts antigos) viram nulo. Registros com marcador de exclusão dBASE (`_deleted`) são removidos e a coluna é descartada.
-Base de baixo volume e cobertura 2014–2024; a lista de colunas é de referência e **deve ser conferida em `frame.columns`**, pois o layout do arquivo `DNEX` difere do `DN` e, em particular, o nome da coluna de país (`CODPAISNASC`) não foi confirmado. Não há UF na partição. Os códigos de município de residência, quando existem, seguem 6 dígitos IBGE. Como os registros são poucos por ano, evite agregações por município.
+- **Preservação de códigos estruturados**: `CODMUNRES`, `CODMUNNATU` e `CODMUNNASC` devem ser tratados como `String`; as colunas têm 7 caracteres (IBGE com dígito verificador) — mantenha o texto original e use `zfill(6)` apenas se algum arquivo trouxer o código truncado. `CODANOMAL` (CID-10) e `CODOCUPMAE` (CBO) são códigos e nunca devem ser convertidos para número. No `wrangle_datasus`, `CODMUNRES` não consta em `CODE_COLUMNS`, mas permanece `String` porque campos caractere do DBF são lidos como texto;
+- **Datas e competências**: nos DBF do SIM e do SINASC as datas (`DTNASC`, `DTNASCMAE`, `DTCADASTRO`, `DTRECEBIM`, `DTULTMENST`) vêm como texto `DDMMAAAA`, e `HORANASC` como `HHMM`. Os nomes sem sublinhado **não** estão em `DATE_COLUMNS` (que cobre `DT_OBITO`, `DT_NASC` etc.), portanto permanecem `String`; converta explicitamente com `pl.col("dtnasc").str.to_date("%d%m%Y", strict=False)`.
+- **Valores ausentes e sentinelas**: o `wrangle_datasus` faz `strip` das strings e converte em nulo os sentinelas `""`, `" "`, `"999999"`, `"99999999"` e `"00000000"` (data zerada). Códigos categóricos de "ignorado" (`9`, `99`, `999`) **não** viram nulo automaticamente e precisam ser tratados conforme o dicionário de cada variável. Colunas listadas em `INTEGER_COLUMNS` (entre as presentes neste arquivo: `GRAVIDEZ`, `GESTACAO`, `PARTO`, `CONSULTAS`, `QTDFILVIVO`, `QTDFILMORT`, `SEXO`) são convertidas para `Int64` com `strict=False`: valores não numéricos (como `M`/`F`/`I` em layouts antigos) viram nulo. Registros com marcador de exclusão dBASE (`_deleted`) são removidos e a coluna é descartada.
+Base de baixo volume e cobertura 2014–2024; layout verificado em `DNEX2024.dbc`, que difere do `DN` (por exemplo, não há `ANO`/`MES` nem `OCUP`). Não há UF na partição; a UF pode ser derivada dos dois primeiros dígitos de `CODMUNRES`. Os códigos de município de residência, quando existem, seguem 6 dígitos IBGE. Como os registros são poucos por ano, evite agregações por município.
 
 ## 4. Exemplos Práticos
 
@@ -102,7 +116,7 @@ import datasus_fetcher as df
 import polars as pl
 
 frame = df.read_dbc("data/sinasc-dnex/2023/sinasc-dnex_2023@20251223.dbc", dataset="sinasc-dnex")
-print(frame.shape, frame.columns)
+print(frame.shape)
 
 frame = frame.with_columns(pl.col("dtnasc").str.to_date("%d%m%Y", strict=False))
 print(frame.group_by(pl.col("dtnasc").dt.year()).len().sort("dtnasc"))

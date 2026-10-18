@@ -1,4 +1,4 @@
-# `cnes-pf` — Profissionais
+# `cnes-pf` — Profissional
 
 O `cnes-pf` contém os microdados do arquivo de **Profissionais** do Cadastro Nacional de Estabelecimentos de Saúde (CNES), que registra os vínculos dos profissionais de saúde com os estabelecimentos cadastrados. Cada registro (linha) representa um **vínculo profissional–estabelecimento–ocupação (CBO)** em uma competência mensal, descrevendo a ocupação exercida, o vínculo empregatício com o SUS, a carga horária e o conselho de classe. É a maior base do CNES em volume e a principal fonte para dimensionar a força de trabalho em saúde no Brasil.
 
@@ -12,7 +12,7 @@ O `cnes-pf` contém os microdados do arquivo de **Profissionais** do Cadastro Na
 | **Particionamento** | `uf`, `yearmonth` (um arquivo por UF e competência mensal, além de `br`) |
 | **Periodicidade** | Mensal (extração por competência) |
 | **Cobertura temporal no FTP** | 2005-08 a 2026-09 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 6858 arquivos (~43,5 GB) |
+| **Volume aproximado no FTP** | 6858 arquivos (~46,7 GB) |
 | **Arquivos preliminares** | Não |
 | **Documentação oficial no FTP** | `/dissemin/publicos/CNES/200508_/doc` (`IT_CNES_1706.pdf`) |
 | **Tabelas auxiliares no FTP** | `/dissemin/publicos/CNES/200508_/Auxiliar` (`TAB_CNES.zip`) |

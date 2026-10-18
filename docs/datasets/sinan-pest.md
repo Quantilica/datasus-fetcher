@@ -12,7 +12,7 @@ O `sinan-pest` contém os microdados das notificações e investigações de cas
 | **Particionamento** | `uf`, `year` (arquivos consolidados anuais, praticamente sempre `br`) |
 | **Periodicidade** | Anual (consolidação final por ano, com atualizações em `PRELIM`) |
 | **Cobertura temporal no FTP** | 2007 a 2025 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 19 arquivos (~42 kB) |
+| **Volume aproximado no FTP** | 19 arquivos (~42,8 KB) |
 | **Arquivos preliminares** | Sim (diretório `PRELIM`) |
 | **Documentação oficial no FTP** | `/dissemin/publicos/SINAN/DOCS` |
 | **Tabelas auxiliares no FTP** | `/dissemin/publicos/SINAN/AUXILIAR` |

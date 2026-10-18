@@ -359,272 +359,274 @@ Use códigos de duas letras em minúsculas com `--regions`. Use `br` para arquiv
 
 ## Datasets Disponíveis
 
+Para a documentação detalhada de cada dataset — ficha técnica, contexto institucional, variáveis, regras de saneamento e exemplos de uso — consulte o **[índice geral da documentação dos 113 datasets](docs/datasets/README.md)**. Todos os códigos abaixo são links diretos para a respectiva página individual em `docs/datasets/`.
+
 Estatísticas geradas em **18 de fevereiro de 2025**.
 
 | Dataset | Nº arquivos | Tamanho total | Período |
 | --- | ---: | ---: | --- |
-| base-populacional-ibge-pop | 33 | 150,4 MB | de 1980 a 2012 |
-| base-populacional-ibge-pops | 25 | 81,3 MB | de 2000 a 2024 |
-| base-populacional-ibge-popt | 32 | 2,4 MB | de 1992 a 2024 |
-| base-territorial | 14 | 20,9 MB | — |
-| base-territorial-conversao | 28 | 35,7 MB | — |
-| base-territorial-mapas | 83 | 122,2 MB | de 1991 a 2013 |
-| cih-cr | 868 | 157,5 MB | de 2008-01 a 2011-04 |
-| ciha | 4201 | 4354,5 MB | de 2011-01 a 2024-09 |
-| cnes-dc | 6318 | 115,4 MB | de 2005-08 a 2025-01 |
-| cnes-ee | 3201 | 4,3 MB | de 2007-03 a 2021-07 |
-| cnes-ef | 5374 | 10,0 MB | de 2007-03 a 2025-01 |
-| cnes-ep | 5778 | 498,8 MB | de 2007-04 a 2025-01 |
-| cnes-eq | 6317 | 1329,2 MB | de 2005-08 a 2025-01 |
-| cnes-gm | 5459 | 11,9 MB | de 2007-03 a 2025-01 |
-| cnes-hb | 5805 | 122,2 MB | de 2007-03 a 2025-01 |
-| cnes-in | 5520 | 36,4 MB | de 2007-10 a 2025-01 |
-| cnes-lt | 6264 | 131,3 MB | de 2005-10 a 2025-01 |
-| cnes-pf | 6318 | 38238,1 MB | de 2005-08 a 2025-01 |
-| cnes-rc | 5744 | 67,2 MB | de 2007-03 a 2025-01 |
-| cnes-sr | 6316 | 1389,8 MB | de 2005-08 a 2025-01 |
-| cnes-st | 6310 | 2805,5 MB | de 2005-08 a 2025-01 |
-| pce | 409 | 14,1 MB | de 1995 a 2021 |
-| po | 12 | 129,5 MB | de 2013 a 2024 |
-| resp | 280 | 3,4 MB | de 2015 a 2024 |
-| sia-ab | 544 | 13,9 MB | de 2008-01 a 2017-04 |
-| sia-abo | 1352 | 32,2 MB | de 2014-01 a 2024-12 |
-| sia-acf | 3263 | 26,7 MB | de 2014-08 a 2024-12 |
-| sia-ad | 5506 | 2683,1 MB | de 2008-01 a 2024-12 |
-| sia-am | 5447 | 14762,8 MB | de 2008-01 a 2024-12 |
-| sia-an | 2145 | 437,6 MB | de 2008-01 a 2014-10 |
-| sia-aq | 5466 | 4202,1 MB | de 2008-01 a 2024-12 |
-| sia-ar | 4982 | 318,9 MB | de 2008-01 a 2024-12 |
-| sia-atd | 3371 | 855,0 MB | de 2014-08 a 2024-12 |
-| sia-pa | 10193 | 163258,4 MB | de 1994-07 a 2024-12 |
-| sia-ps | 3881 | 2543,1 MB | de 2012-11 a 2024-12 |
-| sia-sad | 1088 | 51,0 MB | de 2012-04 a 2018-10 |
-| sih-er | 4419 | 270,4 MB | de 2011-01 a 2024-12 |
-| sih-rd | 10673 | 22639,1 MB | de 1992-01 a 2024-12 |
-| sih-rj | 5348 | 815,8 MB | de 2008-01 a 2024-12 |
-| sih-sp | 8928 | 48377,4 MB | de 1997-06 a 2024-12 |
-| sim-do-cid09 | 466 | 722,2 MB | de 1979 a 1995 |
-| sim-do-cid10 | 784 | 4307,5 MB | de 1996 a 2023 |
-| sim-doext-cid09 | 17 | 42,0 MB | de 1979 a 1995 |
-| sim-doext-cid10 | 28 | 260,2 MB | de 1996 a 2023 |
-| sim-dofet-cid09 | 17 | 23,0 MB | de 1979 a 1995 |
-| sim-dofet-cid10 | 28 | 60,9 MB | de 1996 a 2023 |
-| sim-doinf-cid09 | 17 | 58,0 MB | de 1979 a 1995 |
-| sim-doinf-cid10 | 28 | 92,0 MB | de 1996 a 2023 |
-| sim-domat-cid10 | 28 | 4,1 MB | de 1996 a 2023 |
-| sim-dorext-cid10 | 11 | 0,4 MB | de 2013 a 2023 |
-| sinan-acbi | 19 | 44,2 MB | de 2006 a 2024 |
-| sinan-acgr | 19 | 112,4 MB | de 2006 a 2024 |
-| sinan-aida | 17 | 17,1 MB | de 2007 a 2023 |
-| sinan-aidc | 17 | 0,3 MB | de 2007 a 2023 |
-| sinan-anim | 17 | 127,5 MB | de 2007 a 2023 |
-| sinan-antr | 19 | 432,7 MB | de 2006 a 2024 |
-| sinan-botu | 18 | 0,1 MB | de 2007 a 2024 |
-| sinan-canc | 18 | 0,3 MB | de 2007 a 2024 |
-| sinan-chag | 24 | 4,0 MB | de 2000 a 2023 |
-| sinan-chik | 11 | 70,7 MB | de 2015 a 2025 |
-| sinan-cole | 18 | 0,0 MB | de 2007 a 2024 |
-| sinan-coqu | 19 | 9,1 MB | de 2007 a 2025 |
-| sinan-deng | 26 | 1229,0 MB | de 2000 a 2025 |
-| sinan-derm | 19 | 0,5 MB | de 2006 a 2024 |
-| sinan-dift | 16 | 0,1 MB | de 2007 a 2022 |
-| sinan-espo | 10 | 0,4 MB | de 2013 a 2022 |
-| sinan-esqu | 17 | 7,6 MB | de 2007 a 2023 |
-| sinan-exan | 18 | 14,0 MB | de 2007 a 2024 |
-| sinan-fmac | 17 | 3,9 MB | de 2007 a 2023 |
-| sinan-ftif | 18 | 0,8 MB | de 2007 a 2024 |
-| sinan-hans | 24 | 53,6 MB | de 2001 a 2024 |
-| sinan-hant | 25 | 2,1 MB | de 1999 a 2023 |
-| sinan-hepa | 17 | 28,1 MB | de 2007 a 2023 |
-| sinan-hiva | 17 | 15,3 MB | de 2007 a 2023 |
-| sinan-hivc | 17 | 0,1 MB | de 2007 a 2023 |
-| sinan-hive | 9 | 1,0 MB | de 2015 a 2023 |
-| sinan-hivg | 17 | 3,4 MB | de 2007 a 2023 |
-| sinan-iexo | 19 | 150,3 MB | de 2006 a 2024 |
-| sinan-leiv | 25 | 12,1 MB | de 2000 a 2024 |
-| sinan-lept | 18 | 21,5 MB | de 2007 a 2024 |
-| sinan-lerd | 19 | 6,5 MB | de 2006 a 2024 |
-| sinan-ltan | 25 | 36,2 MB | de 2000 a 2024 |
-| sinan-mala | 20 | 2,5 MB | de 2004 a 2023 |
-| sinan-meni | 18 | 40,9 MB | de 2007 a 2024 |
-| sinan-ment | 19 | 1,2 MB | de 2006 a 2024 |
-| sinan-ntra | 13 | 0,6 MB | de 2010 a 2022 |
-| sinan-pair | 19 | 0,5 MB | de 2006 a 2024 |
-| sinan-pest | 14 | 0,0 MB | de 2007 a 2020 |
-| sinan-pfan | 10 | 0,5 MB | de 2012 a 2021 |
-| sinan-pneu | 19 | 0,3 MB | de 2006 a 2024 |
-| sinan-raiv | 15 | 0,1 MB | de 2007 a 2021 |
-| sinan-rota | 16 | 1,2 MB | de 2009 a 2024 |
-| sinan-sdta | 14 | 0,8 MB | de 2007 a 2021 |
-| sinan-sifa | 15 | 28,3 MB | de 2010 a 2024 |
-| sinan-sifc | 18 | 13,3 MB | de 2007 a 2024 |
-| sinan-sifg | 17 | 16,7 MB | de 2007 a 2023 |
-| sinan-src | 16 | 0,2 MB | de 2007 a 2022 |
-| sinan-teta | 16 | 0,6 MB | de 2007 a 2022 |
-| sinan-tetn | 8 | 0,0 MB | de 2014 a 2021 |
-| sinan-toxc | 6 | 0,8 MB | de 2019 a 2024 |
-| sinan-toxg | 6 | 2,3 MB | de 2019 a 2024 |
-| sinan-trac | 14 | 1,6 MB | de 2009 a 2022 |
-| sinan-tube | 23 | 97,8 MB | de 2001 a 2023 |
-| sinan-varc | 17 | 33,2 MB | de 2007 a 2023 |
-| sinan-viol | 15 | 242,4 MB | de 2009 a 2023 |
-| sinan-zika | 10 | 8,9 MB | de 2016 a 2025 |
-| sinasc-dn | 838 | 6114,7 MB | de 1994 a 2023 |
-| sinasc-dnex | 10 | 0,5 MB | de 2014 a 2023 |
-| siscolo-cc | 2858 | 2380,9 MB | de 2006-01 a 2015-10 |
-| siscolo-hc | 2858 | 38,9 MB | de 2006-01 a 2015-10 |
-| sismama-cm | 1675 | 4,8 MB | de 2009-01 a 2015-07 |
-| sismama-hm | 1674 | 5,7 MB | de 2009-01 a 2015-07 |
-| sisprenatal-pn | 944 | 221,6 MB | de 2012-01 a 2014-12 |
+| [`base-populacional-ibge-pop`](docs/datasets/base-populacional-ibge-pop.md) | 33 | 150,4 MB | de 1980 a 2012 |
+| [`base-populacional-ibge-pops`](docs/datasets/base-populacional-ibge-pops.md) | 25 | 81,3 MB | de 2000 a 2024 |
+| [`base-populacional-ibge-popt`](docs/datasets/base-populacional-ibge-popt.md) | 32 | 2,4 MB | de 1992 a 2024 |
+| [`base-territorial`](docs/datasets/base-territorial.md) | 14 | 20,9 MB | — |
+| [`base-territorial-conversao`](docs/datasets/base-territorial-conversao.md) | 28 | 35,7 MB | — |
+| [`base-territorial-mapas`](docs/datasets/base-territorial-mapas.md) | 83 | 122,2 MB | de 1991 a 2013 |
+| [`cih-cr`](docs/datasets/cih-cr.md) | 868 | 157,5 MB | de 2008-01 a 2011-04 |
+| [`ciha`](docs/datasets/ciha.md) | 4201 | 4354,5 MB | de 2011-01 a 2024-09 |
+| [`cnes-dc`](docs/datasets/cnes-dc.md) | 6318 | 115,4 MB | de 2005-08 a 2025-01 |
+| [`cnes-ee`](docs/datasets/cnes-ee.md) | 3201 | 4,3 MB | de 2007-03 a 2021-07 |
+| [`cnes-ef`](docs/datasets/cnes-ef.md) | 5374 | 10,0 MB | de 2007-03 a 2025-01 |
+| [`cnes-ep`](docs/datasets/cnes-ep.md) | 5778 | 498,8 MB | de 2007-04 a 2025-01 |
+| [`cnes-eq`](docs/datasets/cnes-eq.md) | 6317 | 1329,2 MB | de 2005-08 a 2025-01 |
+| [`cnes-gm`](docs/datasets/cnes-gm.md) | 5459 | 11,9 MB | de 2007-03 a 2025-01 |
+| [`cnes-hb`](docs/datasets/cnes-hb.md) | 5805 | 122,2 MB | de 2007-03 a 2025-01 |
+| [`cnes-in`](docs/datasets/cnes-in.md) | 5520 | 36,4 MB | de 2007-10 a 2025-01 |
+| [`cnes-lt`](docs/datasets/cnes-lt.md) | 6264 | 131,3 MB | de 2005-10 a 2025-01 |
+| [`cnes-pf`](docs/datasets/cnes-pf.md) | 6318 | 38238,1 MB | de 2005-08 a 2025-01 |
+| [`cnes-rc`](docs/datasets/cnes-rc.md) | 5744 | 67,2 MB | de 2007-03 a 2025-01 |
+| [`cnes-sr`](docs/datasets/cnes-sr.md) | 6316 | 1389,8 MB | de 2005-08 a 2025-01 |
+| [`cnes-st`](docs/datasets/cnes-st.md) | 6310 | 2805,5 MB | de 2005-08 a 2025-01 |
+| [`pce`](docs/datasets/pce.md) | 409 | 14,1 MB | de 1995 a 2021 |
+| [`po`](docs/datasets/po.md) | 12 | 129,5 MB | de 2013 a 2024 |
+| [`resp`](docs/datasets/resp.md) | 280 | 3,4 MB | de 2015 a 2024 |
+| [`sia-ab`](docs/datasets/sia-ab.md) | 544 | 13,9 MB | de 2008-01 a 2017-04 |
+| [`sia-abo`](docs/datasets/sia-abo.md) | 1352 | 32,2 MB | de 2014-01 a 2024-12 |
+| [`sia-acf`](docs/datasets/sia-acf.md) | 3263 | 26,7 MB | de 2014-08 a 2024-12 |
+| [`sia-ad`](docs/datasets/sia-ad.md) | 5506 | 2683,1 MB | de 2008-01 a 2024-12 |
+| [`sia-am`](docs/datasets/sia-am.md) | 5447 | 14762,8 MB | de 2008-01 a 2024-12 |
+| [`sia-an`](docs/datasets/sia-an.md) | 2145 | 437,6 MB | de 2008-01 a 2014-10 |
+| [`sia-aq`](docs/datasets/sia-aq.md) | 5466 | 4202,1 MB | de 2008-01 a 2024-12 |
+| [`sia-ar`](docs/datasets/sia-ar.md) | 4982 | 318,9 MB | de 2008-01 a 2024-12 |
+| [`sia-atd`](docs/datasets/sia-atd.md) | 3371 | 855,0 MB | de 2014-08 a 2024-12 |
+| [`sia-pa`](docs/datasets/sia-pa.md) | 10193 | 163258,4 MB | de 1994-07 a 2024-12 |
+| [`sia-ps`](docs/datasets/sia-ps.md) | 3881 | 2543,1 MB | de 2012-11 a 2024-12 |
+| [`sia-sad`](docs/datasets/sia-sad.md) | 1088 | 51,0 MB | de 2012-04 a 2018-10 |
+| [`sih-er`](docs/datasets/sih-er.md) | 4419 | 270,4 MB | de 2011-01 a 2024-12 |
+| [`sih-rd`](docs/datasets/sih-rd.md) | 10673 | 22639,1 MB | de 1992-01 a 2024-12 |
+| [`sih-rj`](docs/datasets/sih-rj.md) | 5348 | 815,8 MB | de 2008-01 a 2024-12 |
+| [`sih-sp`](docs/datasets/sih-sp.md) | 8928 | 48377,4 MB | de 1997-06 a 2024-12 |
+| [`sim-do-cid09`](docs/datasets/sim-do-cid09.md) | 466 | 722,2 MB | de 1979 a 1995 |
+| [`sim-do-cid10`](docs/datasets/sim-do-cid10.md) | 784 | 4307,5 MB | de 1996 a 2023 |
+| [`sim-doext-cid09`](docs/datasets/sim-doext-cid09.md) | 17 | 42,0 MB | de 1979 a 1995 |
+| [`sim-doext-cid10`](docs/datasets/sim-doext-cid10.md) | 28 | 260,2 MB | de 1996 a 2023 |
+| [`sim-dofet-cid09`](docs/datasets/sim-dofet-cid09.md) | 17 | 23,0 MB | de 1979 a 1995 |
+| [`sim-dofet-cid10`](docs/datasets/sim-dofet-cid10.md) | 28 | 60,9 MB | de 1996 a 2023 |
+| [`sim-doinf-cid09`](docs/datasets/sim-doinf-cid09.md) | 17 | 58,0 MB | de 1979 a 1995 |
+| [`sim-doinf-cid10`](docs/datasets/sim-doinf-cid10.md) | 28 | 92,0 MB | de 1996 a 2023 |
+| [`sim-domat-cid10`](docs/datasets/sim-domat-cid10.md) | 28 | 4,1 MB | de 1996 a 2023 |
+| [`sim-dorext-cid10`](docs/datasets/sim-dorext-cid10.md) | 11 | 0,4 MB | de 2013 a 2023 |
+| [`sinan-acbi`](docs/datasets/sinan-acbi.md) | 19 | 44,2 MB | de 2006 a 2024 |
+| [`sinan-acgr`](docs/datasets/sinan-acgr.md) | 19 | 112,4 MB | de 2006 a 2024 |
+| [`sinan-aida`](docs/datasets/sinan-aida.md) | 17 | 17,1 MB | de 2007 a 2023 |
+| [`sinan-aidc`](docs/datasets/sinan-aidc.md) | 17 | 0,3 MB | de 2007 a 2023 |
+| [`sinan-anim`](docs/datasets/sinan-anim.md) | 17 | 127,5 MB | de 2007 a 2023 |
+| [`sinan-antr`](docs/datasets/sinan-antr.md) | 19 | 432,7 MB | de 2006 a 2024 |
+| [`sinan-botu`](docs/datasets/sinan-botu.md) | 18 | 0,1 MB | de 2007 a 2024 |
+| [`sinan-canc`](docs/datasets/sinan-canc.md) | 18 | 0,3 MB | de 2007 a 2024 |
+| [`sinan-chag`](docs/datasets/sinan-chag.md) | 24 | 4,0 MB | de 2000 a 2023 |
+| [`sinan-chik`](docs/datasets/sinan-chik.md) | 11 | 70,7 MB | de 2015 a 2025 |
+| [`sinan-cole`](docs/datasets/sinan-cole.md) | 18 | 0,0 MB | de 2007 a 2024 |
+| [`sinan-coqu`](docs/datasets/sinan-coqu.md) | 19 | 9,1 MB | de 2007 a 2025 |
+| [`sinan-deng`](docs/datasets/sinan-deng.md) | 26 | 1229,0 MB | de 2000 a 2025 |
+| [`sinan-derm`](docs/datasets/sinan-derm.md) | 19 | 0,5 MB | de 2006 a 2024 |
+| [`sinan-dift`](docs/datasets/sinan-dift.md) | 16 | 0,1 MB | de 2007 a 2022 |
+| [`sinan-espo`](docs/datasets/sinan-espo.md) | 10 | 0,4 MB | de 2013 a 2022 |
+| [`sinan-esqu`](docs/datasets/sinan-esqu.md) | 17 | 7,6 MB | de 2007 a 2023 |
+| [`sinan-exan`](docs/datasets/sinan-exan.md) | 18 | 14,0 MB | de 2007 a 2024 |
+| [`sinan-fmac`](docs/datasets/sinan-fmac.md) | 17 | 3,9 MB | de 2007 a 2023 |
+| [`sinan-ftif`](docs/datasets/sinan-ftif.md) | 18 | 0,8 MB | de 2007 a 2024 |
+| [`sinan-hans`](docs/datasets/sinan-hans.md) | 24 | 53,6 MB | de 2001 a 2024 |
+| [`sinan-hant`](docs/datasets/sinan-hant.md) | 25 | 2,1 MB | de 1999 a 2023 |
+| [`sinan-hepa`](docs/datasets/sinan-hepa.md) | 17 | 28,1 MB | de 2007 a 2023 |
+| [`sinan-hiva`](docs/datasets/sinan-hiva.md) | 17 | 15,3 MB | de 2007 a 2023 |
+| [`sinan-hivc`](docs/datasets/sinan-hivc.md) | 17 | 0,1 MB | de 2007 a 2023 |
+| [`sinan-hive`](docs/datasets/sinan-hive.md) | 9 | 1,0 MB | de 2015 a 2023 |
+| [`sinan-hivg`](docs/datasets/sinan-hivg.md) | 17 | 3,4 MB | de 2007 a 2023 |
+| [`sinan-iexo`](docs/datasets/sinan-iexo.md) | 19 | 150,3 MB | de 2006 a 2024 |
+| [`sinan-leiv`](docs/datasets/sinan-leiv.md) | 25 | 12,1 MB | de 2000 a 2024 |
+| [`sinan-lept`](docs/datasets/sinan-lept.md) | 18 | 21,5 MB | de 2007 a 2024 |
+| [`sinan-lerd`](docs/datasets/sinan-lerd.md) | 19 | 6,5 MB | de 2006 a 2024 |
+| [`sinan-ltan`](docs/datasets/sinan-ltan.md) | 25 | 36,2 MB | de 2000 a 2024 |
+| [`sinan-mala`](docs/datasets/sinan-mala.md) | 20 | 2,5 MB | de 2004 a 2023 |
+| [`sinan-meni`](docs/datasets/sinan-meni.md) | 18 | 40,9 MB | de 2007 a 2024 |
+| [`sinan-ment`](docs/datasets/sinan-ment.md) | 19 | 1,2 MB | de 2006 a 2024 |
+| [`sinan-ntra`](docs/datasets/sinan-ntra.md) | 13 | 0,6 MB | de 2010 a 2022 |
+| [`sinan-pair`](docs/datasets/sinan-pair.md) | 19 | 0,5 MB | de 2006 a 2024 |
+| [`sinan-pest`](docs/datasets/sinan-pest.md) | 14 | 0,0 MB | de 2007 a 2020 |
+| [`sinan-pfan`](docs/datasets/sinan-pfan.md) | 10 | 0,5 MB | de 2012 a 2021 |
+| [`sinan-pneu`](docs/datasets/sinan-pneu.md) | 19 | 0,3 MB | de 2006 a 2024 |
+| [`sinan-raiv`](docs/datasets/sinan-raiv.md) | 15 | 0,1 MB | de 2007 a 2021 |
+| [`sinan-rota`](docs/datasets/sinan-rota.md) | 16 | 1,2 MB | de 2009 a 2024 |
+| [`sinan-sdta`](docs/datasets/sinan-sdta.md) | 14 | 0,8 MB | de 2007 a 2021 |
+| [`sinan-sifa`](docs/datasets/sinan-sifa.md) | 15 | 28,3 MB | de 2010 a 2024 |
+| [`sinan-sifc`](docs/datasets/sinan-sifc.md) | 18 | 13,3 MB | de 2007 a 2024 |
+| [`sinan-sifg`](docs/datasets/sinan-sifg.md) | 17 | 16,7 MB | de 2007 a 2023 |
+| [`sinan-src`](docs/datasets/sinan-src.md) | 16 | 0,2 MB | de 2007 a 2022 |
+| [`sinan-teta`](docs/datasets/sinan-teta.md) | 16 | 0,6 MB | de 2007 a 2022 |
+| [`sinan-tetn`](docs/datasets/sinan-tetn.md) | 8 | 0,0 MB | de 2014 a 2021 |
+| [`sinan-toxc`](docs/datasets/sinan-toxc.md) | 6 | 0,8 MB | de 2019 a 2024 |
+| [`sinan-toxg`](docs/datasets/sinan-toxg.md) | 6 | 2,3 MB | de 2019 a 2024 |
+| [`sinan-trac`](docs/datasets/sinan-trac.md) | 14 | 1,6 MB | de 2009 a 2022 |
+| [`sinan-tube`](docs/datasets/sinan-tube.md) | 23 | 97,8 MB | de 2001 a 2023 |
+| [`sinan-varc`](docs/datasets/sinan-varc.md) | 17 | 33,2 MB | de 2007 a 2023 |
+| [`sinan-viol`](docs/datasets/sinan-viol.md) | 15 | 242,4 MB | de 2009 a 2023 |
+| [`sinan-zika`](docs/datasets/sinan-zika.md) | 10 | 8,9 MB | de 2016 a 2025 |
+| [`sinasc-dn`](docs/datasets/sinasc-dn.md) | 838 | 6114,7 MB | de 1994 a 2023 |
+| [`sinasc-dnex`](docs/datasets/sinasc-dnex.md) | 10 | 0,5 MB | de 2014 a 2023 |
+| [`siscolo-cc`](docs/datasets/siscolo-cc.md) | 2858 | 2380,9 MB | de 2006-01 a 2015-10 |
+| [`siscolo-hc`](docs/datasets/siscolo-hc.md) | 2858 | 38,9 MB | de 2006-01 a 2015-10 |
+| [`sismama-cm`](docs/datasets/sismama-cm.md) | 1675 | 4,8 MB | de 2009-01 a 2015-07 |
+| [`sismama-hm`](docs/datasets/sismama-hm.md) | 1674 | 5,7 MB | de 2009-01 a 2015-07 |
+| [`sisprenatal-pn`](docs/datasets/sisprenatal-pn.md) | 944 | 221,6 MB | de 2012-01 a 2014-12 |
 
 **Total: 320,7 GB em 170.543 arquivos**
 
 ### Datasets por sistema
 
 - **Base Populacional - IBGE** — Estimativas populacionais do Censo e TCU
-  - `base-populacional-ibge-pop`: Censo e Estimativas
-  - `base-populacional-ibge-pops`: Estimativas por Sexo e Idade
-  - `base-populacional-ibge-popt`: Estimativas TCU
+  - [`base-populacional-ibge-pop`](docs/datasets/base-populacional-ibge-pop.md): Censo e Estimativas
+  - [`base-populacional-ibge-pops`](docs/datasets/base-populacional-ibge-pops.md): Estimativas por Sexo e Idade
+  - [`base-populacional-ibge-popt`](docs/datasets/base-populacional-ibge-popt.md): Estimativas TCU
 
 - **Base Territorial** — Limites geográficos e tabelas de conversão
-  - `base-territorial`: Base Territoriais
-  - `base-territorial-mapas`: Mapas
-  - `base-territorial-conversao`: Conversões
+  - [`base-territorial`](docs/datasets/base-territorial.md): Base Territoriais
+  - [`base-territorial-mapas`](docs/datasets/base-territorial-mapas.md): Mapas
+  - [`base-territorial-conversao`](docs/datasets/base-territorial-conversao.md): Conversões
 
 - **CIH** — Sistema de Comunicação de Informação Hospitalar
-  - `cih-cr`: Comunicação de Internação Hospitalar
+  - [`cih-cr`](docs/datasets/cih-cr.md): Comunicação de Internação Hospitalar
 
 - **CIHA** — Sistema de Comunicação de Informação Hospitalar e Ambulatorial
-  - `ciha`: Sistema de Comunicação de Informação Hospitalar e Ambulatorial
+  - [`ciha`](docs/datasets/ciha.md): Sistema de Comunicação de Informação Hospitalar e Ambulatorial
 
 - **CNES** — Cadastro Nacional de Estabelecimentos de Saúde
-  - `cnes-lt`: Leitos
-  - `cnes-st`: Estabelecimentos
-  - `cnes-dc`: Dados Complementares
-  - `cnes-eq`: Equipamentos
-  - `cnes-sr`: Serviço Especializado
-  - `cnes-hb`: Habilitação
-  - `cnes-pf`: Profissional
-  - `cnes-ep`: Equipes
-  - `cnes-rc`: Regra Contratual
-  - `cnes-in`: Incentivos
-  - `cnes-ee`: Estabelecimento de Ensino
-  - `cnes-ef`: Estabelecimento Filantrópico
-  - `cnes-gm`: Gestão e Metas
+  - [`cnes-lt`](docs/datasets/cnes-lt.md): Leitos
+  - [`cnes-st`](docs/datasets/cnes-st.md): Estabelecimentos
+  - [`cnes-dc`](docs/datasets/cnes-dc.md): Dados Complementares
+  - [`cnes-eq`](docs/datasets/cnes-eq.md): Equipamentos
+  - [`cnes-sr`](docs/datasets/cnes-sr.md): Serviço Especializado
+  - [`cnes-hb`](docs/datasets/cnes-hb.md): Habilitação
+  - [`cnes-pf`](docs/datasets/cnes-pf.md): Profissional
+  - [`cnes-ep`](docs/datasets/cnes-ep.md): Equipes
+  - [`cnes-rc`](docs/datasets/cnes-rc.md): Regra Contratual
+  - [`cnes-in`](docs/datasets/cnes-in.md): Incentivos
+  - [`cnes-ee`](docs/datasets/cnes-ee.md): Estabelecimento de Ensino
+  - [`cnes-ef`](docs/datasets/cnes-ef.md): Estabelecimento Filantrópico
+  - [`cnes-gm`](docs/datasets/cnes-gm.md): Gestão e Metas
 
 - **PCE** — Programa de Controle da Esquistossomose
-  - `pce`: Programa de Controle da Esquistossomose
+  - [`pce`](docs/datasets/pce.md): Programa de Controle da Esquistossomose
 
 - **PO** — Painel de Oncologia
-  - `po`: Painel de Oncologia
+  - [`po`](docs/datasets/po.md): Painel de Oncologia
 
 - **RESP** — Notificações de casos suspeitos de SCZ
-  - `resp`: Notificações de casos suspeitos de SCZ
+  - [`resp`](docs/datasets/resp.md): Notificações de casos suspeitos de SCZ
 
 - **SIA** — Sistema de Informações Ambulatoriais
-  - `sia-ab`: APAC de Acompanhamento a Cirurgia Bariátrica
-  - `sia-abo`: APAC Acompanhamento Pós Cirurgia Bariátrica
-  - `sia-acf`: APAC Confecção de Fístula Arteriovenosa
-  - `sia-ad`: APAC de Laudos Diversos
-  - `sia-am`: APAC de Medicamentos
-  - `sia-an`: APAC de Nefrologia
-  - `sia-aq`: APAC de Quimioterapia
-  - `sia-ar`: APAC de Radioterapia
-  - `sia-atd`: APAC de Tratamento Dialítico
-  - `sia-pa`: Produção Ambulatorial
-  - `sia-ps`: Psicossocial
-  - `sia-sad`: Atenção Domiciliar
+  - [`sia-ab`](docs/datasets/sia-ab.md): APAC de Acompanhamento a Cirurgia Bariátrica
+  - [`sia-abo`](docs/datasets/sia-abo.md): APAC Acompanhamento Pós Cirurgia Bariátrica
+  - [`sia-acf`](docs/datasets/sia-acf.md): APAC Confecção de Fístula Arteriovenosa
+  - [`sia-ad`](docs/datasets/sia-ad.md): APAC de Laudos Diversos
+  - [`sia-am`](docs/datasets/sia-am.md): APAC de Medicamentos
+  - [`sia-an`](docs/datasets/sia-an.md): APAC de Nefrologia
+  - [`sia-aq`](docs/datasets/sia-aq.md): APAC de Quimioterapia
+  - [`sia-ar`](docs/datasets/sia-ar.md): APAC de Radioterapia
+  - [`sia-atd`](docs/datasets/sia-atd.md): APAC de Tratamento Dialítico
+  - [`sia-pa`](docs/datasets/sia-pa.md): Produção Ambulatorial
+  - [`sia-ps`](docs/datasets/sia-ps.md): Psicossocial
+  - [`sia-sad`](docs/datasets/sia-sad.md): Atenção Domiciliar
 
 - **SIH** — Sistema de Informação Hospitalar
-  - `sih-rd`: AIH Reduzida
-  - `sih-rj`: AIH Rejeitadas
-  - `sih-sp`: Serviços Profissionais
-  - `sih-er`: AIH Rejeitadas com código de erro
+  - [`sih-rd`](docs/datasets/sih-rd.md): AIH Reduzida
+  - [`sih-rj`](docs/datasets/sih-rj.md): AIH Rejeitadas
+  - [`sih-sp`](docs/datasets/sih-sp.md): Serviços Profissionais
+  - [`sih-er`](docs/datasets/sih-er.md): AIH Rejeitadas com código de erro
 
 - **SIM** — Sistema de Informação de Mortalidade
-  - `sim-do-cid09`: Declarações de Óbito (CID-9, 1979–1995)
-  - `sim-do-cid10`: Declarações de Óbito (CID-10, 1996–presente)
-  - `sim-doext-cid09`: Declarações de Óbitos por causas externas (CID-9)
-  - `sim-doext-cid10`: Declarações de Óbitos por causas externas (CID-10)
-  - `sim-dofet-cid09`: Declarações de Óbitos fetais (CID-9)
-  - `sim-dofet-cid10`: Declarações de Óbitos fetais (CID-10)
-  - `sim-doinf-cid09`: Declarações de Óbitos infantis (CID-9)
-  - `sim-doinf-cid10`: Declarações de Óbitos infantis (CID-10)
-  - `sim-domat-cid10`: Declarações de Óbitos maternos (CID-10)
-  - `sim-dorext-cid10`: Mortalidade de residentes no exterior (CID-10)
+  - [`sim-do-cid09`](docs/datasets/sim-do-cid09.md): Declarações de Óbito (CID-9, 1979–1995)
+  - [`sim-do-cid10`](docs/datasets/sim-do-cid10.md): Declarações de Óbito (CID-10, 1996–presente)
+  - [`sim-doext-cid09`](docs/datasets/sim-doext-cid09.md): Declarações de Óbitos por causas externas (CID-9)
+  - [`sim-doext-cid10`](docs/datasets/sim-doext-cid10.md): Declarações de Óbitos por causas externas (CID-10)
+  - [`sim-dofet-cid09`](docs/datasets/sim-dofet-cid09.md): Declarações de Óbitos fetais (CID-9)
+  - [`sim-dofet-cid10`](docs/datasets/sim-dofet-cid10.md): Declarações de Óbitos fetais (CID-10)
+  - [`sim-doinf-cid09`](docs/datasets/sim-doinf-cid09.md): Declarações de Óbitos infantis (CID-9)
+  - [`sim-doinf-cid10`](docs/datasets/sim-doinf-cid10.md): Declarações de Óbitos infantis (CID-10)
+  - [`sim-domat-cid10`](docs/datasets/sim-domat-cid10.md): Declarações de Óbitos maternos (CID-10)
+  - [`sim-dorext-cid10`](docs/datasets/sim-dorext-cid10.md): Mortalidade de residentes no exterior (CID-10)
 
 - **SINAN** — Sistema de agravos de notificação compulsória
-  - `sinan-acbi`: Acidente de trabalho com material biológico
-  - `sinan-acgr`: Acidente de trabalho
-  - `sinan-aida`: AIDS em adultos
-  - `sinan-aidc`: AIDS em crianças
-  - `sinan-anim`: Acidente por Animais Peçonhentos
-  - `sinan-antr`: Atendimento Antirrábico
-  - `sinan-botu`: Botulismo
-  - `sinan-canc`: Câncer relacionado ao trabalho
-  - `sinan-chag`: Doença de Chagas Aguda
-  - `sinan-chik`: Febre de Chikungunya
-  - `sinan-cole`: Cólera
-  - `sinan-coqu`: Coqueluche
-  - `sinan-deng`: Dengue
-  - `sinan-derm`: Dermatoses ocupacionais
-  - `sinan-dift`: Difteria
-  - `sinan-espo`: Esporotricose (Epizootia)
-  - `sinan-esqu`: Esquistossomose
-  - `sinan-exan`: Doenças exantemáticas
-  - `sinan-fmac`: Febre Maculosa
-  - `sinan-ftif`: Febre Tifóide
-  - `sinan-hans`: Hanseníase
-  - `sinan-hant`: Hantavirose
-  - `sinan-hepa`: Hepatites Virais
-  - `sinan-hiva`: HIV em adultos
-  - `sinan-hivc`: HIV em crianças
-  - `sinan-hive`: HIV em crianças expostas
-  - `sinan-hivg`: HIV em gestante
-  - `sinan-iexo`: Intoxicação Exógena
-  - `sinan-leiv`: Leishmaniose Visceral
-  - `sinan-lept`: Leptospirose
-  - `sinan-lerd`: LER/DORT
-  - `sinan-ltan`: Leishmaniose Tegumentar Americana
-  - `sinan-mala`: Malária
-  - `sinan-meni`: Meningite
-  - `sinan-ment`: Transtornos mentais relacionados ao trabalho
-  - `sinan-ntra`: Notificação de Tracoma
-  - `sinan-pair`: Perda auditiva por ruído relacionado ao trabalho
-  - `sinan-pest`: Peste
-  - `sinan-pfan`: Paralisia Flácida Aguda
-  - `sinan-pneu`: Pneumoconioses relacionadas ao trabalho
-  - `sinan-raiv`: Raiva
-  - `sinan-rota`: Rotavírus
-  - `sinan-sdta`: Surto de Doenças Transmitidas por Alimentos
-  - `sinan-sifa`: Sífilis Adquirida
-  - `sinan-sifc`: Sífilis Congênita
-  - `sinan-sifg`: Sífilis em Gestante
-  - `sinan-src`: Síndrome da Rubéola Congênita
-  - `sinan-teta`: Tétano Acidental
-  - `sinan-tetn`: Tétano Neonatal
-  - `sinan-toxc`: Toxoplasmose Congênita
-  - `sinan-toxg`: Toxoplasmose Gestacional
-  - `sinan-trac`: Inquérito de Tracoma
-  - `sinan-tube`: Tuberculose
-  - `sinan-varc`: Varicela
-  - `sinan-viol`: Violência doméstica, sexual e/ou outras violências
-  - `sinan-zika`: Zika Vírus
+  - [`sinan-acbi`](docs/datasets/sinan-acbi.md): Acidente de trabalho com material biológico
+  - [`sinan-acgr`](docs/datasets/sinan-acgr.md): Acidente de trabalho
+  - [`sinan-aida`](docs/datasets/sinan-aida.md): AIDS em adultos
+  - [`sinan-aidc`](docs/datasets/sinan-aidc.md): AIDS em crianças
+  - [`sinan-anim`](docs/datasets/sinan-anim.md): Acidente por Animais Peçonhentos
+  - [`sinan-antr`](docs/datasets/sinan-antr.md): Atendimento Antirrábico
+  - [`sinan-botu`](docs/datasets/sinan-botu.md): Botulismo
+  - [`sinan-canc`](docs/datasets/sinan-canc.md): Câncer relacionado ao trabalho
+  - [`sinan-chag`](docs/datasets/sinan-chag.md): Doença de Chagas Aguda
+  - [`sinan-chik`](docs/datasets/sinan-chik.md): Febre de Chikungunya
+  - [`sinan-cole`](docs/datasets/sinan-cole.md): Cólera
+  - [`sinan-coqu`](docs/datasets/sinan-coqu.md): Coqueluche
+  - [`sinan-deng`](docs/datasets/sinan-deng.md): Dengue
+  - [`sinan-derm`](docs/datasets/sinan-derm.md): Dermatoses ocupacionais
+  - [`sinan-dift`](docs/datasets/sinan-dift.md): Difteria
+  - [`sinan-espo`](docs/datasets/sinan-espo.md): Esporotricose (Epizootia)
+  - [`sinan-esqu`](docs/datasets/sinan-esqu.md): Esquistossomose
+  - [`sinan-exan`](docs/datasets/sinan-exan.md): Doenças exantemáticas
+  - [`sinan-fmac`](docs/datasets/sinan-fmac.md): Febre Maculosa
+  - [`sinan-ftif`](docs/datasets/sinan-ftif.md): Febre Tifóide
+  - [`sinan-hans`](docs/datasets/sinan-hans.md): Hanseníase
+  - [`sinan-hant`](docs/datasets/sinan-hant.md): Hantavirose
+  - [`sinan-hepa`](docs/datasets/sinan-hepa.md): Hepatites Virais
+  - [`sinan-hiva`](docs/datasets/sinan-hiva.md): HIV em adultos
+  - [`sinan-hivc`](docs/datasets/sinan-hivc.md): HIV em crianças
+  - [`sinan-hive`](docs/datasets/sinan-hive.md): HIV em crianças expostas
+  - [`sinan-hivg`](docs/datasets/sinan-hivg.md): HIV em gestante
+  - [`sinan-iexo`](docs/datasets/sinan-iexo.md): Intoxicação Exógena
+  - [`sinan-leiv`](docs/datasets/sinan-leiv.md): Leishmaniose Visceral
+  - [`sinan-lept`](docs/datasets/sinan-lept.md): Leptospirose
+  - [`sinan-lerd`](docs/datasets/sinan-lerd.md): LER/DORT
+  - [`sinan-ltan`](docs/datasets/sinan-ltan.md): Leishmaniose Tegumentar Americana
+  - [`sinan-mala`](docs/datasets/sinan-mala.md): Malária
+  - [`sinan-meni`](docs/datasets/sinan-meni.md): Meningite
+  - [`sinan-ment`](docs/datasets/sinan-ment.md): Transtornos mentais relacionados ao trabalho
+  - [`sinan-ntra`](docs/datasets/sinan-ntra.md): Notificação de Tracoma
+  - [`sinan-pair`](docs/datasets/sinan-pair.md): Perda auditiva por ruído relacionado ao trabalho
+  - [`sinan-pest`](docs/datasets/sinan-pest.md): Peste
+  - [`sinan-pfan`](docs/datasets/sinan-pfan.md): Paralisia Flácida Aguda
+  - [`sinan-pneu`](docs/datasets/sinan-pneu.md): Pneumoconioses relacionadas ao trabalho
+  - [`sinan-raiv`](docs/datasets/sinan-raiv.md): Raiva
+  - [`sinan-rota`](docs/datasets/sinan-rota.md): Rotavírus
+  - [`sinan-sdta`](docs/datasets/sinan-sdta.md): Surto de Doenças Transmitidas por Alimentos
+  - [`sinan-sifa`](docs/datasets/sinan-sifa.md): Sífilis Adquirida
+  - [`sinan-sifc`](docs/datasets/sinan-sifc.md): Sífilis Congênita
+  - [`sinan-sifg`](docs/datasets/sinan-sifg.md): Sífilis em Gestante
+  - [`sinan-src`](docs/datasets/sinan-src.md): Síndrome da Rubéola Congênita
+  - [`sinan-teta`](docs/datasets/sinan-teta.md): Tétano Acidental
+  - [`sinan-tetn`](docs/datasets/sinan-tetn.md): Tétano Neonatal
+  - [`sinan-toxc`](docs/datasets/sinan-toxc.md): Toxoplasmose Congênita
+  - [`sinan-toxg`](docs/datasets/sinan-toxg.md): Toxoplasmose Gestacional
+  - [`sinan-trac`](docs/datasets/sinan-trac.md): Inquérito de Tracoma
+  - [`sinan-tube`](docs/datasets/sinan-tube.md): Tuberculose
+  - [`sinan-varc`](docs/datasets/sinan-varc.md): Varicela
+  - [`sinan-viol`](docs/datasets/sinan-viol.md): Violência doméstica, sexual e/ou outras violências
+  - [`sinan-zika`](docs/datasets/sinan-zika.md): Zika Vírus
 
 - **SINASC** — Sistema de Informação de Nascidos Vivos
-  - `sinasc-dn`: Declarações de nascidos vivos
-  - `sinasc-dnex`: Declarações de nascidos vivos no exterior
+  - [`sinasc-dn`](docs/datasets/sinasc-dn.md): Declarações de nascidos vivos
+  - [`sinasc-dnex`](docs/datasets/sinasc-dnex.md): Declarações de nascidos vivos no exterior
 
 - **SISCOLO** — Sistema de Informações de Cânceres de Colo de Útero
-  - `siscolo-cc`: Citopatológico de Colo de Útero
-  - `siscolo-hc`: Histopatológico de Colo de Útero
+  - [`siscolo-cc`](docs/datasets/siscolo-cc.md): Citopatológico de Colo de Útero
+  - [`siscolo-hc`](docs/datasets/siscolo-hc.md): Histopatológico de Colo de Útero
 
 - **SISMAMA** — Sistema de Informações de Cânceres de Mama
-  - `sismama-cm`: Citopatológico de Mama
-  - `sismama-hm`: Histopatológico de Mama
+  - [`sismama-cm`](docs/datasets/sismama-cm.md): Citopatológico de Mama
+  - [`sismama-hm`](docs/datasets/sismama-hm.md): Histopatológico de Mama
 
 - **SISPRENATAL** — Sistema de Monitoramento e Avaliação do Pré-Natal, Parto, Puerpério e Criança
-  - `sisprenatal-pn`: Pré-Natal
+  - [`sisprenatal-pn`](docs/datasets/sisprenatal-pn.md): Pré-Natal
 
 ## Fontes de Dados
 

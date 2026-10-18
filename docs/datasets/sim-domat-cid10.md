@@ -1,4 +1,4 @@
-# `sim-domat-cid10` — Declarações de Óbitos Maternos CID-10 (SIM)
+# `sim-domat-cid10` — Declarações de Óbitos Maternos CID-10
 
 Microdados nacionais do SIM/SVSA-MS com os óbitos maternos de 1996 a 2025 (CID-10). Cada linha é um óbito materno.
 
@@ -12,7 +12,7 @@ Microdados nacionais do SIM/SVSA-MS com os óbitos maternos de 1996 a 2025 (CID-
 | **Particionamento** | `year` |
 | **Periodicidade** | Anual |
 | **Cobertura temporal no FTP** | 1996 a 2025 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 30 arquivos (~4.6 MB); 1 UF(s) na partição; última atualização 2026-08-28 |
+| **Volume aproximado no FTP** | 30 arquivos (~4,6 MB); 1 UF(s) na partição; última atualização 2026-08-28 |
 | **Arquivos preliminares** | Não |
 | **Documentação oficial no FTP** | `/dissemin/publicos/SIM/CID9/DOCS`, `/dissemin/publicos/SIM/CID10/DOCS` |
 | **Tabelas auxiliares no FTP** | `/dissemin/publicos/SIM/CID9/TAB`, `/dissemin/publicos/SIM/CID10/TAB` |

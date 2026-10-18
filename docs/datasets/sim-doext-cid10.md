@@ -1,4 +1,4 @@
-# `sim-doext-cid10` — Declarações de Óbito Externas CID-10 (SIM)
+# `sim-doext-cid10` — Declarações de Óbito Externas CID-10
 
 Microdados nacionais do SIM/SVSA-MS com as Declarações de Óbito por causas externas de 1996 a 2025 (CID-10). Cada linha é um óbito por causa externa.
 
@@ -12,7 +12,7 @@ Microdados nacionais do SIM/SVSA-MS com as Declarações de Óbito por causas ex
 | **Particionamento** | `year` |
 | **Periodicidade** | Anual |
 | **Cobertura temporal no FTP** | 1996 a 2025 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 30 arquivos (~301.2 MB); 1 UF(s) na partição; última atualização 2026-08-28 |
+| **Volume aproximado no FTP** | 30 arquivos (~301,2 MB); 1 UF(s) na partição; última atualização 2026-08-28 |
 | **Arquivos preliminares** | Não |
 | **Documentação oficial no FTP** | `/dissemin/publicos/SIM/CID9/DOCS`, `/dissemin/publicos/SIM/CID10/DOCS` |
 | **Tabelas auxiliares no FTP** | `/dissemin/publicos/SIM/CID9/TAB`, `/dissemin/publicos/SIM/CID10/TAB` |

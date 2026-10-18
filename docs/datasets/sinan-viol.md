@@ -1,4 +1,4 @@
-# `sinan-viol` — Violência Interpessoal e Autoprovocada (SINAN)
+# `sinan-viol` — Violência doméstica, sexual e/ou outras violências
 
 Notificações de violência interpessoal e autoprovocada (incluindo tentativas de suicídio), de notificação compulsória no SINAN. Cada linha representa uma ficha de notificação/investigação de um caso de violência doméstica, sexual, física, psicológica ou outras formas, atendido em serviços de saúde.
 
@@ -49,42 +49,117 @@ Principais usos: dimensionamento e caracterização da violência no país, moni
 
 ### Variáveis-Chave dos Microdados
 
-Os campos abaixo seguem o dicionário de dados do SINAN Net. A ficha é específica do agravo e os leiautes variam entre anos, portanto o conjunto exato de colunas deve ser conferido nos cabeçalhos do `.dbf` e no dicionário do ano. Por padrão, `wrangle_datasus` converte os nomes de coluna para minúsculas.
+Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo `VIOLBR09.dbc` (leiaute do SINAN Net; fichas e leiautes podem variar entre anos, por isso a lista reflete esse arquivo). Os arquivos públicos não trazem identificadores individuais como número da notificação (`NU_NOTIFIC`) nem data de nascimento completa. Por padrão, `wrangle_datasus` converte os nomes de coluna para minúsculas.
 
 | Coluna (DBF) | Tipo / Formato | Descrição |
 |---|---|---|
-| `NU_NOTIFIC` | String | Número da notificação (identificador da ficha na unidade notificadora; preservar como texto). |
-| `ID_AGRAVO` | String | Código CID-10 do agravo notificado (Capítulo XX, V01–Y98). |
+| `TP_NOT` | String | Tipo de notificação (registro da ficha de notificação individual). |
+| `ID_AGRAVO` | String | Código CID-10 do agravo notificado. |
 | `DT_NOTIFIC` | Data (AAAAMMDD) | Data da notificação. |
-| `DT_OCOR` | Data (AAAAMMDD) | Data da ocorrência da violência. |
 | `SEM_NOT` | String | Semana epidemiológica da notificação (AAAASS). |
-| `NU_ANO` | Inteiro | Ano da notificação. |
+| `NU_ANO` | String | Ano da notificação. |
 | `SG_UF_NOT` | String | UF de notificação (código IBGE de 2 dígitos). |
-| `ID_MUNICIP` | String | Município de notificação (código IBGE, 6 dígitos). |
-| `ID_UNIDADE` | String | Código CNES da unidade de saúde notificadora (7 dígitos). |
-| `DT_NASC` | Data (AAAAMMDD) | Data de nascimento. |
-| `NU_IDADE_N` | Inteiro codificado | Idade no formato `TNNN` (unidade = hora/dia/mês/ano + 3 dígitos). |
+| `ID_MUNICIP` | String | Município de notificação (código IBGE). |
+| `DT_OCOR` | Data (AAAAMMDD) | Data da ocorrência da violência. |
+| `SEM_PRI` | String | Semana epidemiológica da ocorrência (AAAASS). |
+| `ANO_NASC` | String | Ano de nascimento (o arquivo público não traz a data de nascimento completa). |
+| `NU_IDADE_N` | Inteiro | Idade no formato `TNNN`: primeiro dígito = unidade (1 hora, 2 dia, 3 mês, 4 ano) e três dígitos = valor. |
 | `CS_SEXO` | String | Sexo (M, F, I = ignorado). |
-| `CS_GESTANT` | String | Gestante (1 1º trimestre, 2 2º, 3 3º, 4 idade gestacional ignorada, 5 não, 6 não se aplica, 9 ignorado). |
+| `CS_RACA` | String | Raça/cor (1 branca, 2 preta, 3 amarela, 4 parda, 5 indígena, 9 ignorado). |
+| `CS_ESCOL_N` | String | Escolaridade. |
+| `SG_UF` | String | UF de residência (código IBGE de 2 dígitos). |
 | `ID_MN_RESI` | String | Município de residência (código IBGE, 6 dígitos). |
-| `LOC_OCOR` | String | Local de ocorrência (residência, habitação coletiva, escola, local de trabalho, via pública, bar, outros). |
-| `VIOL_FISIC` | String | Violência física (1 sim, 2 não, 9 ignorado). |
-| `VIOL_PSICO` | String | Violência psicológica/moral (1 sim, 2 não, 9 ignorado). |
-| `VIOL_SEXU` | String | Violência sexual (1 sim, 2 não, 9 ignorado). |
-| `VIOL_TORT` | String | Tortura (1 sim, 2 não, 9 ignorado). |
-| `AUTOPROVOC` | String | Lesão autoprovocada / tentativa de suicídio (1 sim, 2 não, 9 ignorado). |
-| `MEIO_AGR` | String | Meio de agressão (força corporal, enforcamento, objeto contundente, arma de fogo, arma branca, substância/objeto quente, envenenamento, outros). |
-| `AUTOR` | String | Autor provável da agressão (pai, mãe, cônjuge, ex-cônjuge, namorado, amigo, desconhecido, próprio, outros). |
-| `CLASSI_FIN` | String | Classificação final (1 violência confirmada, 2 não confirmada/suspeita, 9 ignorado). *Nome a conferir no dicionário.* |
-| `EVOLUCAO` | String | Evolução do caso (alta, permanência hospitalar, transferência, evasão, óbito por violência, óbito por outras causas, ignorado). *Nome a conferir no dicionário.* |
+| `NDUPLIC` | String | Indicador de duplicidade da ficha. |
+| `DT_INVEST` | Data (AAAAMMDD) | Data da investigação. |
+| `ID_OCUPA_N` | String | Ocupação do trabalhador (CBO 2002, 6 dígitos). |
+| `SIT_CONJUG` | String | Situação conjugal. |
+| `DEF_TRANS` | String | Pessoa com deficiência/transtorno (geral). |
+| `DEF_FISICA` | String | Deficiência física. |
+| `DEF_MENTAL` | String | Deficiência mental. |
+| `DEF_VISUAL` | String | Deficiência visual. |
+| `DEF_AUDITI` | String | Deficiência auditiva. |
+| `TRAN_MENT` | String | Transtorno mental. |
+| `TRAN_COMP` | String | Transtorno de comportamento. |
+| `SG_UF_OCOR` | String | UF de ocorrência da violência. |
+| `ID_MN_OCOR` | String | Município de ocorrência da violência (código IBGE). |
+| `HORA_OCOR` | String | Hora da ocorrência. |
+| `LOCAL_OCOR` | String | Local de ocorrência (descrição de outros em `LOCAL_ESPE`). |
+| `OUT_VEZES` | String | A violência ocorreu outras vezes. |
+| `LES_AUTOP` | String | Lesão autoprovocada (distingue violência autoprovocada). |
+| `VIOL_FISIC` | String | Violência física. |
+| `VIOL_PSICO` | String | Violência psicológica/moral. |
+| `VIOL_TORT` | String | Tortura. |
+| `VIOL_SEXU` | String | Violência sexual. |
+| `VIOL_TRAF` | String | Tráfico de seres humanos. |
+| `VIOL_FINAN` | String | Violência financeira/econômica. |
+| `VIOL_NEGLI` | String | Negligência/abandono. |
+| `VIOL_INFAN` | String | Trabalho infantil. |
+| `VIOL_LEGAL` | String | Intervenção legal. |
+| `VIOL_OUTR` | String | Outra violência (descrição em `VIOL_ESPEC`). |
+| `AG_FORCA` | String | Meio de agressão: força corporal/espancamento. |
+| `AG_ENFOR` | String | Meio de agressão: enforcamento. |
+| `AG_OBJETO` | String | Meio de agressão: objeto contundente. |
+| `AG_CORTE` | String | Meio de agressão: objeto perfurocortante. |
+| `AG_QUENTE` | String | Meio de agressão: substância/objeto quente. |
+| `AG_ENVEN` | String | Meio de agressão: envenenamento. |
+| `AG_FOGO` | String | Meio de agressão: arma de fogo. |
+| `AG_AMEACA` | String | Meio de agressão: ameaça. |
+| `AG_OUTROS` | String | Outro meio de agressão (descrição em `AG_ESPEC`). |
+| `SEX_ASSEDI` | String | Violência sexual: assédio sexual. |
+| `SEX_ESTUPR` | String | Violência sexual: estupro. |
+| `SEX_PUDOR` | String | Violência sexual: atentado violento ao pudor. |
+| `SEX_PORNO` | String | Violência sexual: pornografia infantil. |
+| `SEX_EXPLO` | String | Violência sexual: exploração sexual. |
+| `SEX_OUTRO` | String | Violência sexual: outra (descrição em `SEX_ESPEC`). |
+| `LESAO_NAT` | String | Natureza da lesão. |
+| `LESAO_CORP` | String | Parte do corpo atingida. |
+| `NUM_ENVOLV` | String | Número de envolvidos. |
+| `REL_PAI` | String | Autor: pai. |
+| `REL_MAE` | String | Autor: mãe. |
+| `REL_PAD` | String | Autor: padrasto. |
+| `REL_CONJ` | String | Autor: cônjuge. |
+| `REL_EXCON` | String | Autor: ex-cônjuge. |
+| `REL_NAMO` | String | Autor: namorado(a). |
+| `REL_EXNAM` | String | Autor: ex-namorado(a). |
+| `REL_FILHO` | String | Autor: filho(a). |
+| `REL_DESCO` | String | Autor: desconhecido. |
+| `REL_IRMAO` | String | Autor: irmão(ã). |
+| `REL_CONHEC` | String | Autor: amigo/conhecido. |
+| `REL_CUIDA` | String | Autor: cuidador(a). |
+| `REL_PATRAO` | String | Autor: patrão/chefe. |
+| `REL_INST` | String | Autor: pessoa com relação institucional. |
+| `REL_POL` | String | Autor: policial/agente da lei. |
+| `REL_PROPRI` | String | Autor: próprio. |
+| `REL_OUTROS` | String | Autor: outro vínculo (descrição em `REL_ESPEC`). |
+| `AUTOR_SEXO` | String | Sexo do provável autor. |
+| `AUTOR_ALCO` | String | Suspeita de uso de álcool pelo provável autor. |
+| `ENC_SAUDE` | String | Encaminhamento: rede de saúde. |
+| `ENC_TUTELA` | String | Encaminhamento: conselho tutelar. |
+| `ENC_DEAM` | String | Encaminhamento: delegacia da mulher (DEAM). |
+| `ENC_DELEG` | String | Encaminhamento: delegacia. |
+| `ENC_MPU` | String | Encaminhamento: Ministério Público. |
+| `ENC_CREAS` | String | Encaminhamento: CREAS. |
+| `ENC_IML` | String | Encaminhamento: IML. |
+| `ENC_OUTR` | String | Encaminhamento: outros (descrição em `ENC_ESPEC`). |
+| `REL_TRAB` | String | Violência relacionada ao trabalho. |
+| `CIRC_LESAO` | String | Circunstância da lesão (CID-10, causa externa). |
+| `CLASSI_FIN` | String | Classificação final do caso. |
+| `EVOLUCAO` | String | Evolução do caso. |
+| `DT_OBITO` | Data (AAAAMMDD) | Data do óbito, quando aplicável. |
+| `REL_MAD` | String | Autor: madrasta. |
+| `TPUNINOT` | String | Tipo de unidade notificadora. |
+| `ORIENT_SEX` | String | Orientação sexual. |
+| `IDENT_GEN` | String | Identidade de gênero. |
+| `VIOL_MOTIV` | String | Motivação da violência. |
+| `CICL_VID` | String | Ciclo de vida. |
 | `DT_ENCERRA` | Data (AAAAMMDD) | Data de encerramento da investigação. |
 
 ### Observações de Tratamento e Saneamento (`wrangle_datasus`)
 
-- **Preservação de códigos estruturados**: municípios (`ID_MUNICIP`, `ID_MN_RESI`) usam código IBGE de 6 dígitos; `ID_UNIDADE` é CNES de 7 dígitos; `SG_UF_NOT` é código IBGE de 2 dígitos. `ID_AGRAVO` (CID-10) e `NU_NOTIFIC` devem ficar como `String`, mantendo zeros à esquerda (`zfill`).
+- **Preservação de códigos estruturados**: municípios (`ID_MUNICIP`, `ID_MN_RESI`) usam código IBGE de 6 dígitos; `ID_UNIDADE` é CNES de 7 dígitos; `SG_UF_NOT` é código IBGE de 2 dígitos. `ID_AGRAVO` (CID-10), devem ficar como `String`, mantendo zeros à esquerda (`zfill`).
 - **Datas e competências**: datas `DT_*` são gravadas em `AAAAMMDD` nos DBF e convertidas para `pl.Date`; `SEM_NOT` é semana epidemiológica `AAAASS` e permanece texto. A idade em `NU_IDADE_N` está codificada (`TNNN`) e deve ser decodificada antes de calcular faixas etárias.
 - **Valores ausentes e sentinelas**: o SINAN usa `9`, `99`, `999` e `I` (ignorado) como categorias válidas; elas **não** são nulos automáticos. Espaços em branco e `""` viram nulos, e registros marcados como excluídos no dBASE (`_deleted`) são removidos.
-- **Particularidades do dataset**: os campos de forma de violência são múltiplos (uma ficha pode ter mais de uma marcada) e devem ser tratados como flags independentes; a presença de `AUTOPROVOC` distingue violência autoprovocada de interpessoal. A notificação depende de atendimento em serviço de saúde, o que implica subnotificação importante, especialmente em violência psicológica e em áreas sem rede de proteção estruturada. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` (notificação) ou `ID_MN_RESI` (residência) conforme a pergunta. O arquivo de 2025 é preliminar; deduplique por `NU_NOTIFIC` + `ID_UNIDADE` + `NU_ANO` ao combinar as fontes.
+- **Particularidades do dataset**: os campos de forma de violência são múltiplos (uma ficha pode ter mais de uma marcada) e devem ser tratados como flags independentes; a presença de `LES_AUTOP` distingue violência autoprovocada de interpessoal. A notificação depende de atendimento em serviço de saúde, o que implica subnotificação importante, especialmente em violência psicológica e em áreas sem rede de proteção estruturada. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` (notificação) ou `ID_MN_RESI` (residência) conforme a pergunta. O arquivo de 2025 é preliminar; como `NU_NOTIFIC` não consta dos arquivos públicos, deduplique por combinação de campos (ex.: `ID_UNIDADE`, `DT_NOTIFIC`, `ID_MN_RESI`, `ANO_NASC`, `CS_SEXO`) ao combinar as fontes.
 
 ## 4. Exemplos Práticos
 

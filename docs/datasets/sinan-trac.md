@@ -1,4 +1,4 @@
-# `sinan-trac` — Inquérito de Tracoma (SINAN)
+# `sinan-trac` — Inquérito de Tracoma
 
 Registros de inquéritos populacionais de tracoma (busca ativa de casos) conduzidos no âmbito da vigilância epidemiológica e registrados no SINAN. Cada linha representa o resultado do exame oftalmológico de um indivíduo examinado durante um inquérito domiciliar, escolar ou comunitário.
 
@@ -49,37 +49,36 @@ Principais usos: cálculo de prevalência de tracoma e de TF em crianças, monit
 
 ### Variáveis-Chave dos Microdados
 
-Os campos abaixo seguem o dicionário de dados do SINAN Net. O leiaute do inquérito varia entre anos e campanhas, portanto o conjunto exato de colunas deve ser conferido nos cabeçalhos do `.dbf`. Por padrão, `wrangle_datasus` converte os nomes de coluna para minúsculas.
+As colunas abaixo foram extraídas do cabeçalho do arquivo mais recente (`TRACBR26.dbc`). Por padrão, `wrangle_datasus` converte os nomes de coluna para minúsculas.
 
 | Coluna (DBF) | Tipo / Formato | Descrição |
 |---|---|---|
-| `NU_NOTIFIC` | String | Número do registro (identificador do indivíduo examinado; preservar como texto). |
-| `ID_AGRAVO` | String | Código CID-10 associado (A71 / H13.1). *Nome a conferir no dicionário.* |
-| `DT_NOTIFIC` | Data (AAAAMMDD) | Data do registro/exame. |
-| `DT_INVEST` / `DT_EXAME` | Data (AAAAMMDD) | Data da investigação/exame oftalmológico. |
-| `NU_ANO` | Inteiro | Ano do inquérito. |
-| `SG_UF_NOT` | String | UF de referência (código IBGE de 2 dígitos). |
-| `ID_MUNICIP` | String | Município do inquérito (código IBGE, 6 dígitos). |
-| `ID_UNIDADE` | String | Código CNES da unidade/equipe responsável (7 dígitos). |
-| `DT_NASC` | Data (AAAAMMDD) | Data de nascimento. |
-| `NU_IDADE_N` | Inteiro codificado | Idade no formato `TNNN` (unidade = hora/dia/mês/ano + 3 dígitos). |
+| `DT_NOTIFIC` | Data (AAAAMMDD) | Data da notificação do registro. |
+| `ID_AGRAVO` | String | Código CID-10 do agravo notificado (A71). |
+| `SEM_NOT` | String | Semana epidemiológica da notificação (AAAASS). |
+| `NU_ANO` | String | Ano da notificação. |
+| `SG_UF_NOT` | String | UF de notificação (código IBGE de 2 dígitos). |
+| `ID_MUNICIP` | String | Município de notificação (código IBGE, 6 dígitos). |
+| `ID_REGIONA` | String | Código da regional de saúde. |
+| `ID_UNIDADE` | String | Código CNES da unidade responsável (7 dígitos). |
+| `CS_INQUERI` | String | Tipo de inquérito realizado. |
+| `NU_CASO` | Inteiro | Número de casos registrados. |
+| `SG_UF` | String | UF de residência (código IBGE de 2 dígitos). |
+| `ID_MUNI_RE` | String | Município de residência (código IBGE, 6 dígitos). |
 | `CS_SEXO` | String | Sexo (M, F, I = ignorado). |
-| `ZONA` | String | Zona (1 urbana, 2 rural, 3 periurbana, 9 ignorado). |
-| `ESCOLARIDADE` / `SERIE_ESCOLAR` | String | Escolaridade / série escolar do examinado (relevante nos inquéritos escolares). *Nome a conferir no dicionário.* |
-| `FORMA_CLIN` / `TRACOMA` | String | Resultado do exame: presença e forma clínica (TF folicular, TI inflamatório intenso, TS cicatricial, TT trichiasis, CO opacificação da córnea, ausência). *Nome a conferir no dicionário.* |
-| `OLHO_DIR` | String | Resultado do exame no olho direito. *Nome a conferir no dicionário.* |
-| `OLHO_ESQ` | String | Resultado do exame no olho esquerdo. *Nome a conferir no dicionário.* |
-| `TRATAMENTO` | String | Tratamento realizado (1 sim, 2 não, 9 ignorado). |
-| `CIRURGIA` | String | Encaminhamento para cirurgia (TT/CO) (1 sim, 2 não, 9 ignorado). |
-| `CLASSI_FIN` | String | Classificação final (1 confirmado, 2 descartado, 9 ignorado). *Nome a conferir no dicionário.* |
-| `DT_ENCERRA` | Data (AAAAMMDD) | Data de encerramento. |
+| `NU_IDADE_N` | Inteiro | Idade. |
+| `FORMA_TF` / `FORMA_TI` / `FORMA_TS` / `FORMA_TT` / `FORMA_CO` | String | Indicadores das formas clínicas: TF (folicular), TI (inflamatório intenso), TS (cicatricial), TT (triquíase) e CO (opacificação da córnea). |
+| `ENCAMINHA` | String | Encaminhamento do examinado. |
+| `DT_DIGITA` | Data (AAAAMMDD) | Data de digitação do registro. |
+| `DT_TRANSUS` / `DT_TRANSDM` / `DT_TRANSSM` / `DT_TRANSRM` / `DT_TRANSRS` / `DT_TRANSSE` | Data (AAAAMMDD) | Datas de transferência do registro entre as esferas do SINAN (US, distrital/municipal, estadual/regional, federal). |
+| `NU_LOTE_V` / `NU_LOTE_H` | String | Números dos lotes de transferência vertical e horizontal. |
 
 ### Observações de Tratamento e Saneamento (`wrangle_datasus`)
 
-- **Preservação de códigos estruturados**: municípios (`ID_MUNICIP`) usam código IBGE de 6 dígitos; `ID_UNIDADE` é CNES de 7 dígitos; `SG_UF_NOT` é código IBGE de 2 dígitos. `ID_AGRAVO` (CID-10) e `NU_NOTIFIC` devem ficar como `String`, mantendo zeros à esquerda (`zfill`).
-- **Datas e competências**: datas `DT_*` são gravadas em `AAAAMMDD` nos DBF e convertidas para `pl.Date`. A idade em `NU_IDADE_N` está codificada (`TNNN`) e deve ser decodificada antes de calcular faixas etárias.
+- **Preservação de códigos estruturados**: municípios (`ID_MUNICIP`) usam código IBGE de 6 dígitos; `ID_UNIDADE` é CNES de 7 dígitos; `SG_UF_NOT` é código IBGE de 2 dígitos. `ID_AGRAVO` (CID-10) deve ficar como `String`, mantendo zeros à esquerda (`zfill`).
+- **Datas e competências**: datas `DT_*` são gravadas em `AAAAMMDD` nos DBF e convertidas para `pl.Date`. 
 - **Valores ausentes e sentinelas**: o SINAN usa `9`, `99`, `999` e `I` (ignorado) como categorias válidas; elas **não** são nulos automáticos. Espaços em branco e `""` viram nulos, e registros marcados como excluídos no dBASE (`_deleted`) são removidos.
-- **Particularidades do dataset**: este é o **inquérito** (busca ativa, indivíduos examinados), distinto da **notificação individual** de casos em `sinan-ntra`. O denominador é o número de examinados, e a base não deve ser usada para contagem de casos notificados. Os leiautes variam substancialmente entre campanhas, especialmente nos campos de resultado por olho e forma clínica. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` ou `ID_MUNICIP` conforme a pergunta. Arquivos do diretório PRELIM (2025+) são preliminares; deduplique com cautela ao combinar as fontes.
+- **Particularidades do dataset**: este é o **inquérito** (busca ativa, indivíduos examinados), distinto da **notificação individual** de casos em `sinan-ntra`. O denominador é o número de examinados, e a base não deve ser usada para contagem de casos notificados. Os leiautes variam substancialmente entre campanhas, especialmente nos indicadores de forma clínica (`FORMA_*`). Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` ou `ID_MUNICIP` conforme a pergunta. Arquivos do diretório PRELIM (2025+) são preliminares; deduplique com cautela ao combinar as fontes.
 
 ## 4. Exemplos Práticos
 

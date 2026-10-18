@@ -1,4 +1,4 @@
-# `sinan-ntra` — Notificação Individual de Tracoma (SINAN)
+# `sinan-ntra` — Notificação de Tracoma
 
 Notificações individuais de casos de tracoma, de notificação compulsória no SINAN. Cada linha representa uma ficha de notificação/investigação de um caso de tracoma (conjuntivite e ceratoconjuntivite por *Chlamydia trachomatis*), atendido em serviços de saúde.
 
@@ -49,38 +49,31 @@ Principais usos: vigilância da forma e distribuição do tracoma, monitoramento
 
 ### Variáveis-Chave dos Microdados
 
-Os campos abaixo seguem o dicionário de dados do SINAN Net. A ficha é específica do agravo e os leiautes variam entre anos, portanto o conjunto exato de colunas deve ser conferido nos cabeçalhos do `.dbf` e no dicionário do ano. Por padrão, `wrangle_datasus` converte os nomes de coluna para minúsculas.
+As colunas abaixo foram extraídas do cabeçalho do arquivo mais recente (`NTRABR26.dbc`). Por padrão, `wrangle_datasus` converte os nomes de coluna para minúsculas.
 
 | Coluna (DBF) | Tipo / Formato | Descrição |
 |---|---|---|
-| `NU_NOTIFIC` | String | Número da notificação (identificador da ficha na unidade notificadora; preservar como texto). |
-| `ID_AGRAVO` | String | Código CID-10 do agravo notificado (A71; formas oculares em H13.1). |
-| `DT_NOTIFIC` | Data (AAAAMMDD) | Data da notificação. |
-| `DT_SIN_PRI` | Data (AAAAMMDD) | Data dos primeiros sintomas. |
-| `SEM_NOT` | String | Semana epidemiológica da notificação (AAAASS). |
-| `NU_ANO` | Inteiro | Ano da notificação. |
+| `DT_NOTIFIC` | Data (AAAAMMDD) | Data da notificação do inquérito. |
+| `NU_ANO` | String | Ano da notificação. |
+| `ID_AGRAVO` | String | Código CID-10 do agravo notificado (A71). |
 | `SG_UF_NOT` | String | UF de notificação (código IBGE de 2 dígitos). |
-| `ID_MUNICIP` | String | Município de notificação (código IBGE, 6 dígitos). |
-| `ID_UNIDADE` | String | Código CNES da unidade de saúde notificadora (7 dígitos). |
-| `DT_NASC` | Data (AAAAMMDD) | Data de nascimento. |
-| `NU_IDADE_N` | Inteiro codificado | Idade no formato `TNNN` (unidade = hora/dia/mês/ano + 3 dígitos). |
-| `CS_SEXO` | String | Sexo (M, F, I = ignorado). |
-| `ID_MN_RESI` | String | Município de residência (código IBGE, 6 dígitos). |
-| `ZONA` | String | Zona de residência (1 urbana, 2 rural, 3 periurbana, 9 ignorado). |
-| `FORMA_CLIN` | String | Forma clínica (TF folicular, TI inflamatório intenso, TS cicatricial, TT trichiasis, CO opacificação da córnea). *Nome a conferir no dicionário.* |
-| `EXAME_LAB` | String | Resultado de exame laboratorial (1 positivo, 2 negativo, 3 não realizado, 9 ignorado). *Nome a conferir no dicionário.* |
-| `TRATAMENTO` | String | Tratamento realizado (1 sim, 2 não, 9 ignorado). |
-| `CIRURGIA` | String | Encaminhamento para cirurgia (TT/CO) (1 sim, 2 não, 9 ignorado). |
-| `CLASSI_FIN` | String | Classificação final (1 confirmado, 2 descartado, 9 ignorado). |
-| `EVOLUCAO` | String | Evolução do caso (cura, melhora, óbito, ignorado). *Nome a conferir no dicionário.* |
-| `DT_ENCERRA` | Data (AAAAMMDD) | Data de encerramento da investigação. |
+| `ID_MUNICIP` | String | Município de notificação (código IBGE, 7 dígitos). |
+| `ID_UNIDADE` | String | Código CNES da unidade notificadora (7 dígitos). |
+| `SEM_NOT` | String | Semana epidemiológica da notificação (AAAASS). |
+| `ID_REGIONA` | String | Código da regional de saúde. |
+| `CS_INQUERI` | String | Tipo de inquérito realizado. |
+| `NU_CASOEXA` | Inteiro | Número de casos examinados. |
+| `NU_CASOPOS` | Inteiro | Número de casos positivos. |
+| `DT_DIGITA` | Data (AAAAMMDD) | Data de digitação do registro. |
+| `DT_TRANSUS` / `DT_TRANSDM` / `DT_TRANSSM` / `DT_TRANSRM` / `DT_TRANSRS` / `DT_TRANSSE` | Data (AAAAMMDD) | Datas de transferência do registro entre as esferas do SINAN (US, distrital/municipal, estadual/regional, federal). |
+| `NU_LOTE_V` / `NU_LOTE_H` | String | Números dos lotes de transferência vertical e horizontal. |
 
 ### Observações de Tratamento e Saneamento (`wrangle_datasus`)
 
-- **Preservação de códigos estruturados**: municípios (`ID_MUNICIP`, `ID_MN_RESI`) usam código IBGE de 6 dígitos; `ID_UNIDADE` é CNES de 7 dígitos; `SG_UF_NOT` é código IBGE de 2 dígitos. `ID_AGRAVO` (CID-10) e `NU_NOTIFIC` devem ficar como `String`, mantendo zeros à esquerda (`zfill`).
-- **Datas e competências**: datas `DT_*` são gravadas em `AAAAMMDD` nos DBF e convertidas para `pl.Date`; `SEM_NOT` é semana epidemiológica `AAAASS` e permanece texto. A idade em `NU_IDADE_N` está codificada (`TNNN`) e deve ser decodificada antes de calcular faixas etárias.
+- **Preservação de códigos estruturados**: o município (`ID_MUNICIP`) usa código IBGE de 7 dígitos; `ID_UNIDADE` é CNES de 7 dígitos; `SG_UF_NOT` é código IBGE de 2 dígitos. `ID_AGRAVO` (CID-10) deve ficar como `String`, mantendo zeros à esquerda (`zfill`).
+- **Datas e competências**: datas `DT_*` são gravadas em `AAAAMMDD` nos DBF e convertidas para `pl.Date`; `SEM_NOT` é semana epidemiológica `AAAASS` e permanece texto. 
 - **Valores ausentes e sentinelas**: o SINAN usa `9`, `99`, `999` e `I` (ignorado) como categorias válidas; elas **não** são nulos automáticos. Espaços em branco e `""` viram nulos, e registros marcados como excluídos no dBASE (`_deleted`) são removidos.
-- **Particularidades do dataset**: este dataset contém a **notificação individual** de casos; o **inquérito** populacional de tracoma (busca ativa) está no dataset separado `sinan-trac`. O tracoma é frequentemente investigado em inquéritos escolares e domiciliares, o que gera diferenças nos denominadores. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` (notificação) ou `ID_MN_RESI` (residência) conforme a pergunta. Arquivos do diretório PRELIM (2025+) são preliminares; deduplique por `NU_NOTIFIC` + `ID_UNIDADE` + `NU_ANO` ao combinar as fontes.
+- **Particularidades do dataset**: o layout é compacto e traz contagens por notificação de inquérito (`NU_CASOEXA` examinados, `NU_CASOPOS` positivos), sem dados individuais de pacientes; o detalhamento por forma clínica está no dataset `sinan-trac`. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT`. Arquivos do diretório PRELIM são preliminares; deduplique ao combinar as fontes.
 
 ## 4. Exemplos Práticos
 

@@ -1,4 +1,4 @@
-# `sinan-sifa` — Sífilis Adquirida (SINAN)
+# `sinan-sifa` — Sífilis Adquirida
 
 Notificações de casos de sífilis adquirida (não gestacional e não congênita) registradas no SINAN. Cada linha representa uma ficha de notificação de um caso de sífilis adquirida em qualquer faixa etária.
 
@@ -12,7 +12,7 @@ Notificações de casos de sífilis adquirida (não gestacional e não congênit
 | **Particionamento** | `uf`, `year` (no FTP há apenas arquivos nacionais `BR`: `partition_n_ufs` = 1) |
 | **Periodicidade** | Anual |
 | **Cobertura temporal no FTP** | 2010 a 2025 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 16 arquivos (~36.5 MB) |
+| **Volume aproximado no FTP** | 16 arquivos (~36,5 MB) |
 | **Arquivos preliminares** | Sim (diretório PRELIM) |
 | **Documentação oficial no FTP** | `/dissemin/publicos/SINAN/DOCS` |
 | **Tabelas auxiliares no FTP** | `/dissemin/publicos/SINAN/AUXILIAR` |
@@ -58,36 +58,44 @@ Usos: taxa de detecção de sífilis adquirida por 100 mil habitantes, perfil po
 
 ### Variáveis-Chave dos Microdados
 
-Os campos abaixo seguem o dicionário de dados do SINAN Net. A ficha é específica do agravo e os leiautes variam entre anos, portanto o conjunto exato de colunas deve ser conferido nos cabeçalhos do `.dbf` e no dicionário do ano. Por padrão, `wrangle_datasus` converte os nomes de coluna para minúsculas.
+Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo real `SIFABR16.dbc` do FTP (campos da ficha do SINAN Net; o leiaute pode variar entre anos). Os microdados públicos não trazem número de notificação nem data de nascimento completa, apenas campos não identificáveis. Por padrão, `wrangle_datasus` converte os nomes de coluna para minúsculas.
 
 | Coluna (DBF) | Tipo / Formato | Descrição |
 |---|---|---|
-| `NU_NOTIFIC` | String | Número da notificação (identificador da ficha na unidade notificadora; preservar como texto). |
+| `TP_NOT` | String | Tipo de notificação (individual ou negativa). |
 | `ID_AGRAVO` | String | Código CID-10 do agravo notificado. |
 | `DT_NOTIFIC` | Data (AAAAMMDD) | Data da notificação. |
 | `SEM_NOT` | String | Semana epidemiológica da notificação (AAAASS). |
 | `NU_ANO` | Inteiro | Ano da notificação. |
 | `SG_UF_NOT` | String | UF de notificação (código IBGE de 2 dígitos). |
-| `ID_MUNICIP` | String | Município de notificação (código IBGE, 6 dígitos). |
-| `ID_UNIDADE` | String | Código CNES da unidade de saúde notificadora (7 dígitos). |
-| `DT_NASC` | Data (AAAAMMDD) | Data de nascimento. |
+| `ID_MUNICIP` | String | Município de notificação (código IBGE). |
+| `ID_REGIONA` | String | Regional de saúde de notificação. |
+| `DT_DIAG` | Data (AAAAMMDD) | Data do diagnóstico. |
+| `SEM_DIAG` | String | Semana epidemiológica do diagnóstico (AAAASS). |
 | `NU_IDADE_N` | Inteiro codificado | Idade no formato `TNNN`: primeiro dígito = unidade (1 hora, 2 dia, 3 mês, 4 ano) e três dígitos = valor. |
 | `CS_SEXO` | String | Sexo (M, F, I = ignorado). |
+| `CS_GESTANT` | String | Gestante (trimestre de gestação ou não gestante, conforme a ficha). |
 | `CS_RACA` | String | Raça/cor (1 branca, 2 preta, 3 amarela, 4 parda, 5 indígena, 9 ignorado). |
+| `CS_ESCOL_N` | String | Escolaridade (código da ficha do SINAN). |
 | `SG_UF` | String | UF de residência. |
 | `ID_MN_RESI` | String | Município de residência (código IBGE, 6 dígitos). |
-| `CS_ESCOL_N` | String | Escolaridade (0 a 10; 9 ou 10 = ignorado/não se aplica, conforme o dicionário). |
-| `CLASSI_FIN` | String | Classificação final do caso (confirmado/descartado ou categoria específica do agravo). |
-| `EVOLUCAO` | String | Evolução do caso (cura, óbito pelo agravo, óbito por outras causas, ignorado). |
+| `ID_RG_RESI` | String | Regional de saúde de residência. |
+| `ID_PAIS` | String | País de residência. |
+| `DT_INVEST` | Data (AAAAMMDD) | Data da investigação. |
+| `ID_OCUPA_N` | String | Ocupação (CBO, 6 dígitos). |
+| `CLASSI_FIN` | String | Classificação final do caso. |
+| `CRITERIO` | String | Critério de confirmação/definição do caso. |
+| `DOENCA_TRA` | String | Indica se a doença é relacionada ao trabalho. |
+| `EVOLUCAO` | String | Evolução do caso. |
+| `DT_OBITO` | Data (AAAAMMDD) | Data do óbito. |
 | `DT_ENCERRA` | Data (AAAAMMDD) | Data de encerramento da investigação. |
-| `CS_GESTANT` | String | Idade gestacional / situação de gravidez da paciente (1º, 2º, 3º trimestre, idade ignorada, não, não se aplica, ignorado). |
 
 ### Observações de Tratamento e Saneamento (`wrangle_datasus`)
 
-- **Preservação de códigos estruturados**: municípios (`ID_MUNICIP`, `ID_MN_RESI`) usam código IBGE de 6 dígitos (sem dígito verificador) e `ID_UNIDADE` é CNES de 7 dígitos; `SG_UF`/`SG_UF_NOT` são códigos IBGE de 2 dígitos. `ID_AGRAVO` (CID-10) e `NU_NOTIFIC` devem ficar como `String`, mantendo zeros à esquerda (`zfill`).
+- **Preservação de códigos estruturados**: municípios (`ID_MUNICIP`, `ID_MN_RESI`) usam código IBGE de 6 dígitos (sem dígito verificador); `SG_UF`/`SG_UF_NOT` são códigos IBGE de 2 dígitos. `ID_AGRAVO` (CID-10) deve ficar como `String`, mantendo zeros à esquerda (`zfill`).
 - **Datas e competências**: datas `DT_*` são gravadas em `AAAAMMDD` nos DBF e convertidas para `pl.Date`; `SEM_NOT` é semana epidemiológica `AAAASS` e permanece texto. A idade em `NU_IDADE_N` está codificada (`TNNN`) e deve ser decodificada antes de calcular faixas etárias.
 - **Valores ausentes e sentinelas**: o SINAN usa `9`, `99`, `999` e `I` (ignorado) como categorias válidas no dicionário; elas **não** são nulos automáticos e a decisão de tratá-las como ausente cabe à análise. Espaços em branco e `""` viram nulos, e registros marcados como excluídos no dBASE (`_deleted`) são removidos.
-- **Particularidades do dataset**: Mulheres gestantes com sífilis podem constar também em `sinan-sifg`; a ficha de sífilis adquirida não deve ser usada para contar gestantes. Conferir a mudança do critério de definição de caso em 2017-2020, que modificou classificação e totais. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` (UF de notificação) ou `SG_UF`/`ID_MN_RESI` (residência) conforme a pergunta, pois os dois podem diferir. Arquivos do diretório PRELIM são preliminares e substituídos pelos finais; deduplique por `NU_NOTIFIC` + `ID_UNIDADE` + `NU_ANO` ao combinar as duas fontes.
+- **Particularidades do dataset**: Mulheres gestantes com sífilis podem constar também em `sinan-sifg`; a ficha de sífilis adquirida não deve ser usada para contar gestantes. Conferir a mudança do critério de definição de caso em 2017-2020, que modificou classificação e totais. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` (UF de notificação) ou `SG_UF`/`ID_MN_RESI` (residência) conforme a pergunta, pois os dois podem diferir. Arquivos do diretório PRELIM são preliminares e substituídos pelos finais; prefira sempre os arquivos finais quando o mesmo ano existir nas duas fontes, evitando somar PRELIM e FINAIS.
 
 ## 4. Exemplos Práticos
 

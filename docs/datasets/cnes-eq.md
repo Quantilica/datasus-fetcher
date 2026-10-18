@@ -12,7 +12,7 @@ O `cnes-eq` contém os microdados do arquivo de **Equipamentos** do Cadastro Nac
 | **Particionamento** | `uf`, `yearmonth` (um arquivo por UF e competência mensal, além de `br`) |
 | **Periodicidade** | Mensal (extração por competência) |
 | **Cobertura temporal no FTP** | 2005-08 a 2026-09 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 6857 arquivos (~1,49 GB) |
+| **Volume aproximado no FTP** | 6857 arquivos (~1,6 GB) |
 | **Arquivos preliminares** | Não |
 | **Documentação oficial no FTP** | `/dissemin/publicos/CNES/200508_/doc` (`IT_CNES_1706.pdf`) |
 | **Tabelas auxiliares no FTP** | `/dissemin/publicos/CNES/200508_/Auxiliar` (`TAB_CNES.zip`) |

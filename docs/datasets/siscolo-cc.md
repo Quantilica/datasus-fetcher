@@ -1,4 +1,4 @@
-# `siscolo-cc` — Citopatológico de Colo de Útero (SISCOLO)
+# `siscolo-cc` — Citopatológico de Colo de Útero
 
 Microdados do SISCOLO (INCA/DATASUS) com os laudos citopatológicos do colo do útero realizados no SUS entre 2006 e 2015, por UF e mês. Cada linha representa um exame citopatológico.
 
@@ -12,7 +12,7 @@ Microdados do SISCOLO (INCA/DATASUS) com os laudos citopatológicos do colo do �
 | **Particionamento** | `uf / yearmonth` |
 | **Periodicidade** | Mensal |
 | **Cobertura temporal no FTP** | 2006-01 a 2015-10 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 2858 arquivos (~2.5 GB); 27 UF(s) na partição; última atualização 2022-08-17 |
+| **Volume aproximado no FTP** | 2858 arquivos (~2,5 GB); 27 UF(s) na partição; última atualização 2022-08-17 |
 | **Arquivos preliminares** | Não |
 | **Documentação oficial no FTP** | Não aplicável (o catálogo `meta.docs` não define diretório de documentação para este sistema) |
 | **Tabelas auxiliares no FTP** | `/dissemin/publicos/SISCAN/SISCOLO4/Auxiliar` |
@@ -48,26 +48,40 @@ Volume expressivo (~2,5 GB, 2.858 arquivos) em razão do número de exames; pref
 
 ### Variáveis-Chave dos Microdados
 
-**Atenção**: os nomes de coluna abaixo são os mais prováveis conforme o dicionário do sistema, mas o layout do DBF não foi inspecionado diretamente neste levantamento. Confirme em `TAB_SISCOLO4.zip`/`TAB_SISMAMA.zip` ou com `frame.columns` antes de usar.
+Nomes verificados contra o arquivo real `CCRJ1503.dbc` (102 colunas; resultado do exame citopatológico do colo do útero). Cada linha é um registro agregado de exames da competência, por isso há muitos contadores (`String` de 8 caracteres).
 
 | Coluna (DBF) | Tipo / Formato | Descrição |
 |---|---|---|
-| `MUN_RES / COD_MUN` | String (IBGE, 6) | Município de residência da mulher. |
-| `CNES / UNIDADE` | String (CNES, 7) | Unidade solicitante do exame. |
-| `IDADE` | Inteiro | Idade da mulher na data do exame. |
-| `DT_COLETA` | Data | Data da coleta do material. |
-| `DT_RESULT` | Data | Data do resultado do exame. |
-| `MOTIVO` | String | Motivo do exame: rastreamento, repetição ou seguimento. |
-| `ADEQUACAO` | String | Adequabilidade da amostra: satisfatória ou insatisfatória. |
-| `RESULTADO` | String | Categoria diagnóstica (Bethesda): dentro dos limites da normalidade, ASC-US, ASC-H, LSIL, HSIL, AGC, carcinoma etc. |
-| `ESCOLARIDADE / RACA_COR` | String | Escolaridade e raça/cor da mulher. |
+| `CO_US` / `CO_US_UF` / `CO_US_IBGE` | String | Unidade solicitante: código, UF e município (IBGE, 7). |
+| `CO_CNES` | String (CNES, 7) | CNES do estabelecimento. |
+| `REGUS` / `REGRESID` / `REGLAB` | String | Indicadores de região da unidade, da residência e do laboratório. |
+| `CO_PAC_UF` / `CO_PAC_IBG` | String | UF e município (IBGE, 7) de residência da paciente. |
+| `ANO_COMP` / `DT_ID_COMP` | String | Ano e competência (`AAAAMM`) do registro. |
+| `CO_FX_ETAR` | String | Faixa etária da paciente. |
+| `DINTCOLETA` / `DINTRESULT` / `DINTTEMPEX` | String | Intervalos (categorizados) entre coleta, resultado e tempo de exame. |
+| `QTDEXA` | String | Quantidade de exames do registro. |
+| `CO_PAC_IDA` | String (3) | Idade da paciente. |
+| `CO_PAC_ESC` / `CO_PAC_RAC` | String | Escolaridade e raça/cor da paciente. |
+| `CO_RES_NOR` | String | Indicador de residência (campo do layout). |
+| `CLABIBGE` / `CLABUF` | String | Município (IBGE, 7) e UF do laboratório. |
+| `CO_ATI_ESC` / `CO_ATI_GLA` / `CO_ATI_IND` / `CO_CEL_ESC` / `CO_CEL_GLA` / `CO_NEO_MAL` | String | Indicadores de atipias e neoplasia maligna nas células escamosas e glandulares. |
+| `CO_AMOSTRA` / `CO_ADEQ_MA` | String | Indicador de amostra e adequabilidade do material (satisfatória/insatisfatória). |
+| `CO_BEN_INF` / `CO_BEN_MET` / `CO_BEN_REP` / `CO_BEN_ATR` / `CO_BEN_RAD` / `CO_BEN_OUT` | String | Alterações benignas: inflamação, metaplasia, reparação, atrofia, radiação e outras. |
+| `CO_MIC_LAC` / `CO_MIC_COC` / `CO_MIC_CHL` / `CO_MIC_ACT` / `CO_MIC_BAC` / `CO_MIC_TRI` / `CO_MIC_HER` / `CO_MIC_CAN` / `CO_MIC_GAR` / `CO_MIC_OUT` | String | Microbiologia: Lactobacillus, cocos, Chlamydia, Actinomyces, bacilos, Trichomonas, herpes, Candida, Gardnerella e outros. |
+| `CO_ANM_PRE` / `DT_ANM_PRE` | String | Exame citopatológico anterior e ano de realização. |
+| `ST_MON_EXT` / `TEMPCITANT` | String | Indicadores de monitoramento externo e tempo desde a citologia anterior. |
+| `QUANTEXAME` / `REPREZT` / `RESNORM` / `POSNAONEO` / `LESALTGRA` / `PSNAONPLA` / `NLSALTGRA` / `PSNNPLA` / `NALTGRA` / `LBGRAU` / `LAGRAU` / `LAGRAUMI`` | String (8) | Contadores agregados por registro de resultados (representatividade, normal, lesões de baixo e alto grau etc.). |
+| `CARCINO` / `C_EPI_ESCA` / `C_EPI_GLAN` / `CO_EPI_MET` / `ADENCARCIN` / `DENCARCINV` / `OUTNEO` / `ALTERADO` / `CVCIONAL` / `MEIOLIQU` | String (8) | Contadores de carcinomas epiteliais, adenocarcinomas, outras neoplasias e demais resultados. |
+| `AMOSREJAUS` / `AMOSREJDAN` / `AMOSREJALH` / `AMOSREJOUT` / `REJEITADA` / `SATISFACT` / `INSATSFAC` / `CO_INSA_AC` / `CO_INSA_SA` / `CO_INSA_PI` / `CO_INSA_AR` / `CO_INSA_CO` / `CO_INSA_SU` / `CO_INSA_OU` | String (8) | Contadores de amostras rejeitadas, satisfatórias e insatisfatórias, com motivos. |
+| `CBEMINFLA` / `CBEMMETAS` / `CBEMREPAR` / `CBEMATROF` / `CBEMRADI` / `CBEMOUT` / `CMICLACT` / `CMICCOCO` / `CMICCHLA` / `CMICACTI` / `CMICBACI` / `CMICTRICO` / `CMICHERP` / `CMICCAND` / `CMICGARD` / `CMICOUT`` | String (8) | Contadores agregados de alterações benignas e microbiologia. |
 
 ### Observações de Tratamento e Saneamento (`wrangle_datasus`)
 
-- **Preservação de códigos estruturados**: `CODMUNRES`, `CODMUNOCOR` e `CODMUNNASC` devem ser tratados como `String`; a base usa o código IBGE de 6 dígitos (sem dígito verificador) — mantenha o texto original e use `zfill(6)` apenas se algum arquivo trouxer o código truncado. `CAUSABAS`, `LINHAA`–`LINHAD` e `LINHAII` (CID-10 ou CID-9 conforme o período) e `OCUP`/`CODOCUPMAE` (CBO) são códigos e nunca devem ser convertidos para número. No `wrangle_datasus`, `CODMUNRES` não consta em `CODE_COLUMNS`, mas permanece `String` porque campos caractere do DBF são lidos como texto; `CAUSABAS` e `CAUSABAS_O` constam em `CODE_COLUMNS` e são preservados como `String` limpa.
-- **Datas e competências**: nos DBF do SIM e do SINASC as datas (`DTOBITO`, `DTNASC`, `DTCADASTRO`, `DTRECEBIM`, `DTINVESTIG`) vêm como texto `DDMMAAAA`, e `HORAOBITO`/`HORANASC` como `HHMM`. Os nomes sem sublinhado **não** estão em `DATE_COLUMNS` (que cobre `DT_OBITO`, `DT_NASC` etc.), portanto permanecem `String`; converta explicitamente com `pl.col("dtobito").str.to_date("%d%m%Y", strict=False)`.
-- **Valores ausentes e sentinelas**: o `wrangle_datasus` faz `strip` das strings e converte em nulo os sentinelas `""`, `" "`, `"999999"`, `"99999999"` e `"00000000"` (data zerada). Códigos categóricos de "ignorado" (`9`, `99`, `999`) **não** viram nulo automaticamente e precisam ser tratados conforme o dicionário de cada variável. Colunas listadas em `INTEGER_COLUMNS` (`IDADE`, `SEXO`, `ESTCIV`, `GRAVIDEZ`, `GESTACAO`, `PARTO`, `CONSULTAS`, `QTDFILVIVO`, `QTDFILMORT`, `ANO`, `MES`) são convertidas para `Int64` com `strict=False`: valores não numéricos (como `M`/`F`/`I` em layouts antigos) viram nulo. Registros com marcador de exclusão dBASE (`_deleted`) são removidos e a coluna é descartada.
-As colunas de código (município, CNES do laboratório/unidade, CID-O) devem permanecer `String`. Os sentinelas padrão são anulados pelo `wrangle_datasus`, mas códigos de "ignorado/não informado" próprios do sistema não são. Os arquivos usam UF de **residência** ou de **atendimento** conforme o campo; verifique antes de agregar por UF. Um exame não equivale a uma mulher: para cobertura populacional é necessário deduplicar por mulher. Como o sistema legado foi substituído pelo SISCAN, os dados cobrem somente 2006–2015.
+- **Preservação de códigos estruturados**: `CO_US_IBGE`, `CO_PAC_IBG`, `CLABIBGE`, `CO_CNES` e `CO_US` devem permanecer `String` (os campos caractere do DBF são lidos como texto), preservando zeros à esquerda; os códigos de município têm 7 caracteres (IBGE com dígito verificador).
+- **Datas e competências**: `DT_ID_COMP` é a competência (`AAAAMM`) e `ANO_COMP` o ano; não há colunas de data completa neste arquivo.
+- **Valores ausentes e sentinelas**: o `wrangle_datasus` faz `strip` das strings e converte `""` e sentinelas em nulo. Códigos categóricos de "ignorado" (por exemplo `9`) **não** viram nulo automaticamente. Registros marcados como excluídos no dBASE (`_deleted`) são removidos.
+
+Um registro não equivale a uma mulher: para cobertura populacional é necessário deduplicar. Os arquivos usam UF de **residência** (`CO_PAC_UF`) ou da unidade (`CO_US_UF`) conforme o campo; verifique antes de agregar por UF. Como o sistema legado foi substituído pelo SISCAN, os dados cobrem somente 2006–2015.
 
 ## 4. Exemplos Práticos
 
@@ -97,9 +111,9 @@ import polars as pl
 
 frame = df.read_dbc("data/siscolo-cc/201001/siscolo-cc_201001-sp@20220817.dbc", dataset="siscolo-cc")
 print(frame.shape)
-print(frame.columns)  # confirme o nome real das colunas: o layout não foi inspecionado diretamente
+print(frame.columns)
 
-print(frame.group_by('resultado').len().sort('len', descending=True).head(10))
+print(frame.group_by('co_adeq_ma').len().sort('len', descending=True).head(10))
 ```
 
 ## 5. Referências Oficiais

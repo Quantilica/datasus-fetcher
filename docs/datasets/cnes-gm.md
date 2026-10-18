@@ -12,7 +12,7 @@ O `cnes-gm` contém os microdados do arquivo de **Gestão e Metas** do Cadastro 
 | **Particionamento** | `uf`, `yearmonth` (um arquivo por UF e competência mensal, além de `br`) |
 | **Periodicidade** | Mensal (extração por competência) |
 | **Cobertura temporal no FTP** | 2007-03 a 2026-09 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 5975 arquivos (~13 MB) |
+| **Volume aproximado no FTP** | 5975 arquivos (~13,8 MB) |
 | **Arquivos preliminares** | Não |
 | **Documentação oficial no FTP** | `/dissemin/publicos/CNES/200508_/doc` (`IT_CNES_1706.pdf`) |
 | **Tabelas auxiliares no FTP** | `/dissemin/publicos/CNES/200508_/Auxiliar` (`TAB_CNES.zip`) |

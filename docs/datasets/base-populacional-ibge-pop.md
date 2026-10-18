@@ -1,4 +1,4 @@
-# `base-populacional-ibge-pop` — POP: Censo e Estimativas
+# `base-populacional-ibge-pop` — POP - Censo e Estimativas
 
 O `base-populacional-ibge-pop` contém as **populações residentes** dos municípios brasileiros, estratificadas por sexo, situação de domicílio (urbano/rural) e faixa etária, obtidas dos Censos Demográficos, Contagens Populacionais e Projeções Intercensitárias do IBGE e disponibilizadas pelo DATASUS. Cada registro (linha) representa a população de um município, em um ano, para uma combinação de sexo, situação e faixa etária. É a base de denominadores populacionais usada nos indicadores de saúde do SUS para o período de 1980 a 2012.
 

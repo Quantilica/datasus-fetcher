@@ -1,4 +1,4 @@
-# `base-populacional-ibge-pops` — POPS: Estimativas por Sexo e Idade
+# `base-populacional-ibge-pops` — POPS - Estimativas por Sexo e Idade
 
 O `base-populacional-ibge-pops` contém as **estimativas populacionais municipais** revisadas do IBGE para o período de 2000 a 2025, desagregadas por **sexo e idade simples**, disponibilizadas pelo Ministério da Saúde (CGIAE/SVSA). Cada registro (linha) representa a população estimada de um município, em um ano, para uma combinação de sexo e idade (0 a 79 anos ano a ano e 80 anos e mais). É a base de denominadores populacionais mais detalhada e metodologicamente consistente usada atualmente para indicadores de saúde no SUS.
 

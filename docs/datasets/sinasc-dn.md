@@ -1,4 +1,4 @@
-# `sinasc-dn` — Declarações de nascidos vivos (SINASC)
+# `sinasc-dn` — Declarações de nascidos vivos
 
 Microdados do Sistema de Informações sobre Nascidos Vivos (SINASC/SVSA-MS) de 1994 em diante, agrupados por UF de residência da mãe. Cada linha representa uma Declaração de Nascido Vivo (um nascimento).
 
@@ -12,7 +12,7 @@ Microdados do Sistema de Informações sobre Nascidos Vivos (SINASC/SVSA-MS) de 
 | **Particionamento** | `uf / year` |
 | **Periodicidade** | Anual |
 | **Cobertura temporal no FTP** | 1994 a 2026 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 922 arquivos (~7.2 GB); 28 UF(s) na partição; última atualização 2026-09-28 |
+| **Volume aproximado no FTP** | 922 arquivos (~7,2 GB); 28 UF(s) na partição; última atualização 2026-09-28 |
 | **Arquivos preliminares** | Sim (diretório PRELIM) |
 | **Documentação oficial no FTP** | `/dissemin/publicos/SINASC/ANT/DOCS`, `/dissemin/publicos/SINASC/NOV/DOCS` |
 | **Tabelas auxiliares no FTP** | `/dissemin/publicos/SINASC/1994_1995/Auxiliar`, `/dissemin/publicos/SINASC/1996_/Auxiliar` |

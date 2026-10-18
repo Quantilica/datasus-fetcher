@@ -1,4 +1,4 @@
-# `sim-doinf-cid09` — Declarações de Óbito Infantis CID-9 (SIM)
+# `sim-doinf-cid09` — Declarações de Óbito Infantis CID-9
 
 Microdados nacionais do SIM/SVSA-MS com as Declarações de Óbito de menores de 1 ano de 1979 a 1995, codificadas pela CID-9. Cada linha é um óbito infantil.
 
@@ -12,7 +12,7 @@ Microdados nacionais do SIM/SVSA-MS com as Declarações de Óbito de menores de
 | **Particionamento** | `year` |
 | **Periodicidade** | Anual |
 | **Cobertura temporal no FTP** | 1979 a 1995 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 17 arquivos (~60.8 MB); 1 UF(s) na partição; última atualização 2020-01-31 |
+| **Volume aproximado no FTP** | 17 arquivos (~60,8 MB); 1 UF(s) na partição; última atualização 2020-01-31 |
 | **Arquivos preliminares** | Não |
 | **Documentação oficial no FTP** | `/dissemin/publicos/SIM/CID9/DOCS`, `/dissemin/publicos/SIM/CID10/DOCS` |
 | **Tabelas auxiliares no FTP** | `/dissemin/publicos/SIM/CID9/TAB`, `/dissemin/publicos/SIM/CID10/TAB` |

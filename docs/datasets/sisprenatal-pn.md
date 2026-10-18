@@ -1,4 +1,4 @@
-# `sisprenatal-pn` — Pré-Natal (SISPRENATAL)
+# `sisprenatal-pn` — Pré-Natal
 
 Microdados do SISPRENATAL (Sistema de Monitoramento e Avaliação do Pré-Natal, Parto, Puerpério e Criança) do Ministério da Saúde, com registros de acompanhamento de gestantes no SUS entre 2012 e 2014. A unidade de registro é o acompanhamento da gestante, por UF e mês.
 
@@ -12,7 +12,7 @@ Microdados do SISPRENATAL (Sistema de Monitoramento e Avaliação do Pré-Natal,
 | **Particionamento** | `uf / yearmonth` |
 | **Periodicidade** | Mensal |
 | **Cobertura temporal no FTP** | 2012-01 a 2014-12 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 944 arquivos (~232.4 MB); 27 UF(s) na partição; última atualização 2015-01-06 |
+| **Volume aproximado no FTP** | 944 arquivos (~232,4 MB); 27 UF(s) na partição; última atualização 2015-01-06 |
 | **Arquivos preliminares** | Não |
 | **Documentação oficial no FTP** | Não aplicável (o catálogo `meta.docs` não define diretório de documentação para este sistema) |
 | **Tabelas auxiliares no FTP** | `/dissemin/publicos/SISPRENATAL/201201_/Auxiliar` |
@@ -48,27 +48,36 @@ Aplicações: proporção de gestantes com 6 ou mais consultas (adequação do p
 
 ### Variáveis-Chave dos Microdados
 
-**Atenção**: os nomes de coluna são representativos do dicionário do sistema, mas o layout do DBF não foi inspecionado diretamente. Confirme em `TAB_SISPRENATAL.zip` ou com `frame.columns`.
+Nomes verificados contra o arquivo real `PNSP1408.dbc` (36 colunas). Não há municípios de residência da gestante, apenas o da UBS.
 
 | Coluna (DBF) | Tipo / Formato | Descrição |
 |---|---|---|
-| `MUN_RES / COD_MUN` | String (IBGE, 6) | Município de residência da gestante. |
-| `CNES / UNIDADE` | String (CNES, 7) | Unidade de saúde que realizou o atendimento. |
-| `DT_CADASTRO / DT_DUM` | Data | Data do cadastro no pré-natal e data da última menstruação (DUM). |
-| `IDADE` | Inteiro | Idade da gestante. |
-| `RISCO` | String | Classificação de risco da gestação. |
-| `CONSULTAS` | Inteiro | Número de consultas de pré-natal realizadas. |
-| `DT_CONSULTA` | Data | Data da consulta de pré-natal. |
-| `EXAMES (VDRL, HIV, GLICEMIA, ...)` | String | Exames de rotina do pré-natal e respectivos resultados. |
-| `VACINA_ANTITETANICA` | String | Status de imunização antitetânica. |
-| `DT_PARTO / CONSULTA_PUERPERAL` | Data / String | Data do parto e realização da consulta puerperal. |
+| `NU_ANO_GES` | String (4) | Ano da gestação. |
+| `DT_ATEND` | String `AAAAMM` | Competência do atendimento. |
+| `CO_UF_IBGE` | String (2) | UF (código IBGE). |
+| `CO_MUN_UBS` | String (IBGE, 6) | Município da unidade básica de saúde. |
+| `CO_PAIS` | String (3) | País da gestante. |
+| `NU_GESTA` / `CO_GESTANT` | String | Número da gestação e identificador da gestante no sistema. |
+| `NU_CNS` / `NU_NIS` / `NU_NIS_REP` | String (15) | Cartão Nacional de Saúde e NIS da gestante e do responsável (dados pessoais: tratar conforme a LGPD). |
+| `NU_IDADE` | String (15) | Idade da gestante. |
+| `DS_ZONA` | String (50) | Zona de residência (descrição). |
+| `CO_ESC_GP` / `CO_RAC_GP` / `CO_ETN_GP` / `CO_STF_GP` | String | Escolaridade, raça, etnia e situação familiar da gestante. |
+| `DT_DUM` / `DT_DPP` | String `AAAAMMDD` | Data da última menstruação e data provável do parto. |
+| `DT_INC` | String `AAAAMMDD` | Data de inclusão do registro. |
+| `CO_TPO_GRA` | String (10) | Tipo de gravidez. |
+| `ST_GRA_ANT` / `ST_GRA_PLA` / `ST_AUX_DSL` / `ST_GESTAC` | String (1) | Indicadores: gravidez anterior, planejada, auxílio e situação da gestação. |
+| `QT_AB_ECT` / `QT_AB_GER` / `QT_AB_MOL` | String (3) | Histórico de abortamentos: ectópicos, gerais e molares. |
+| `QT_MOR_APS` / `QT_MOR_PS` / `QT_NSC_MOR` / `QT_NSC_VIV` | String (3) | Mortes (antes e após o primeiro semestre de vida), nascidos mortos e nascidos vivos anteriores. |
+| `QT_PRT_CIR` / `QT_PRT_FOR` / `QT_PRT_VAG` | String (3) | Partos anteriores: cesáreos, fórceps e vaginais. |
+| `QT_CONS` / `QT_CONSULT` | Inteiro / String (3) | Número de consultas de pré-natal (mesma informação em duas colunas). |
 
 ### Observações de Tratamento e Saneamento (`wrangle_datasus`)
 
-- **Preservação de códigos estruturados**: `CODMUNRES`, `CODMUNOCOR` e `CODMUNNASC` devem ser tratados como `String`; a base usa o código IBGE de 6 dígitos (sem dígito verificador) — mantenha o texto original e use `zfill(6)` apenas se algum arquivo trouxer o código truncado. `CAUSABAS`, `LINHAA`–`LINHAD` e `LINHAII` (CID-10 ou CID-9 conforme o período) e `OCUP`/`CODOCUPMAE` (CBO) são códigos e nunca devem ser convertidos para número. No `wrangle_datasus`, `CODMUNRES` não consta em `CODE_COLUMNS`, mas permanece `String` porque campos caractere do DBF são lidos como texto; `CAUSABAS` e `CAUSABAS_O` constam em `CODE_COLUMNS` e são preservados como `String` limpa.
-- **Datas e competências**: nos DBF do SIM e do SINASC as datas (`DTOBITO`, `DTNASC`, `DTCADASTRO`, `DTRECEBIM`, `DTINVESTIG`) vêm como texto `DDMMAAAA`, e `HORAOBITO`/`HORANASC` como `HHMM`. Os nomes sem sublinhado **não** estão em `DATE_COLUMNS` (que cobre `DT_OBITO`, `DT_NASC` etc.), portanto permanecem `String`; converta explicitamente com `pl.col("dtobito").str.to_date("%d%m%Y", strict=False)`.
-- **Valores ausentes e sentinelas**: o `wrangle_datasus` faz `strip` das strings e converte em nulo os sentinelas `""`, `" "`, `"999999"`, `"99999999"` e `"00000000"` (data zerada). Códigos categóricos de "ignorado" (`9`, `99`, `999`) **não** viram nulo automaticamente e precisam ser tratados conforme o dicionário de cada variável. Colunas listadas em `INTEGER_COLUMNS` (`IDADE`, `SEXO`, `ESTCIV`, `GRAVIDEZ`, `GESTACAO`, `PARTO`, `CONSULTAS`, `QTDFILVIVO`, `QTDFILMORT`, `ANO`, `MES`) são convertidas para `Int64` com `strict=False`: valores não numéricos (como `M`/`F`/`I` em layouts antigos) viram nulo. Registros com marcador de exclusão dBASE (`_deleted`) são removidos e a coluna é descartada.
-Os registros são mensais e uma mesma gestante pode aparecer em vários meses: deduplique antes de calcular indicadores por gestante. Municípios que não digitaram no sistema aparecem como lacuna, e não como zero. Os códigos de município, CNES e exame permanecem `String`; use `frame.columns` para confirmar o layout real.
+- **Preservação de códigos estruturados**: `CO_MUN_UBS`, `CO_UF_IBGE`, `NU_CNS`, `NU_NIS` e `CO_GESTANT` devem permanecer `String` (os campos caractere do DBF são lidos como texto), preservando zeros à esquerda; os códigos de município têm 7 caracteres (IBGE com dígito verificador).
+- **Datas e competências**: `DT_ATEND` é a competência (`AAAAMM`) e `NU_ANO_GES` o ano; `DT_DUM`, `DT_DPP` e `DT_INC` vêm como texto `AAAAMMDD` e devem ser convertidas explicitamente (`str.to_date("%Y%m%d", strict=False)`).
+- **Valores ausentes e sentinelas**: o `wrangle_datasus` faz `strip` das strings e converte `""` e sentinelas em nulo. Códigos categóricos de "ignorado" (por exemplo `9`) **não** viram nulo automaticamente. Registros marcados como excluídos no dBASE (`_deleted`) são removidos.
+
+Os registros são mensais e uma mesma gestante pode aparecer em vários meses: deduplique antes de calcular indicadores por gestante. Municípios que não digitaram no sistema aparecem como lacuna, e não como zero.
 
 ## 4. Exemplos Práticos
 
@@ -98,9 +107,9 @@ import polars as pl
 
 frame = df.read_dbc("data/sisprenatal-pn/201201/sisprenatal-pn_201201-sp@20150106.dbc", dataset="sisprenatal-pn")
 print(frame.shape)
-print(frame.columns)  # confirme o nome real das colunas: o layout não foi inspecionado diretamente
+print(frame.columns)
 
-print(frame.group_by("consultas").len().sort("consultas"))
+print(frame.group_by("qt_cons").len().sort("qt_cons"))
 ```
 
 ## 5. Referências Oficiais

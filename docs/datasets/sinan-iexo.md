@@ -1,4 +1,4 @@
-# `sinan-iexo` — Intoxicação Exógena (SINAN)
+# `sinan-iexo` — Intoxicação Exógena
 
 Notificações de intoxicações exógenas por agentes químicos, medicamentos, drogas de abuso, metais, agrotóxicos e outros, registradas no SINAN. Cada linha representa uma ficha de investigação de um caso de intoxicação por substância exógena, incluindo exposições ocupacionais, acidentais e intencionais.
 
@@ -49,42 +49,76 @@ Principais usos: vigilância de intoxicações ocupacionais por ramo (CNAE) e oc
 
 ### Variáveis-Chave dos Microdados
 
-Os campos abaixo seguem o dicionário de dados do SINAN Net. A ficha é específica do agravo e os leiautes variam entre anos, portanto o conjunto exato de colunas deve ser conferido nos cabeçalhos do `.dbf` e no dicionário do ano. Por padrão, `wrangle_datasus` converte os nomes de coluna para minúsculas.
+Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo `IEXOBR07.dbc` (leiaute do SINAN Net; fichas e leiautes podem variar entre anos, por isso a lista reflete esse arquivo). Os arquivos públicos não trazem identificadores individuais como número da notificação (`NU_NOTIFIC`) nem data de nascimento completa. Por padrão, `wrangle_datasus` converte os nomes de coluna para minúsculas.
 
 | Coluna (DBF) | Tipo / Formato | Descrição |
 |---|---|---|
-| `NU_NOTIFIC` | String | Número da notificação (identificador da ficha na unidade notificadora; preservar como texto). |
-| `ID_AGRAVO` | String | Código CID-10 do agravo notificado (T36–T65). |
+| `TP_NOT` | String | Tipo de notificação (registro da ficha de notificação individual). |
+| `ID_AGRAVO` | String | Código CID-10 do agravo notificado. |
 | `DT_NOTIFIC` | Data (AAAAMMDD) | Data da notificação. |
-| `DT_SIN_PRI` | Data (AAAAMMDD) | Data dos primeiros sintomas. |
 | `SEM_NOT` | String | Semana epidemiológica da notificação (AAAASS). |
-| `NU_ANO` | Inteiro | Ano da notificação. |
+| `NU_ANO` | String | Ano da notificação. |
 | `SG_UF_NOT` | String | UF de notificação (código IBGE de 2 dígitos). |
-| `ID_MUNICIP` | String | Município de notificação (código IBGE, 6 dígitos). |
+| `ID_MUNICIP` | String | Município de notificação (código IBGE). |
 | `ID_UNIDADE` | String | Código CNES da unidade de saúde notificadora (7 dígitos). |
-| `DT_NASC` | Data (AAAAMMDD) | Data de nascimento. |
-| `NU_IDADE_N` | Inteiro codificado | Idade no formato `TNNN` (unidade = hora/dia/mês/ano + 3 dígitos). |
+| `DT_SIN_PRI` | Data (AAAAMMDD) | Data dos primeiros sintomas. |
+| `SEM_PRI` | String | Semana epidemiológica dos primeiros sintomas (AAAASS). |
+| `ANO_NASC` | String | Ano de nascimento (o arquivo público não traz a data de nascimento completa). |
+| `NU_IDADE_N` | Inteiro | Idade no formato `TNNN`: primeiro dígito = unidade (1 hora, 2 dia, 3 mês, 4 ano) e três dígitos = valor. |
 | `CS_SEXO` | String | Sexo (M, F, I = ignorado). |
+| `CS_RACA` | String | Raça/cor (1 branca, 2 preta, 3 amarela, 4 parda, 5 indígena, 9 ignorado). |
+| `CS_ESCOL_N` | String | Escolaridade. |
+| `SG_UF` | String | UF de residência (código IBGE de 2 dígitos). |
 | `ID_MN_RESI` | String | Município de residência (código IBGE, 6 dígitos). |
-| `ID_OCUPA_N` | String | Ocupação (CBO 2002, 6 dígitos) do trabalhador (relevante nas exposições ocupacionais). |
-| `SIT_TRAB` | String | Situação no mercado de trabalho (1 a 12, 99 ignorado). |
-| `CNAE` / `ATIV_ECO` | String | Atividade econômica da empresa contratante (CNAE), quando ocupacional. |
-| `TP_AGENTE` / `GRUPO_AGENTE` | String | Grupo do agente tóxico (medicamento, agrotóxico, metal, solvente, produto doméstico, droga de abuso, etc.). *Nome a conferir no dicionário.* |
-| `AGENTE_TOX` | String | Agente tóxico / princípio ativo (até três agentes informados na ficha). |
-| `VIA_EXPO` | String | Via de exposição (respiratória, cutânea, oral, ocular, parenteral, vaginal, outros). |
-| `CIRCUNST` | String | Circunstância da exposição (habitual, ocupacional, acidental, intencional, ignorada, outros). |
-| `CLASSI_FIN` | String | Classificação final (1 intoxicado, 2 só exposição, 3 reação adversa, 4 surto/reação, 9 ignorado). |
-| `CRITERIO` | String | Critério de confirmação (clínico, laboratorial, clínico-epidemiológico, ignorado). |
-| `EVOLUCAO` | String | Evolução do caso (cura, óbito por intoxicação, óbito por outras causas, sequela, ignorado). |
-| `CAT` | String | Foi emitida a Comunicação de Acidente do Trabalho (CAT)? (1 sim, 2 não, 3 não se aplica, 9 ignorado). |
+| `DT_INVEST` | Data (AAAAMMDD) | Data da investigação. |
+| `ID_OCUPA_N` | String | Ocupação do trabalhador (CBO 2002, 6 dígitos). |
+| `SIT_TRAB` | String | Situação no mercado de trabalho. |
+| `LOC_EXPO` | String | Local de ocorrência da exposição (descrição de outros em `LOC_EXP_DE`). |
+| `CNAE` | String | Atividade econômica da empresa contratante (CNAE). |
+| `PAIS_EXP` | String | País de ocorrência da exposição. |
+| `AGENTE_TOX` | String | Classificação do agente tóxico (grupo). |
+| `COAGTOXMA1` | Inteiro | Código do agente tóxico (1º) segundo a tabela de agentes tóxicos. |
+| `COAGTOXMA2` | Inteiro | Código do agente tóxico (2º). |
+| `COAGTOXMA3` | Inteiro | Código do agente tóxico (3º). |
+| `AGENTE_1` | String | Nome do agente tóxico (1º; texto livre). |
+| `AGENTE_2` | String | Nome do agente tóxico (2º; texto livre). |
+| `AGENTE_3` | String | Nome do agente tóxico (3º; texto livre). |
+| `P_ATIVO_1` | String | Princípio ativo (1º; texto livre). |
+| `P_ATIVO_2` | String | Princípio ativo (2º; texto livre). |
+| `P_ATIVO_3` | String | Princípio ativo (3º; texto livre). |
+| `UTILIZACAO` | String | Utilização do agente (descrição em `UTIL_DESC`). |
+| `ATIVIDA_1` | String | Atividade relacionada à exposição (1ª). |
+| `ATIVIDA_2` | String | Atividade relacionada à exposição (2ª). |
+| `ATIVIDA_3` | String | Atividade relacionada à exposição (3ª). |
+| `VIA_1` | String | Via de exposição (1ª). |
+| `VIA_2` | String | Via de exposição (2ª). |
+| `VIA_3` | String | Via de exposição (3ª). |
+| `CIRCUNSTAN` | String | Circunstância da exposição/intoxicação (descrição de outras em `CIRCUN_DES`). |
+| `DOENCA_TRA` | String | Doença relacionada ao trabalho. |
+| `TPEXP` | String | Tipo de exposição (aguda, crônica etc.). |
+| `TPATENDE` | String | Tipo de atendimento. |
+| `HOSPITAL` | String | Hospitalização (marcação da ficha (padrão SINAN: 1 sim, 2 não, 9 ignorado)). |
+| `DTINTERNA` | Data (AAAAMMDD) | Data da internação. |
+| `UF_HOSP` | String | UF do hospital. |
+| `MUN_HOSP` | String | Município do hospital. |
+| `CLASSI_FIN` | String | Classificação final do caso. |
+| `DIAG_CONF` | String | Diagnóstico confirmado (CID-10). |
+| `CRITERIO` | String | Critério de confirmação. |
+| `EVOLUCAO` | String | Evolução do caso. |
+| `DT_OBITO` | Data (AAAAMMDD) | Data do óbito, quando aplicável. |
+| `CAT` | String | Foi emitida a Comunicação de Acidente do Trabalho (CAT)? |
 | `DT_ENCERRA` | Data (AAAAMMDD) | Data de encerramento da investigação. |
+| `LAVOURA` | String | Tipo de lavoura (texto livre). |
+| `INTOX_CHUM` | String | Intoxicação por chumbo (marcação). |
+| `INTOX_MERC` | String | Intoxicação por mercúrio (marcação). |
+| `INTOX_META` | String | Intoxicação por outro metal (marcação). |
 
 ### Observações de Tratamento e Saneamento (`wrangle_datasus`)
 
-- **Preservação de códigos estruturados**: municípios (`ID_MUNICIP`, `ID_MN_RESI`) usam código IBGE de 6 dígitos; `ID_UNIDADE` é CNES de 7 dígitos; `SG_UF_NOT` é código IBGE de 2 dígitos. `ID_AGRAVO` (CID-10), `CBO`/`ID_OCUPA_N` (6 dígitos), `CNAE` (7 dígitos) e `NU_NOTIFIC` devem ficar como `String`, mantendo zeros à esquerda (`zfill`).
+- **Preservação de códigos estruturados**: municípios (`ID_MUNICIP`, `ID_MN_RESI`) usam código IBGE de 6 dígitos; `ID_UNIDADE` é CNES de 7 dígitos; `SG_UF_NOT` é código IBGE de 2 dígitos. `ID_AGRAVO` (CID-10), `ID_OCUPA_N` (CBO 2002, 6 dígitos), `CNAE`, devem ficar como `String`, mantendo zeros à esquerda (`zfill`).
 - **Datas e competências**: datas `DT_*` são gravadas em `AAAAMMDD` nos DBF e convertidas para `pl.Date`; `SEM_NOT` é semana epidemiológica `AAAASS` e permanece texto. A idade em `NU_IDADE_N` está codificada (`TNNN`) e deve ser decodificada antes de calcular faixas etárias.
 - **Valores ausentes e sentinelas**: o SINAN usa `9`, `99`, `999` e `I` (ignorado) como categorias válidas; elas **não** são nulos automáticos. Espaços em branco e `""` viram nulos, e registros marcados como excluídos no dBASE (`_deleted`) são removidos.
-- **Particularidades do dataset**: é uma das maiores bases do SINAN e inclui grande volume de casos não ocupacionais (medicamentos, tentativas de autoextermínio, acidentes domésticos); filtre por `CIRCUNST`/`SIT_TRAB`/`CNAE` para análises ocupacionais. Os agentes tóxicos podem ser registrados com granularidade variável (nome do princípio ativo é texto livre, sujeito a inconsistências) e há múltiplos campos de agente. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` (notificação) ou `ID_MN_RESI` (residência) conforme a pergunta. Arquivos do diretório PRELIM (2023+) são preliminares; deduplique por `NU_NOTIFIC` + `ID_UNIDADE` + `NU_ANO` ao combinar as duas fontes.
+- **Particularidades do dataset**: é uma das maiores bases do SINAN e inclui grande volume de casos não ocupacionais (medicamentos, tentativas de autoextermínio, acidentes domésticos); filtre por `CIRCUNSTAN`/`SIT_TRAB`/`CNAE` para análises ocupacionais. Os agentes tóxicos podem ser registrados com granularidade variável (nome do princípio ativo é texto livre, sujeito a inconsistências) e há múltiplos campos de agente. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` (notificação) ou `ID_MN_RESI` (residência) conforme a pergunta. Arquivos do diretório PRELIM (2023+) são preliminares; como `NU_NOTIFIC` não consta dos arquivos públicos, deduplique por combinação de campos (ex.: `ID_UNIDADE`, `DT_NOTIFIC`, `ID_MN_RESI`, `ANO_NASC`, `CS_SEXO`) ao combinar as duas fontes.
 
 ## 4. Exemplos Práticos
 
@@ -122,7 +156,7 @@ resumo = (
 )
 
 # Circunstância da exposição e classificação final
-print(frame.group_by("circunst").agg(pl.len().alias("n")).sort("n", descending=True))
+print(frame.group_by("circunstan").agg(pl.len().alias("n")).sort("n", descending=True))
 print(frame.group_by("classi_fin").agg(pl.len().alias("n")).sort("n", descending=True))
 print(resumo.head())
 ```

@@ -1,4 +1,4 @@
-# `sinan-src` — Síndrome da Rubéola Congênita (SINAN)
+# `sinan-src` — Síndrome da Rubéola Congênita
 
 Notificações de casos suspeitos de síndrome da rubéola congênita (SRC) registradas no SINAN. Cada linha representa uma ficha de investigação de um caso suspeito, confirmado ou descartado de SRC em criança.
 
@@ -58,34 +58,56 @@ Usos: vigilância pós-eliminação, taxa de notificação de casos suspeitos, p
 
 ### Variáveis-Chave dos Microdados
 
-Os campos abaixo seguem o dicionário de dados do SINAN Net. A ficha é específica do agravo e os leiautes variam entre anos, portanto o conjunto exato de colunas deve ser conferido nos cabeçalhos do `.dbf` e no dicionário do ano. Por padrão, `wrangle_datasus` converte os nomes de coluna para minúsculas.
+Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo real `SRCBR26.dbc` do FTP (campos da ficha do SINAN Net; o leiaute pode variar entre anos).
 
 | Coluna (DBF) | Tipo / Formato | Descrição |
 |---|---|---|
-| `NU_NOTIFIC` | String | Número da notificação (identificador da ficha na unidade notificadora; preservar como texto). |
+| `TP_NOT` | String | Tipo de notificação (individual ou negativa). |
 | `ID_AGRAVO` | String | Código CID-10 do agravo notificado. |
 | `DT_NOTIFIC` | Data (AAAAMMDD) | Data da notificação. |
 | `SEM_NOT` | String | Semana epidemiológica da notificação (AAAASS). |
 | `NU_ANO` | Inteiro | Ano da notificação. |
 | `SG_UF_NOT` | String | UF de notificação (código IBGE de 2 dígitos). |
-| `ID_MUNICIP` | String | Município de notificação (código IBGE, 6 dígitos). |
+| `ID_MUNICIP` | String | Município de notificação (código IBGE). |
 | `ID_UNIDADE` | String | Código CNES da unidade de saúde notificadora (7 dígitos). |
-| `DT_NASC` | Data (AAAAMMDD) | Data de nascimento. |
+| `DT_DIAG` | Data (AAAAMMDD) | Data do diagnóstico. |
+| `SEM_DIAG` | String | Semana epidemiológica do diagnóstico (AAAASS). |
 | `NU_IDADE_N` | Inteiro codificado | Idade no formato `TNNN`: primeiro dígito = unidade (1 hora, 2 dia, 3 mês, 4 ano) e três dígitos = valor. |
 | `CS_SEXO` | String | Sexo (M, F, I = ignorado). |
 | `CS_RACA` | String | Raça/cor (1 branca, 2 preta, 3 amarela, 4 parda, 5 indígena, 9 ignorado). |
 | `SG_UF` | String | UF de residência. |
 | `ID_MN_RESI` | String | Município de residência (código IBGE, 6 dígitos). |
-| `CLASSI_FIN` | String | Classificação final do caso (confirmado/descartado ou categoria específica do agravo). |
-| `EVOLUCAO` | String | Evolução do caso (cura, óbito pelo agravo, óbito por outras causas, ignorado). |
+| `DT_INVEST` | Data (AAAAMMDD) | Data da investigação. |
+| `RECEM_NASC` | String | Indicador de recém-nascido. |
+| `PESO` | String | Peso ao nascer. |
+| `CATARATA` | String | Alteração: catarata. |
+| `RETINOPA` | String | Alteração: retinopatia. |
+| `GLAUCOMA` | String | Alteração: glaucoma. |
+| `AUDITIVA` | String | Alteração auditiva. |
+| `CARDIOPATI` | String | Alteração: cardiopatia. |
+| `RETAR_PM` | String | Retardo psicomotor. |
+| `MICROCEFA` | String | Microcefalia. |
+| `ICTERICIA` | String | Icterícia. |
+| `PURPURA` | String | Púrpura. |
+| `DT_COL1` | Data (AAAAMMDD) | Data da 1ª coleta de amostra. |
+| `S1_IGM` | String | Resultado IgM da 1ª amostra. |
+| `S1_IGG` | String | Resultado IgG da 1ª amostra. |
+| `CS_RESULTA` | String | Resultado final do exame. |
+| `IDADEMAE` | Inteiro | Idade da mãe (anos). |
+| `VACINACAO` | String | Situação de vacinação da mãe. |
+| `DT_VACINA` | Data (AAAAMMDD) | Data da vacinação. |
+| `CLASSI_FIN` | String | Classificação final do caso. |
+| `CRITERIO` | String | Critério de confirmação/descarte. |
+| `EVOLUCAO` | String | Evolução do caso. |
+| `DT_OBITO` | Data (AAAAMMDD) | Data do óbito. |
 | `DT_ENCERRA` | Data (AAAAMMDD) | Data de encerramento da investigação. |
 
 ### Observações de Tratamento e Saneamento (`wrangle_datasus`)
 
-- **Preservação de códigos estruturados**: municípios (`ID_MUNICIP`, `ID_MN_RESI`) usam código IBGE de 6 dígitos (sem dígito verificador) e `ID_UNIDADE` é CNES de 7 dígitos; `SG_UF`/`SG_UF_NOT` são códigos IBGE de 2 dígitos. `ID_AGRAVO` (CID-10) e `NU_NOTIFIC` devem ficar como `String`, mantendo zeros à esquerda (`zfill`).
+- **Preservação de códigos estruturados**: municípios (`ID_MUNICIP`, `ID_MN_RESI`) usam código IBGE de 6 dígitos (sem dígito verificador) e `ID_UNIDADE` é CNES de 7 dígitos; `SG_UF`/`SG_UF_NOT` são códigos IBGE de 2 dígitos. `ID_AGRAVO` (CID-10) deve ficar como `String`, mantendo zeros à esquerda (`zfill`).
 - **Datas e competências**: datas `DT_*` são gravadas em `AAAAMMDD` nos DBF e convertidas para `pl.Date`; `SEM_NOT` é semana epidemiológica `AAAASS` e permanece texto. A idade em `NU_IDADE_N` está codificada (`TNNN`) e deve ser decodificada antes de calcular faixas etárias.
 - **Valores ausentes e sentinelas**: o SINAN usa `9`, `99`, `999` e `I` (ignorado) como categorias válidas no dicionário; elas **não** são nulos automáticos e a decisão de tratá-las como ausente cabe à análise. Espaços em branco e `""` viram nulos, e registros marcados como excluídos no dBASE (`_deleted`) são removidos.
-- **Particularidades do dataset**: Os registros incluem muitos casos descartados; filtrar por `CLASSI_FIN` ao contar casos confirmados. Contagens por UF/ano são pequenas e sujeitas a grande variação. Dados do ano corrente são preliminares. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` (UF de notificação) ou `SG_UF`/`ID_MN_RESI` (residência) conforme a pergunta, pois os dois podem diferir. Arquivos do diretório PRELIM são preliminares e substituídos pelos finais; deduplique por `NU_NOTIFIC` + `ID_UNIDADE` + `NU_ANO` ao combinar as duas fontes.
+- **Particularidades do dataset**: Os registros incluem muitos casos descartados; filtrar por `CLASSI_FIN` ao contar casos confirmados. Contagens por UF/ano são pequenas e sujeitas a grande variação. Dados do ano corrente são preliminares. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` (UF de notificação) ou `SG_UF`/`ID_MN_RESI` (residência) conforme a pergunta, pois os dois podem diferir. Arquivos do diretório PRELIM são preliminares e substituídos pelos finais; prefira sempre os arquivos finais quando o mesmo ano existir nas duas fontes, evitando somar PRELIM e FINAIS.
 
 ## 4. Exemplos Práticos
 

@@ -1,4 +1,4 @@
-# `sim-dorext-cid10` — Mortalidade de Residentes no Exterior CID-10 (SIM)
+# `sim-dorext-cid10` — Mortalidade de Residentes no Exterior CID-10
 
 Microdados nacionais do SIM/SVSA-MS com os óbitos de residentes no exterior ocorridos no Brasil, de 2013 a 2025 (CID-10). Cada linha é um óbito.
 
@@ -12,7 +12,7 @@ Microdados nacionais do SIM/SVSA-MS com os óbitos de residentes no exterior oco
 | **Particionamento** | `year` |
 | **Periodicidade** | Anual |
 | **Cobertura temporal no FTP** | 2013 a 2025 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 13 arquivos (~0.6 MB); 1 UF(s) na partição; última atualização 2026-08-28 |
+| **Volume aproximado no FTP** | 13 arquivos (~0,6 MB); 1 UF(s) na partição; última atualização 2026-08-28 |
 | **Arquivos preliminares** | Não |
 | **Documentação oficial no FTP** | `/dissemin/publicos/SIM/CID9/DOCS`, `/dissemin/publicos/SIM/CID10/DOCS` |
 | **Tabelas auxiliares no FTP** | `/dissemin/publicos/SIM/CID9/TAB`, `/dissemin/publicos/SIM/CID10/TAB` |
@@ -60,25 +60,38 @@ Cobertura no FTP: 1996 a 2025, em um único arquivo nacional por ano. Uso: recon
 
 ### Variáveis-Chave dos Microdados
 
-Layout menor que o da DO completa. A lista é de referência e deve ser confirmada contra o arquivo real (`frame.columns`); em especial `CODPAISRES` pode ter outro nome.
+Nomes verificados contra o arquivo real `DOREXT25.dbc` (87 colunas); o layout é próximo ao da DO completa.
 
 | Coluna (DBF) | Tipo / Formato | Descrição |
 |---|---|---|
-| `DTOBITO` | String `DDMMAAAA` | Data do óbito. |
-| `IDADE` | Inteiro (código composto) | Idade ao morrer. |
-| `SEXO` | Inteiro | Sexo. |
-| `RACACOR` | String | Raça/cor. |
-| `CODMUNOCOR` | String (IBGE, 6) | Município de ocorrência no Brasil. |
-| `CAUSABAS` | String (CID-10) | Causa básica do óbito. |
-| `LOCOCOR` | String | Local de ocorrência. |
-| `CODPAISRES` | String | País de residência do falecido, quando disponível no layout. |
+| `TIPOBITO` | String | Tipo do óbito (fetal ou não fetal). |
+| `DTOBITO` / `HORAOBITO` | String `DDMMAAAA` / `HHMM` | Data e hora do óbito. |
+| `DTNASC` / `IDADE` | String | Data de nascimento e idade (código composto). |
+| `SEXO` / `RACACOR` / `ESTCIV` | String | Sexo, raça/cor e estado civil. |
+| `ESC` / `ESC2010` / `SERIESCFAL` / `ESCFALAGR1` | String | Escolaridade do falecido (layouts antigo e de 2010, série e agregado). |
+| `OCUP` | String (CBO, 6) | Ocupação do falecido. |
+| `NATURAL` / `CODMUNNATU` | String | Naturalidade do falecido (país/UF e município). |
+| `CODMUNRES` / `CODPAISRES` | String (IBGE, 7) / String | Município de residência no Brasil e país de residência. |
+| `CODMUNOCOR` / `LOCOCOR` | String | Município de ocorrência (IBGE, 7) e local de ocorrência. |
+| `CODESTAB` / `ESTABDESCR` | String | Estabelecimento de ocorrência (código e descrição). |
+| `CAUSABAS` / `CAUSABAS_O` / `CB_PRE` | String (CID-10, 4) | Causa básica do óbito (atual, original e pré-investigação). |
+| `LINHAA` / `LINHAB` / `LINHAC` / `LINHAD` / `LINHAII` | String (CID-10) | Causas da declaração de óbito (linhas A–D e parte II). |
+| `ATESTADO` / `ATESTANTE` | String | Texto codificado do atestado e tipo de atestante. |
+| `CIRCOBITO` / `ACIDTRAB` / `FONTE` | String | Circunstância do óbito (acidente/suicídio/homicídio), indicador de acidente de trabalho e fonte da informação. |
+| `ASSISTMED` / `EXAME` / `CIRURGIA` / `NECROPSIA` | String | Assistência médica, exames, cirurgia e necrópsia. |
+| `IDADEMAE` / `ESCMAE` / `ESCMAE2010` / `SERIESCMAE` / `ESCMAEAGR1` / `OCUPMAE` | String | Dados da mãe (óbitos fetais e infantis). |
+| `QTDFILVIVO` / `QTDFILMORT` / `GRAVIDEZ` / `SEMAGESTAC` / `GESTACAO` / `PARTO` / `PESO` / `OBITOPARTO` | String | Dados de gestação, parto e peso (óbitos fetais e infantis). |
+| `TPMORTEOCO` / `OBITOGRAV` / `OBITOPUERP` / `MORTEPARTO` / `CAUSAMAT` | String | Variáveis de mortalidade materna. |
+| `DTINVESTIG` / `DTCADINV` / `DTCONINV` / `FONTEINV` / `FONTES` / `TPRESGINFO` / `TPNIVELINV` / `NUDIASINF` / `DTCADINF` / `DTCONCASO` / `FONTESINF` / `TPOBITOCOR` / `NUDIASOBCO` | String | Investigação do óbito e resgate de informações. |
+| `DTATESTADO` / `DTCADASTRO` / `DTRECEBIM` / `DTRECORIGA` / `DIFDATA` | String `DDMMAAAA` | Datas de atestado, cadastro, recebimento e controle. |
+| `NUMEROLOTE` / `VERSAOSIST` / `VERSAOSCB` / `CODIFICADO` / `STCODIFICA` / `STDOEPIDEM` / `STDONOVA` / `TPPOS` / `ALTCAUSA` / `COMUNSVOIM` / `CONTADOR` / `ORIGEM` | String | Controle do sistema e codificação. |
 
 ### Observações de Tratamento e Saneamento (`wrangle_datasus`)
 
 - **Preservação de códigos estruturados**: `CODMUNRES`, `CODMUNOCOR` e `CODMUNNASC` devem ser tratados como `String`; a base usa o código IBGE de 6 dígitos (sem dígito verificador) — mantenha o texto original e use `zfill(6)` apenas se algum arquivo trouxer o código truncado. `CAUSABAS`, `LINHAA`–`LINHAD` e `LINHAII` (CID-10 ou CID-9 conforme o período) e `OCUP`/`CODOCUPMAE` (CBO) são códigos e nunca devem ser convertidos para número. No `wrangle_datasus`, `CODMUNRES` não consta em `CODE_COLUMNS`, mas permanece `String` porque campos caractere do DBF são lidos como texto; `CAUSABAS` e `CAUSABAS_O` constam em `CODE_COLUMNS` e são preservados como `String` limpa.
 - **Datas e competências**: nos DBF do SIM e do SINASC as datas (`DTOBITO`, `DTNASC`, `DTCADASTRO`, `DTRECEBIM`, `DTINVESTIG`) vêm como texto `DDMMAAAA`, e `HORAOBITO`/`HORANASC` como `HHMM`. Os nomes sem sublinhado **não** estão em `DATE_COLUMNS` (que cobre `DT_OBITO`, `DT_NASC` etc.), portanto permanecem `String`; converta explicitamente com `pl.col("dtobito").str.to_date("%d%m%Y", strict=False)`.
 - **Valores ausentes e sentinelas**: o `wrangle_datasus` faz `strip` das strings e converte em nulo os sentinelas `""`, `" "`, `"999999"`, `"99999999"` e `"00000000"` (data zerada). Códigos categóricos de "ignorado" (`9`, `99`, `999`) **não** viram nulo automaticamente e precisam ser tratados conforme o dicionário de cada variável. Colunas listadas em `INTEGER_COLUMNS` (`IDADE`, `SEXO`, `ESTCIV`, `GRAVIDEZ`, `GESTACAO`, `PARTO`, `CONSULTAS`, `QTDFILVIVO`, `QTDFILMORT`, `ANO`, `MES`) são convertidas para `Int64` com `strict=False`: valores não numéricos (como `M`/`F`/`I` em layouts antigos) viram nulo. Registros com marcador de exclusão dBASE (`_deleted`) são removidos e a coluna é descartada.
-Arquivo nacional por ano (sem UF): para análises por estado use `CODMUNRES`/`CODMUNOCOR` (os dois primeiros dígitos do código IBGE identificam a UF). Série de apenas 13 anos (2013 a 2025) e volume mínimo (~0,6 MB). Não há município de residência no Brasil; a análise territorial usa `CODMUNOCOR`. Para totais por ocorrência some este dataset a `sim-do-cid10` (por ocorrência), tomando cuidado para não duplicar registros.
+Arquivo nacional por ano (sem UF): para análises por estado use `CODMUNRES`/`CODMUNOCOR` (os dois primeiros dígitos do código IBGE identificam a UF). Série de apenas 13 anos (2013 a 2025) e volume mínimo (~0,6 MB). As colunas `CODMUNRES` e `CODPAISRES` existem no layout, mas as declarações são de óbitos de residentes no exterior; a análise territorial usa `CODMUNOCOR`. Para totais por ocorrência some este dataset a `sim-do-cid10` (por ocorrência), tomando cuidado para não duplicar registros.
 
 ## 4. Exemplos Práticos
 
@@ -112,7 +125,7 @@ print(frame.shape)
 frame = frame.with_columns(
     pl.col("dtobito").str.to_date("%d%m%Y", strict=False).alias("data_obito"),
 )
-print(frame.shape, frame.columns)
+print(frame.shape)
 ```
 
 ## 5. Referências Oficiais

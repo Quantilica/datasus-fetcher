@@ -1,4 +1,4 @@
-# `sim-do-cid10` — Declarações de Óbito CID-10 (SIM)
+# `sim-do-cid10` — Declarações de Óbito CID-10
 
 Microdados do Sistema de Informação sobre Mortalidade (SIM/SVSA-MS) com todos os óbitos (fetais e não fetais) ocorridos a partir de 1996, codificados na CID-10 e agrupados por UF de residência. Cada linha representa uma Declaração de Óbito.
 
@@ -12,7 +12,7 @@ Microdados do Sistema de Informação sobre Mortalidade (SIM/SVSA-MS) com todos 
 | **Particionamento** | `uf / year` |
 | **Periodicidade** | Anual |
 | **Cobertura temporal no FTP** | 1996 a 2026 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 868 arquivos (~5.2 GB); 28 UF(s) na partição; última atualização 2026-09-28 |
+| **Volume aproximado no FTP** | 868 arquivos (~5,2 GB); 28 UF(s) na partição; última atualização 2026-09-28 |
 | **Arquivos preliminares** | Sim (diretório PRELIM) |
 | **Documentação oficial no FTP** | `/dissemin/publicos/SIM/CID9/DOCS`, `/dissemin/publicos/SIM/CID10/DOCS` |
 | **Tabelas auxiliares no FTP** | `/dissemin/publicos/SIM/CID9/TAB`, `/dissemin/publicos/SIM/CID10/TAB` |

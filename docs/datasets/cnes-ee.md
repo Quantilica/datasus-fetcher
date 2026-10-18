@@ -12,7 +12,7 @@ O `cnes-ee` contém os microdados do arquivo de **Estabelecimento de Ensino** do
 | **Particionamento** | `uf`, `yearmonth` (um arquivo por UF e competência mensal, além de `br`) |
 | **Periodicidade** | Mensal (extração por competência) |
 | **Cobertura temporal no FTP** | 2007-03 a 2021-07 (conforme `index.json`) — **série descontinuada** |
-| **Volume aproximado no FTP** | 3201 arquivos (~4,3 MB, 23 UFs) |
+| **Volume aproximado no FTP** | 3201 arquivos (~4,6 MB, 23 UFs) |
 | **Arquivos preliminares** | Não |
 | **Documentação oficial no FTP** | `/dissemin/publicos/CNES/200508_/doc` (`IT_CNES_1706.pdf`) |
 | **Tabelas auxiliares no FTP** | `/dissemin/publicos/CNES/200508_/Auxiliar` (`TAB_CNES.zip`) |
