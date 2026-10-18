@@ -17,7 +17,7 @@ from quantilica.core.ftp import FtpClient
 from rich.rule import Rule
 from rich.table import Table
 
-from datasus_fetcher import fetcher, meta
+from datasus_fetcher import fetcher, meta, snapshot
 from datasus_fetcher.fetcher import FTP_HOST
 from datasus_fetcher.slicer import Slicer
 from datasus_fetcher.storage import DataPartition, RemoteFile, get_files_metadata
@@ -81,17 +81,23 @@ def _get_ftp():
 def datasus_list_datasets(group: str) -> list[dict]:
     """Lists dataset entries for a specific group (dataset ID).
 
+    Metadata-first: when ``DATASUS_METADATA_DIR`` points to a fresh
+    ``datasus-metadata`` snapshot, it is used instead of the FTP ``LIST``
+    (see :mod:`datasus_fetcher.snapshot`); otherwise falls back to the FTP.
+
     Args:
         group (str): The dataset ID (e.g., 'sih-rd').
 
     Returns:
         list[dict]: A list of dataset entries.
     """
-    ftp = _get_ftp()
     entries = []
 
     if group in meta.datasets:
-        for f in fetcher.list_dataset_files(ftp, group):
+        files = snapshot.snapshot_data_files(group)
+        if files is None:
+            files = fetcher.list_dataset_files(_get_ftp(), group)
+        for f in files:
             entries.append(
                 {
                     "id": f.filename,
@@ -105,33 +111,26 @@ def datasus_list_datasets(group: str) -> list[dict]:
                 }
             )
 
-    if group in meta.docs:
-        for doc in fetcher.list_documentation_files(ftp, group):
+    for kind, registry, list_fn in (
+        ("doc", meta.docs, fetcher.list_documentation_files),
+        ("aux", meta.auxiliary_tables, fetcher.list_auxiliary_tables_files),
+    ):
+        if group not in registry:
+            continue
+        support = snapshot.snapshot_support_files(kind, group)
+        if support is None:
+            support = list_fn(_get_ftp(), group)
+        for item in support:
             entries.append(
                 {
-                    "id": doc["filename"],
-                    "url": doc["full_path"],
+                    "id": item["filename"],
+                    "url": item["full_path"],
                     "group": group,
                     "dataset": group,
-                    "type": "doc",
-                    "datetime": doc["datetime"],
-                    "size": doc["size"],
-                    "extension": doc.get("extension"),
-                }
-            )
-
-    if group in meta.auxiliary_tables:
-        for aux in fetcher.list_auxiliary_tables_files(ftp, group):
-            entries.append(
-                {
-                    "id": aux["filename"],
-                    "url": aux["full_path"],
-                    "group": group,
-                    "dataset": group,
-                    "type": "aux",
-                    "datetime": aux["datetime"],
-                    "size": aux["size"],
-                    "extension": aux.get("extension"),
+                    "type": kind,
+                    "datetime": item["datetime"],
+                    "size": item["size"],
+                    "extension": item.get("extension"),
                 }
             )
 

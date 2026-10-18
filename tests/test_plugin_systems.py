@@ -70,8 +70,11 @@ class TestPluginCliWiring(unittest.TestCase):
         """Dataset inexistente deve falhar com código != 0, antes de conectar."""
         result = runner.invoke(app, ["sync", "sim", "--dry-run"])
         self.assertNotEqual(result.exit_code, 0)
-        self.assertIn("não reconhecido", result.output)
-        self.assertIn("--system", result.output)
+        # Rich pode quebrar linha no meio de "--system" conforme a largura do terminal
+        output = "".join(result.output.split())
+        self.assertIn("nãoreconhecido", output)
+        self.assertIn("sim", output)
+        self.assertIn("system", output)
 
     def test_list_rejects_unknown_dataset_with_exit_code(self):
         result = runner.invoke(app, ["list", "sinasc"])
