@@ -130,3 +130,21 @@ def test_normalize_frame_struct_series():
     framed = _normalize_frame(single)
     assert isinstance(framed, pl.DataFrame)
     assert framed.columns == ["col"]
+
+
+def test_write_parquet_herda_proveniencia(tmp_path: Path):
+    import pyarrow.parquet as pq
+    from quantilica.core.manifests import DownloadManifest, write_manifest_sidecar
+
+    raw = tmp_path / "raw.dbc"
+    raw.write_bytes(b"x")
+    write_manifest_sidecar(
+        raw,
+        DownloadManifest.from_content(
+            source_id="datasus", dataset_id="sim", url="ftp://x", content=b"x"
+        ),
+    )
+    out = write_parquet(
+        pl.DataFrame({"a": [1]}), tmp_path / "o.parquet", source_path=raw
+    )
+    assert pq.ParquetFile(out).metadata.metadata[b"quantilica.dataset_id"] == b"sim"

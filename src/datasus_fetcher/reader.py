@@ -395,19 +395,40 @@ def write_parquet(
     df: pl.DataFrame,
     dest_path: Path | str,
     compression: str = "zstd",
+    source_path: Path | str | None = None,
 ) -> Path:
     """Save a Polars DataFrame to a Parquet file atomically with metadata.
+
+    When ``source_path`` is given (or a ``.manifest.json`` sidecar exists next
+    to the raw file), the ``quantilica.*`` provenance keys are injected into
+    the Parquet file-level metadata.
 
     Args:
         df: Polars DataFrame to save.
         dest_path: Destination path for the Parquet file.
         compression: Compression algorithm ('zstd', 'snappy', 'lz4', 'uncompressed').
+        source_path: Raw .dbc/.dbf whose ``.manifest.json`` sidecar provides
+            the provenance. Defaults to None (no provenance recorded).
 
     Returns:
         Path to the saved Parquet file.
     """
     dest = Path(dest_path)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    df.write_parquet(dest, compression=compression, statistics=True)
+    metadata: dict[str, str] = {}
+    if source_path is not None:
+        try:
+            from quantilica.analytics.writer import manifest_to_metadata
+            from quantilica.core.manifests import read_manifest_sidecar
+        except ImportError:  # quantilica-analytics ausente: sem proveniência
+            logger.debug("quantilica-analytics ausente; sem metadados quantilica.*")
+        else:
+            metadata.update(manifest_to_metadata(read_manifest_sidecar(source_path)))
+    df.write_parquet(
+        dest,
+        compression=compression,
+        statistics=True,
+        metadata=metadata or None,
+    )
     logger.debug("Parquet salvo em %s (%d linhas)", dest, len(df))
     return dest

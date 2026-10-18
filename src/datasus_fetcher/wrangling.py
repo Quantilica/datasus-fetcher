@@ -191,7 +191,7 @@ def convert_file(
             "Suportadas: .dbc, .dbf"
         )
 
-    return reader.write_parquet(df, dest, compression=compression)
+    return reader.write_parquet(df, dest, compression=compression, source_path=src)
 
 
 def convert_directory(
