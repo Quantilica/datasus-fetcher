@@ -28,13 +28,58 @@ logger = logging.getLogger(__name__)
 DBF_CHUNK_BYTES = 32 * 2**20
 
 
+# Registros comparados com o dbfread em cada pedaço lido pelo fastdbf.
+DBF_SANITY_ROWS = 50
+
+
+def _fix_field_displacements(header: bytes) -> bytes:
+    """Grava nos descritores de campo o deslocamento de cada campo no registro.
+
+    Os bytes 12-15 de cada descritor de 32 bytes são "reservados" no dBASE III, mas o
+    FoxPro os usa como deslocamento do campo dentro do registro, e o fastdbf (0.5.2)
+    confia neles. Os arquivos do DATASUS deixam esses bytes zerados, então o fastdbf
+    lia todos os campos a partir do byte 0 do registro (o byte de deleção) e devolvia
+    valores deslocados em silêncio (``DTOBITO=" 1207052"`` em vez de ``"07052022"``).
+    Aqui o deslocamento é recalculado como ``1 + soma dos tamanhos anteriores`` (o
+    byte 0 é o marcador de deleção), o que não altera a leitura pelo dbfread.
+
+    Args:
+        header: Cabeçalho completo do .dbf (``header_len`` bytes).
+
+    Returns:
+        Cópia do cabeçalho com os deslocamentos corrigidos.
+    """
+    fixed = bytearray(header)
+    pos = 1
+    off = 32
+    while off + 32 <= len(fixed) and fixed[off] != 0x0D:
+        fixed[off + 12 : off + 16] = struct.pack("<I", pos)
+        pos += fixed[off + 16]
+        off += 32
+    return bytes(fixed)
+
+
+def _has_wrong_displacements(dbf_path: Path) -> bool:
+    """Indica se os deslocamentos gravados no cabeçalho divergem do layout real."""
+    with open(dbf_path, "rb") as src:
+        header = src.read(32)
+        if len(header) < 32:
+            return False
+        header_len = struct.unpack("<H", header[8:10])[0]
+        src.seek(0)
+        full_header = src.read(header_len)
+    return _fix_field_displacements(full_header) != full_header
+
+
 def _iter_dbf_chunks(dbf_path: Path, chunk_bytes: int, tmp_dir: Path) -> Iterator[Path]:
     """Divide um .dbf em .dbf menores (mesmo cabeçalho, menos registros).
 
     O formato dBASE tem cabeçalho de tamanho fixo (bytes 8-9), registros de tamanho fixo
     (bytes 10-11) e a contagem de registros nos bytes 4-7. Cada pedaço copia o cabeçalho
-    com a contagem ajustada, uma fatia contígua de registros e o terminador ``0x1A``.
-    Os arquivos são gravados em ``tmp_dir`` e removidos assim que o chamador avança.
+    com a contagem ajustada (e os deslocamentos de campo corrigidos, ver
+    :func:`_fix_field_displacements`), uma fatia contígua de registros e o terminador
+    ``0x1A``. Os arquivos são gravados em ``tmp_dir`` e removidos assim que o chamador
+    avança.
 
     Args:
         dbf_path: Arquivo .dbf de origem.
@@ -49,7 +94,7 @@ def _iter_dbf_chunks(dbf_path: Path, chunk_bytes: int, tmp_dir: Path) -> Iterato
         n_records = struct.unpack("<I", header[4:8])[0]
         header_len, record_len = struct.unpack("<HH", header[8:12])
         src.seek(0)
-        full_header = src.read(header_len)
+        full_header = _fix_field_displacements(src.read(header_len))
         per_chunk = max(1, chunk_bytes // max(record_len, 1))
         done = 0
         index = 0
@@ -117,27 +162,110 @@ def _read_dbf_dbfread(dbf_path: Path, encoding: str) -> pl.DataFrame:
     return frame.with_columns(pl.lit(False).alias("_deleted"))
 
 
-def _read_dbf_piece(piece: Path, encoding: str) -> pl.DataFrame:
+def _same_value(a: Any, b: Any) -> bool:
+    """Compara um valor do fastdbf com o do dbfread, tolerando tipo e espaços."""
+    import datetime as dt
+    from decimal import Decimal
+
+    if a is None or b is None:
+        return (a is None or a == "") and (b is None or b == "")
+    if isinstance(a, int | float | Decimal) and isinstance(b, int | float | Decimal):
+        return float(a) == float(b)
+    if isinstance(a, dt.date) or isinstance(b, dt.date):
+        return a == b
+    return str(a).strip() == str(b).strip()
+
+
+def _fastdbf_mismatch(
+    frame: pl.DataFrame, piece: Path, encoding: str, rows: int
+) -> str | None:
+    """Confere as primeiras ``rows`` linhas do fastdbf contra o dbfread.
+
+    Barato (o dbfread lê os registros sob demanda) e pega deslocamento de colunas,
+    que não levanta exceção. Registros deletados são ignorados nos dois lados.
+
+    Returns:
+        Descrição da primeira divergência, ou ``None`` se tudo bate.
+    """
+    from itertools import islice
+
+    try:
+        import dbfread
+    except ImportError:
+        return None
+
+    table = dbfread.DBF(
+        str(piece),
+        encoding=encoding,
+        ignore_missing_memofile=True,
+        char_decode_errors="replace",
+    )
+    try:
+        reference = list(islice(iter(table), rows))
+    except Exception as exc:  # o dbfread também não lê: nada a comparar
+        logger.debug("dbfread falhou na checagem de %s (%s)", piece.name, exc)
+        return None
+    sample = frame
+    if "_deleted" in frame.columns:
+        sample = frame.filter(~frame["_deleted"].fill_null(False))
+    sample = sample.head(len(reference))
+    if sample.height != len(reference):
+        return f"{sample.height} linhas no fastdbf, {len(reference)} no dbfread"
+    for field in table.field_names:
+        name = field.upper()
+        if name not in sample.columns:
+            return f"coluna {name} ausente no fastdbf"
+        values = sample[name].to_list()
+        for i, (got, rec) in enumerate(zip(values, reference, strict=True)):
+            if not _same_value(got, rec[field]):
+                return f"{name}[{i}]: fastdbf={got!r} dbfread={rec[field]!r}"
+    return None
+
+
+def _read_dbf_piece(
+    piece: Path, encoding: str, sanity_rows: int = DBF_SANITY_ROWS
+) -> pl.DataFrame:
     """Lê um .dbf (ou um pedaço dele) com fastdbf e, se falhar, com dbfread.
 
     Um campo numérico com lixo (por exemplo ``"2165198310000EP3170"`` num SIA-PA)
     faz o fastdbf levantar ``DbfFormatError``. Como o fallback vale só para o
-    pedaço que falhou, o custo do dbfread fica limitado a ele.
+    pedaço que falhou, o custo do dbfread fica limitado a ele. Erros silenciosos
+    também caem no dbfread: as primeiras ``sanity_rows`` linhas do fastdbf são
+    comparadas com as do dbfread e, se divergirem, o pedaço é relido com o dbfread
+    e um aviso é registrado.
     """
     try:
-        return _read_dbf_fastdbf(piece)
+        frame = _read_dbf_fastdbf(piece)
     except Exception as exc:
         logger.debug("fastdbf falhou em %s (%s), usando dbfread", piece.name, exc)
         return _read_dbf_dbfread(piece, encoding)
+    if sanity_rows > 0:
+        mismatch = _fastdbf_mismatch(frame, piece, encoding, sanity_rows)
+        if mismatch is not None:
+            logger.warning(
+                "fastdbf divergiu do dbfread em %s (%s); usando dbfread",
+                piece.name,
+                mismatch,
+            )
+            return _read_dbf_dbfread(piece, encoding)
+    return frame
 
 
 def _dbf_frames(
     src: Path, encoding: str, chunk_bytes: int | None
 ) -> Iterator[pl.DataFrame]:
-    """Gera os DataFrames brutos de um .dbf (um só, ou um por pedaço)."""
-    if chunk_bytes is None or src.stat().st_size <= 2 * chunk_bytes:
-        yield _read_dbf_piece(src, encoding)
-        return
+    """Gera os DataFrames brutos de um .dbf (um só, ou um por pedaço).
+
+    Arquivos pequenos com deslocamentos de campo zerados no cabeçalho (o caso do
+    DATASUS) passam por uma cópia temporária única com o cabeçalho corrigido, pois o
+    fastdbf lê os campos nas posições gravadas ali.
+    """
+    size = src.stat().st_size
+    if chunk_bytes is None or size <= 2 * chunk_bytes:
+        if not _has_wrong_displacements(src):
+            yield _read_dbf_piece(src, encoding)
+            return
+        chunk_bytes = max(size, 1)
     with tempfile.TemporaryDirectory(prefix="dbf-chunks-") as tmp:
         for piece in _iter_dbf_chunks(src, chunk_bytes, Path(tmp)):
             yield _read_dbf_piece(piece, encoding)
@@ -209,11 +337,15 @@ def read_dbf(
     """Read a .dbf file into a Polars DataFrame.
 
     Tries fastdbf (Rust + Apache Arrow) first, falling back to dbfread (pure
-    Python) for maximum portability. fastdbf builds the whole Arrow table at once and
-    peaks at roughly 12x the .dbf size in memory, so files larger than
-    ``2 * chunk_bytes`` are read in pieces of about ``chunk_bytes`` and concatenated;
-    the peak then follows the chunk plus the final DataFrame. The fallback is per
-    piece: one malformed record only sends its own piece to dbfread.
+    Python) for maximum portability. fastdbf reads each field at the displacement
+    stored in its descriptor, which DATASUS files leave zeroed; the header is
+    rewritten with the real displacements in a temporary copy before fastdbf sees
+    it, and the first rows of every piece are checked against dbfread (a mismatch
+    logs a warning and rereads the piece with dbfread). fastdbf builds the whole
+    Arrow table at once and peaks at roughly 12x the .dbf size in memory, so files
+    larger than ``2 * chunk_bytes`` are read in pieces of about ``chunk_bytes`` and
+    concatenated; the peak then follows the chunk plus the final DataFrame. The
+    fallback is per piece: one malformed record only sends its own piece to dbfread.
 
     Args:
         dbf_path: Path to the .dbf file.

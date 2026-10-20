@@ -5,6 +5,16 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [Não lançado]
+
+### Corrigido
+- `read_dbf`, `read_dbc` e `quantilica datasus convert` devolviam valores deslocados entre colunas, sem erro nem aviso, em todos os `.dbf` do DATASUS testados (SIM `DOAC2022`, SINASC `DNAC2022`, SIH-RD `RDAC2201`, SINAN `BOTUBR22` e a fixture `DOAC1996`). Exemplo no SIM: `DTOBITO=" 1207052"` em vez de `"07052022"`, `CAUSABAS=" 120"` em vez de `"I461"`. O `fastdbf` (0.5.2, a versão mais recente no PyPI) lê cada campo na posição gravada nos bytes 12-15 do descritor (o deslocamento do campo no registro, no FoxPro). No dBASE III esses bytes são reservados, e o DATASUS os deixa zerados, então todos os campos eram lidos a partir do byte 0 do registro, que é o marcador de deleção. Parte dos arquivos (o SINAN `BOTUBR22`, com campo data) fazia o `fastdbf` falhar e cair no `dbfread`, que lia certo; o resto saía corrompido. Agora o cabeçalho é reescrito com os deslocamentos reais (`1 + soma dos tamanhos anteriores`) numa cópia temporária antes de o `fastdbf` lê-lo. O arquivo de origem não é alterado. Arquivos de até `2 * DBF_CHUNK_BYTES` passam por uma única cópia, e os maiores já eram copiados em pedaços. Nos 5 arquivos, o resultado bate célula a célula com o `dbfread`, e os tipos de saída não mudam.
+- Checagem de sanidade em cada pedaço lido pelo `fastdbf`: as primeiras `DBF_SANITY_ROWS` (50) linhas são comparadas com o `dbfread`. Se divergirem, o pedaço é relido com o `dbfread` e um aviso (`logging.WARNING`) é registrado. Assim, um defeito parecido no futuro não volta a corromper os dados em silêncio.
+- Parquets e DataFrames gerados com versões anteriores a partir de `.dbc`/`.dbf` do DATASUS devem ser regenerados.
+
+### Adicionado
+- `tests/test_dbf_displacement.py` e `tests/fixtures/dbf/*_head.dbf`: os 25 primeiros registros de arquivos reais (SIM, SINASC, SIH-RD e SINAN) com o cabeçalho original, comparados com o `dbfread` com e sem leitura em pedaços. Esses testes falham com o leitor anterior.
+
 ## [0.13.0] - 2026-10-20
 
 ### Adicionado
