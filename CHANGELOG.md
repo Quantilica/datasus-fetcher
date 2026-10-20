@@ -5,6 +5,25 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [0.14.1] - 2026-10-20
+
+### Corrigido
+- **Datas do SINAN rejeitadas pela conversão estrita.** Os campos de data do
+  SINAN (`DT_SIN_PRI`, `DT_OBITO`, `DT_INVEST`, `DT_DIGITA`...) são do tipo
+  `D` no .dbf e o leitor já os entrega como `pl.Date`; `wrangle_datasus` os
+  passava para texto (`"2024-03-02"`) e tentava ler `AAAAMMDD`, o que na
+  0.14.0 levantava "Valores fora do formato esperado" em `read_dbf`/`read_dbc`
+  + `wrangle_datasus` de qualquer arquivo do SINAN (ex. `DENGBR24`). Colunas
+  de `DATE_COLUMNS` que já chegam como data são mantidas e as `Datetime` são
+  truncadas para data; texto continua lido como `AAAAMMDD` estrito, e valores
+  inválidos continuam levantando `ValueError`. SIM, SINASC e SIH não têm
+  campos `D` (datas em texto) e não mudam.
+
+### Adicionado
+- `tests/test_sinan_dates.py` com fixtures reais do SINAN:
+  `tests/fixtures/dbf/DENGBR24_head.dbf` (recorte com o cabeçalho original) e
+  `tests/fixtures/BOTUBR22.dbc` (arquivo completo do FTP, 38 registros).
+
 ## [0.14.0] - 2026-10-20
 
 ### Corrigido
