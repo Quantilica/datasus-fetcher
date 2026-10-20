@@ -141,7 +141,11 @@ def test_check_preenche_remote_last_modified_documentacao(tmp_path, monkeypatch)
     itens = [plugin._datasus_check_entry(e, tmp_path) for e in entradas]
     assert itens[0].remote_last_modified == dt.datetime(2024, 3, 4, 5, 6, 7).isoformat()
     assert itens[0].remote_size == 7
-    assert itens[0].local_path.endswith("_documentacao/cnes/doc@20240304.pdf")
+    assert (
+        itens[0]
+        .local_path.replace("\\", "/")
+        .endswith("_documentacao/cnes/doc@20240304.pdf")
+    )
 
 
 def test_entry_last_modified_none_sem_data():
