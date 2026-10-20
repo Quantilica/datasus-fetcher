@@ -6,7 +6,8 @@ partir do byte 0 do registro: ``DTOBITO=" 1207052"`` em vez de ``"07052022"``.
 
 As fixtures são os 25 primeiros registros de arquivos reais do FTP do DATASUS, com
 o cabeçalho original (só a contagem de registros ajustada): SIM ``DOAC2022``,
-SINASC ``DNAC2022``, SIH-RD ``RDAC2201`` e SINAN ``BOTUBR22``.
+SINASC ``DNAC2022``, SIH-RD ``RDAC2201`` e SINAN ``BOTUBR22`` e ``DENGBR24`` (20
+primeiros registros mais 5 com ``DT_OBITO`` preenchido).
 """
 
 import logging
@@ -42,6 +43,7 @@ def _diferencas(frame, path: Path) -> list[str]:
 def test_fixtures_presentes():
     assert {p.name for p in DBF_FIXTURES} == {
         "BOTUBR22_head.dbf",
+        "DENGBR24_head.dbf",
         "DNAC2022_head.dbf",
         "DOAC2022_head.dbf",
         "RDAC2201_head.dbf",

@@ -106,7 +106,9 @@ CODE_COLUMNS = {
     "ESCOL",
 }
 
-# Columns containing dates formatted as YYYYMMDD
+# Columns containing dates: YYYYMMDD text (SIH, CNES...) or ``D`` fields of
+# the .dbf (SINAN), which the reader already returns as dates. Both end up as
+# pl.Date in wrangle_datasus.
 DATE_COLUMNS = {
     "DT_INTER",
     "DT_SAIDA",

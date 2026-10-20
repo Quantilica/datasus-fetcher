@@ -485,8 +485,10 @@ def wrangle_datasus(
     - Converts legacy sentinel values ("", "NA", "999999", etc.) to null.
     - Preserves administrative/diagnostic and categorical code columns as
       clean strings with leading zeros.
-    - Parses YYYYMMDD date columns (``DATE_COLUMNS``) to pl.Date. The SIM
-      DDMMYYYY date fields stay as text: some are partial (see constants).
+    - Parses YYYYMMDD date columns (``DATE_COLUMNS``) to pl.Date. Columns
+      that already arrive as dates (``D`` fields of the .dbf, as in the SINAN)
+      are kept; datetimes are truncated to the date. The SIM DDMMYYYY date
+      fields stay as text: some are partial (see constants).
     - Keeps exact ``Decimal`` monetary columns (numeric DBF fields with
       decimals, see ``read_dbf``); text monetary columns become pl.Float64.
     - Converts counts to pl.Int64.
@@ -537,8 +539,14 @@ def wrangle_datasus(
             # Preservar estritamente como string UTF-8 limpa
             expr = expr.cast(pl.String)
         elif u_col in DATE_COLUMNS:
-            expr = expr.cast(pl.String).str.to_date("%Y%m%d", strict=False)
-            converted[target_name] = col
+            if dtype == pl.Date or dtype == pl.Null:
+                # Campo tipo D do .dbf (SINAN): o leitor já entrega data.
+                expr = expr.cast(pl.Date)
+            elif isinstance(dtype, pl.Datetime):
+                expr = expr.dt.date()
+            else:
+                expr = expr.cast(pl.String).str.to_date("%Y%m%d", strict=False)
+                converted[target_name] = col
         elif u_col in FLOAT_COLUMNS:
             if isinstance(dtype, pl.Decimal):
                 pass  # já exato (read_dbf)
