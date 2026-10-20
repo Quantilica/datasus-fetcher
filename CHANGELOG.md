@@ -5,6 +5,20 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [0.13.0] - 2026-10-20
+
+### Adicionado
+- Listagem `metadata-first` no plugin via snapshot JSON do `datasus-metadata` com fallback automático ao `LIST` FTP quando indisponível ou expirado (`DATASUS_METADATA_DIR` e `DATASUS_METADATA_MAX_AGE_HOURS`).
+- Injeção de metadados canônicos de proveniência (`quantilica.*`) no esquema Parquet em `write_parquet`.
+- Documentação canônica completa dos 113 datasets do DATASUS e índice geral.
+
+### Alterado
+- Dependências atualizadas: `quantilica-core>=0.12.0` e `quantilica-analytics>=0.4.0`.
+
+### Corrigido
+- Testes unitários do snapshot desacoplados do `typer` para execução em ambientes mínimos sem extra `cli`.
+- Normalização de caminhos de arquivos para suporte multiplataforma (Windows/POSIX).
+
 ## [0.12.1] - 2026-10-14
 
 ### Alterado
