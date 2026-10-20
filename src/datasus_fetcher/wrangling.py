@@ -33,6 +33,13 @@ _DATASET_PREFIXES = {
 }
 
 
+_STORED_NAME = re.compile(
+    r"^(?P<dataset>[a-z][a-z0-9]*(?:-[a-z0-9]+)*)_"
+    r"(?P<year>(?:19|20)\d{2})(?P<month>0[1-9]|1[0-2])?"
+    r"(?:-(?P<uf>[a-z]{2}))?(?:-[a-z0-9]+)?$"
+)
+
+
 def parse_filename_metadata(filepath_or_name: str | Path) -> dict[str, Any]:
     """Extract partition and dataset metadata from a DATASUS filename.
 
@@ -53,6 +60,21 @@ def parse_filename_metadata(filepath_or_name: str | Path) -> dict[str, Any]:
         name_clean = raw_name.split("@", 1)[0]
     else:
         name_clean = raw_name
+
+    # Nome gravado pelo próprio fetcher (storage.get_filename):
+    # '<dataset>_<partição>', ex. 'sih-rd_202201-ac', 'sim-do-cid10_2022-ac',
+    # 'sim-doext-cid10_2024'; acervos antigos trazem o carimbo como '_AAAAMMDD'.
+    stored = _STORED_NAME.match(re.sub(r"_\d{8}$", "", name_clean))
+    if stored:
+        meta_stored: dict[str, Any] = {
+            "dataset": stored["dataset"],
+            "ano": int(stored["year"]),
+        }
+        if stored["month"]:
+            meta_stored["mes"] = int(stored["month"])
+        if stored["uf"]:
+            meta_stored["uf"] = stored["uf"]
+        return meta_stored
 
     meta: dict[str, Any] = {}
 

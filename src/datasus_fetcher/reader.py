@@ -6,6 +6,7 @@ import logging
 import struct
 import tempfile
 from collections.abc import Callable, Iterator
+from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -26,6 +27,58 @@ logger = logging.getLogger(__name__)
 # cerca de 12x o tamanho do .dbf (medido em 2026-10-13: 529 MiB de .dbf -> 6,4 GB).
 # Acima de ``2 * DBF_CHUNK_BYTES`` o arquivo é lido em pedaços desse tamanho.
 DBF_CHUNK_BYTES = 32 * 2**20
+
+DBF_FIELD_TERMINATOR = 0x0D
+
+
+@dataclass(frozen=True)
+class DbfField:
+    """One field descriptor of a dBASE header."""
+
+    name: str
+    type: str
+    length: int
+    decimals: int
+
+
+def _dbf_fields(header: bytes) -> list[DbfField]:
+    """Parse the field descriptors (32 bytes each, from byte 32 up to ``0x0D``)."""
+    header_len = struct.unpack("<H", header[8:10])[0]
+    fields = []
+    pos = 32
+    while pos < header_len and header[pos] != DBF_FIELD_TERMINATOR:
+        desc = header[pos : pos + 32]
+        name = desc[:11].split(b"\0", 1)[0].decode("ascii").strip().upper()
+        fields.append(DbfField(name, chr(desc[11]), desc[16], desc[17]))
+        pos += 32
+    return fields
+
+
+def _with_field_offsets(header: bytes) -> bytes:
+    """Return the header with each field's offset (bytes 12-15) filled in.
+
+    The DATASUS .dbf files leave every field offset as zero. fastdbf reads each
+    field from that offset, so every field came out read from the start of the
+    record (``DT_INTER=' 1200002'``, ``VAL_TOT`` of 1.2 trillion, ``SEXO``
+    empty). The offsets are the running sum of the field lengths after the
+    one-byte deletion flag.
+
+    Raises:
+        ValueError: If the field lengths do not add up to the record length.
+    """
+    header_len, record_len = struct.unpack("<HH", header[8:12])
+    fixed = bytearray(header)
+    offset = 1  # byte de deleção
+    pos = 32
+    while pos < header_len and fixed[pos] != DBF_FIELD_TERMINATOR:
+        fixed[pos + 12 : pos + 16] = struct.pack("<I", offset)
+        offset += fixed[pos + 16]
+        pos += 32
+    if offset != record_len:
+        raise ValueError(
+            f"Campos somam {offset} bytes por registro, cabeçalho declara {record_len}"
+        )
+    return bytes(fixed)
 
 
 # Registros comparados com o dbfread em cada pedaço lido pelo fastdbf.
@@ -222,6 +275,42 @@ def _fastdbf_mismatch(
     return None
 
 
+def _exact_decimals(frame: pl.DataFrame, fields: list[DbfField]) -> pl.DataFrame:
+    """Turn numeric fields with decimal places into exact ``Decimal`` columns.
+
+    Both backends parse ``N``/``F`` fields with decimals into ``Float64``. The
+    shortest text of each float is the decimal written in the file (fields
+    have at most 20 characters), so it is cast to ``Decimal(length, decimals)``
+    through that text, never through the binary value.
+
+    Raises:
+        ValueError: If a value does not fit the declared field size.
+    """
+    import polars as pl
+
+    exprs = []
+    for field in fields:
+        if field.type not in "NF" or not field.decimals or field.name not in frame:
+            continue
+        dtype = pl.Decimal(precision=min(field.length, 38), scale=field.decimals)
+        exprs.append(
+            pl.col(field.name)
+            .cast(pl.Float64)
+            .round(field.decimals)
+            .cast(pl.String)
+            .cast(dtype, strict=True)
+            .alias(field.name)
+        )
+    if not exprs:
+        return frame
+    try:
+        return frame.with_columns(exprs)
+    except pl.exceptions.InvalidOperationError as exc:
+        raise ValueError(
+            f"Valor fora do tamanho declarado no cabeçalho: {exc}"
+        ) from exc
+
+
 def _read_dbf_piece(
     piece: Path, encoding: str, sanity_rows: int = DBF_SANITY_ROWS
 ) -> pl.DataFrame:
@@ -234,21 +323,26 @@ def _read_dbf_piece(
     comparadas com as do dbfread e, se divergirem, o pedaço é relido com o dbfread
     e um aviso é registrado.
     """
+    with open(piece, "rb") as src:
+        head = src.read(32)
+        header_len = struct.unpack("<H", head[8:10])[0]
+        fields = _dbf_fields(head + src.read(header_len - 32))
     try:
         frame = _read_dbf_fastdbf(piece)
     except Exception as exc:
         logger.debug("fastdbf falhou em %s (%s), usando dbfread", piece.name, exc)
-        return _read_dbf_dbfread(piece, encoding)
-    if sanity_rows > 0:
-        mismatch = _fastdbf_mismatch(frame, piece, encoding, sanity_rows)
-        if mismatch is not None:
-            logger.warning(
-                "fastdbf divergiu do dbfread em %s (%s); usando dbfread",
-                piece.name,
-                mismatch,
-            )
-            return _read_dbf_dbfread(piece, encoding)
-    return frame
+        frame = _read_dbf_dbfread(piece, encoding)
+    else:
+        if sanity_rows > 0:
+            mismatch = _fastdbf_mismatch(frame, piece, encoding, sanity_rows)
+            if mismatch is not None:
+                logger.warning(
+                    "fastdbf divergiu do dbfread em %s (%s); usando dbfread",
+                    piece.name,
+                    mismatch,
+                )
+                frame = _read_dbf_dbfread(piece, encoding)
+    return _exact_decimals(frame, fields)
 
 
 def _dbf_frames(
@@ -389,13 +483,19 @@ def wrangle_datasus(
 
     - Trims whitespace from string columns.
     - Converts legacy sentinel values ("", "NA", "999999", etc.) to null.
-    - Preserves administrative/diagnostic code columns as clean strings with
-      leading zeros.
-    - Parses date columns (DT_*) from YYYYMMDD to pl.Date.
-    - Converts monetary and floating-point columns to pl.Float64.
-    - Converts counts and integer columns to pl.Int64.
+    - Preserves administrative/diagnostic and categorical code columns as
+      clean strings with leading zeros.
+    - Parses YYYYMMDD date columns (``DATE_COLUMNS``) to pl.Date. The SIM
+      DDMMYYYY date fields stay as text: some are partial (see constants).
+    - Keeps exact ``Decimal`` monetary columns (numeric DBF fields with
+      decimals, see ``read_dbf``); text monetary columns become pl.Float64.
+    - Converts counts to pl.Int64.
     - Lowercases column names for modern analytical querying.
     - Appends optional partition metadata columns (e.g. uf, ano, mes).
+
+    Conversions are strict: a value that is not a sentinel and does not parse
+    raises ``ValueError`` (naming the column and showing examples) instead of
+    becoming null.
 
     Args:
         df: Input raw Polars DataFrame.
@@ -407,6 +507,9 @@ def wrangle_datasus(
 
     Returns:
         Cleaned and strictly typed Polars DataFrame.
+
+    Raises:
+        ValueError: If a date, monetary or count value does not parse.
     """
     import polars as pl
 
@@ -414,6 +517,8 @@ def wrangle_datasus(
         return df
 
     exprs: list[pl.Expr] = []
+    cleaned: list[pl.Expr] = []
+    converted: dict[str, str] = {}  # coluna de saída -> coluna de entrada
     sentinels = list(SENTINEL_NULLS)
 
     for col in df.columns:
@@ -425,35 +530,44 @@ def wrangle_datasus(
         if dtype == pl.String:
             expr = expr.str.strip_chars()
             expr = pl.when(expr.is_in(sentinels)).then(None).otherwise(expr)
+        cleaned.append(expr.alias(col))
+        target_name = col.lower() if lowercase else col
 
         if u_col in CODE_COLUMNS:
             # Preservar estritamente como string UTF-8 limpa
             expr = expr.cast(pl.String)
         elif u_col in DATE_COLUMNS:
-            # Converter YYYYMMDD para Date
-            expr = (
-                expr.cast(pl.String)
-                .str.strip_chars()
-                .str.to_date("%Y%m%d", strict=False)
-            )
+            expr = expr.cast(pl.String).str.to_date("%Y%m%d", strict=False)
+            converted[target_name] = col
         elif u_col in FLOAT_COLUMNS:
-            # Converter monetários / floats
-            if dtype == pl.String:
-                expr = (
-                    expr.str.strip_chars()
-                    .str.replace(",", ".")
-                    .cast(pl.Float64, strict=False)
-                )
+            if isinstance(dtype, pl.Decimal):
+                pass  # já exato (read_dbf)
+            elif dtype == pl.String:
+                expr = expr.str.replace(",", ".").cast(pl.Float64, strict=False)
+                converted[target_name] = col
             else:
-                expr = expr.cast(pl.Float64, strict=False)
+                expr = expr.cast(pl.Float64)
         elif u_col in INTEGER_COLUMNS:
-            # Converter contagens para Int64
             expr = expr.cast(pl.Int64, strict=False)
+            converted[target_name] = col
 
-        target_name = col.lower() if lowercase else col
         exprs.append(expr.alias(target_name))
 
     result = df.select(exprs)
+
+    # Conversão estrita: o que não era nulo (nem sentinela) e virou nulo é erro.
+    if converted:
+        before = df.select(cleaned)
+        problems = []
+        for target, source in converted.items():
+            lost = before[source].is_not_null() & result[target].is_null()
+            if lost.any():
+                examples = before.filter(lost)[source].unique().head(5).to_list()
+                problems.append(
+                    f"{source}: {int(lost.sum())} valor(es), ex. {examples}"
+                )
+        if problems:
+            raise ValueError("Valores fora do formato esperado: " + "; ".join(problems))
 
     # Descartar registros marcados como deletados no formato dBase
     del_cols = [c for c in result.columns if c.lower() == "_deleted"]

@@ -88,6 +88,22 @@ CODE_COLUMNS = {
     "NUM_SUS",
     "CNS",
     "CNS_PAC",
+    # Categorical codes: kept as text, not integers. As integers "01" became 1
+    # and, with the lenient cast, letter codes (SEXO "M"/"F" in SINAN) became
+    # null without warning. IDADE is left in its source type on purpose: in
+    # the SIM it is a text code ("487" = 87 years, the first digit is the
+    # unit); in the SIH it is a numeric field with the age.
+    "SEXO",
+    "RACA_COR",
+    "RACACOR",
+    "MORTE",
+    "OBITO",
+    "PARTO",
+    "GRAVIDEZ",
+    "GESTACAO",
+    "ESTCIV",
+    "ESC",
+    "ESCOL",
 }
 
 # Columns containing dates formatted as YYYYMMDD
@@ -110,6 +126,11 @@ DATE_COLUMNS = {
     "DATA",
     "DT_REG",
 }
+
+# The SIM date fields (DTOBITO, DTNASC, DTATESTADO...) are DDMMYYYY text and
+# are deliberately left as text: from 1996 to 2005 hundreds of values per year
+# are partial (year only, "1996", or month and year, "011996"), and a few are
+# not dates ("00101976", "09202003"). Parsing them would turn those into null.
 
 # Columns containing monetary values (SUS reimbursements, hospital expenses)
 FLOAT_COLUMNS = {
@@ -138,25 +159,15 @@ FLOAT_COLUMNS = {
     "VAL_REAJ",
 }
 
-# Columns containing integer counts or categorical codes that are safe as integers
+# Columns containing integer counts. QTDFILVIVO and QTDFILMORT (SIM, SINASC)
+# are left as text on purpose: "99" means "unknown", not 99 children, and the
+# files carry a few non-numeric values ("XX" in SIM 1996 GO, "9." in 2002 SP).
 INTEGER_COLUMNS = {
     "DIAS_PERM",
     "QT_DIARIAS",
     "QTDE_PROC",
     "QTD_FILHOS",
-    "QTDFILVIVO",
-    "QTDFILMORT",
-    "IDADE",
-    "SEXO",
-    "RACA_COR",
-    "MORTE",
-    "OBITO",
-    "PARTO",
-    "GRAVIDEZ",
-    "GESTACAO",
     "CONSULTAS",
-    "ESTCIV",
-    "ESCOL",
     "ANO",
     "MES",
 }

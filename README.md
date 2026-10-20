@@ -682,8 +682,10 @@ convert_directory(
 
 Ao utilizar o extra `analysis`, o pipeline aplica regras canônicas de qualidade:
 - **Sentinelas Nulos:** Converte sequências como `"\N"`, `""`, `"999999"`, `"000000"`, `"NA"` em valores nulos reais (`null`).
-- **Preservação de Códigos:** Colunas de códigos estruturados (ex: `CODMUNRES`, `CODMUNNAT`, `CAUSABAS`, `CID10`, `CBO`, `CNES`, procedimentos SUS) são preservadas estritamente como string com preenchimento correto de zeros à esquerda (`zfill`), impedindo truncamento numérico acidental.
-- **Tipagem de Datas:** Colunas temporais (`DTOBITO`, `DTNASC`, `DTNOTIF`, etc.) são convertidas para o tipo `Date` nativo do Polars (`pl.Date`), tratando formatos brasileiros `DDMMAAAA`.
+- **Preservação de Códigos:** Colunas de códigos estruturados (ex: `CODMUNRES`, `CODMUNNAT`, `CAUSABAS`, `CID10`, `CBO`, `CNES`, procedimentos SUS) e códigos categóricos (`SEXO`, `RACA_COR`, `ESTCIV`...) são preservadas como string, com os zeros à esquerda.
+- **Tipagem de Datas:** Colunas `AAAAMMDD` (`DT_INTER`, `DT_SAIDA`, `DT_NOTIF`...) viram `pl.Date`. As datas do SIM (`DTOBITO`, `DTNASC`...; `DDMMAAAA`) ficam como texto: de 1996 a 2005 há valores parciais (só o ano, ou mês e ano).
+- **Valores monetários exatos:** campos numéricos do .dbf com casas decimais (`VAL_TOT`, `PA_VALAPR`...) saem como `Decimal` com a escala do cabeçalho, sem erro de ponto flutuante.
+- **Conversão estrita:** valor que não é sentinela e não converte (data, contagem, valor em texto) levanta `ValueError` com a coluna e exemplos, em vez de virar nulo.
 - **Registros Deletados:** Filtra marcadores de exclusão lógica nativos do formato dBASE (`_deleted`) e remove a coluna auxiliar.
 
 ## Desenvolvimento
