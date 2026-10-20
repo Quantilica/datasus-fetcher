@@ -15,6 +15,44 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ### Adicionado
 - `tests/test_dbf_displacement.py` e `tests/fixtures/dbf/*_head.dbf`: os 25 primeiros registros de arquivos reais (SIM, SINASC, SIH-RD e SINAN) com o cabeçalho original, comparados com o `dbfread` com e sem leitura em pedaços. Esses testes falham com o leitor anterior.
 
+## [0.14.0] - 2026-10-20
+
+### Corrigido
+- **Leitura corrompida pelo fastdbf.** Os .dbf do DATASUS trazem zerado o
+  deslocamento de cada campo no cabeçalho (bytes 12-15 do descritor), e o
+  fastdbf lia todos os campos a partir do início do registro: no SIH,
+  `DT_INTER=' 1200002'` e `VAL_TOT` de 1,2 trilhão; no SIM, `SEXO` vazio. O
+  SIA-PA só saía certo porque o lixo fazia o fastdbf falhar e cair no
+  dbfread. O cabeçalho agora é corrigido (soma dos tamanhos a partir do byte
+  de deleção) na cópia lida pelo fastdbf; o arquivo de origem não é alterado.
+  Um cabeçalho cujos campos não somam o tamanho do registro levanta
+  `ValueError`. Com os deslocamentos certos, o fastdbf coincide com o dbfread
+  em todas as colunas da fixture e não cai mais no fallback nesses arquivos.
+- **Conversões estritas em `wrangle_datasus`.** Data `AAAAMMDD`, valor
+  monetário em texto ou contagem que não é sentinela e não converte levanta
+  `ValueError` com a coluna e exemplos; antes virava nulo sem aviso.
+- **Códigos categóricos como texto.** `SEXO`, `RACA_COR`/`RACACOR`, `MORTE`,
+  `OBITO`, `PARTO`, `GRAVIDEZ`, `GESTACAO`, `ESTCIV`, `ESC`, `ESCOL` saem de
+  `INTEGER_COLUMNS` para `CODE_COLUMNS`: como inteiro, "01" virava 1 e, com o
+  cast tolerante, códigos com letra (SEXO "M"/"F" do SINAN) viravam nulo.
+  `IDADE` fica no tipo de origem: texto codificado no SIM ("487" = 87 anos),
+  número no SIH. `QTDFILVIVO` e `QTDFILMORT` (SIM, SINASC) saem de
+  `INTEGER_COLUMNS` e ficam texto: "99" é "ignorado", não 99 filhos, e há
+  valores não numéricos na origem ("XX" no SIM 1996 GO, "9." no SIM 2002 SP).
+- `parse_filename_metadata` reconhece os nomes gravados pelo próprio fetcher
+  (`sih-rd_202201-ac@20230206.dbc`, `sim-do-cid10_2022-ac_20231221.dbc`) e
+  devolve `dataset`, `ano`, `mes` e `uf`; antes devolvia `{}`, e `uf`/`ano`/`mes`
+  não eram injetados na conversão.
+
+### Alterado
+- **Incompatível:** campos numéricos do .dbf com casas decimais (`VAL_*` do
+  SIH, `PA_VAL*` do SIA) saem como `Decimal(tamanho, decimais)` exatos, em vez
+  de `Float64`; a conversão passa pelo texto mais curto do float, que é o
+  valor escrito no arquivo.
+- As datas do SIM (`DTOBITO`, `DTNASC`...; `DDMMAAAA`) continuam texto, agora
+  documentado: de 1996 a 2005 centenas de valores por ano são parciais (só o
+  ano ou mês e ano) e alguns não são datas.
+
 ## [0.13.0] - 2026-10-20
 
 ### Adicionado
