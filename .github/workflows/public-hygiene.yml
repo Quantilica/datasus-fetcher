@@ -1,0 +1,104 @@
+name: Public hygiene
+
+# Veta termos internos (planos, decisões, repositórios privados, infraestrutura)
+# em CHANGELOG.md, README e nas mensagens de commit de PRs. O repositório é
+# público: o que entra aqui fica no histórico para sempre.
+# Regra e lista de termos: docs/normas/changelog.md, seção 5.1.
+# Falso positivo legítimo: termine a linha com `<!-- hygiene-ok -->`.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hygiene:
+    name: Termos internos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Escrever lista de termos
+        run: |
+          cat > "$RUNNER_TEMP/termos-comuns.txt" <<'EOF'
+          \bOnda\b
+          \bADR\b
+          \bplanning/
+          \bplano (`|[a-z0-9-]+-[a-z0-9-]+|§)
+          \bPlano:
+          uploader
+          \bCAS\b
+          \bVPS\b
+          crontab
+          \bcrons?\b
+          systemd
+          runs\.csv
+          quantilica-(workers|cloud|web|events|portal|manifests-db)
+          bcb-sgs-app
+          rtn-app
+          crons-dashboard
+          datasus-analytics
+          [a-z-]+-metadata-db
+          tddata-db
+          dev-plugins
+          \bOKF\b
+          Flamingo
+          Alpaca
+          Hedgehog
+          Sloth
+          \bFish\b
+          Telegram
+          Umami
+          Cloudflare
+          (^|[^[:alnum:].])/home/[a-z]+
+          \.agents/
+          CLAUDE\.md
+          AGENTS\.md
+          EOF
+          cat > "$RUNNER_TEMP/termos-arquivos.txt" <<'EOF'
+          \bworkspace\b
+          ingestão efêmera
+          retenção efêmera
+          pipeline de ingestão
+          EOF
+          cat "$RUNNER_TEMP/termos-comuns.txt" "$RUNNER_TEMP/termos-arquivos.txt" \
+            > "$RUNNER_TEMP/termos-todos.txt"
+
+      - name: CHANGELOG e README
+        run: |
+          files=$(ls CHANGELOG.md README*.md docs/changelog.md 2>/dev/null || true)
+          if [ -z "$files" ]; then
+            echo "Nenhum CHANGELOG/README para verificar."
+            exit 0
+          fi
+          # shellcheck disable=SC2086
+          hits=$(grep -nIiE -f "$RUNNER_TEMP/termos-todos.txt" $files /dev/null \
+            | grep -v 'hygiene-ok' || true)
+          if [ -n "$hits" ]; then
+            echo "$hits"
+            echo "::error::Termos internos em changelog/README. Reescreva em termos públicos (docs/normas/changelog.md, seção 5.1)."
+            exit 1
+          fi
+          echo "Limpo."
+
+      - name: Mensagens de commit do PR
+        if: github.event_name == 'pull_request'
+        run: |
+          range="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+          msgs=$(git log --format='%h %s%n%b' "$range")
+          hits=$(printf '%s\n' "$msgs" \
+            | grep -iE -f "$RUNNER_TEMP/termos-comuns.txt" \
+            | grep -v 'hygiene-ok' || true)
+          if [ -n "$hits" ]; then
+            echo "$hits"
+            echo "::error::Termos internos em mensagem de commit. Reescreva o commit (docs/normas/changelog.md, seção 5.1)."
+            exit 1
+          fi
+          echo "Limpo."
