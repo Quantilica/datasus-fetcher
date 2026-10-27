@@ -23,7 +23,7 @@ def test_cli_decompress(tmp_path: Path):
 
 
 def test_cli_convert_parquet(tmp_path: Path):
-    """Test CLI 'convert' command producing Parquet."""
+    """Test CLI 'convert' command producing Hive Lake Parquet."""
     if not FIXTURE_DBC.exists():
         pytest.skip("Fixture não encontrada")
     from datasus_fetcher import _HAS_ANALYTICS
@@ -31,9 +31,9 @@ def test_cli_convert_parquet(tmp_path: Path):
     if not _HAS_ANALYTICS:
         pytest.skip("Requer datasus-fetcher[analysis] (polars + dbfread/fastdbf)")
 
-    out_parquet = tmp_path / "saida.parquet"
-    main(["convert", "-i", str(FIXTURE_DBC), "-o", str(out_parquet)])
-    assert out_parquet.exists()
+    lake_dir = tmp_path / "lake"
+    main(["convert", "-i", str(FIXTURE_DBC), "-o", str(lake_dir)])
+    assert (lake_dir / "datasus" / "sim-do-cid10").exists()
 
 
 def test_cli_missing_analytics_graceful_exit(tmp_path: Path):
@@ -41,9 +41,10 @@ def test_cli_missing_analytics_graceful_exit(tmp_path: Path):
     if not FIXTURE_DBC.exists():
         pytest.skip("Fixture não encontrada")
 
-    out_parquet = tmp_path / "saida.parquet"
+    lake_dir = tmp_path / "lake"
 
-    with patch("datasus_fetcher._HAS_ANALYTICS", False):
+    err = ImportError("No module named 'quantilica.analytics'")
+    with patch("datasus_fetcher.lake.converter.convert", side_effect=err):
         with pytest.raises(SystemExit) as excinfo:
-            main(["convert", "-i", str(FIXTURE_DBC), "-o", str(out_parquet)])
+            main(["convert", "-i", str(FIXTURE_DBC), "-o", str(lake_dir)])
         assert excinfo.value.code == 1

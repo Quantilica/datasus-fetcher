@@ -115,17 +115,19 @@ class LakeConverter:
         input_dir = Path(input_dir)
         lake_dir = Path(lake_dir)
         result = ConvertResult()
-        if not input_dir.is_dir():
-            result.errors.append(f"diretório '{input_dir}' não existe")
+        if input_dir.is_file():
+            files = [input_dir] if input_dir.suffix.lower() in {".dbc", ".dbf"} else []
+        elif input_dir.is_dir():
+            files = sorted(
+                p
+                for p in input_dir.rglob("*")
+                if p.is_file() and p.suffix.lower() in {".dbc", ".dbf"}
+            )
+        else:
+            result.errors.append(f"arquivo ou diretório '{input_dir}' não existe")
             return result
 
         allowed = set(datasets) if datasets else None
-        files = sorted(
-            p
-            for p in input_dir.rglob("*")
-            if p.is_file() and p.suffix.lower() in {".dbc", ".dbf"}
-        )
-
         writers: dict[str, LakeWriter] = {}
 
         for path in files:

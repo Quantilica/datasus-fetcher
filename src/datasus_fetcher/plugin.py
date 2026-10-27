@@ -8,7 +8,7 @@ from __future__ import annotations
 import datetime as dt
 import shutil
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 import typer
 from quantilica.cli.sdk import CheckPlan, CheckPlanItem, FetcherApp
@@ -631,225 +631,21 @@ def cmd_decompress(
         console.print(f"[green]✓[/green] Descompactado para [bold]{dest}[/bold]")
 
 
-@app.command("convert")
-def cmd_convert(
-    input: Annotated[
-        Path,
-        typer.Option(
-            "-i",
-            "--input",
-            help="Arquivo ou diretório de origem (.dbc ou .dbf)",
-        ),
-    ],
-    output: Annotated[
-        Path | None,
-        typer.Option(
-            "-o", "--output", help="Destino do arquivo ou diretório convertido"
-        ),
-    ] = None,
-    lake: Annotated[
-        Path | None,
-        typer.Option(
-            "--lake",
-            help="Raiz do lake Hive de destino (padrão: QUANTILICA_LAKE_DIR)",
-        ),
-    ] = None,
-    dataset: Annotated[
-        list[str] | None,
-        typer.Option("--dataset", help="Filtrar datasets específicos a converter"),
-    ] = None,
-    force: Annotated[
-        bool,
-        typer.Option("--force", help="Forçar reconversão mesmo se sha256 coincidir"),
-    ] = False,
-    format: Annotated[
-        str,
-        typer.Option("--format", help="Formato de saída (parquet ou dbf)"),
-    ] = "parquet",
-    compression: Annotated[
-        str,
-        typer.Option("--compression", help="Compressão do Parquet (zstd, snappy)"),
-    ] = "zstd",
-    clean: Annotated[
-        bool,
-        typer.Option("--clean/--no-clean", help="Aplicar limpeza e tipagem canônica"),
-    ] = True,
-    lowercase: Annotated[
-        bool,
-        typer.Option(
-            "--lowercase/--no-lowercase",
-            help="Converter nomes de colunas para minúsculas",
-        ),
-    ] = True,
-    keep_dbf: Annotated[
-        bool,
-        typer.Option("--keep-dbf", help="Manter arquivos intermediários .dbf gerados"),
-    ] = False,
-    workers: Annotated[
-        int, typer.Option("--workers", help="Workers paralelos para diretórios")
-    ] = 4,
-    verbose: Annotated[bool, typer.Option("--verbose", help="Logs detalhados")] = False,
-) -> None:
-    """Converter arquivos .dbc ou .dbf para Parquet ou DBF."""
-    setup_rich_logging(verbose, console=console)
-    if format == "parquet" or lake is not None:
-        try:
-            from datasus_fetcher import _HAS_ANALYTICS
+def convert(
+    input_dir: Path,
+    lake_dir: Path,
+    *,
+    dataset: list[str] | None = None,
+    force: bool = False,
+) -> Any:
+    """Converte arquivos brutos do DATASUS (.dbc/.dbf) para o lake Hive (Parquet)."""
+    from datasus_fetcher import lake
 
-            if not _HAS_ANALYTICS:
-                raise ImportError
-        except ImportError:
-            console.print(
-                "[red]Erro:[/red] conversão para Parquet requer extras de análise: "
-                "quantilica install datasus --extra analysis"
-            )
-            raise typer.Exit(1) from None
-
-    if lake is not None:
-        from datasus_fetcher import lake as datasus_lake
-
-        res = datasus_lake.converter.convert(input, lake, datasets=dataset, force=force)
-        if res.errors:
-            for err in res.errors:
-                console.print(f"[red]Erro:[/red] {err}")
-            console.print(
-                f"[yellow]Conversão parcial:[/yellow] {res.converted} convertidos, "
-                f"{res.skipped} pulados, {len(res.errors)} erros"
-            )
-            raise typer.Exit(1)
-        console.print(
-            f"[green]✓[/green] Lake atualizado em [bold]{lake}[/bold]: "
-            f"{res.converted} convertidos, {res.skipped} mantidos"
-        )
-        return
-
-    from datasus_fetcher.wrangling import convert_directory, convert_file
-
-    if input.is_dir():
-        out_dir = output or input
-        convert_directory(
-            input,
-            out_dir,
-            target_format=format,
-            compression=compression,
-            clean=clean,
-            lowercase=lowercase,
-            keep_dbf=keep_dbf,
-            workers=workers,
-        )
-        console.print(f"[green]✓[/green] Conversão concluída em [bold]{out_dir}[/bold]")
-    else:
-        dest = convert_file(
-            input,
-            output,
-            target_format=format,
-            compression=compression,
-            clean=clean,
-            lowercase=lowercase,
-            keep_dbf=keep_dbf,
-        )
-        console.print(f"[green]✓[/green] Arquivo convertido: [bold]{dest}[/bold]")
+    return lake.converter.convert(input_dir, lake_dir, datasets=dataset, force=force)
 
 
-@app.command("pipeline")
-def cmd_pipeline(
-    datasets: Annotated[
-        list[str] | None,
-        typer.Argument(help="Datasets a baixar (omitir para todos)"),
-    ] = None,
-    systems: Annotated[
-        list[str] | None,
-        typer.Option(
-            "-s",
-            "--system",
-            help=(
-                "Sistema(is) a processar (ex: sim, sinasc). Aceita valores "
-                "separados por vírgula e múltiplas ocorrências; "
-                "case-insensitive"
-            ),
-        ),
-    ] = None,
-    output: Annotated[
-        Path,
-        typer.Option("-o", "--output", help="Diretório de dados brutos"),
-    ] = _DEFAULT_OUTPUT,
-    parquet_dir: Annotated[
-        Path | None,
-        typer.Option("--parquet-dir", help="Diretório para os Parquets"),
-    ] = None,
-    start: Annotated[
-        str, typer.Option("--start", help="Período inicial (ex: 2024-01)")
-    ] = "",
-    end: Annotated[str, typer.Option("--end", help="Período final (ex: 2024-12)")] = "",
-    regions: Annotated[
-        list[str] | None, typer.Option("--regions", help="Regiões (ex: sp, rj)")
-    ] = None,
-    threads: Annotated[
-        int, typer.Option("-t", "--threads", help="Downloads paralelos")
-    ] = 2,
-    workers: Annotated[
-        int, typer.Option("--workers", help="Workers de conversão Parquet")
-    ] = 4,
-    compression: Annotated[
-        str, typer.Option("--compression", help="Compressão do Parquet")
-    ] = "zstd",
-    clean: Annotated[
-        bool, typer.Option("--clean/--no-clean", help="Aplicar limpeza e tipagem")
-    ] = True,
-    lowercase: Annotated[
-        bool, typer.Option("--lowercase/--no-lowercase", help="Colunas minúsculas")
-    ] = True,
-    docs: Annotated[bool, typer.Option("--docs", help="Baixar documentação")] = False,
-    aux: Annotated[
-        bool, typer.Option("--aux", help="Baixar tabelas auxiliares")
-    ] = False,
-    verbose: Annotated[bool, typer.Option("--verbose", help="Logs detalhados")] = False,
-) -> None:
-    """Pipeline completo do DATASUS (download FTP -> conversão Parquet)."""
-    setup_rich_logging(verbose, console=console)
-    try:
-        from datasus_fetcher import _HAS_ANALYTICS, convert_directory
-
-        if not _HAS_ANALYTICS:
-            raise ImportError
-    except ImportError:
-        console.print(
-            "[red]Erro:[/red] pipeline requer extras de análise: "
-            "quantilica install datasus --extra analysis"
-        )
-        raise typer.Exit(1) from None
-
-    console.print(Rule("[bold]Passo 1/2: Download FTP[/bold]"))
-    cmd_sync(
-        datasets=datasets,
-        systems=systems,
-        output=output,
-        start=start,
-        end=end,
-        regions=regions,
-        threads=threads,
-        docs=docs,
-        aux=aux,
-        dry_run=False,
-        convert=False,
-        verbose=verbose,
-    )
-
-    console.print(Rule("[bold]Passo 2/2: Conversão para Parquet[/bold]"))
-    parquet_out = parquet_dir or output
-    convert_directory(
-        output,
-        parquet_out,
-        target_format="parquet",
-        compression=compression,
-        clean=clean,
-        lowercase=lowercase,
-        workers=workers,
-    )
-    console.print(
-        "[green]✓[/green] Pipeline concluído. Parquet salvo em "
-        f"[bold]{parquet_out}[/bold]"
-    )
+fetcher_app.command_convert(convert)
+fetcher_app.command_pipeline(convert)
 
 
 @app.command("archive")

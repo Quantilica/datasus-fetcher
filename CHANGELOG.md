@@ -9,7 +9,8 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ### Adicionado
 - Módulo `datasus_fetcher.lake` e entry point `quantilica.lake`: conversão direta de microdados DATASUS (.dbc/.dbf) para o lake Parquet particionado no formato Hive (`uf=/ano=/mes=` para subsistemas mensais, `uf=/ano=` para anuais).
-- Suporte a `--lake` no comando `convert` da CLI com detecção automática de partição, descritores `_dataset.json` e verificação de integridade.
+- Comandos CLI `convert` e `pipeline` integrados via SDK do `FetcherApp`, com suporte padronizado a `--lake`, `--dataset` e `--force`.
+- Dependência de base `quantilica-core` atualizada para `>=0.13.0`.
 
 ## [0.14.1] - 2026-10-20
 
