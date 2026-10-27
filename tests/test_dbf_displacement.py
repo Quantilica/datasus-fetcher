@@ -113,3 +113,37 @@ def test_sem_correcao_nem_checagem_o_fastdbf_desloca(monkeypatch):
     if frame["DTOBITO"][0] == "07052022":
         pytest.skip("fastdbf passou a ignorar o deslocamento zerado")
     assert frame["DTOBITO"][0] != "07052022"
+
+
+@pytest.mark.parametrize("chunk_bytes", [None, 2048])
+def test_cabecalho_sem_terminador(tmp_path: Path, chunk_bytes):
+    """CNES-ST desde 2019-12: ``0x00`` no lugar do ``0x0D`` que encerra os campos."""
+    original = FIXTURES / "DOAC2022_head.dbf"
+    data = bytearray(original.read_bytes())
+    header_len = int.from_bytes(data[8:10], "little")
+    assert data[header_len - 1] == reader.DBF_FIELD_TERMINATOR
+    data[header_len - 1] = 0
+    src = tmp_path / "sem_terminador.dbf"
+    src.write_bytes(bytes(data))
+
+    frame = reader.read_dbf(src, chunk_bytes=chunk_bytes)
+
+    assert _diferencas(frame, original) == []
+
+
+@pytest.mark.parametrize("chunk_bytes", [None, 2048])
+def test_dbf_sem_registros_mantem_as_colunas(tmp_path: Path, chunk_bytes):
+    """O DATASUS publica meses vazios: zero linhas, mas o esquema do arquivo cheio."""
+    original = FIXTURES / "RDAC2201_head.dbf"
+    data = original.read_bytes()
+    header_len = int.from_bytes(data[8:10], "little")
+    vazio = tmp_path / "vazio.dbf"
+    vazio.write_bytes(
+        data[:4] + (0).to_bytes(4, "little") + data[8:header_len] + b"\x1a"
+    )
+
+    cheio = reader.read_dbf(original, chunk_bytes=chunk_bytes)
+    frame = reader.read_dbf(vazio, chunk_bytes=chunk_bytes)
+
+    assert frame.height == 0
+    assert frame.schema == cheio.schema

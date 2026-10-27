@@ -46,7 +46,8 @@ def _dbf_fields(header: bytes) -> list[DbfField]:
     header_len = struct.unpack("<H", header[8:10])[0]
     fields = []
     pos = 32
-    while pos < header_len and header[pos] != DBF_FIELD_TERMINATOR:
+    # Só descritores inteiros: há arquivos sem o 0x0D (ver _fix_field_displacements).
+    while pos + 32 < header_len and header[pos] != DBF_FIELD_TERMINATOR:
         desc = header[pos : pos + 32]
         name = desc[:11].split(b"\0", 1)[0].decode("ascii").strip().upper()
         fields.append(DbfField(name, chr(desc[11]), desc[16], desc[17]))
@@ -96,6 +97,10 @@ def _fix_field_displacements(header: bytes) -> bytes:
     Aqui o deslocamento é recalculado como ``1 + soma dos tamanhos anteriores`` (o
     byte 0 é o marcador de deleção), o que não altera a leitura pelo dbfread.
 
+    Alguns arquivos (CNES-ST desde 2019-12) trazem ``0x00`` no lugar do terminador
+    ``0x0D`` dos descritores, no último byte do cabeçalho; sem ele, o dbfread lê o
+    início dos registros como mais um campo. O terminador é reposto.
+
     Args:
         header: Cabeçalho completo do .dbf (``header_len`` bytes).
 
@@ -105,10 +110,12 @@ def _fix_field_displacements(header: bytes) -> bytes:
     fixed = bytearray(header)
     pos = 1
     off = 32
-    while off + 32 <= len(fixed) and fixed[off] != 0x0D:
+    while off + 32 <= len(fixed) and fixed[off] != DBF_FIELD_TERMINATOR:
         fixed[off + 12 : off + 16] = struct.pack("<I", pos)
         pos += fixed[off + 16]
         off += 32
+    if off == len(fixed) - 1 and fixed[off] == 0:
+        fixed[off] = DBF_FIELD_TERMINATOR
     return bytes(fixed)
 
 
@@ -469,8 +476,44 @@ def read_dbf(
         if frame.width:
             frames.append(frame)
     if not frames:
-        return pl.DataFrame()
+        # Arquivo sem registros (o DATASUS publica meses vazios): zero linhas, mas
+        # com as colunas do cabeçalho e os tipos que os leitores dariam a elas.
+        empty = _empty_frame(src)
+        return transform(empty) if transform is not None else empty
     return pl.concat(frames, how="diagonal_relaxed") if len(frames) > 1 else frames[0]
+
+
+def _empty_frame(dbf_path: Path) -> pl.DataFrame:
+    """DataFrame sem linhas com os campos declarados no cabeçalho do .dbf.
+
+    Os tipos seguem o que o fastdbf e o :func:`_exact_decimals` produzem para um
+    arquivo com registros: ``C`` texto, ``N`` sem casas ``Int64``, ``N``/``F`` com
+    casas ``Decimal``, ``F`` sem casas ``Float64``, ``D`` data e ``L`` booleano,
+    mais a coluna ``_deleted``.
+    """
+    import polars as pl
+
+    with open(dbf_path, "rb") as src:
+        head = src.read(32)
+        header_len = struct.unpack("<H", head[8:10])[0]
+        fields = _dbf_fields(head + src.read(header_len - 32))
+    schema = {}
+    for field in fields:
+        if field.type in "NF" and field.decimals:
+            dtype = pl.Decimal(precision=min(field.length, 38), scale=field.decimals)
+        elif field.type == "N":
+            dtype = pl.Int64
+        elif field.type == "F":
+            dtype = pl.Float64
+        elif field.type == "D":
+            dtype = pl.Date
+        elif field.type == "L":
+            dtype = pl.Boolean
+        else:
+            dtype = pl.String
+        schema[field.name] = dtype
+    schema["_deleted"] = pl.Boolean  # como o fastdbf (e _read_dbf_dbfread) entregam
+    return pl.DataFrame(schema=schema)
 
 
 def wrangle_datasus(

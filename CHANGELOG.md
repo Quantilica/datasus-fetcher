@@ -12,6 +12,13 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
   o DBC; uma nova passada sobre o mesmo bruto deixa de decodificar tudo de novo.
 - Extra `analysis` exige `quantilica-analytics>=0.5.1`.
 
+### Corrigido
+- `read_dbf` lê arquivos cujo cabeçalho traz `0x00` no lugar do terminador `0x0D` dos
+  campos (CNES-ST desde 2019-12), que antes falhavam com `index out of range`.
+- `read_dbf` devolve zero linhas com as colunas e os tipos do cabeçalho quando o arquivo
+  não tem registros (o DATASUS publica meses vazios); antes vinha um DataFrame sem
+  colunas, e a conversão para o lake falhava com "No payload columns".
+
 ## [0.15.0] - 2026-10-27
 
 ### Adicionado
