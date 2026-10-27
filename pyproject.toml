@@ -71,6 +71,11 @@ dev = [
     "maturin>=1.5,<2.0",
     "dbfread>=2.0.7",
     "fastdbf>=0.5.2",
+    # Só para os testes: tests/test_lake.py exercita o comando convert do plugin Typer,
+    # que depende do host (quantilica-cli). Não são dependências do pacote.
+    "quantilica-cli>=0.13.0",
+    "typer>=0.15.0",
+    "rich>=13.0.0",
 ]
 
 [tool.pytest.ini_options]
