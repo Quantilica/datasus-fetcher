@@ -13,6 +13,7 @@ pytest.importorskip("duckdb")
 from quantilica.analytics.lake import check_dataset, scan_dataset  # noqa: E402
 from typer.testing import CliRunner  # noqa: E402
 
+import datasus_fetcher.lake as lake_module  # noqa: E402
 from datasus_fetcher.lake import (  # noqa: E402
     SOURCE_ID,
     converter,
@@ -69,7 +70,7 @@ def test_converter_datasets() -> None:
     assert "sinasc-dn" in datasets
 
 
-def test_convert_end_to_end(tmp_path: Path) -> None:
+def test_convert_end_to_end(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     if not FIXTURE_DBC.exists():
         pytest.skip("Fixture DOAC1996.dbc não encontrada")
 
@@ -95,7 +96,11 @@ def test_convert_end_to_end(tmp_path: Path) -> None:
     assert df["uf"][0] == "ac"
     assert df["ano"][0] == "1996"
 
-    # Second pass skips
+    # Second pass skips without decoding the DBC again
+    def no_decode(*args, **kwargs):
+        raise AssertionError("DBC decodificado de novo")
+
+    monkeypatch.setattr(lake_module.reader, "read_dbc", no_decode)
     res2 = converter.convert(raw_dir, lake_dir)
     assert not res2.errors
     assert res2.converted == 0

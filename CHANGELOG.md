@@ -5,6 +5,13 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [Unreleased]
+
+### Alterado
+- `convert` pula o arquivo já presente no lake com o mesmo `sha256` antes de decodificar
+  o DBC; uma nova passada sobre o mesmo bruto deixa de decodificar tudo de novo.
+- Extra `analysis` exige `quantilica-analytics>=0.5.1`.
+
 ## [0.15.0] - 2026-10-27
 
 ### Adicionado

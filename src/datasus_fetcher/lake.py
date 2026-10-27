@@ -160,6 +160,11 @@ class LakeConverter:
             writer = writers[dataset_id]
 
             try:
+                # Decodificar um DBC custa caro; o arquivo já presente no lake com
+                # o mesmo sha256 é pulado antes da leitura.
+                if writer.is_current(path, partitions=partition_values):
+                    result.skipped += 1
+                    continue
                 if path.suffix.lower() == ".dbc":
                     df = reader.read_dbc(path, clean=True, lowercase=True)
                 else:
