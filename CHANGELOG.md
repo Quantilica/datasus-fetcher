@@ -5,6 +5,12 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [0.15.0] - 2026-10-27
+
+### Adicionado
+- Módulo `datasus_fetcher.lake` e entry point `quantilica.lake`: conversão direta de microdados DATASUS (.dbc/.dbf) para o lake Parquet particionado no formato Hive (`uf=/ano=/mes=` para subsistemas mensais, `uf=/ano=` para anuais).
+- Suporte a `--lake` no comando `convert` da CLI com detecção automática de partição, descritores `_dataset.json` e verificação de integridade.
+
 ## [0.14.1] - 2026-10-20
 
 ### Corrigido

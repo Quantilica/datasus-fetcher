@@ -647,6 +647,21 @@ def cmd_convert(
             "-o", "--output", help="Destino do arquivo ou diretório convertido"
         ),
     ] = None,
+    lake: Annotated[
+        Path | None,
+        typer.Option(
+            "--lake",
+            help="Raiz do lake Hive de destino (padrão: QUANTILICA_LAKE_DIR)",
+        ),
+    ] = None,
+    dataset: Annotated[
+        list[str] | None,
+        typer.Option("--dataset", help="Filtrar datasets específicos a converter"),
+    ] = None,
+    force: Annotated[
+        bool,
+        typer.Option("--force", help="Forçar reconversão mesmo se sha256 coincidir"),
+    ] = False,
     format: Annotated[
         str,
         typer.Option("--format", help="Formato de saída (parquet ou dbf)"),
@@ -677,7 +692,7 @@ def cmd_convert(
 ) -> None:
     """Converter arquivos .dbc ou .dbf para Parquet ou DBF."""
     setup_rich_logging(verbose, console=console)
-    if format == "parquet":
+    if format == "parquet" or lake is not None:
         try:
             from datasus_fetcher import _HAS_ANALYTICS
 
@@ -689,6 +704,24 @@ def cmd_convert(
                 "quantilica install datasus --extra analysis"
             )
             raise typer.Exit(1) from None
+
+    if lake is not None:
+        from datasus_fetcher import lake as datasus_lake
+
+        res = datasus_lake.converter.convert(input, lake, datasets=dataset, force=force)
+        if res.errors:
+            for err in res.errors:
+                console.print(f"[red]Erro:[/red] {err}")
+            console.print(
+                f"[yellow]Conversão parcial:[/yellow] {res.converted} convertidos, "
+                f"{res.skipped} pulados, {len(res.errors)} erros"
+            )
+            raise typer.Exit(1)
+        console.print(
+            f"[green]✓[/green] Lake atualizado em [bold]{lake}[/bold]: "
+            f"{res.converted} convertidos, {res.skipped} mantidos"
+        )
+        return
 
     from datasus_fetcher.wrangling import convert_directory, convert_file
 
