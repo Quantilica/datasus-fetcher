@@ -188,6 +188,25 @@ def _read_dbf_fastdbf(dbf_path: Path) -> pl.DataFrame:
         return _normalize_frame(pl.from_arrow(table.to_arrow()))
 
 
+def _datasus_field_parser(dbfread: Any) -> type:
+    """``FieldParser`` do dbfread que lê como nula a data só de ``*``, espaço ou ``0``.
+
+    O SINAN grava ``********`` (ou ``      **``) em campos ``D`` sem data; o dbfread
+    e o fastdbf recusam o arquivo inteiro. Outros valores inválidos seguem erro.
+    """
+
+    class _DatasusFieldParser(dbfread.FieldParser):
+        def parseD(self, field, data):  # noqa: N802 - nome do dbfread
+            try:
+                return super().parseD(field, data)
+            except ValueError:
+                if not data.strip(b" *0"):
+                    return None
+                raise
+
+    return _DatasusFieldParser
+
+
 def _read_dbf_dbfread(dbf_path: Path, encoding: str) -> pl.DataFrame:
     """Lê um .dbf com dbfread (Python puro): lento e pesado, mas tolerante."""
     import polars as pl
@@ -206,6 +225,7 @@ def _read_dbf_dbfread(dbf_path: Path, encoding: str) -> pl.DataFrame:
         encoding=encoding,
         ignore_missing_memofile=True,
         char_decode_errors="replace",
+        parserclass=_datasus_field_parser(dbfread),
     )
     # Mesmo formato do fastdbf: nomes em maiúsculas e coluna ``_deleted``. O dbfread já
     # descarta os registros deletados, então a coluna é sempre falsa.
@@ -295,27 +315,26 @@ def _exact_decimals(frame: pl.DataFrame, fields: list[DbfField]) -> pl.DataFrame
     """
     import polars as pl
 
-    exprs = []
     for field in fields:
         if field.type not in "NF" or not field.decimals or field.name not in frame:
             continue
+        text = pl.col(field.name).cast(pl.Float64).round(field.decimals).cast(pl.String)
         dtype = pl.Decimal(precision=min(field.length, 38), scale=field.decimals)
-        exprs.append(
-            pl.col(field.name)
-            .cast(pl.Float64)
-            .round(field.decimals)
-            .cast(pl.String)
-            .cast(dtype, strict=True)
-            .alias(field.name)
-        )
-    if not exprs:
-        return frame
-    try:
-        return frame.with_columns(exprs)
-    except pl.exceptions.InvalidOperationError as exc:
-        raise ValueError(
-            f"Valor fora do tamanho declarado no cabeçalho: {exc}"
-        ) from exc
+        try:
+            frame = frame.with_columns(text.cast(dtype, strict=True).alias(field.name))
+        except pl.exceptions.InvalidOperationError:
+            # O texto cabe no campo, mas não na precisão declarada: "3415.0" num
+            # N(6,3) (PESO do SINAN). A escala é mantida; só a precisão cresce.
+            wide = pl.Decimal(precision=38, scale=field.decimals)
+            try:
+                frame = frame.with_columns(
+                    text.cast(wide, strict=True).alias(field.name)
+                )
+            except pl.exceptions.InvalidOperationError as exc:
+                raise ValueError(
+                    f"Valor fora do tamanho declarado no cabeçalho: {exc}"
+                ) from exc
+    return frame
 
 
 def _read_dbf_piece(
@@ -516,6 +535,39 @@ def _empty_frame(dbf_path: Path) -> pl.DataFrame:
     return pl.DataFrame(schema=schema)
 
 
+# Datasets cujas datas de 8 dígitos são DDMMAAAA (as do SIM ficam texto, ver constants).
+DDMMYYYY_DATASETS = frozenset({"resp"})
+
+
+def _parse_date(expr: pl.Expr, dataset: str | None) -> pl.Expr:
+    """Data de um campo texto, pelo formato que o DATASUS usa em cada caso.
+
+    - 8 dígitos: ``AAAAMMDD`` (``DDMMAAAA`` nos ``DDMMYYYY_DATASETS``);
+    - 6 dígitos no SIH (até meados dos anos 1990): ``AAMMDD``;
+    - 6 dígitos nos demais (competência do SIA-PS, SIA-SAD, SISPRENATAL): ``AAAAMM``,
+      lido como o dia 1º do mês.
+
+    O que não casar vira nulo aqui, e a checagem estrita de ``wrangle_datasus``
+    transforma isso em erro.
+    """
+    import polars as pl
+
+    text = expr.cast(pl.String)
+    size = text.str.len_chars()
+    eight = "%d%m%Y" if dataset in DDMMYYYY_DATASETS else "%Y%m%d"
+    if dataset is not None and dataset.startswith("sih"):
+        six = text.str.to_date("%y%m%d", strict=False)
+    else:
+        six = (text + "01").str.to_date("%Y%m%d", strict=False)
+    return (
+        pl.when(size == 8)
+        .then(text.str.to_date(eight, strict=False))
+        .when(size == 6)
+        .then(six)
+        .otherwise(None)
+    )
+
+
 def wrangle_datasus(
     df: pl.DataFrame,
     dataset: str | None = None,
@@ -588,7 +640,7 @@ def wrangle_datasus(
             elif isinstance(dtype, pl.Datetime):
                 expr = expr.dt.date()
             else:
-                expr = expr.cast(pl.String).str.to_date("%Y%m%d", strict=False)
+                expr = _parse_date(expr, dataset)
                 converted[target_name] = col
         elif u_col in FLOAT_COLUMNS:
             if isinstance(dtype, pl.Decimal):

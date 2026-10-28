@@ -166,7 +166,9 @@ class LakeConverter:
                     result.skipped += 1
                     continue
                 if path.suffix.lower() == ".dbc":
-                    df = reader.read_dbc(path, clean=True, lowercase=True)
+                    df = reader.read_dbc(
+                        path, clean=True, dataset=dataset_id, lowercase=True
+                    )
                 else:
                     df = reader.read_dbf(
                         path,

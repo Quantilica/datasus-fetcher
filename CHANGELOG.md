@@ -13,6 +13,14 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - Extra `analysis` exige `quantilica-analytics>=0.5.1`.
 
 ### Corrigido
+- Datas em formatos além de `AAAAMMDD` viram `Date` em vez de rejeitar o arquivo:
+  competência `AAAAMM` (SIA-PS, SIA-SAD, SISPRENATAL) como o dia 1º do mês, `AAMMDD`
+  do SIH antigo com século 19xx e `DDMMAAAA` no RESP. O conversor do lake passa o
+  dataset ao leitor, que antes aplicava as regras genéricas.
+- Campos `D` só com `*`, espaço ou zero (SINAN, `********`) viram nulo; antes o arquivo
+  inteiro falhava com `invalid date`.
+- Valor numérico que cabe no campo mas não na precisão declarada (`PESO` do SINAN-SRC,
+  "3415.0" num `N(6,3)`) passa a `Decimal(38, escala)` em vez de falhar.
 - `read_dbf` lê arquivos cujo cabeçalho traz `0x00` no lugar do terminador `0x0D` dos
   campos (CNES-ST desde 2019-12), que antes falhavam com `index out of range`.
 - `read_dbf` devolve zero linhas com as colunas e os tipos do cabeçalho quando o arquivo
