@@ -24,7 +24,7 @@ except ImportError as exc:
         "--index https://index.quantilica.com/simple/"
     ) from exc
 
-from datasus_fetcher import __version__, meta, reader
+from datasus_fetcher import __version__, lake_bases, meta, reader
 from datasus_fetcher.wrangling import parse_filename_metadata
 
 SOURCE_ID = "datasus"
@@ -121,7 +121,7 @@ class LakeConverter:
             files = sorted(
                 p
                 for p in input_dir.rglob("*")
-                if p.is_file() and p.suffix.lower() in {".dbc", ".dbf"}
+                if p.is_file() and p.suffix.lower() in {".dbc", ".dbf", ".zip"}
             )
         else:
             result.errors.append(f"arquivo ou diretório '{input_dir}' não existe")
@@ -129,10 +129,20 @@ class LakeConverter:
 
         allowed = set(datasets) if datasets else None
         writers: dict[str, LakeWriter] = {}
+        base_zips: list[tuple[Path, str, dict[str, Any]]] = []
 
         for path in files:
             meta_dict = parse_filename_metadata(path)
             dataset_id = resolve_dataset_id(path, meta_dict)
+            if path.suffix.lower() == ".zip":
+                # Só as bases auxiliares vêm em ZIP; os demais (mapas) ficam fora.
+                if lake_bases.is_base_zip(dataset_id) and (
+                    allowed is None or dataset_id in allowed
+                ):
+                    base_zips.append(
+                        (path, dataset_id, resolve_partitions(meta_dict)[1])
+                    )
+                continue
             if not dataset_id:
                 result.errors.append(
                     f"{path.name}: não foi possível identificar dataset"
@@ -194,6 +204,17 @@ class LakeConverter:
             else:
                 result.converted += 1
 
+        def writer_for(dataset_id: str, keys: list[str]) -> LakeWriter:
+            key = f"{dataset_id}:{','.join(keys)}"
+            if key not in writers:
+                writers[key] = LakeWriter(
+                    lake_dir / SOURCE_ID / dataset_id,
+                    lake_bases.descriptor(dataset_id, keys),
+                    force=force,
+                )
+            return writers[key]
+
+        lake_bases.convert_base_zips(base_zips, writer_for, result)
         return result
 
 

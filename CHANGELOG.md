@@ -7,6 +7,13 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Unreleased]
 
+### Adicionado
+- O conversor do lake passa a cobrir as bases auxiliares distribuídas em ZIP: população
+  do IBGE (`base-populacional-ibge-pop`, `-pops`, `-popt`, por `uf`/`ano`), as tabelas
+  de referência da base territorial (cada uma como `base-territorial-<tabela>`, do ZIP
+  mais recente) e os arquivos de conversão do TabWin (`base-territorial-conversao`, uma
+  linha por código, por `uf`). Os mapas (`.MAP`) não são tabelas e ficam fora.
+
 ### Alterado
 - `convert` pula o arquivo já presente no lake com o mesmo `sha256` antes de decodificar
   o DBC; uma nova passada sobre o mesmo bruto deixa de decodificar tudo de novo.
