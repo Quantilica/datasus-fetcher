@@ -189,10 +189,17 @@ def _read_dbf_fastdbf(dbf_path: Path) -> pl.DataFrame:
 
 
 def _datasus_field_parser(dbfread: Any) -> type:
-    """``FieldParser`` do dbfread que lê como nula a data só de ``*``, espaço ou ``0``.
+    """``FieldParser`` do dbfread para os desvios de formato do DATASUS.
 
-    O SINAN grava ``********`` (ou ``      **``) em campos ``D`` sem data; o dbfread
-    e o fastdbf recusam o arquivo inteiro. Outros valores inválidos seguem erro.
+    - Campo ``D`` só de ``*``, espaço ou ``0``: o SINAN grava ``********`` (ou
+      ``      **``) quando não há data. Vira nulo.
+    - Campo ``D`` com barras (``03/03/20``, ``12/1/200``): data digitada como texto
+      e cortada nos 8 bytes do campo (SINAN de 2007-2008); o ano se perdeu. Vira nulo.
+    - Campo ``N``/``F`` com aspas (``"14.35``, SIA-PA de 2000): o número é lido sem
+      elas.
+
+    O dbfread e o fastdbf recusam o arquivo inteiro nesses casos. Outros valores
+    inválidos seguem erro.
     """
 
     class _DatasusFieldParser(dbfread.FieldParser):
@@ -200,9 +207,19 @@ def _datasus_field_parser(dbfread: Any) -> type:
             try:
                 return super().parseD(field, data)
             except ValueError:
-                if not data.strip(b" *0"):
+                if not data.strip(b" *0") or b"/" in data:
                     return None
                 raise
+
+        def parseN(self, field, data):  # noqa: N802 - nome do dbfread
+            try:
+                return super().parseN(field, data)
+            except ValueError:
+                if b'"' not in data:
+                    raise
+                return super().parseN(field, data.replace(b'"', b""))
+
+        parseF = parseN  # noqa: N815 - nome do dbfread
 
     return _DatasusFieldParser
 
@@ -545,7 +562,8 @@ def _parse_date(expr: pl.Expr, dataset: str | None) -> pl.Expr:
     - 8 dígitos: ``AAAAMMDD`` (``DDMMAAAA`` nos ``DDMMYYYY_DATASETS``);
     - 6 dígitos no SIH (até meados dos anos 1990): ``AAMMDD``;
     - 6 dígitos nos demais (competência do SIA-PS, SIA-SAD, SISPRENATAL): ``AAAAMM``,
-      lido como o dia 1º do mês.
+      lido como o dia 1º do mês;
+    - 10 caracteres com barras: ``DD/MM/AAAA`` (``DT_NASC`` do SIA-PO).
 
     O que não casar vira nulo aqui, e a checagem estrita de ``wrangle_datasus``
     transforma isso em erro.
@@ -564,6 +582,8 @@ def _parse_date(expr: pl.Expr, dataset: str | None) -> pl.Expr:
         .then(text.str.to_date(eight, strict=False))
         .when(size == 6)
         .then(six)
+        .when(size == 10)
+        .then(text.str.to_date("%d/%m/%Y", strict=False))
         .otherwise(None)
     )
 
@@ -586,7 +606,7 @@ def wrangle_datasus(
       fields stay as text: some are partial (see constants).
     - Keeps exact ``Decimal`` monetary columns (numeric DBF fields with
       decimals, see ``read_dbf``); text monetary columns become pl.Float64.
-    - Converts counts to pl.Int64.
+    - Converts counts to pl.Int64 (letters-only values, typing garbage, become null).
     - Lowercases column names for modern analytical querying.
     - Appends optional partition metadata columns (e.g. uf, ano, mes).
 
@@ -651,6 +671,15 @@ def wrangle_datasus(
             else:
                 expr = expr.cast(pl.Float64)
         elif u_col in INTEGER_COLUMNS:
+            if dtype == pl.String:
+                # Só letras ("EA" no ANO do SINAN-DENG 2000) é lixo de digitação,
+                # não um número em outro formato: vira nulo.
+                expr = (
+                    pl.when(expr.str.contains(r"^[A-Za-z]+$"))
+                    .then(None)
+                    .otherwise(expr)
+                )
+                cleaned[-1] = expr.alias(col)
             expr = expr.cast(pl.Int64, strict=False)
             converted[target_name] = col
 

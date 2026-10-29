@@ -94,3 +94,31 @@ def test_decimal_alem_da_precisao_declarada_alarga_a_precisao():
     )
     assert df.schema["PESO"] == pl.Decimal(38, 3)
     assert [str(v) for v in df["PESO"].to_list()] == ["3415.000", "1.250"]
+
+
+def test_dd_mm_aaaa_com_barras():
+    # DT_NASC do SIA-PO
+    out = reader.wrangle_datasus(_frame(DT_NASC=["29/05/1960", None]), dataset="po")
+    assert out["dt_nasc"].to_list() == [dt.date(1960, 5, 29), None]
+
+
+def test_inteiro_so_com_letras_vira_nulo():
+    out = reader.wrangle_datasus(_frame(ANO=["2000", "EA"]), dataset="sinan-deng")
+    assert out["ano"].to_list() == [2000, None]
+
+
+def test_inteiro_em_outro_formato_segue_erro():
+    with pytest.raises(ValueError, match="ANO"):
+        reader.wrangle_datasus(_frame(ANO=["2000", "20o0"]), dataset="sinan-deng")
+
+
+def test_campo_d_cortado_vira_nulo_e_numero_com_aspas_e_lido():
+    cls = reader._datasus_field_parser(dbfread)
+    parser = cls.__new__(cls)  # sem tabela: parseD/parseN não a usam
+    assert parser.parseD(None, b"03/03/20") is None
+    assert parser.parseD(None, b"12/1/200") is None
+    with pytest.raises(ValueError):
+        parser.parseD(None, b"2008AB01")
+    assert parser.parseN(None, b'"14.35') == 14.35
+    with pytest.raises(ValueError):
+        parser.parseN(None, b"14x35")

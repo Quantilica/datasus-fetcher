@@ -171,12 +171,16 @@ def _populacional(path, dataset_id, partitions, writer_for, result, converter):
         result.skipped += 1
         return
     with zipfile.ZipFile(path) as archive, tempfile.TemporaryDirectory() as tmp:
+        # Até 2024 o ZIP traz o .dbf; o de 2025 traz o .dbc (POPTBR25.dbc).
         member = next(
-            (n for n in archive.namelist() if n.lower().endswith(".dbf")), None
+            (n for n in archive.namelist() if n.lower().endswith((".dbf", ".dbc"))),
+            None,
         )
         if member is None:
-            raise ValueError("ZIP sem .dbf")
+            raise ValueError("ZIP sem .dbf nem .dbc")
         dbf = Path(archive.extract(member, tmp))
+        if dbf.suffix.lower() == ".dbc":
+            dbf = reader.decompress_dbc(dbf, dbf.with_suffix(".dbf"))
         df = reader.read_dbf(
             dbf,
             transform=lambda f: reader.wrangle_datasus(

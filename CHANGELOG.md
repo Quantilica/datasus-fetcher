@@ -20,6 +20,13 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - Extra `analysis` exige `quantilica-analytics>=0.5.1`.
 
 ### Corrigido
+- Mais desvios de formato dos DBCs deixam de rejeitar o arquivo: `DT_NASC` em
+  `DD/MM/AAAA` (SIA-PO) vira `Date`; datas digitadas com barras e cortadas no campo `D`
+  (SINAN de 2007-2008, como `03/03/20`) e inteiros só com letras (`ANO` = `EA` no
+  SINAN-DENG 2000) viram nulos; números com aspas (`"14.35`, SIA-PA de 2000) são lidos
+  sem elas.
+- A base populacional de 2025 (`base-populacional-ibge-popt`), cujo ZIP traz o `.dbc` em
+  vez do `.dbf`, é convertida.
 - Datas em formatos além de `AAAAMMDD` viram `Date` em vez de rejeitar o arquivo:
   competência `AAAAMM` (SIA-PS, SIA-SAD, SISPRENATAL) como o dia 1º do mês, `AAMMDD`
   do SIH antigo com século 19xx e `DDMMAAAA` no RESP. O conversor do lake passa o
