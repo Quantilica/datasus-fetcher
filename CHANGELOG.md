@@ -5,6 +5,16 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [Unreleased]
+
+### Alterado
+- O lake guarda um Parquet por período em vez de um por arquivo bruto: as UFs de um
+  mês (ou ano) dividem `<dataset>_<período>.parquet`, com a UF na coluna `uf` (as linhas
+  são ordenadas por ela) e o bruto de cada linha em `_origem`. `uf` deixa de ser
+  partição (`ano=`/`mes=` continuam). Consultas que filtram por `uf` não mudam; o número
+  de arquivos cai de dezenas de vezes e a leitura fica de 3 a 36 vezes mais rápida.
+- Extra `analysis` exige `quantilica-analytics>=0.7.0`.
+
 ## [0.16.0] - 2026-10-29
 
 ### Adicionado

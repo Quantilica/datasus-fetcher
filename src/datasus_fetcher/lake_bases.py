@@ -1,11 +1,11 @@
 """Bases auxiliares do DATASUS distribuídas em ZIP, para o lake.
 
-- ``base-populacional-ibge-pop*``: um DBF de população por ano (``uf=br/ano=``).
+- ``base-populacional-ibge-pop*``: um DBF de população por ano (``ano=``, com ``uf``).
 - ``base-territorial``: tabelas de referência (``tb_municip``, ``rl_municip_*``...);
   só o ZIP mais recente vale, e cada tabela vira o dataset
   ``base-territorial-<tabela>``.
 - ``base-territorial-conversao``: arquivos ``.cnv`` do TabWin (categorias e os
-  códigos de cada uma), uma linha por código, particionados por UF.
+  códigos de cada uma), uma linha por código, com a UF numa coluna.
 
 Os mapas (``base-territorial-mapas``, ``.MAP``) são polígonos e ficam fora.
 """
@@ -40,6 +40,22 @@ _CNV_HEAD = re.compile(r"^\s*[A-Za-z]?\s*\d+\s+(?P<size>\d+)")
 # antes dos pontos de indentação).
 _CNV_SEQ_BEFORE_DOTS = re.compile(r"^\s*(?P<seq>\d+)\s+(?=\.)")
 _MAX_RANGE = 100_000
+
+
+def group_partitions(
+    dataset_id: str, keys: list[str], values: dict[str, str]
+) -> tuple[list[str], dict[str, str], dict[str, str], str]:
+    """Split ``uf`` out of the partitions: it becomes a column of the period's file.
+
+    Returns:
+        Partition keys and values without ``uf``, the member columns
+        (``{"uf": "sp"}``) and the period's file key (``sih-rd_202001``).
+    """
+    member = {"uf": values["uf"]} if "uf" in values else {}
+    keys = [k for k in keys if k != "uf"]
+    values = {k: v for k, v in values.items() if k != "uf"}
+    group = "_".join([dataset_id, "".join(values.values())]) if values else dataset_id
+    return keys, values, member, group
 
 
 def is_base_zip(dataset_id: str | None) -> bool:
@@ -166,19 +182,22 @@ def _count(written: Any, result: Any) -> None:
 
 
 def _populacional(path, dataset_id, partitions, writer_for, result, converter):
-    writer = writer_for(dataset_id, list(partitions))
-    if writer.is_current(path, partitions=partitions):
+    keys, partitions, member, group = group_partitions(
+        dataset_id, list(partitions), partitions
+    )
+    writer = writer_for(dataset_id, keys)
+    if writer.is_current_member(path, group_key=group, partitions=partitions):
         result.skipped += 1
         return
     with zipfile.ZipFile(path) as archive, tempfile.TemporaryDirectory() as tmp:
         # Até 2024 o ZIP traz o .dbf; o de 2025 traz o .dbc (POPTBR25.dbc).
-        member = next(
+        inner = next(
             (n for n in archive.namelist() if n.lower().endswith((".dbf", ".dbc"))),
             None,
         )
-        if member is None:
+        if inner is None:
             raise ValueError("ZIP sem .dbf nem .dbc")
-        dbf = Path(archive.extract(member, tmp))
+        dbf = Path(archive.extract(inner, tmp))
         if dbf.suffix.lower() == ".dbc":
             dbf = reader.decompress_dbc(dbf, dbf.with_suffix(".dbf"))
         df = reader.read_dbf(
@@ -188,16 +207,25 @@ def _populacional(path, dataset_id, partitions, writer_for, result, converter):
             ),
         )
     _count(
-        writer.write_polars(df, path, partitions=partitions, converter=converter),
+        writer.write_member(
+            df,
+            path,
+            group_key=group,
+            partitions=partitions,
+            member_columns=member,
+            converter=converter,
+        ),
         result,
     )
 
 
 def _conversao(path, writer_for, result, converter):
     match = _UF.search(path.name)
-    partitions = {"uf": match["uf"].lower()} if match else {}
-    writer = writer_for(CONVERSAO, list(partitions))
-    if writer.is_current(path, partitions=partitions):
+    keys, partitions, member, group = group_partitions(
+        CONVERSAO, ["uf"] if match else [], {"uf": match["uf"].lower()} if match else {}
+    )
+    writer = writer_for(CONVERSAO, keys)
+    if writer.is_current_member(path, group_key=group, partitions=partitions):
         result.skipped += 1
         return
     frames = []
@@ -211,7 +239,14 @@ def _conversao(path, writer_for, result, converter):
         raise ValueError("ZIP sem .cnv")
     df = pl.concat(frames)
     _count(
-        writer.write_polars(df, path, partitions=partitions, converter=converter),
+        writer.write_member(
+            df,
+            path,
+            group_key=group,
+            partitions=partitions,
+            member_columns=member,
+            converter=converter,
+        ),
         result,
     )
 

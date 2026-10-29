@@ -1,7 +1,11 @@
 """Convert raw DATASUS microdata (DBC/DBF) into the Hive-partitioned lake.
 
 Each raw DBC/DBF lands in
-``<lake>/datasus/<dataset_id>/[uf=<uf>/][ano=<ano>/][mes=<mes>/]``
+``<lake>/datasus/<dataset_id>/[ano=<ano>/][mes=<mes>/]<dataset_id>_<ano><mes>.parquet``
+
+The DATASUS publishes one file per state and period, most of them tiny: the files
+of a period share one Parquet, with the state as the ``uf`` column (the rows are
+sorted by it) and the raw file's key in ``_origem``.
 as ``<file_key>.parquet``. Columns are cleaned and normalized with lowercase names,
 while partition columns are encoded in directory structure according to the Hive
 partitioning contract.
@@ -152,7 +156,9 @@ class LakeConverter:
             if allowed is not None and dataset_id not in allowed:
                 continue
 
-            partition_keys, partition_values = resolve_partitions(meta_dict)
+            partition_keys, partition_values, member, group = (
+                lake_bases.group_partitions(dataset_id, *resolve_partitions(meta_dict))
+            )
 
             if dataset_id not in writers:
                 writers[dataset_id] = LakeWriter(
@@ -172,7 +178,9 @@ class LakeConverter:
             try:
                 # Decodificar um DBC custa caro; o arquivo já presente no lake com
                 # o mesmo sha256 é pulado antes da leitura.
-                if writer.is_current(path, partitions=partition_values):
+                if writer.is_current_member(
+                    path, group_key=group, partitions=partition_values
+                ):
                     result.skipped += 1
                     continue
                 if path.suffix.lower() == ".dbc":
@@ -187,10 +195,12 @@ class LakeConverter:
                         ),
                     )
 
-                written = writer.write_polars(
+                written = writer.write_member(
                     df,
                     path,
+                    group_key=group,
                     partitions=partition_values,
+                    member_columns=member,
                     converter=f"datasus-fetcher {__version__}",
                 )
             except (LakeError, OSError, pl.exceptions.PolarsError, Exception) as exc:

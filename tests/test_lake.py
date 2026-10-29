@@ -124,3 +124,29 @@ def test_cli_convert_lake(tmp_path: Path) -> None:
     )
     assert result.exit_code == 0, result.output
     assert (lake_dir / SOURCE_ID / "sim-do-cid10").exists()
+
+
+def test_ufs_do_mesmo_periodo_dividem_um_parquet(tmp_path: Path) -> None:
+    if not FIXTURE_DBC.exists():
+        pytest.skip("Fixture DOAC1996.dbc não encontrada")
+    raw_dir = tmp_path / "raw"
+    raw_dir.mkdir()
+    # O mesmo conteúdo publicado como AC e como RO: um Parquet para 1996, com a UF
+    # numa coluna e o bruto de cada linha em _origem.
+    (raw_dir / "DOAC1996.dbc").write_bytes(FIXTURE_DBC.read_bytes())
+    (raw_dir / "DORO1996.dbc").write_bytes(FIXTURE_DBC.read_bytes())
+    lake_dir = tmp_path / "lake"
+    res = converter.convert(raw_dir, lake_dir)
+    assert not res.errors, res.errors
+    assert res.converted == 2
+
+    dataset_dir = lake_dir / SOURCE_ID / "sim-do-cid10"
+    files = [
+        p.relative_to(dataset_dir).as_posix() for p in dataset_dir.rglob("*.parquet")
+    ]
+    assert files == ["ano=1996/sim-do-cid10_1996.parquet"]
+    assert check_dataset(dataset_dir) == []
+    df = scan_dataset(dataset_dir).collect()
+    assert df.height == 2 * 2263
+    assert df["uf"].unique().sort().to_list() == ["ac", "ro"]
+    assert df["_origem"].unique().sort().to_list() == ["DOAC1996", "DORO1996"]
