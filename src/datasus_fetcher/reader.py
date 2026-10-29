@@ -17,6 +17,8 @@ from .constants import (
     FLOAT_COLUMNS,
     INTEGER_COLUMNS,
     SENTINEL_NULLS,
+    SINAN_DENG_RENAMES,
+    SINAN_RENAMES,
 )
 
 if TYPE_CHECKING:
@@ -604,6 +606,45 @@ def _parse_date(expr: pl.Expr, dataset: str | None) -> pl.Expr:
     )
 
 
+# Dengue reintroduzida no Brasil em 1981-1982 (Boa Vista): antes disso não há
+# dengue anterior a registrar.
+_FIRST_DENGUE_YEAR = 1981
+
+
+def _plausible_previous_dengue(frame: pl.DataFrame) -> pl.DataFrame:
+    """Anula o ano da dengue anterior fora de 1981 até o ano da notificação.
+
+    São erros de digitação sem leitura possível (``11`` virando 2011 num arquivo
+    de 2002, ``1``, ``200``). O teto é ``NU_ANO`` (ano da notificação) ou, sem ele,
+    o ano de ``DT_NOTIFIC``.
+    """
+    import polars as pl
+
+    names = {c.upper(): c for c in frame.columns}
+    target = names.get("ANO_DENGUE_ANTERIOR")
+    if target is None:
+        return frame
+    caps = []
+    if "NU_ANO" in names:
+        caps.append(pl.col(names["NU_ANO"]).cast(pl.Int64, strict=False))
+    if "DT_NOTIFIC" in names and frame.schema[names["DT_NOTIFIC"]] == pl.Date:
+        caps.append(pl.col(names["DT_NOTIFIC"]).dt.year().cast(pl.Int64))
+    value = pl.col(target)
+    ok = value >= _FIRST_DENGUE_YEAR
+    if caps:
+        ok = ok & (value <= pl.coalesce(caps).fill_null(value))
+    return frame.with_columns(pl.when(ok).then(value).otherwise(None).alias(target))
+
+
+def _column_renames(dataset: str | None) -> dict[str, str]:
+    """Colunas renomeadas por terem o nome de uma partição (ver constants)."""
+    if dataset is None or not dataset.startswith("sinan"):
+        return {}
+    if dataset.startswith("sinan-deng"):
+        return {**SINAN_RENAMES, **SINAN_DENG_RENAMES}
+    return dict(SINAN_RENAMES)
+
+
 def wrangle_datasus(
     df: pl.DataFrame,
     dataset: str | None = None,
@@ -623,6 +664,8 @@ def wrangle_datasus(
     - Keeps exact ``Decimal`` monetary columns (numeric DBF fields with
       decimals, see ``read_dbf``); text monetary columns become pl.Float64.
     - Converts counts to pl.Int64 (letters-only values, typing garbage, become null).
+    - Renames SINAN columns named like a lake partition (``UF`` becomes
+      ``UF_HOSPITAL``; in dengue, ``ANO`` becomes ``ANO_DENGUE_ANTERIOR``).
     - Lowercases column names for modern analytical querying.
     - Appends optional partition metadata columns (e.g. uf, ano, mes).
 
@@ -648,6 +691,12 @@ def wrangle_datasus(
 
     if df.is_empty():
         return df
+
+    renames = _column_renames(dataset)
+    if renames:
+        df = df.rename(
+            {c: renames[c.upper()] for c in df.columns if c.upper() in renames}
+        )
 
     exprs: list[pl.Expr] = []
     cleaned: list[pl.Expr] = []
@@ -705,7 +754,20 @@ def wrangle_datasus(
                     .otherwise(expr.str.strip_suffix("."))
                 )
                 cleaned[-1] = expr.alias(col)
+            digits = expr.cast(pl.String).str.strip_chars().str.len_chars()
             expr = expr.cast(pl.Int64, strict=False)
+            if u_col == "ANO_DENGUE_ANTERIOR":
+                # O SINAN Windows grava esse ano às vezes com 2 dígitos ("01",
+                # "99"): até 50 é 20xx, acima, 19xx. O que cair fora de 1981 até
+                # o ano da notificação é anulado depois (_plausible_previous_dengue).
+                two = digits == 2
+                expr = (
+                    pl.when(two & (expr <= 50))
+                    .then(expr + 2000)
+                    .when(two)
+                    .then(expr + 1900)
+                    .otherwise(expr)
+                )
             converted[target_name] = col
 
         exprs.append(expr.alias(target_name))
@@ -725,6 +787,8 @@ def wrangle_datasus(
                 )
         if problems:
             raise ValueError("Valores fora do formato esperado: " + "; ".join(problems))
+
+    result = _plausible_previous_dengue(result)
 
     # Descartar registros marcados como deletados no formato dBase
     del_cols = [c for c in result.columns if c.lower() == "_deleted"]

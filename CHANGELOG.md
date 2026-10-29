@@ -27,6 +27,12 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
   `..` no SINAN-DENG) e campos numéricos só com letras (`AGENTE_ET1` do SINAN-SDTA)
   viram nulos; números com aspas, `$` ou espaço não separável antes (`"14.35`,
   `$ 2.55`, SIA-PA de 2000) são lidos sem eles.
+- Colunas do SINAN com o nome de uma partição do lake deixam de ser descartadas na
+  conversão: `UF` (UF onde o paciente foi hospitalizado, em dengue, chikungunya, febre
+  tifoide e raiva) passa a `uf_hospital`, e `ANO` da dengue de 2000-2006 (ano da dengue
+  anterior) passa a `ano_dengue_anterior`, com o ano de 2 dígitos (`01`, `99`) lido
+  como 2001 e 1999. Valores fora de 1981 (reintrodução da dengue no Brasil) até o ano da
+  notificação (`NU_ANO`) são erros de digitação e viram nulo.
 - Datas do SINAN-SDTA de 2016 gravadas como número de série do Excel (`42664`) viram a
   data correspondente.
 - A base populacional de 2025 (`base-populacional-ibge-popt`), cujo ZIP traz o `.dbc` em

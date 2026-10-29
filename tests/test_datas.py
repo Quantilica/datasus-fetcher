@@ -104,7 +104,7 @@ def test_dd_mm_aaaa_com_barras():
 
 def test_inteiro_so_com_letras_vira_nulo():
     out = reader.wrangle_datasus(
-        _frame(ANO=["2000", "EA", "..", "4."]), dataset="sinan-deng"
+        _frame(ANO=["2000", "EA", "..", "4."]), dataset="sinan-dift"
     )
     assert out["ano"].to_list() == [2000, None, None, 4]
 
@@ -135,3 +135,36 @@ def test_zero_em_coluna_de_data_numerica_vira_nulo():
     df = pl.DataFrame({"DT_DIGITA": [0, 20240105]})
     out = reader.wrangle_datasus(df, dataset="sinan-sdta")
     assert out["dt_digita"].to_list() == [None, dt.date(2024, 1, 5)]
+
+
+def test_colunas_com_nome_de_particao_no_sinan():
+    df = _frame(UF=["TO", None], ANO=["01", "99"], DENGUE=["1", "1"])
+    out = reader.wrangle_datasus(df, dataset="sinan-deng")
+    assert out.columns == ["uf_hospital", "ano_dengue_anterior", "dengue"]
+    assert out["uf_hospital"].to_list() == ["TO", None]
+    assert out["ano_dengue_anterior"].to_list() == [2001, 1999]
+    # Nos outros agravos só a UF muda; fora do SINAN nada muda.
+    assert reader.wrangle_datasus(_frame(UF=["33"]), dataset="sinan-chik").columns == [
+        "uf_hospital"
+    ]
+    out = reader.wrangle_datasus(_frame(ANO=["2012"]), dataset="sih-er")
+    assert out["ano"].to_list() == [2012]
+
+
+def test_ano_dengue_anterior_fora_da_faixa_vira_nulo():
+    df = _frame(
+        ANO=["01", "11", "1998", "1", "200", "1975", "2003", "99"],
+        NU_ANO=["2002"] * 7 + [None],
+    )
+    out = reader.wrangle_datasus(df, dataset="sinan-deng")
+    # 2011 e 2003 passam do ano da notificação; 1, 200 e 1975 são antes de 1981.
+    assert out["ano_dengue_anterior"].to_list() == [
+        2001,
+        None,
+        1998,
+        None,
+        None,
+        None,
+        None,
+        1999,
+    ]

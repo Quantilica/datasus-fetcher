@@ -39,6 +39,7 @@ CODE_COLUMNS = {
     "CO_MUNIC_S",
     # States and Zip
     "UF",
+    "UF_HOSPITAL",
     "SG_UF",
     "CEP",
     "CEP_RES",
@@ -171,5 +172,18 @@ INTEGER_COLUMNS = {
     "QTD_FILHOS",
     "CONSULTAS",
     "ANO",
+    "ANO_DENGUE_ANTERIOR",
     "MES",
 }
+
+
+# Colunas do SINAN com o nome de uma partição do lake (``uf=``, ``ano=``), que o
+# gravador descartaria. Ganham o nome do que guardam, conforme os dicionários de
+# dados do SINAN e o preenchimento dos arquivos:
+# - ``UF`` (dengue, chikungunya, febre tifoide, raiva...): UF onde o paciente foi
+#   hospitalizado (``co_uf_hospital``), ao lado de ``HOSPITALIZ``, ``DT_INTERNA`` e
+#   ``MUNICIPIO``;
+# - ``ANO`` (dengue do SINAN Windows, 2000-2006): ano da dengue anterior, preenchido
+#   quase só quando ``DENGUE`` (já teve dengue) = 1.
+SINAN_RENAMES = {"UF": "UF_HOSPITAL"}
+SINAN_DENG_RENAMES = {"ANO": "ANO_DENGUE_ANTERIOR"}
