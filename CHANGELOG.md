@@ -17,7 +17,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ### Alterado
 - `convert` pula o arquivo já presente no lake com o mesmo `sha256` antes de decodificar
   o DBC; uma nova passada sobre o mesmo bruto deixa de decodificar tudo de novo.
-- Extra `analysis` exige `quantilica-analytics>=0.5.1`.
+- Extra `analysis` exige `quantilica-analytics>=0.6.0`.
 
 ### Corrigido
 - Mais desvios de formato dos DBCs deixam de rejeitar o arquivo: `DT_NASC` em
