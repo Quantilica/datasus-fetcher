@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime
 import logging
 import struct
 import tempfile
@@ -188,6 +189,9 @@ def _read_dbf_fastdbf(dbf_path: Path) -> pl.DataFrame:
         return _normalize_frame(pl.from_arrow(table.to_arrow()))
 
 
+_EXCEL_EPOCH = datetime.date(1899, 12, 30)
+
+
 def _datasus_field_parser(dbfread: Any) -> type:
     """``FieldParser`` do dbfread para os desvios de formato do DATASUS.
 
@@ -195,6 +199,10 @@ def _datasus_field_parser(dbfread: Any) -> type:
       ``      **``) quando não há data. Vira nulo.
     - Campo ``D`` com barras (``03/03/20``, ``12/1/200``): data digitada como texto
       e cortada nos 8 bytes do campo (SINAN de 2007-2008); o ano se perdeu. Vira nulo.
+    - Campo ``D`` com ano negativo (``-0010101``, SINAN-SDTA preliminar): data
+      mínima usada como "sem data". Vira nulo.
+    - Campo ``D`` com 5 dígitos (``42664   ``, SINAN-SDTA 2016): número de série de
+      data do Excel (dias desde 30/12/1899), convertido para a data.
     - Campo ``N``/``F`` com aspas, ``$`` ou espaço não separável antes do número
       (``"14.35``, ``$ 2.55``, SIA-PA de 2000): o número é lido sem eles.
     - Campo ``N``/``F`` só com letras (``E`` no ``AGENTE_ET1`` do SINAN-SDTA): vira
@@ -209,8 +217,11 @@ def _datasus_field_parser(dbfread: Any) -> type:
             try:
                 return super().parseD(field, data)
             except ValueError:
-                if not data.strip(b" *0") or b"/" in data:
+                stripped = data.strip()
+                if not data.strip(b" *0") or b"/" in data or stripped[:1] == b"-":
                     return None
+                if len(stripped) == 5 and stripped.isdigit():
+                    return _EXCEL_EPOCH + datetime.timedelta(days=int(stripped))
                 raise
 
         def parseN(self, field, data):  # noqa: N802 - nome do dbfread
@@ -665,6 +676,14 @@ def wrangle_datasus(
             elif isinstance(dtype, pl.Datetime):
                 expr = expr.dt.date()
             else:
+                # Zero numa coluna de data numérica (DT_DIGITA do SINAN-SDTA
+                # preliminar) é "sem data".
+                expr = (
+                    pl.when(expr.cast(pl.String).str.contains(r"^0+$"))
+                    .then(None)
+                    .otherwise(expr)
+                )
+                cleaned[-1] = expr.alias(col)
                 expr = _parse_date(expr, dataset)
                 converted[target_name] = col
         elif u_col in FLOAT_COLUMNS:

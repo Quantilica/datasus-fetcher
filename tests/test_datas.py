@@ -119,6 +119,8 @@ def test_campo_d_cortado_vira_nulo_e_numero_com_aspas_e_lido():
     parser = cls.__new__(cls)  # sem tabela: parseD/parseN não a usam
     assert parser.parseD(None, b"03/03/20") is None
     assert parser.parseD(None, b"12/1/200") is None
+    assert parser.parseD(None, b"-0010101") is None
+    assert parser.parseD(None, b"42664   ") == dt.date(2016, 10, 21)
     with pytest.raises(ValueError):
         parser.parseD(None, b"2008AB01")
     assert parser.parseN(None, b'"14.35') == 14.35
@@ -127,3 +129,9 @@ def test_campo_d_cortado_vira_nulo_e_numero_com_aspas_e_lido():
     assert parser.parseN(None, b"E") is None
     with pytest.raises(ValueError):
         parser.parseN(None, b"14x35")
+
+
+def test_zero_em_coluna_de_data_numerica_vira_nulo():
+    df = pl.DataFrame({"DT_DIGITA": [0, 20240105]})
+    out = reader.wrangle_datasus(df, dataset="sinan-sdta")
+    assert out["dt_digita"].to_list() == [None, dt.date(2024, 1, 5)]
