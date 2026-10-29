@@ -22,9 +22,10 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ### Corrigido
 - Mais desvios de formato dos DBCs deixam de rejeitar o arquivo: `DT_NASC` em
   `DD/MM/AAAA` (SIA-PO) vira `Date`; datas digitadas com barras e cortadas no campo `D`
-  (SINAN de 2007-2008, como `03/03/20`) e inteiros só com letras (`ANO` = `EA` no
-  SINAN-DENG 2000) viram nulos; números com aspas (`"14.35`, SIA-PA de 2000) são lidos
-  sem elas.
+  (SINAN de 2007-2008, como `03/03/20`), inteiros sem nenhum dígito (`ANO` = `EA` ou
+  `..` no SINAN-DENG) e campos numéricos só com letras (`AGENTE_ET1` do SINAN-SDTA)
+  viram nulos; números com aspas, `$` ou espaço não separável antes (`"14.35`,
+  `$ 2.55`, SIA-PA de 2000) são lidos sem eles.
 - A base populacional de 2025 (`base-populacional-ibge-popt`), cujo ZIP traz o `.dbc` em
   vez do `.dbf`, é convertida.
 - Datas em formatos além de `AAAAMMDD` viram `Date` em vez de rejeitar o arquivo:

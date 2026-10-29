@@ -103,8 +103,10 @@ def test_dd_mm_aaaa_com_barras():
 
 
 def test_inteiro_so_com_letras_vira_nulo():
-    out = reader.wrangle_datasus(_frame(ANO=["2000", "EA"]), dataset="sinan-deng")
-    assert out["ano"].to_list() == [2000, None]
+    out = reader.wrangle_datasus(
+        _frame(ANO=["2000", "EA", "..", "4."]), dataset="sinan-deng"
+    )
+    assert out["ano"].to_list() == [2000, None, None, 4]
 
 
 def test_inteiro_em_outro_formato_segue_erro():
@@ -120,5 +122,8 @@ def test_campo_d_cortado_vira_nulo_e_numero_com_aspas_e_lido():
     with pytest.raises(ValueError):
         parser.parseD(None, b"2008AB01")
     assert parser.parseN(None, b'"14.35') == 14.35
+    assert parser.parseN(None, b"$   6.12") == 6.12
+    assert parser.parseN(None, b"\xa0 6.50") == 6.5
+    assert parser.parseN(None, b"E") is None
     with pytest.raises(ValueError):
         parser.parseN(None, b"14x35")

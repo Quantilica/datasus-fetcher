@@ -195,8 +195,10 @@ def _datasus_field_parser(dbfread: Any) -> type:
       ``      **``) quando não há data. Vira nulo.
     - Campo ``D`` com barras (``03/03/20``, ``12/1/200``): data digitada como texto
       e cortada nos 8 bytes do campo (SINAN de 2007-2008); o ano se perdeu. Vira nulo.
-    - Campo ``N``/``F`` com aspas (``"14.35``, SIA-PA de 2000): o número é lido sem
-      elas.
+    - Campo ``N``/``F`` com aspas, ``$`` ou espaço não separável antes do número
+      (``"14.35``, ``$ 2.55``, SIA-PA de 2000): o número é lido sem eles.
+    - Campo ``N``/``F`` só com letras (``E`` no ``AGENTE_ET1`` do SINAN-SDTA): vira
+      nulo.
 
     O dbfread e o fastdbf recusam o arquivo inteiro nesses casos. Outros valores
     inválidos seguem erro.
@@ -215,9 +217,12 @@ def _datasus_field_parser(dbfread: Any) -> type:
             try:
                 return super().parseN(field, data)
             except ValueError:
-                if b'"' not in data:
+                cleaned = data.translate(None, b'"$\xa0').strip()
+                if cleaned.isalpha():
+                    return None
+                if cleaned == data.strip():
                     raise
-                return super().parseN(field, data.replace(b'"', b""))
+                return super().parseN(field, cleaned)
 
         parseF = parseN  # noqa: N815 - nome do dbfread
 
@@ -672,12 +677,13 @@ def wrangle_datasus(
                 expr = expr.cast(pl.Float64)
         elif u_col in INTEGER_COLUMNS:
             if dtype == pl.String:
-                # Só letras ("EA" no ANO do SINAN-DENG 2000) é lixo de digitação,
-                # não um número em outro formato: vira nulo.
+                # Sem nenhum dígito ("EA", ".." no ANO do SINAN-DENG) é lixo de
+                # digitação, não um número em outro formato: vira nulo. O ponto
+                # final solto ("4.") sai.
                 expr = (
-                    pl.when(expr.str.contains(r"^[A-Za-z]+$"))
+                    pl.when(~expr.str.contains(r"\d"))
                     .then(None)
-                    .otherwise(expr)
+                    .otherwise(expr.str.strip_suffix("."))
                 )
                 cleaned[-1] = expr.alias(col)
             expr = expr.cast(pl.Int64, strict=False)
