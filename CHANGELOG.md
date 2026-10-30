@@ -8,6 +8,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ## [Unreleased]
 
 ### Alterado
+- Exige `quantilica-core>=0.14.1` (chave dos DBCs sem a data de publicação).
 - O lake guarda um Parquet por período em vez de um por arquivo bruto: as UFs de um
   mês (ou ano) dividem `<dataset>_<período>.parquet`, com a UF na coluna `uf` (as linhas
   são ordenadas por ela) e o bruto de cada linha em `_origem`. `uf` deixa de ser
