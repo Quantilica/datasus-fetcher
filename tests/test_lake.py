@@ -150,3 +150,52 @@ def test_ufs_do_mesmo_periodo_dividem_um_parquet(tmp_path: Path) -> None:
     assert df.height == 2 * 2263
     assert df["uf"].unique().sort().to_list() == ["ac", "ro"]
     assert df["_origem"].unique().sort().to_list() == ["DOAC1996", "DORO1996"]
+
+
+def test_inventory_roteia_e_ignora(tmp_path: Path) -> None:
+    raw = tmp_path / "raw"
+    (raw / "sih-rd").mkdir(parents=True)
+    (raw / "base-territorial").mkdir()
+    (raw / "base-territorial-mapas").mkdir()
+    (raw / "sih-rd" / "RDSP2401.dbc").write_bytes(b"x")
+    (raw / "sih-rd" / "RDSP2401.dbc.manifest.json").write_text("{}")
+    (raw / "sih-rd" / "RDSP2402.dbc.tmp").write_bytes(b"x")
+    (raw / "sih-rd" / "LEIAME.pdf").write_bytes(b"x")
+    (raw / "base-territorial" / "base-territorial@20240101.zip").write_bytes(b"x")
+    (raw / "base-territorial" / "base-territorial@20250101.zip").write_bytes(b"x")
+    (raw / "base-territorial-mapas" / "mapas@20250101.zip").write_bytes(b"x")
+    (raw / "AC.map").write_bytes(b"x")
+
+    got = {p.path.relative_to(raw).as_posix(): p for p in converter.inventory(raw)}
+
+    assert set(got) == {
+        "sih-rd/RDSP2401.dbc",
+        "sih-rd/LEIAME.pdf",
+        "base-territorial/base-territorial@20240101.zip",
+        "base-territorial/base-territorial@20250101.zip",
+        "base-territorial-mapas/mapas@20250101.zip",
+        "AC.map",
+    }
+    assert got["sih-rd/RDSP2401.dbc"].dataset == "sih-rd"
+    assert got["sih-rd/RDSP2401.dbc"].skip_reason is None
+    assert got["sih-rd/LEIAME.pdf"].skip_reason == "nao_tabular"
+    assert got["AC.map"].skip_reason == "nao_tabular"
+    assert got["base-territorial-mapas/mapas@20250101.zip"].skip_reason == "nao_tabular"
+    old = got["base-territorial/base-territorial@20240101.zip"]
+    assert old.skip_reason == "superado"
+    new = got["base-territorial/base-territorial@20250101.zip"]
+    assert (new.dataset, new.skip_reason) == ("base-territorial", None)
+
+
+def test_inventory_coincide_com_convert(tmp_path: Path) -> None:
+    if not FIXTURE_DBC.exists():
+        pytest.skip("Fixture DOAC1996.dbc não encontrada")
+    raw = tmp_path / "raw"
+    raw.mkdir()
+    (raw / "DOAC1996.dbc").write_bytes(FIXTURE_DBC.read_bytes())
+
+    (item,) = converter.inventory(raw)
+    assert item.dataset == "sim-do-cid10"
+    converter.convert(raw, tmp_path / "lake")
+    assert (tmp_path / "lake" / SOURCE_ID / item.dataset).is_dir()
+    assert converter.inventory(tmp_path / "ausente") == []

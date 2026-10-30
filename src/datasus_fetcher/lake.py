@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 try:
     import polars as pl
@@ -30,6 +30,9 @@ except ImportError as exc:
 
 from datasus_fetcher import __version__, lake_bases, meta, reader
 from datasus_fetcher.wrangling import parse_filename_metadata
+
+if TYPE_CHECKING:
+    from quantilica.core.lake import Planned
 
 SOURCE_ID = "datasus"
 
@@ -66,6 +69,21 @@ def resolve_dataset_id(path: Path, meta_dict: dict[str, Any]) -> str | None:
         return "sinasc-dn"
 
     return ds
+
+
+def route_file(path: Path) -> tuple[str | None, dict[str, Any]]:
+    """Dataset e metadados de um arquivo bruto, pelo nome e pela pasta.
+
+    É o roteamento único de :meth:`LakeConverter.convert` e
+    :meth:`LakeConverter.inventory`.
+    """
+    meta_dict = parse_filename_metadata(path)
+    return resolve_dataset_id(path, meta_dict), meta_dict
+
+
+def _is_sidecar(path: Path) -> bool:
+    """Se o arquivo é sidecar de manifest ou resto ``.tmp``, não dado bruto."""
+    return path.name.endswith((".manifest.json", ".tmp"))
 
 
 def resolve_partitions(meta_dict: dict[str, Any]) -> tuple[list[str], dict[str, str]]:
@@ -136,8 +154,7 @@ class LakeConverter:
         base_zips: list[tuple[Path, str, dict[str, Any]]] = []
 
         for path in files:
-            meta_dict = parse_filename_metadata(path)
-            dataset_id = resolve_dataset_id(path, meta_dict)
+            dataset_id, meta_dict = route_file(path)
             if path.suffix.lower() == ".zip":
                 # Só as bases auxiliares vêm em ZIP; os demais (mapas) ficam fora.
                 if lake_bases.is_base_zip(dataset_id) and (
@@ -226,6 +243,72 @@ class LakeConverter:
 
         lake_bases.convert_base_zips(base_zips, writer_for, result)
         return result
+
+    def inventory(self, input_dir: Path) -> list[Planned]:
+        """Um ``Planned`` por arquivo bruto: o dataset ou o motivo de ignorar.
+
+        Reaproveita o roteamento de :meth:`convert` (``route_file`` e a escolha
+        do ZIP territorial mais recente) numa única varredura de ``input_dir``,
+        sem abrir nenhum arquivo:
+
+        - ``.dbc``/``.dbf``: o dataset de ``route_file`` (sem dataset
+          identificável, o item fica sem destino nem motivo, como o erro de
+          ``convert``);
+        - ``.zip`` de base auxiliar (população do IBGE, base territorial,
+          conversão do TabWin): o dataset da pasta; os ZIPs de ``base-territorial``
+          anteriores ao mais recente vêm como ``"superado"``;
+        - qualquer outro arquivo (mapas, ZIPs de mapas, ``.cnv``, ``.def``,
+          documentação): ``"nao_tabular"``.
+
+        Sidecars ``*.manifest.json`` e restos ``*.tmp`` não entram.
+
+        Args:
+            input_dir: Raiz dos arquivos brutos (a mesma de ``convert``).
+
+        Returns:
+            list[Planned]: Um item por arquivo, em ordem de caminho.
+        """
+        # Import local: o core publicado antes do contrato não tem ``Planned``.
+        from quantilica.core.lake import Planned
+
+        input_dir = Path(input_dir)
+        if input_dir.is_file():
+            files = [input_dir]
+        elif input_dir.is_dir():
+            files = sorted(
+                p for p in input_dir.rglob("*") if p.is_file() and not _is_sidecar(p)
+            )
+        else:
+            return []
+
+        planned: list[Planned | None] = []
+        base_zips: list[tuple[Path, str, None]] = []
+        zip_slots: dict[Path, int] = {}
+        for path in files:
+            suffix = path.suffix.lower()
+            if suffix in {".dbc", ".dbf"}:
+                dataset_id, _ = route_file(path)
+                planned.append(Planned(path, dataset=dataset_id))
+            elif suffix == ".zip" and not input_dir.is_file():
+                dataset_id, _ = route_file(path)
+                if lake_bases.is_base_zip(dataset_id):
+                    base_zips.append((path, dataset_id, None))
+                    zip_slots[path] = len(planned)
+                    planned.append(None)
+                else:
+                    planned.append(Planned(path, skip_reason="nao_tabular"))
+            else:
+                planned.append(Planned(path, skip_reason="nao_tabular"))
+
+        latest = lake_bases.latest_territorial(base_zips)
+        for path, dataset_id, _ in base_zips:
+            superseded = dataset_id == lake_bases.TERRITORIAL and path != latest
+            planned[zip_slots[path]] = (
+                Planned(path, skip_reason="superado")
+                if superseded
+                else Planned(path, dataset=dataset_id)
+            )
+        return [item for item in planned if item is not None]
 
 
 converter = LakeConverter()

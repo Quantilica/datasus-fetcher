@@ -5,6 +5,14 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [Não lançado]
+
+### Adicionado
+- O conversor do lake passa a expor `inventory(input_dir)`: para cada arquivo bruto,
+  o dataset que o recebe ou o motivo de ficar de fora (`nao_tabular` para mapas,
+  conversões e documentação; `superado` para os ZIPs antigos da base territorial).
+  Usa o mesmo roteamento de `convert` e só olha os nomes dos arquivos.
+
 ## [0.17.0] - 2026-10-30
 
 ### Alterado

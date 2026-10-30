@@ -143,6 +143,21 @@ def _stamp(path: Path) -> str:
     return match["stamp"] if match else ""
 
 
+def latest_territorial(zips: list[tuple[Path, str, Any]]) -> Path | None:
+    """O ZIP da base territorial que vale: o de carimbo mais recente.
+
+    Args:
+        zips: ``(caminho, dataset, ...)`` dos ZIPs das bases; só os de
+            ``base-territorial`` entram na escolha.
+
+    Returns:
+        Path | None: O ZIP mais recente, ou None se não há base territorial.
+    """
+    territorial = [z for z in zips if z[1] == TERRITORIAL]
+    latest = max(territorial, key=lambda z: _stamp(z[0]), default=None)
+    return latest[0] if latest else None
+
+
 def convert_base_zips(
     zips: list[tuple[Path, str, dict[str, Any]]],
     writer_for: Callable[[str, list[str]], LakeWriter],
@@ -156,8 +171,7 @@ def convert_base_zips(
         result: ``ConvertResult`` do conversor (contagens e erros).
     """
     converter = f"datasus-fetcher {__version__}"
-    territorial = [z for z in zips if z[1] == TERRITORIAL]
-    latest = max(territorial, key=lambda z: _stamp(z[0]), default=None)
+    latest = latest_territorial(zips)
     for path, dataset_id, partitions in zips:
         try:
             if dataset_id.startswith(POPULACIONAL):
@@ -166,7 +180,7 @@ def convert_base_zips(
                 )
             elif dataset_id == CONVERSAO:
                 _conversao(path, writer_for, result, converter)
-            elif latest is not None and path == latest[0]:
+            elif latest is not None and path == latest:
                 _territorial(path, writer_for, result, converter)
         except Exception as exc:  # noqa: BLE001 - registra e segue
             message = str(exc).strip()
