@@ -354,7 +354,7 @@ fetcher_app = FetcherApp(
     path_builder=datasus_path_builder,
     default_output=_DEFAULT_OUTPUT,
     client=FtpClient(FTP_HOST),
-    freshness_policy=FreshnessPolicy.REMOTE_ONLY,
+    freshness_policy=FreshnessPolicy.HEAD_OR_MANIFEST,
 )
 
 app = fetcher_app.app
