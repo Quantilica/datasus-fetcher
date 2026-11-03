@@ -5,6 +5,7 @@ from pathlib import Path
 
 from datasus_fetcher.storage import (
     DataPartition,
+    DataRepository,
     RemoteFile,
     get_data_filepath,
     get_file_metadata,
@@ -241,6 +242,56 @@ class TestGetFilesMetadata(unittest.TestCase):
             most_recent = [f for f in files if f.is_most_recent]
             self.assertEqual(len(most_recent), 1)
             self.assertIn("20240115", most_recent[0].filepath.name)
+
+
+class TestDataRepositoryPathForEntry(unittest.TestCase):
+    def test_path_for_entry_fallback_timestamp(self):
+        """When last_modified is None, use today's date as @YYYYMMDD stamp."""
+        repo = DataRepository(Path("/tmp/test"))
+        entry = {
+            "group": "sih-rd",
+            "id": "RDSP2001",
+            "ext": "dbc",
+            "year": 2001,
+        }
+        today = datetime.date.today()
+        result = repo.path_for_entry(entry, last_modified=None)
+        # Filename should contain today's date stamp @YYYYMMDD
+        expected_stamp = f"@{today:%Y%m%d}."
+        self.assertIn(expected_stamp, result.name)
+        # Should be under dataset directory
+        self.assertEqual(result.parts[-2], "sih-rd")
+
+    def test_path_for_entry_with_timestamp(self):
+        """When last_modified is provided, it should be used."""
+        repo = DataRepository(Path("/tmp/test"))
+        entry = {
+            "group": "sih-rd",
+            "id": "RDSP2001",
+            "ext": "dbc",
+            "year": 2001,
+        }
+        last_modified = datetime.date(2024, 6, 15)
+        result = repo.path_for_entry(entry, last_modified=last_modified)
+        self.assertIn("@20240615.", result.name)
+        self.assertEqual(result.parts[-2], "sih-rd")
+
+    def test_path_for_entry_subdir_by_year(self):
+        """When subdir_by_year=True, file should be placed under year subdirectory."""
+        repo = DataRepository(Path("/tmp/test"))
+        entry = {
+            "group": "sinasc-dn",
+            "id": "DNSP2020",
+            "ext": "dbc",
+            "year": 2020,
+        }
+        last_modified = datetime.date(2024, 1, 15)
+        result = repo.path_for_entry(
+            entry, last_modified=last_modified, subdir_by_year=True
+        )
+        self.assertEqual(result.parts[-2], "2020")
+        self.assertEqual(result.parts[-3], "sinasc-dn")
+        self.assertIn("@20240115.", result.name)
 
 
 if __name__ == "__main__":

@@ -109,5 +109,5 @@ def test_convert_base_zips(tmp_path: Path) -> None:
         "Nordeste",
     ]
     pop = scan_dataset(lake / "base-populacional-ibge-pop").collect()
-    assert pop["ano"].unique().to_list() == ["2022"]
+    assert pop["ano"].unique().to_list() == [2022]
     assert converter.convert(raw, tmp_path / "lake").skipped == 3

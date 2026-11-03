@@ -94,7 +94,7 @@ def test_convert_end_to_end(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> 
     assert "uf" in df.columns
     assert "ano" in df.columns
     assert df["uf"][0] == "ac"
-    assert df["ano"][0] == "1996"
+    assert df["ano"][0] == 1996
 
     # Second pass skips without decoding the DBC again
     def no_decode(*args, **kwargs):

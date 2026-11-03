@@ -21,7 +21,7 @@ from typing import Any
 
 import polars as pl
 from quantilica.analytics.lake import LakeWriter
-from quantilica.core.lake import DatasetDescriptor
+from quantilica.core.lake import DatasetDescriptor, partition_types_for
 
 from datasus_fetcher import __version__, reader
 
@@ -301,5 +301,5 @@ def descriptor(dataset_id: str, keys: list[str]) -> DatasetDescriptor:
         dataset_id=dataset_id,
         alias=dataset_id,
         partition_keys=keys,
-        partition_types={k: "varchar" for k in keys},
+        partition_types=partition_types_for(keys),
     )

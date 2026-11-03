@@ -97,5 +97,5 @@ python-source = "src"
 module-name = "datasus_fetcher._datasus_dbc"
 
 [build-system]
-requires = ["maturin>=1.5,<2.0"]
+requires = ["maturin>=1.5,<2.0", "hatchling>=1.27"]
 build-backend = "maturin"

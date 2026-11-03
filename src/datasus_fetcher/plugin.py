@@ -14,6 +14,7 @@ import typer
 from quantilica.cli.sdk import CheckPlan, CheckPlanItem, FetcherApp
 from quantilica.cli.ui import get_console, setup_rich_logging
 from quantilica.core.ftp import FtpClient
+from quantilica.core.sync import FreshnessPolicy
 from rich.rule import Rule
 from rich.table import Table
 
@@ -353,6 +354,7 @@ fetcher_app = FetcherApp(
     path_builder=datasus_path_builder,
     default_output=_DEFAULT_OUTPUT,
     client=FtpClient(FTP_HOST),
+    freshness_policy=FreshnessPolicy.REMOTE_ONLY,
 )
 
 app = fetcher_app.app
@@ -580,6 +582,11 @@ def cmd_sync(
                 )
                 raise typer.Exit(1) from None
 
+            if parquet_dir is not None:
+                console.print(
+                    "[yellow]Aviso:[/yellow] A flag '--parquet-dir' está depreciada. "
+                    "Use 'quantilica datasus convert' ou 'pipeline' para o Lake."
+                )
             parquet_out = parquet_dir or output
             console.print(Rule("[bold]Conversão para Parquet[/bold]"))
             convert_directory(

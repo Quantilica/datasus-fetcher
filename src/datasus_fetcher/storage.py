@@ -1,12 +1,16 @@
 import datetime as dt
-from collections.abc import Generator
+from collections.abc import Generator, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 from quantilica.core.dates import year_month_partition
 from quantilica.core.exceptions import ParseError
 from quantilica.core.files import is_complete_file
-from quantilica.core.storage import LocalStorage, build_stamped_filename
+from quantilica.core.storage import (
+    BaseDataRepository,
+    build_stamped_filename,
+)
 from quantilica.core.sync import (
     IncrementalSyncStrategy,
     RemoteStat,
@@ -198,7 +202,7 @@ def is_cached_download(
     return is_complete_file(target_path, expected_size) and skipped
 
 
-class DataRepository:
+class DataRepository(BaseDataRepository):
     """Manages local storage for DATASUS files using LocalStorage."""
 
     def __init__(self, root: Path | str):
@@ -207,48 +211,39 @@ class DataRepository:
         Args:
             root (Path | str): The root directory for local storage.
         """
-        self.storage = LocalStorage(root)
+        super().__init__(root)
 
-    def get_partition_dir(self, remote_file: RemoteFile) -> str:
-        """Returns the partition directory string for a remote file.
+    def path_for_entry(
+        self,
+        entry: Mapping[str, Any],
+        *,
+        last_modified: dt.date | dt.datetime | None = None,
+        precision: str = "date",
+        subdir_by_year: bool = False,
+    ) -> Path:
+        """Compute the destination path for a dataset entry with timestamp fallback.
 
-        Args:
-            remote_file (RemoteFile): The remote file.
-
-        Returns:
-            str: The partition directory string.
-        """
-        return get_partition_dir(remote_file)
-
-    def get_filename(self, remote_file: RemoteFile) -> str:
-        """Returns the filename for a remote file.
-
-        Args:
-            remote_file (RemoteFile): The remote file.
-
-        Returns:
-            str: The generated filename.
-        """
-        return get_filename(remote_file)
-
-    def get_data_filepath(self, file: RemoteFile) -> Path:
-        """Returns the absolute path where the file should be stored.
+        If last_modified is None, uses today's date as fallback to ensure
+        all files get an @YYYYMMDD stamp (A7 archetype compliance).
 
         Args:
-            file (RemoteFile): The remote file.
+            entry: Mapping containing metadata (group, id, ext, year, etc.).
+            last_modified: The last modified timestamp to stamp, or None.
+            precision: The timestamp precision ("date" or "datetime").
+            subdir_by_year: If True and year is present, place under
+                ``{dataset_id}/{year}/``.
 
         Returns:
-            Path: The absolute path for the file.
+            Path: The computed local path under the storage root.
         """
-        dataset = file.dataset
-        partition_dir = get_partition_dir(file)
-        filename = get_filename(file)
-        key = (
-            f"{dataset}/{partition_dir}/{filename}"
-            if partition_dir
-            else f"{dataset}/{filename}"
+        # Fallback to today's date when last_modified is None
+        timestamp = last_modified or dt.date.today()
+        return super().path_for_entry(
+            entry,
+            last_modified=timestamp,
+            precision=precision,  # type: ignore[arg-type]
+            subdir_by_year=subdir_by_year,
         )
-        return self.storage.path_for(key)
 
 
 def get_file_metadata(file: Path) -> File:

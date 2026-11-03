@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING, Any
 try:
     import polars as pl
     from quantilica.analytics.lake import LakeError, LakeWriter
-    from quantilica.core.lake import DatasetDescriptor
+    from quantilica.core.lake import DatasetDescriptor, partition_types_for
 except ImportError as exc:
     raise ImportError(
         "datasus_fetcher.lake requer o extra 'analysis': "
@@ -185,7 +185,7 @@ class LakeConverter:
                         dataset_id=dataset_id,
                         alias=dataset_id,
                         partition_keys=partition_keys,
-                        partition_types={k: "varchar" for k in partition_keys},
+                        partition_types=partition_types_for(partition_keys),
                     ),
                     force=force,
                 )
