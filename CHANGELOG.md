@@ -7,6 +7,8 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+## [0.17.4] - 2026-11-04
+
 ### Corrigido
 - Sem o extra `analysis`, o comando `convert` termina com código 1 e a instrução de instalação (`quantilica install datasus --extra analysis`), sem traceback.
 
