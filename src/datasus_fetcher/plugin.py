@@ -624,7 +624,14 @@ def cmd_decompress(
     """Descompactar arquivo ou pasta .dbc para .dbf nativamente."""
     setup_rich_logging(verbose, console=console)
     if input.is_dir():
-        from datasus_fetcher.wrangling import convert_directory
+        try:
+            from datasus_fetcher.wrangling import convert_directory
+        except ImportError:
+            console.print(
+                "[red]Erro:[/red] a descompressão de pastas requer extras de "
+                "análise: quantilica install datasus --extra analysis"
+            )
+            raise typer.Exit(1) from None
 
         out_dir = output or input
         convert_directory(input, out_dir, target_format="dbf", workers=workers)
@@ -646,7 +653,13 @@ def convert(
     force: bool = False,
 ) -> Any:
     """Converte arquivos brutos do DATASUS (.dbc/.dbf) para o lake Hive (Parquet)."""
-    from datasus_fetcher import lake
+    try:
+        from datasus_fetcher import lake
+    except ImportError as exc:
+        raise ImportError(
+            "Conversão para o lake requer o extra 'analysis'. "
+            "Instale com: quantilica install datasus --extra analysis"
+        ) from exc
 
     return lake.converter.convert(input_dir, lake_dir, datasets=dataset, force=force)
 
