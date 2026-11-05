@@ -65,6 +65,8 @@ datasus = "datasus_fetcher.lake:converter"
 
 [dependency-groups]
 dev = [
+    "pyright>=1.1.400",
+    "pytest-cov>=7.1",
     "ruff>=0.9.0",
     "pytest>=8.0.0",
     "pytest-mock>=3.12",
@@ -99,3 +101,15 @@ module-name = "datasus_fetcher._datasus_dbc"
 [build-system]
 requires = ["maturin>=1.5,<2.0", "hatchling>=1.27"]
 build-backend = "maturin"
+
+[tool.pyright]
+typeCheckingMode = "basic"
+include = ["src"]
+
+[tool.coverage.run]
+source = ["datasus_fetcher"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+skip_covered = true

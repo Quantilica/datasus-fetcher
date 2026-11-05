@@ -51,5 +51,10 @@ jobs:
           uv run --no-sync ruff check src/ tests/
           uv run --no-sync ruff format --check src/ tests/
 
-      - name: Run tests
-        run: uv run --no-sync pytest
+      - name: Run tests with coverage
+        # Limiar: [tool.coverage.report] fail_under no pyproject (se houver).
+        run: uv run --no-sync pytest --cov --cov-report=term-missing
+
+      - name: Type check with pyright
+        continue-on-error: true
+        run: uv run --no-sync pyright
