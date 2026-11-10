@@ -14,6 +14,7 @@ import typer
 from quantilica.cli.sdk import CheckPlan, CheckPlanItem, FetcherApp
 from quantilica.cli.ui import get_console, setup_rich_logging
 from quantilica.core.ftp import FtpClient
+from quantilica.core.registry import FetcherInfo
 from quantilica.core.sync import FreshnessPolicy
 from rich.rule import Rule
 from rich.table import Table
@@ -348,6 +349,15 @@ def _datasus_check_entry(entry: dict, output_dir: Path) -> CheckPlanItem:
 fetcher_app = FetcherApp(
     name="datasus-fetcher",
     help="Dados brutos do DATASUS (SIH, SIM, CNES, etc.).",
+    info=FetcherInfo(
+        id="datasus",
+        nome="DATASUS - Microdados do SUS",
+        orgao="Departamento de Informática do Sistema Único de Saúde "
+        "(DATASUS), Ministério da Saúde",
+        homepage="https://datasus.saude.gov.br",
+        cadencia="monthly",
+        dominio="saude",
+    ),
     groups_dict=meta.datasets,
     aliases_dict={},
     list_datasets=datasus_list_datasets,
