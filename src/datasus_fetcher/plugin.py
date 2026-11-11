@@ -426,6 +426,19 @@ def cmd_list(
     )
 
 
+# Mesmo contrato do ``sync`` do ``FetcherApp`` (quantilica-cli >= 0.19.0,
+# ``EXIT_SYNC_PARTIAL``): 3 = parte dos arquivos baixou e parte falhou; 1 = nada
+# baixou; 0 = sem erros. Definido aqui para não exigir a versão nova do host.
+EXIT_SYNC_PARTIAL = 3
+
+
+def sync_exit_code(downloaded: int, errors: list[tuple[str, str]]) -> int:
+    """Código de saída do ``sync`` dado o resultado de ``download_datasets``."""
+    if not errors:
+        return 0
+    return EXIT_SYNC_PARTIAL if downloaded > 0 else 1
+
+
 @app.command("sync")
 def cmd_sync(
     datasets: Annotated[
@@ -549,6 +562,7 @@ def cmd_sync(
             console.print("[yellow]Download cancelado pelo usuário.[/yellow]")
             raise typer.Exit(code=130) from None
 
+    exit_code = 0
     try:
         if dry_run:
             total_size = sum(e["size"] or 0 for e in entries)
@@ -575,9 +589,21 @@ def cmd_sync(
             return
 
         if force:
-            fetcher_app.download_datasets(entries, output, workers=threads, force=True)
+            downloaded, total, errors = fetcher_app.download_datasets(
+                entries, output, workers=threads, force=True
+            )
         else:
-            fetcher_app.download_datasets(entries, output, workers=threads)
+            downloaded, total, errors = fetcher_app.download_datasets(
+                entries, output, workers=threads
+            )
+        console.print(
+            f"\n[green]Concluído:[/green] {downloaded}/{total} arquivo(s) baixado(s)."
+        )
+        if errors:
+            console.print(f"[red]{len(errors)} erro(s):[/red]")
+            for eid, emsg in errors:
+                console.print(f"  {eid}: {emsg}")
+        exit_code = sync_exit_code(downloaded, errors)
 
         if convert:
             try:
@@ -612,6 +638,11 @@ def cmd_sync(
     except KeyboardInterrupt:
         console.print("[yellow]Download cancelado pelo usuário.[/yellow]")
         raise typer.Exit(code=130) from None
+
+    # Erros de arquivo nunca saem como sucesso (a conversão acima já rodou com o
+    # que baixou).
+    if exit_code:
+        raise typer.Exit(exit_code)
 
 
 @app.command("decompress")

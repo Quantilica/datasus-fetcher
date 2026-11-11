@@ -13,6 +13,9 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ### Alterado
 - Requer `quantilica-core>=0.19.0` (e `quantilica-cli>=0.17.0` como host).
 
+### Corrigido
+- `sync` não sai mais com código 0 quando algum arquivo falha, e passa a listar os erros ("N erro(s)") e o resumo "Concluído: X/Y arquivo(s) baixado(s)". Sai com `3` se parte dos arquivos baixou e parte falhou, com `1` se nada baixou e com `0` sem erros, o mesmo contrato do `sync` dos demais fetchers. Com `--convert`, a conversão roda com o que baixou antes de sair com o código.
+
 ## [0.17.4] - 2026-11-04
 
 ### Corrigido
