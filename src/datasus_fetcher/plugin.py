@@ -354,6 +354,10 @@ fetcher_app = FetcherApp(
         nome="DATASUS - Microdados do SUS",
         orgao="Departamento de Informática do Sistema Único de Saúde "
         "(DATASUS), Ministério da Saúde",
+        licenca=(
+            "Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) "
+            "e Decreto 8.777/2016"
+        ),
         homepage="https://datasus.saude.gov.br",
         cadencia="monthly",
         dominio="saude",
