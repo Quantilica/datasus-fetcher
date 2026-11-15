@@ -10,6 +10,9 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ### Adicionado
 - Testes: identidade do registro conferida.
 
+### Corrigido
+- CI: o índice Quantilica passa a ser explícito (`[[tool.uv.index]]` com `explicit = true` e `[tool.uv.sources]` só para `quantilica-analytics`). O `uv sync` deixa de consultar o índice para cada pacote de terceiros, que o GitHub Pages responde com 503 intermitente quando o caminho não existe.
+
 ## [0.19.0] - 2026-11-14
 
 ### Alterado

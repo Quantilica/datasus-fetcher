@@ -80,6 +80,18 @@ dev = [
     "rich>=13.0.0",
 ]
 
+[tool.uv.sources]
+# O índice Quantilica (GitHub Pages) responde 503 intermitente a pacotes que não
+# hospeda. Como índice explícito, o uv só o consulta para os pacotes ligados a
+# ele aqui (os do ecossistema que não estão no PyPI); o resto vem só do PyPI.
+# Pacote Quantilica novo que só exista no índice entra nesta lista.
+quantilica-analytics = { index = "quantilica" }
+
+[[tool.uv.index]]
+name = "quantilica"
+url = "https://index.quantilica.com/simple/"
+explicit = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = ["-p", "no:cacheprovider"]
