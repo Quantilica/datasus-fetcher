@@ -29,9 +29,9 @@ jobs:
 
       # O índice Quantilica (GitHub Pages) já deu flake de DNS no runner
       # (2026-08-23: rtn e inmet) e responde 503 intermitente a pacote que não
-      # hospeda (2026-11-15). O índice é explícito no pyproject ([[tool.uv.index]]
-      # + [tool.uv.sources]): só quantilica-analytics passa por ele; o resto vem do
-      # PyPI. Por isso não há --index aqui. Três tentativas removem o flake sem
+      # hospeda (2026-11-15). O pyproject declara o PyPI antes do índice
+      # ([[tool.uv.index]]); com first-index só quantilica-analytics passa por ele.
+      # Por isso não há --index aqui. Três tentativas removem o flake sem
       # esconder erro real de resolução.
       - name: Install dependencies
         run: |

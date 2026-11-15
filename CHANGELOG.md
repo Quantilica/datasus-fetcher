@@ -11,7 +11,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - Testes: identidade do registro conferida.
 
 ### Corrigido
-- CI: o índice Quantilica passa a ser explícito (`[[tool.uv.index]]` com `explicit = true` e `[tool.uv.sources]` só para `quantilica-analytics`). O `uv sync` deixa de consultar o índice para cada pacote de terceiros, que o GitHub Pages responde com 503 intermitente quando o caminho não existe.
+- CI: o pyproject declara o PyPI antes do índice Quantilica (`[[tool.uv.index]]`), e o workflow perde `--index` e `--index-strategy`. Com a estratégia padrão `first-index`, o `uv sync` só consulta o índice para o que não está no PyPI (`quantilica-analytics`) e deixa de receber o 503 intermitente que o GitHub Pages devolve a caminhos inexistentes.
 
 ## [0.19.0] - 2026-11-14
 
