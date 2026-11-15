@@ -80,17 +80,19 @@ dev = [
     "rich>=13.0.0",
 ]
 
-[tool.uv.sources]
-# O índice Quantilica (GitHub Pages) responde 503 intermitente a pacotes que não
-# hospeda. Como índice explícito, o uv só o consulta para os pacotes ligados a
-# ele aqui (os do ecossistema que não estão no PyPI); o resto vem só do PyPI.
-# Pacote Quantilica novo que só exista no índice entra nesta lista.
-quantilica-analytics = { index = "quantilica" }
+# Índices: o uv procura em ordem e para no primeiro que tem o pacote
+# (index-strategy padrão first-index). O PyPI vem antes, então o índice
+# Quantilica (GitHub Pages, que responde 503 intermitente a pacote que não
+# hospeda) só é consultado para o que não está no PyPI (quantilica-analytics).
+# Sem [tool.uv.sources]: no workspace do monorepo quantilica-analytics é membro
+# e uma fonte de índice aqui quebraria o `uv run` da raiz.
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple/"
 
 [[tool.uv.index]]
 name = "quantilica"
 url = "https://index.quantilica.com/simple/"
-explicit = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
