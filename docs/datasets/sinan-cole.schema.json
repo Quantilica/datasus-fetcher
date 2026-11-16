@@ -1,0 +1,675 @@
+{
+  "fonte": "datasus",
+  "dataset": "sinan-cole",
+  "gerado_em": "2026-11-16T18:27:31+00:00",
+  "particoes": [
+    "ano"
+  ],
+  "colunas": [
+    {
+      "nome": "tp_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "id_agravo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "dt_notific",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "sem_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "nu_ano",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "sg_uf_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "id_municip",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "id_regiona",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "dt_sin_pri",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "sem_pri",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "dt_nasc",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "nu_idade_n",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_sexo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_gestant",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_raca",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_escol_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "sg_uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "id_mn_resi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "id_rg_resi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "id_pais",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "dt_invest",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "id_ocupa_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "fc_contato",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "fc_cont_de",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "vinculo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "out_vincul",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_assinto",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_diarre",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_caimbra",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_febre",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_vomitos",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_dor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_choque",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_desit",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "tip_diarre",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_frequen",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_sangue",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_muco",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_tipo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "dt_atendim",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "dt_interna",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "uf_hospita",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "nm_munic_h",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_materia",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_vomito",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "dt_coleta",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_antib",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "nm_antibio",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_resulta",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_positiv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_neg_esp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_reidrat",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "cs_antib_t",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "antib_des",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "classi_fin",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "criterio",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "tpautocto",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "coufinf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "copaisinf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "comuninf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "codisinf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "doenca_tra",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "evolucao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "dt_obito",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "dt_encerra",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "dt_digita",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "dt_desc1",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "dt_desc2",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "dt_desc3",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "co_uf_des1",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "co_uf_des2",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "co_uf_des3",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "mun_des1",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "mun_des2",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "mun_des3",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "pa_des1",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "pa_des2",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "pa_des3",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "ds_trans1",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "ds_trans2",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "ds_trans3",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2016",
+      "periodo_fim": "2016"
+    }
+  ],
+  "arquivos": 1
+}

@@ -1,33 +1,60 @@
-# `sinan-espo` — Esporotricose (Epizootia)
+---
+dataset:
+  id: sinan-espo
+  fonte: datasus
+  titulo: Esporotricose (Epizootia)
+  resumo: O sinan-espo contém os registros de notificação de epizootias e casos animais de Esporotricose (dermatofitose por *Sporothrix* spp., transmissível de felinos a humanos) registrados no módulo específico do Sistema de Informação de Agravos de Notificação (SINAN)
+  orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
+  pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
+  licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
+  periodicidade: anual (um arquivo por UF ou nacional, por ano)
+  cobertura:
+    inicio: '2013'
+    fim: '2022'
+  unidade: uma ficha de notificação/investigação de esporotricose (Epizootia)
+  granularidade:
+    espacial: município de notificação e de residência do paciente; arquivo nacional
+    temporal: data da notificação e de início dos sintomas; arquivo anual
+  formato_bruto: DBC (DBF comprimido com PKWARE DCL), codificação latin1, um arquivo nacional (`BR`) por ano; o ano corrente fica em diretório de preliminares
+  lake:
+    estado: convertido
+    particoes:
+    - ano
+    chave: []
+    colunas: 19
+  unidades_de_medida:
+    id_notific: 'número inteiro: contagem ou código numérico (ver Descrição)'
+    nu_ano: 'número inteiro: contagem ou código numérico (ver Descrição)'
+    especie: 'número inteiro: contagem ou código numérico (ver Descrição)'
+    g_d: 'número inteiro: contagem ou código numérico (ver Descrição)'
+    g_m: 'número inteiro: contagem ou código numérico (ver Descrição)'
+    c_d: 'número inteiro: contagem ou código numérico (ver Descrição)'
+    c_m: 'número inteiro: contagem ou código numérico (ver Descrição)'
+  dados_pessoais: nenhum
+  eras: []
+  revisado_em: '2026-11-16'
+  versao_fetcher: 0.19.0
+---
+
+# Esporotricose (Epizootia) (`sinan-espo`)
+
+## Resumo
 
 O `sinan-espo` contém os registros de **notificação de epizootias e casos animais** de Esporotricose (dermatofitose por *Sporothrix* spp., transmissível de felinos a humanos) registrados no módulo específico do Sistema de Informação de Agravos de Notificação (SINAN) do Ministério da Saúde. Cada registro (linha) representa a notificação consolidada de ocorrência de esporotricose em animais (com destaque para felinos, principal reservatório dos surtos urbanos), registrada por unidades de saúde e serviços de zoonoses e digitada no SINAN Net — leiaute compacto de 17 colunas com identificação da notificação, período (semana/mês), local (UF/município), zona e ambiente de ocorrência (`TP_ZN_OCO`/`TP_AMB_OCO`), espécie animal (`ESPECIE`) e indicadores de ocorrência em gatos (`G_D`/`G_M`) e cães (`C_D`/`C_M`) — suporte à Vigilância Integrada em Zoonoses (esporotricose felina/canina e notificação humana) instituída pela Nota Técnica nº 60/2023-CGZV/DEDT.
 
-## Ficha Técnica
+## Ficha técnica
 
-| Atributo | Valor |
-|---|---|
-| **Sistema / Grupo** | `sinan` — SINAN: Sistema de Informação de Agravos de Notificação |
-| **Código no `datasus-fetcher`** | `sinan-espo` |
-| **Formato dos arquivos** | `.dbc` (comprimido dBASE, descompactável nativamente em Rust) |
-| **Particionamento** | `uf`, `year` (arquivos consolidados anuais, praticamente sempre `br`) |
-| **Periodicidade** | Anual (apenas bases `FINAIS`; sem diretório `PRELIM`) |
-| **Cobertura temporal no FTP** | 2013 a 2022, apenas em `FINAIS` (conforme `index.json`) |
-| **Volume aproximado no FTP** | 10 arquivos (~0,4 MB) |
-| **Arquivos preliminares** | Sim — `meta.py` também consulta `PRELIM`, mas hoje o diretório não contém arquivos do agravo (toda a série está em `FINAIS`) |
-| **Documentação oficial no FTP** | `/dissemin/publicos/SINAN/DOCS` |
-| **Tabelas auxiliares no FTP** | `/dissemin/publicos/SINAN/AUXILIAR` |
+<!-- gerado:ficha -->
 
-## 1. Contexto Institucional e Epidemiológico
+## Origem e coleta
 
-A esporotricose é uma zoonose micótica em expansão no Brasil, associada à transmissão preferencial por felinos domiciliados e errantes (*Sporothrix brasiliensis*), com surtos urbanos reiteradamente descritos desde os anos 1990 (notadamente no Rio de Janeiro). Em 2023, a vigilância do agravo foi normatizada pela **Nota Técnica nº 60/2023-CGZV/DEDT** (Coordenação-Geral de Vigilância das Zoonoses e Doenças de Transmissão Veterinária/DEDT/SVSA), que institui a vigilância integrada de esporotricose em humanos e animais — as epizootias em felinos e cães passam a ser registradas em módulo próprio do SINAN, em regra pelos serviços de zoonoses e pelas unidades de saúde
-
-O evento gerador deste dataset é a ficha de notificação de esporotricose animal do SINAN (módulo de epizootias, referenciado pela Nota Técnica do agravo). Cada registro é uma notificação consolidada por município-semana, com: identificação da notificação (`ID_NOTIFIC`, sequencial), ano (`NU_ANO`), data de notificação e de digitação (`DT_NOTIFIC`, `DT_DIGITA`), UF e município (`SG_UF_NOT`, `ID_MUNICIP`), semanas epidemiológicas de notificação e de início da epizootia (`SEM_NOT`, `SEM_PRI`), data de início da epizootia (`DT_INI_EPI`), zona da ocorrência (`TP_ZN_OCO`: urbana, rural, periurbana, ignorado), ambiente onde ocorreu a epizootia (`TP_AMB_OCO`: 1 - Domicílio, 2 - Parque, praça ou zoológico, 3 - Área Silvestre, 4 - Reserva Ecológica, 5 - Outro, com descrição em `DS_OUT_AMB`), espécie animal afetada (`ESPECIE`, código conforme dicionário — nos dados observados, o valor 1 concentra a vigilância de felinos) e presença de animais sintomáticos/óbitos por espécie: gatos (`G_D` = doentes, `G_M` = mortos) e cães (`C_D` = doentes, `C_M` = mortos), campos binários/contagem conforme a ficha. A unidade de análise é a notificação de epizootia/caso animal.
-
-A série histórica é curta e recente: o FTP contém apenas as bases `FINAIS` de **2013 a 2022** (10 arquivos, sem diretório `PRELIM`), com última atualização em 08/01/2024 (dois arquivos reenviados em 18/01/2024). O volume inicial é minúsculo (arquivo de 2013 com poucas dezenas de registros, concentrados em municípios do Rio de Janeiro — `SG_UF_NOT` 33) e cresce ao longo dos anos: a vigilância de esporotricose animal (notificação por município/felino) se expande nacionalmente nos anos seguintes, via serviços de zoonoses/CIEVS (módulo de "Sistemas Auxiliares" do SINAN — Epizootias).
-
-Aplicações analíticas típicas: evolução do número de notificações por ano/UF (`NU_ANO`, `SG_UF_NOT`); distribuição de zona e ambiente (`TP_ZN_OCO`, `TP_AMB_OCO`) — perfil urbano/domiciliar da esporotricose felina; espécie e indicadores por espécie (`ESPECIE`, gatos vs cães em `G_D`/`C_D`); sazonalidade por semana epidemiológica (`SEM_NOT`, `SEM_PRI`); e correlação com casos humanos de esporotricose em municípios com notificação ativa (vigilância integrada NT 60/2023).
-
-## 2. Metadados Técnicos no FTP DATASUS
+- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
+- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (arquivos consolidados anuais, praticamente sempre `br`)
+- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2013 a 2022, apenas em `FINAIS` (conforme `index.json`)
+- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 10 arquivos (~0,4 MB)
+- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim — `meta.py` também consulta `PRELIM`, mas hoje o diretório não contém arquivos do agravo (toda a série está em `FINAIS`)
+- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -42,9 +69,22 @@ Aplicações analíticas típicas: evolução do número de notificações por a
 - **No armazenamento local do `datasus-fetcher`**: caminho padronizado `data/sinan-espo/<ano>/sinan-espo_<período>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-espo/2022/sinan-espo_2022-br@20240108.dbc`.
 - **Documentação e Tabelas Auxiliares associadas**: no diretório `SINAN/DOCS` estão `Docs_TAB_SINAN.zip` e as instruções POP_I/II/III de acesso, descompactação e tabulação; em `SINAN/AUXILIAR` estão `TAB_SINANNET.zip`, `TAB_SINANONLINE.zip` e `POPT_Estimativa_TCU_2019_Sinan.zip` (denominadores populacionais). A normatização do agravo está na **Nota Técnica nº 60/2023-CGZV/DEDT** (Vigilância da Esporotricose).
 
-## 3. Principais Variáveis e Qualidade dos Dados
+## Conteúdo
 
-### Variáveis-Chave dos Microdados
+A esporotricose é uma zoonose micótica em expansão no Brasil, associada à transmissão preferencial por felinos domiciliados e errantes (*Sporothrix brasiliensis*), com surtos urbanos reiteradamente descritos desde os anos 1990 (notadamente no Rio de Janeiro). Em 2023, a vigilância do agravo foi normatizada pela **Nota Técnica nº 60/2023-CGZV/DEDT** (Coordenação-Geral de Vigilância das Zoonoses e Doenças de Transmissão Veterinária/DEDT/SVSA), que institui a vigilância integrada de esporotricose em humanos e animais — as epizootias em felinos e cães passam a ser registradas em módulo próprio do SINAN, em regra pelos serviços de zoonoses e pelas unidades de saúde
+
+O evento gerador deste dataset é a ficha de notificação de esporotricose animal do SINAN (módulo de epizootias, referenciado pela Nota Técnica do agravo). Cada registro é uma notificação consolidada por município-semana, com: identificação da notificação (`ID_NOTIFIC`, sequencial), ano (`NU_ANO`), data de notificação e de digitação (`DT_NOTIFIC`, `DT_DIGITA`), UF e município (`SG_UF_NOT`, `ID_MUNICIP`), semanas epidemiológicas de notificação e de início da epizootia (`SEM_NOT`, `SEM_PRI`), data de início da epizootia (`DT_INI_EPI`), zona da ocorrência (`TP_ZN_OCO`: urbana, rural, periurbana, ignorado), ambiente onde ocorreu a epizootia (`TP_AMB_OCO`: 1 - Domicílio, 2 - Parque, praça ou zoológico, 3 - Área Silvestre, 4 - Reserva Ecológica, 5 - Outro, com descrição em `DS_OUT_AMB`), espécie animal afetada (`ESPECIE`, código conforme dicionário — nos dados observados, o valor 1 concentra a vigilância de felinos) e presença de animais sintomáticos/óbitos por espécie: gatos (`G_D` = doentes, `G_M` = mortos) e cães (`C_D` = doentes, `C_M` = mortos), campos binários/contagem conforme a ficha. A unidade de análise é a notificação de epizootia/caso animal.
+
+A série histórica é curta e recente: o FTP contém apenas as bases `FINAIS` de **2013 a 2022** (10 arquivos, sem diretório `PRELIM`), com última atualização em 08/01/2024 (dois arquivos reenviados em 18/01/2024). O volume inicial é minúsculo (arquivo de 2013 com poucas dezenas de registros, concentrados em municípios do Rio de Janeiro — `SG_UF_NOT` 33) e cresce ao longo dos anos: a vigilância de esporotricose animal (notificação por município/felino) se expande nacionalmente nos anos seguintes, via serviços de zoonoses/CIEVS (módulo de "Sistemas Auxiliares" do SINAN — Epizootias).
+
+Aplicações analíticas típicas: evolução do número de notificações por ano/UF (`NU_ANO`, `SG_UF_NOT`); distribuição de zona e ambiente (`TP_ZN_OCO`, `TP_AMB_OCO`) — perfil urbano/domiciliar da esporotricose felina; espécie e indicadores por espécie (`ESPECIE`, gatos vs cães em `G_D`/`C_D`); sazonalidade por semana epidemiológica (`SEM_NOT`, `SEM_PRI`); e correlação com casos humanos de esporotricose em municípios com notificação ativa (vigilância integrada NT 60/2023).
+
+### Cobertura observada
+
+- Índice do FTP (2026-10): 10 arquivos, de 2013 a 2022, 1 UF(s) com arquivos, última atualização em 2024-01-18.
+- Conversão local de amostras (5 arquivo(s) Parquet, de 2013 a 2022), feita em 2026-11-16 com o `datasus-fetcher` 0.19.0: serve de base ao esquema de referência. Períodos fora das amostras podem ter colunas que não aparecem aqui.
+
+### Variáveis de uso mais frequente (resumo da versão anterior desta página)
 
 Schema extraído de `ESPOBR13.dbc` (17 colunas depois de remover `_deleted`).
 
@@ -63,14 +103,65 @@ Schema extraído de `ESPOBR13.dbc` (17 colunas depois de remover `_deleted`).
 | `G_D` / `G_M` | String (1) | Presença/ocorrência de gatos doentes e de gatos mortos |
 | `C_D` / `C_M` | String (1) | Presença/ocorrência de cães doentes e de cães mortos |
 
-### Observações de Tratamento e Saneamento (`wrangle_datasus`)
+## Variáveis
 
-- **Preservação de códigos estruturados**: `ID_MUNICIP` (IBGE, `String` com `zfill`); `TP_ZN_OCO`, `TP_AMB_OCO` e `ESPECIE` são códigos de dicionário e só devem virar categóricos após mapeamento explícito.
-- **Datas e competências**: `DT_NOTIFIC`, `DT_DIGITA` e `DT_INI_EPI` vêm como `AAAAMMDD` no DBF e são convertidas para `pl.Date` pelo saneamento canônico (`wrangle_datasus`); `SEM_NOT`/`SEM_PRI` são semanas epidemiológicas no formato `AAAASS` (texto com ano + semana).
-- **Valores ausentes e sentinelas**: códigos ignorados (`9`), o literal `00000000` em datas e espaços em branco viram nulo por `SENTINEL_NULLS`; registros com marcador lógico dBASE `_deleted` são removidos.
-- **Particularidades do dataset**: base de **notificação de epizootia/casos animais** — não há registros individuais de pacientes, dados clínicos, exames ou desfechos humanos neste dataset (casos humanos de esporotricose migraram para vigilância integrada à parte, via NT 60/2023); cobertura restrita a `FINAIS` 2013–2022 sem arquivos preliminares; e os campos `G_D`/`G_M`/`C_D`/`C_M` frequentemente vêm em branco (ex.: em `ESPOBR13.dbc` `C_D`/`C_M` vazios), exigindo tratamento cuidadoso de nulos para não confundir "sem info" com "não ocorreu".
+| Coluna no lake | Na fonte | Tipo | Descrição | Unidade / códigos | Período |
+|---|---|---|---|---|---|
+| `id_notific` | `ID_NOTIFIC` | inteiro | Código (tipo, identificação ou classificação) registrado na ficha de Esporotricose (Epizootia) (`ID_NOTIFIC`); o dicionário consultado não define o campo isoladamente | — | todos |
+| `nu_ano` | `NU_ANO` | inteiro | (campo interno). Ano da notificação | — | todos |
+| `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
+| `dt_digita` | `DT_DIGITA` | data | Data de digitação. Data de Digitação da primeira inclusão da notificação no sistema | — | todos |
+| `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_notifi cacao | — | todos |
+| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno). ds_semana_sinto ma | — | todos |
+| `dt_ini_epi` | `DT_INI_EPI` | data | Data de início da epizootia (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `tp_zn_oco` | `TP_ZN_OCO` | texto | Zona de ocorrência da epizootia (urbana, rural ou periurbana) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `tp_amb_oco` | `TP_AMB_OCO` | texto | Ambiente de ocorrência da epizootia (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `ds_out_amb` | `DS_OUT_AMB` | texto | Descrição de outro ambiente de ocorrência da epizootia (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `especie` | `ESPECIE` | inteiro | Espécie do animal (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `g_d` | `G_D` | inteiro | Número de animais doentes (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `g_m` | `G_M` | inteiro | Número de animais mortos (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `c_d` | `C_D` | inteiro | Número de animais doentes (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `c_m` | `C_M` | inteiro ou texto | Número de animais mortos (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `uf` | — | texto | UF do arquivo de origem (sigla em minúsculas, `br` para arquivos nacionais), gravada pelo conversor; as linhas do período saem ordenadas por ela | sigla da UF | todos |
+| `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
 
-## 4. Exemplos Práticos
+## No lake
+
+- **Dataset no lake:** `datasus/sinan-espo`, particionado por `ano` (diretórios `chave=valor`). A UF do arquivo de origem vai na coluna `uf` (as linhas do período saem ordenadas por ela) e o nome do arquivo bruto, na coluna `_origem`; os arquivos de uma mesma partição compartilham um Parquet.
+- **Chave:** sem chave natural declarada. Nenhuma combinação de colunas foi conferida como única nas amostras; para tirar duplicatas, defina a chave por consulta (ver Cuidados de uso).
+- **Tipos nas amostras** (número de colunas): data: 3, inteiro: 7, texto: 10.
+- **Transformações do conversor** (`datasus-fetcher` 0.19.0, `wrangle_datasus` e `LakeConverter`): nomes de coluna em minúsculas; textos aparados (espaços das pontas saem); valores de preenchimento (texto vazio, `NA`, `null`, `None` e códigos como `999999` e `00000000`, conforme a lista `SENTINEL_NULLS` do pacote) viram nulo; colunas de código (CID, CNES, município, procedimento, CEP, número de AIH e semelhantes) ficam como texto, preservando zeros à esquerda; colunas de data no formato `AAAAMMDD` viram data (valores inválidos interrompem a conversão em vez de virarem nulo); valores monetários com casas decimais ficam como decimal exato; registros marcados como excluídos no DBF são descartados; arquivos DBC sem nenhuma linha não passam pela limpeza (ver Cuidados de uso).
+- **Colunas renomeadas por colidir com partição** (SINAN): `UF` vira `uf_hospital`.
+- **Esquema de referência:** `sinan-espo.schema.json`, gerado por conversão local de amostras. Tipos listados com mais de um valor variam entre partições.
+
+## Cuidados de uso
+
+- base de **notificação de epizootia/casos animais** — não há registros individuais de pacientes, dados clínicos, exames ou desfechos humanos neste dataset (casos humanos de esporotricose migraram para vigilância integrada à parte, via NT 60/2023); cobertura restrita a `FINAIS` 2013–2022 sem arquivos preliminares; e os campos `G_D`/`G_M`/`C_D`/`C_M` frequentemente vêm em branco (ex.: em `ESPOBR13.dbc` `C_D`/`C_M` vazios), exigindo tratamento cuidadoso de nulos para não confundir "sem info" com "não ocorreu". (texto da versão anterior desta página; não reconferido nesta revisão.)
+- **Tipo que varia entre períodos:** `c_m` aparecem com mais de um tipo nas amostras (por exemplo, inteiro em alguns períodos e texto em outros); leia a coluna `Tipo` do dicionário e converta explicitamente antes de empilhar períodos. Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
+- **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
+- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
+
+## Exemplos
+
+### Consulta sobre o lake (polars)
+
+Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+
+```python
+import polars as pl
+
+(
+    pl.scan_parquet("lake/datasus/sinan-espo/**/*.parquet", hive_partitioning=True)
+    .group_by("ano", "sg_uf_not")
+    .agg(pl.len().alias("fichas"))
+    .sort("ano", "sg_uf_not")
+    .collect()
+)
+```
+
+O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
 ### Via CLI (`quantilica datasus` / `datasus-fetcher`)
 
@@ -111,8 +202,7 @@ print(amb)
 mun = qdf.group_by("id_municip").len().sort("len", descending=True)
 print(mun.head(10))
 ```
-
-## 5. Referências Oficiais
+## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS`
 - **Portal de Transferência de Arquivos do DATASUS**: https://datasus.saude.gov.br/transferencia-de-arquivos/

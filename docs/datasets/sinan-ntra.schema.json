@@ -1,0 +1,227 @@
+{
+  "fonte": "datasus",
+  "dataset": "sinan-ntra",
+  "gerado_em": "2026-11-16T18:27:31+00:00",
+  "particoes": [
+    "ano"
+  ],
+  "colunas": [
+    {
+      "nome": "dt_notific",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_ano",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_agravo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "sg_uf_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_municip",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_unidade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "sem_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_regiona",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "cs_inqueri",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_casoexa",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_casopos",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_digita",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_transus",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_transdm",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_transsm",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_transrm",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_transrs",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_transse",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_lote",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_lote_v",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_lote_h",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_sema_ep",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "tpuninot",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2010"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_notific",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2015"
+    },
+    {
+      "nome": "ident_micr",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2015"
+    }
+  ],
+  "arquivos": 5
+}

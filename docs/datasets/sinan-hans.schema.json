@@ -1,0 +1,531 @@
+{
+  "fonte": "datasus",
+  "dataset": "sinan-hans",
+  "gerado_em": "2026-11-16T18:27:31+00:00",
+  "particoes": [
+    "ano"
+  ],
+  "colunas": [
+    {
+      "nome": "tp_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_agravo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_notific",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_ano",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "sg_uf_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_municip",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_regiona",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_unidade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_diag",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "sem_diag",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "ano_nasc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_idade_n",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "cs_sexo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "cs_gestant",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "cs_raca",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "cs_escol_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "sg_uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_mn_resi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_rg_resi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_pais",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nduplic_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_digita",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_transus",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_transdm",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_transsm",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_transrm",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_transrs",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_transse",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_lote_v",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_lote_h",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "cs_flxret",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "flxrecebi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "migrado_w",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_ocupa_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_lesoes",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "formaclini",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "avalia_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "classopera",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "modoentr",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "mododetect",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "baciloscop",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dtinictrat",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "esq_ini_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "contreg",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nervosafet",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "ufatual",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_muni_at",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_noti_at",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_unid_at",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "ufresat",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "muniresat",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dtultcomp",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "classatual",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "aval_atu_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "esq_atu_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dose_receb",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "epis_racio",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dtmudesq",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "contexam",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dtalta_n",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "tpalta_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "in_vincula",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_lote_ia",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2026"
+    }
+  ],
+  "arquivos": 5
+}

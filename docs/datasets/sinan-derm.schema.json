@@ -1,0 +1,531 @@
+{
+  "fonte": "datasus",
+  "dataset": "sinan-derm",
+  "gerado_em": "2026-11-16T18:27:31+00:00",
+  "particoes": [
+    "ano"
+  ],
+  "colunas": [
+    {
+      "nome": "tp_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_agravo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_notific",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "sem_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_ano",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "sg_uf_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_municip",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_regiona",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_unidade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_diag",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "sem_diag",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "ano_nasc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_idade_n",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "cs_sexo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "cs_gestant",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "cs_raca",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "cs_escol_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "sg_uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_mn_resi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_rg_resi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_pais",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_ocupa_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "sit_trab",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nutempo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "tptempo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "cnae",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "uf_emp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "mun_emp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "terceiriza",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "hiperten",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "tube",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "diabetes",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "asma",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "hanseniase",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "mental",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "out_agravo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nutemporis",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "tptemporis",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "regime",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "agente",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "lesao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "epicuta",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "diag_esp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "afastament",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_afast",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "tp_afast",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "evol_afast",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "trab_doe",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "afast_risc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "individual",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "muda_trab",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nenhum",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "coletiva",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "afast_trab",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "conduta",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "evolucao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_obito",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "cat",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "agravo_des",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "agente_des",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "lesao_des",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "condut_des",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_lote_i",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2026"
+    }
+  ],
+  "arquivos": 5
+}

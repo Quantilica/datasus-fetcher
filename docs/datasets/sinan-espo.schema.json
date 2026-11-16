@@ -1,0 +1,164 @@
+{
+  "fonte": "datasus",
+  "dataset": "sinan-espo",
+  "gerado_em": "2026-11-16T18:27:31+00:00",
+  "particoes": [
+    "ano"
+  ],
+  "colunas": [
+    {
+      "nome": "id_notific",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    },
+    {
+      "nome": "nu_ano",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    },
+    {
+      "nome": "dt_notific",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    },
+    {
+      "nome": "dt_digita",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    },
+    {
+      "nome": "sg_uf_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    },
+    {
+      "nome": "id_municip",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    },
+    {
+      "nome": "sem_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    },
+    {
+      "nome": "sem_pri",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    },
+    {
+      "nome": "dt_ini_epi",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    },
+    {
+      "nome": "tp_zn_oco",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    },
+    {
+      "nome": "tp_amb_oco",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    },
+    {
+      "nome": "ds_out_amb",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    },
+    {
+      "nome": "especie",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    },
+    {
+      "nome": "g_d",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    },
+    {
+      "nome": "g_m",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    },
+    {
+      "nome": "c_d",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    },
+    {
+      "nome": "c_m",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2022"
+    }
+  ],
+  "arquivos": 5
+}

@@ -1,0 +1,803 @@
+{
+  "fonte": "datasus",
+  "dataset": "sinan-tube",
+  "gerado_em": "2026-11-16T18:27:31+00:00",
+  "particoes": [
+    "ano"
+  ],
+  "colunas": [
+    {
+      "nome": "tp_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "id_agravo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_notific",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "nu_ano",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sg_uf_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "id_municip",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "id_regiona",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_diag",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "ano_nasc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "nu_idade_n",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cs_sexo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cs_gestant",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cs_raca",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cs_escol_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sg_uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "id_mn_resi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "id_rg_resi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "id_pais",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "nduplic_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "in_vincula",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_digita",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_transus",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_transdm",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_transsm",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_transrm",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_transrs",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_transse",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cs_flxret",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "flxrecebi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "migrado_w",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "id_ocupa_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "tratamento",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "institucio",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "raiox_tora",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "teste_tube",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "forma",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "extrapu1_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "extrapu2_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "extrapul_o",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2018"
+    },
+    {
+      "nome": "agravaids",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "agravalcoo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "agravdiabe",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "agravdoenc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "agravoutra",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "agravoutde",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2018"
+    },
+    {
+      "nome": "bacilosc_e",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "bacilos_e2",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "bacilosc_o",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cultura_es",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cultura_ou",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "hiv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "histopatol",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_inic_tr",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rifampicin",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "isoniazida",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "etambutol",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "estreptomi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "pirazinami",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "etionamida",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "outras",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "outras_des",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2018"
+    },
+    {
+      "nome": "trat_super",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "nu_contato",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "doenca_tra",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sg_uf_at",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "id_munic_a",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_noti_at",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sg_uf_2",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "id_munic_2",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "bacilosc_1",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "bacilosc_2",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "bacilosc_3",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "bacilosc_4",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "bacilosc_5",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "bacilosc_6",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "tratsup_at",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_mudanca",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "nu_comu_ex",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "situa_9_m",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "situa_12_m",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "situa_ence",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_encerra",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "tpuninot",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "pop_liber",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "pop_rua",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "pop_saude",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "pop_imig",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "benef_gov",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "agravdroga",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "agravtabac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "test_molec",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "test_sensi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "ant_retro",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "bac_apos_6",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "transf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "uf_transf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "mun_transf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2001",
+      "periodo_fim": "2025"
+    }
+  ],
+  "arquivos": 5
+}

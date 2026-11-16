@@ -1,0 +1,1299 @@
+{
+  "fonte": "datasus",
+  "dataset": "sinan-viol",
+  "gerado_em": "2026-11-16T18:27:31+00:00",
+  "particoes": [
+    "ano"
+  ],
+  "colunas": [
+    {
+      "nome": "tp_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "id_agravo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_notific",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sem_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "nu_ano",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sg_uf_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "id_municip",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_ocor",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sem_pri",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "ano_nasc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "nu_idade_n",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cs_sexo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cs_gestant",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cs_raca",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cs_escol_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sg_uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "id_mn_resi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "id_pais",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "nduplic",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_invest",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "id_ocupa_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sit_conjug",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "def_trans",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "def_fisica",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "def_mental",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "def_visual",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "def_auditi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "tran_ment",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "tran_comp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "def_out",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "def_espec",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sg_uf_ocor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "id_mn_ocor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "hora_ocor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "local_ocor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "local_espe",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "out_vezes",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "les_autop",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "viol_fisic",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "viol_psico",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "viol_tort",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "viol_sexu",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "viol_traf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "viol_finan",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "viol_negli",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "viol_infan",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "viol_legal",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "viol_outr",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "viol_espec",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "ag_forca",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "ag_enfor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "ag_objeto",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "ag_corte",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "ag_quente",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "ag_enven",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "ag_fogo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "ag_ameaca",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "ag_outros",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "ag_espec",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sex_assedi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sex_estupr",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sex_pudor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sex_porno",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sex_explo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sex_outro",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sex_espec",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "pen_oral",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "pen_anal",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "pen_vagina",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "proc_dst",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "proc_hiv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "proc_hepb",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "proc_sang",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "proc_semen",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "proc_vagin",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "proc_contr",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "proc_abort",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cons_abort",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cons_grav",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cons_dst",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cons_suic",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cons_ment",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cons_comp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cons_estre",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cons_outr",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cons_espec",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "lesao_nat",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "lesao_espe",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "lesao_corp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "num_envolv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_sexual",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_pai",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_mae",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_pad",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_conj",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_excon",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_namo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_exnam",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_filho",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_desco",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_irmao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_conhec",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_cuida",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_patrao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_inst",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_pol",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_propri",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_outros",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_espec",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "autor_sexo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "autor_alco",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "enc_saude",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "enc_tutela",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "enc_vara",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "enc_abrigo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "enc_sentin",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "enc_deam",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "enc_dpca",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "enc_deleg",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "enc_mpu",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "enc_mulher",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "enc_creas",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "enc_iml",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "enc_outr",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "enc_espec",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_trab",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_cat",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "circ_lesao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "classi_fin",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "evolucao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_obito",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_digita",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_transus",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_transdm",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_transsm",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_transrm",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_transrs",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_transse",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rel_mad",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "tpuninot",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "orient_sex",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "ident_gen",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "viol_motiv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cicl_vid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rede_sau",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "assist_soc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "rede_educa",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "atend_mulh",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cons_tutel",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cons_ido",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "deleg_idos",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dir_human",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "mpu",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "deleg_cria",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "deleg_mulh",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "deleg",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "infan_juv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "defen_publ",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dt_encerra",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009",
+      "periodo_fim": "2025"
+    }
+  ],
+  "arquivos": 4
+}

@@ -1,0 +1,459 @@
+{
+  "fonte": "datasus",
+  "dataset": "sinan-acgr",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [
+    "ano"
+  ],
+  "colunas": [
+    {
+      "nome": "tp_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "id_agravo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "dt_notific",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "sem_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "nu_ano",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "sg_uf_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "id_municip",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "id_regiona",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "id_unidade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "dt_acid",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "sem_acid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "ano_nasc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "nu_idade_n",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "cs_sexo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "cs_gestant",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "cs_raca",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "cs_escol_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "sg_uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "id_mn_resi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "id_rg_resi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "id_pais",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "id_ocupa_n",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "sit_trab",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "nutempo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "tptempo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "local_acid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "cnae",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "uf_emp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "mun_emp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "terceiriza",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "cnae_prin",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "hora_acid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "min_acid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "hora_jor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "min_jor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "uf_acid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "mun_acid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "cid_acid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "tipo_acid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "mais_trab",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "nu_trab",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "atende_med",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "dt_atende",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "uf_atende",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "mun_atende",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "uni_atende",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "part_corp1",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "part_corp2",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "part_corp3",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "cid_lesao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "regime",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "evolucao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "dt_obito",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "cat",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006",
+      "periodo_fim": "2023"
+    }
+  ],
+  "arquivos": 5
+}
