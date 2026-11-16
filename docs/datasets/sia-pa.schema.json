@@ -1,0 +1,632 @@
+{
+  "fonte": "datasus",
+  "dataset": "sia-pa",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [
+    "ano",
+    "mes"
+  ],
+  "colunas": [
+    {
+      "nome": "pa_condic",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_gestao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_coduni",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_datref",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2004-08"
+    },
+    {
+      "nome": "pa_codpro",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2004-08"
+    },
+    {
+      "nome": "pa_codesp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2004-08"
+    },
+    {
+      "nome": "pa_tippro",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2004-08"
+    },
+    {
+      "nome": "pa_tipate",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2004-08"
+    },
+    {
+      "nome": "pa_qtdpro",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_qtdapr",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_indica",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_tippre",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_datpr",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2004-08"
+    },
+    {
+      "nome": "pa_valpro",
+      "tipos": [
+        "decimal128(10, 2)",
+        "decimal128(20, 2)"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_valapr",
+      "tipos": [
+        "decimal128(10, 2)",
+        "decimal128(20, 2)"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_ufmun",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_munat",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2004-08"
+    },
+    {
+      "nome": "pa_numapa",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2004-08"
+    },
+    {
+      "nome": "pa_codoco",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_docorig",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1994-12",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_fxetar",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2004-08",
+      "periodo_fim": "2004-08"
+    },
+    {
+      "nome": "pa_cidpri",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2004-08",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_cidsec",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2004-08",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_morfol",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2004-08",
+      "periodo_fim": "2004-08"
+    },
+    {
+      "nome": "pa_cnpj_cc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2004-08",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_rcb",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2004-08",
+      "periodo_fim": "2004-08"
+    },
+    {
+      "nome": "pa_rcbdf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2004-08",
+      "periodo_fim": "2004-08"
+    },
+    {
+      "nome": "pa_nh",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2004-08",
+      "periodo_fim": "2004-08"
+    },
+    {
+      "nome": "pa_regct",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_incout",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_incurg",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_tpups",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_mn_ind",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_cnpjcpf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_cnpjmnt",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_mvm",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_cmp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_proc_id",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_tpfin",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_subfin",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_nivcpl",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_autoriz",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_cnsmed",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_cbocod",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_motsai",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_obito",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_encerr",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_perman",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_alta",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_transf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_cidcas",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_catend",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_idade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "idademin",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "idademax",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_flidade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_sexo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_racacor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_munpcn",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_ufdif",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_mndif",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_dif_val",
+      "tipos": [
+        "decimal128(20, 2)"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "nu_vpa_tot",
+      "tipos": [
+        "decimal128(20, 2)"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "nu_pa_tot",
+      "tipos": [
+        "decimal128(20, 2)"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_flqt",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_fler",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_etnia",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2010-01",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_vl_cf",
+      "tipos": [
+        "decimal128(20, 2)"
+      ],
+      "periodo_inicio": "2017-11",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_vl_cl",
+      "tipos": [
+        "decimal128(20, 2)"
+      ],
+      "periodo_inicio": "2017-11",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_vl_inc",
+      "tipos": [
+        "decimal128(20, 2)"
+      ],
+      "periodo_inicio": "2017-11",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_srv_c",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017-11",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_ine",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017-11",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_nat_jur",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017-11",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_fntorc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2026-04",
+      "periodo_fim": "2026-04"
+    },
+    {
+      "nome": "pa_vl_crd",
+      "tipos": [
+        "decimal128(20, 2)"
+      ],
+      "periodo_inicio": "2026-04",
+      "periodo_fim": "2026-04"
+    }
+  ],
+  "arquivos": 5
+}

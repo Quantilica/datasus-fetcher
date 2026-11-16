@@ -1,0 +1,388 @@
+{
+  "fonte": "datasus",
+  "dataset": "sia-ps",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [
+    "ano",
+    "mes"
+  ],
+  "colunas": [
+    {
+      "nome": "cnes_exec",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "gestao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "condic",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "ufmun",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "tpups",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "tippre",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "mn_ind",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "cnpjcpf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "cnpjmnt",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "dt_process",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "dt_atend",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "cns_pac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "dtnasc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "tpidadepac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "idadepac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "nacion_pac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "sexopac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "racacor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "etnia",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "munpac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "mot_cob",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "dt_motcob",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "catend",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "cidpri",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "cidassoc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "origem_pac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "dt_inicio",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "dt_fim",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "cob_esf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "cnes_esf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "destinopac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "pa_proc_id",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "pa_qtdpro",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "pa_qtdapr",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "pa_srv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "pa_class_s",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "sit_rua",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "tp_droga",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "loc_realiz",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "inicio",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "fim",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "permanen",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "qtdate",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "qtdpcn",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-12",
+      "periodo_fim": "2026-02"
+    },
+    {
+      "nome": "nat_jur",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2019-11",
+      "periodo_fim": "2026-02"
+    }
+  ],
+  "arquivos": 5
+}

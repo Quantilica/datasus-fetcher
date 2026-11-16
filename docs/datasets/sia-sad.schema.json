@@ -1,0 +1,388 @@
+{
+  "fonte": "datasus",
+  "dataset": "sia-sad",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [
+    "ano",
+    "mes"
+  ],
+  "colunas": [
+    {
+      "nome": "cnes_exec",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "gestao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "condic",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "ufmun",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "tpups",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "mn_ind",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "cnpjcpf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "cnpjmnt",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "dt_process",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "dt_atend",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "cns_pac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "dtnasc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "tpidadepac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "idadepac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "nacion_pac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "sexopac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "racacor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "etnia",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "munpac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "mot_cob",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "dt_motcob",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "catend",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "cidpri",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "cidassoc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "origem_pac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "dt_inicio",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "dt_fim",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "cob_esf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "cnes_esf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "destinopac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "pa_proc_id",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "pa_qtdpro",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "pa_qtdapr",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "pa_srv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "pa_class_s",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "pa_equipe",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "pa_tp_eqp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "pa_cid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "inicio",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "fim",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "permanen",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "qtdate",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "qtdpcn",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-07",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "co_ine",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015-02",
+      "periodo_fim": "2018-01"
+    },
+    {
+      "nome": "nat_jur",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017-03",
+      "periodo_fim": "2018-01"
+    }
+  ],
+  "arquivos": 5
+}
