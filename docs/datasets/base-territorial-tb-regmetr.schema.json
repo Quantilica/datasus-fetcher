@@ -1,0 +1,51 @@
+{
+  "fonte": "datasus",
+  "dataset": "base-territorial-tb-regmetr",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [],
+  "colunas": [
+    {
+      "nome": "co_regmetr",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "co_status",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "co_tipo",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "ds_nome",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "ds_nomepad",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "ds_abrev",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "nu_ordem",
+      "tipos": [
+        "large_string"
+      ]
+    }
+  ],
+  "arquivos": 1
+}

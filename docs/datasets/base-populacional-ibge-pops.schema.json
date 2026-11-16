@@ -1,0 +1,59 @@
+{
+  "fonte": "datasus",
+  "dataset": "base-populacional-ibge-pops",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [
+    "ano"
+  ],
+  "colunas": [
+    {
+      "nome": "cod_mun",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2000",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sexo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2000",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "idade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2000",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "pop",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2000",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2000",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2000",
+      "periodo_fim": "2025"
+    }
+  ],
+  "arquivos": 2
+}

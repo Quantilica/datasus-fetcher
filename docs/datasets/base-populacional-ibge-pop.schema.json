@@ -1,0 +1,67 @@
+{
+  "fonte": "datasus",
+  "dataset": "base-populacional-ibge-pop",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [
+    "ano"
+  ],
+  "colunas": [
+    {
+      "nome": "munic_res",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1980",
+      "periodo_fim": "2012"
+    },
+    {
+      "nome": "sexo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1980",
+      "periodo_fim": "2012"
+    },
+    {
+      "nome": "situacao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1980",
+      "periodo_fim": "2012"
+    },
+    {
+      "nome": "fxetaria",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1980",
+      "periodo_fim": "2012"
+    },
+    {
+      "nome": "populacao",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "1980",
+      "periodo_fim": "2012"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1980",
+      "periodo_fim": "2012"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1980",
+      "periodo_fim": "2012"
+    }
+  ],
+  "arquivos": 2
+}

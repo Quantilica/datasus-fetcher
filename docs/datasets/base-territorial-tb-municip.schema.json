@@ -1,0 +1,165 @@
+{
+  "fonte": "datasus",
+  "dataset": "base-territorial-tb-municip",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [],
+  "colunas": [
+    {
+      "nome": "co_municip",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "co_municdv",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "co_status",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "co_tipo",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "ds_nome",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "macrorregi",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "ds_nomepad",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "ds_observ",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "co_regiao",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "co_uf",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "co_alter",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "co_alterdv",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "in_capital",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "in_amazleg",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "in_semiar",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "in_frontzn",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "dt_instal",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "dt_extin",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "co_sucess",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "nu_ordem",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "nu_ordmap",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "nu_latitud",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "nu_longit",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "nu_altitud",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "nu_area",
+      "tipos": [
+        "large_string"
+      ]
+    }
+  ],
+  "arquivos": 1
+}

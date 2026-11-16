@@ -1,0 +1,39 @@
+{
+  "fonte": "datasus",
+  "dataset": "base-territorial-tb-terrcid",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [],
+  "colunas": [
+    {
+      "nome": "co_terrcid",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "ds_nome",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "ds_nomepad",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "co_status",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "nu_ordmap",
+      "tipos": [
+        "int64"
+      ]
+    }
+  ],
+  "arquivos": 1
+}

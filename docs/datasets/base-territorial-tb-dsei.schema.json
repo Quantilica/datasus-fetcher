@@ -1,0 +1,33 @@
+{
+  "fonte": "datasus",
+  "dataset": "base-territorial-tb-dsei",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [],
+  "colunas": [
+    {
+      "nome": "co_dsei",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "ds_nome",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "ds_nomepad",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "co_sede",
+      "tipos": [
+        "large_string"
+      ]
+    }
+  ],
+  "arquivos": 1
+}

@@ -1,33 +1,49 @@
-# `base-territorial-mapas` — Base Territorial - Mapas
+---
+dataset:
+  id: base-territorial-mapas
+  fonte: datasus
+  titulo: Base Territorial - Mapas
+  resumo: O base-territorial-mapas contém os mapas digitais em formato TabWin (.MAP) da divisão territorial brasileira, usados para a representação cartográfica dos dados de saúde.
+  orgao: Ministério da Saúde — DATASUS
+  pagina_oficial: ftp://ftp.datasus.gov.br/territorio/
+  licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
+  periodicidade: anual (um arquivo por UF ou nacional, por ano)
+  cobertura:
+    inicio: '1991'
+    fim: em-curso
+  unidade: um mapa digital em formato TabWin (`.MAP`), por UF e ano de referência
+  granularidade:
+    espacial: UF e município
+    temporal: versão (mês de publicação)
+  formato_bruto: ZIP
+  lake:
+    estado: so-bruto
+    particoes: []
+    chave: []
+    colunas: null
+  dados_pessoais: nenhum
+  eras: []
+  revisado_em: '2026-11-16'
+  versao_fetcher: 0.19.0
+---
+
+# Base Territorial - Mapas (`base-territorial-mapas`)
+
+## Resumo
 
 O `base-territorial-mapas` contém os **mapas digitais em formato TabWin (`.MAP`)** da divisão territorial brasileira, usados para a representação cartográfica dos dados de saúde. Cada ZIP reúne, para uma UF (ou o Brasil) e um ano de referência, um conjunto de arquivos `.MAP` correspondentes aos recortes territoriais — município, região de saúde, macrorregião de saúde, microrregião IBGE, região metropolitana e divisão administrativa. É a base cartográfica que permite gerar mapas temáticos (por município ou região) no TabWin e em apps compatíveis.
 
-## Ficha Técnica
+## Ficha técnica
 
-| Atributo | Valor |
-|---|---|
-| **Sistema / Grupo** | `base-territorial` — Base Territorial |
-| **Código no `datasus-fetcher`** | `base-territorial-mapas` |
-| **Formato dos arquivos** | `.zip` (contendo arquivos `.MAP` do TabWin) |
-| **Particionamento** | `uf`, `year` (um ZIP por UF e ano de referência) |
-| **Periodicidade** | Anual / versionada (malhas de 1991, 1994, 1997, 2001, 2005, 2013 e 2025) |
-| **Cobertura temporal no FTP** | 1991 a 2025 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 111 arquivos (~143 MB, 28 UFs/consolidados) |
-| **Arquivos preliminares** | Não |
-| **Documentação oficial no FTP** | `/territorio/doc` (`bases_territoriais.pdf`, `registro_de_alteracoes.pdf`) |
-| **Tabelas auxiliares no FTP** | Não aplicável |
+<!-- gerado:ficha -->
 
-## 1. Contexto Institucional e Epidemiológico
+## Origem e coleta
 
-Os mapas integram a **Base Territorial** mantida pelo **Ministério da Saúde/DATASUS** e servem de suporte cartográfico à análise e à disseminação dos dados de saúde. São a versão geográfica dos recortes territoriais: permitem que sistemas como o TabWin associem códigos de município/região a polígonos, viabilizando mapas de taxas, coberturas e indicadores.
-
-O **evento gerador** é a atualização das malhas territoriais quando há mudanças na divisão político-administrativa (Censos, contagens e revisões da malha municipal do IBGE; criação/desmembramento de municípios; redefinição de regiões de saúde). A **unidade de análise é o conjunto de arquivos `.MAP` de uma UF em um ano**. Os anos disponíveis correspondem a marcos da malha do IBGE: **1991, 1994, 1997, 2001, 2005, 2013 e 2025** (algumas UFs não têm todos os anos). Cada ZIP contém arquivos como `<uf>_municip.MAP`, `<uf>_regsaud.MAP`, `<uf>_macsaud.MAP`, `<uf>_micibge.MAP`, `<uf>_regmetr.MAP` e `<uf>_divadm.MAP`.
-
-Não há diretório preliminar. Os arquivos `.MAP` são binários proprietários do TabWin e exigem esse aplicativo (ou conversão) para uso; o DATASUS também disponibiliza os shapes equivalentes em outros portais.
-
-Aplicações analíticas típicas: geração de mapas temáticos de indicadores de saúde no TabWin, análise espacial da distribuição de doenças e da oferta de serviços, apoio à regionalização e à vigilância em saúde e produção de mapas para relatórios e boletins.
-
-## 2. Metadados Técnicos no FTP DATASUS
+- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.zip` (contendo arquivos `.MAP` do TabWin)
+- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (um ZIP por UF e ano de referência)
+- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 1991 a 2025 (conforme `index.json`)
+- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 111 arquivos (~143 MB, 28 UFs/consolidados)
+- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/territorio/doc` (`bases_territoriais.pdf`, `registro_de_alteracoes.pdf`)
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -41,29 +57,29 @@ Aplicações analíticas típicas: geração de mapas temáticos de indicadores 
 - **No armazenamento local do `datasus-fetcher`**: `data/base-territorial-mapas/2025/base-territorial-mapas_2025-es@20260918.zip`.
 - **Documentação e Tabelas Auxiliares associadas**: `bases_territoriais.pdf` e `registro_de_alteracoes.pdf` em `/territorio/doc`; para converter/visualizar os `.MAP`, é necessário o aplicativo **TabWin** do DATASUS.
 
-## 3. Principais Variáveis e Qualidade dos Dados
+## Conteúdo
 
-### Variáveis-Chave dos Microdados
+Os mapas integram a **Base Territorial** mantida pelo **Ministério da Saúde/DATASUS** e servem de suporte cartográfico à análise e à disseminação dos dados de saúde. São a versão geográfica dos recortes territoriais: permitem que sistemas como o TabWin associem códigos de município/região a polígonos, viabilizando mapas de taxas, coberturas e indicadores.
 
-Os arquivos `.MAP` **não são tabelas** com colunas/variáveis como um DBF; são estruturas binárias de polígonos indexados por código geográfico. Os "atributos" relevantes são os **códigos territoriais de ligação** usados para casar o mapa com as tabelas:
+O **evento gerador** é a atualização das malhas territoriais quando há mudanças na divisão político-administrativa (Censos, contagens e revisões da malha municipal do IBGE; criação/desmembramento de municípios; redefinição de regiões de saúde). A **unidade de análise é o conjunto de arquivos `.MAP` de uma UF em um ano**. Os anos disponíveis correspondem a marcos da malha do IBGE: **1991, 1994, 1997, 2001, 2005, 2013 e 2025** (algumas UFs não têm todos os anos). Cada ZIP contém arquivos como `<uf>_municip.MAP`, `<uf>_regsaud.MAP`, `<uf>_macsaud.MAP`, `<uf>_micibge.MAP`, `<uf>_regmetr.MAP` e `<uf>_divadm.MAP`.
 
-| Arquivo (`.MAP`) | Chave de ligação | Descrição |
-|---|---|---|
-| `<uf>_municip.MAP` | Código de município | Polígonos dos municípios da UF |
-| `<uf>_regsaud.MAP` | Código de região de saúde | Polígonos das regiões de saúde |
-| `<uf>_macsaud.MAP` | Código de macrorregião de saúde | Polígonos das macrorregiões |
-| `<uf>_micibge.MAP` | Código de microrregião IBGE | Polígonos das microrregiões |
-| `<uf>_regmetr.MAP` | Código de região metropolitana | Polígonos das regiões metropolitanas |
-| `<uf>_divadm.MAP` | Código de divisão administrativa | Polígonos da divisão administrativa estadual |
+Não há diretório preliminar. Os arquivos `.MAP` são binários proprietários do TabWin e exigem esse aplicativo (ou conversão) para uso; o DATASUS também disponibiliza os shapes equivalentes em outros portais.
 
-### Observações de Tratamento e Saneamento (`wrangle_datasus`)
+Aplicações analíticas típicas: geração de mapas temáticos de indicadores de saúde no TabWin, análise espacial da distribuição de doenças e da oferta de serviços, apoio à regionalização e à vigilância em saúde e produção de mapas para relatórios e boletins.
 
-- **Preservação de códigos estruturados**: como os `.MAP` se ligam a código de município/UF/região, os códigos usados nas tabelas de dados (6/7 dígitos para município, 2 para UF, 5 para região de saúde) devem permanecer `String` com zeros à esquerda para que o casamento mapa↔dado funcione.
-- **Datas e competências**: o "ano" da malha está no nome do arquivo (não é uma coluna interna), refletindo o ano da divisão territorial usada.
-- **Valores ausentes e sentinelas**: não aplicável a dados tabulares; eventuais divergências de malha entre anos devem ser resolvidas escolhendo a malha compatível com a data dos dados.
-- **Particularidades do dataset**: `.MAP` é formato binário proprietário — sem o TabWin (ou uma rotina de conversão) não é legível; a malha muda de ano para ano (municípios criados/extintos alteram os polígonos), portanto o mapa deve ser compatível com a versão dos dados; algumas UFs não possuem todos os anos; e há malhas nacionais (`br_mapas_*`) e regionais (`mrco`, `mrne`) para análises agregadas.
+## Variáveis
 
-## 4. Exemplos Práticos
+Não se aplica: o dataset reúne arquivos de mapa em formato TabWin (`.MAP`, polígonos), que o conversor não lê. Não há esquema de referência nem dicionário de colunas.
+
+## No lake
+
+O dataset está só no bruto: o conversor ignora os ZIPs de mapas (`nao_tabular` no inventário). Não há `datasus/base-territorial-mapas` no lake.
+
+## Cuidados de uso
+
+- Os `.MAP` só abrem no TabWin ou em ferramentas que leiam o formato; para análise geográfica em Python, use as malhas do IBGE. (Observação operacional, não verificada contra os arquivos.)
+
+## Exemplos
 
 ### Via CLI (`quantilica datasus` / `datasus-fetcher`)
 
@@ -92,8 +108,7 @@ with zipfile.ZipFile("data/raw/base-territorial-mapas/2025/es_mapas_2025.zip") a
     print(pl.Series("mapas", [n for n in z.namelist() if n.upper().endswith(".MAP")]))
 # A visualização/análise espacial é feita no TabWin do DATASUS (formato binário proprietário).
 ```
-
-## 5. Referências Oficiais
+## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/territorio/mapas`
 - **Portal de Transferência de Arquivos do DATASUS**: https://datasus.saude.gov.br/transferencia-de-arquivos/

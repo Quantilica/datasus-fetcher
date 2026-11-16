@@ -1,0 +1,57 @@
+{
+  "fonte": "datasus",
+  "dataset": "base-territorial-tb-uf",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [],
+  "colunas": [
+    {
+      "nome": "co_uf",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "ds_sigla",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "co_status",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "ds_nome",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "ds_nomepad",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "co_sucess",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "co_regiao",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "nu_area",
+      "tipos": [
+        "large_string"
+      ]
+    }
+  ],
+  "arquivos": 1
+}

@@ -1,0 +1,21 @@
+{
+  "fonte": "datasus",
+  "dataset": "base-territorial-rl-municip-terrcid",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [],
+  "colunas": [
+    {
+      "nome": "co_municip",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "co_terrcid",
+      "tipos": [
+        "large_string"
+      ]
+    }
+  ],
+  "arquivos": 1
+}

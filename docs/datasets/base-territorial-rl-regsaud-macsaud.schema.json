@@ -1,0 +1,21 @@
+{
+  "fonte": "datasus",
+  "dataset": "base-territorial-rl-regsaud-macsaud",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [],
+  "colunas": [
+    {
+      "nome": "co_regsaud",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "co_macrorr",
+      "tipos": [
+        "large_string"
+      ]
+    }
+  ],
+  "arquivos": 1
+}

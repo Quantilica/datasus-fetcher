@@ -1,0 +1,51 @@
+{
+  "fonte": "datasus",
+  "dataset": "base-territorial-conversao",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [],
+  "colunas": [
+    {
+      "nome": "tabela",
+      "tipos": [
+        "string"
+      ]
+    },
+    {
+      "nome": "sequencia",
+      "tipos": [
+        "int64"
+      ]
+    },
+    {
+      "nome": "nivel",
+      "tipos": [
+        "int64"
+      ]
+    },
+    {
+      "nome": "descricao",
+      "tipos": [
+        "string"
+      ]
+    },
+    {
+      "nome": "codigo",
+      "tipos": [
+        "string"
+      ]
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ]
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ]
+    }
+  ],
+  "arquivos": 1
+}

@@ -1,0 +1,33 @@
+{
+  "fonte": "datasus",
+  "dataset": "base-territorial-tb-mis",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [],
+  "colunas": [
+    {
+      "nome": "co_mis",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "nome_mis",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "co_munic_i",
+      "tipos": [
+        "large_string"
+      ]
+    },
+    {
+      "nome": "nu_ordem",
+      "tipos": [
+        "large_string"
+      ]
+    }
+  ],
+  "arquivos": 1
+}
