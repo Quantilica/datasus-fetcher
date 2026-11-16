@@ -1,0 +1,276 @@
+{
+  "fonte": "datasus",
+  "dataset": "cnes-gm",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [
+    "ano",
+    "mes"
+  ],
+  "colunas": [
+    {
+      "nome": "cnes",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "codufmun",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "regsaude",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "micr_reg",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "distrsan",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "distradm",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "tpgestao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "pf_pj",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "cpf_cnpj",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "niv_dep",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "cnpj_man",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "esfera_a",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "retencao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "atividad",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "natureza",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "clientel",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "tp_unid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "turno_at",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "niv_hier",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "terceiro",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "cod_cep",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "vinc_sus",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "tp_prest",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "sgruphab",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "cmpt_ini",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "cmpt_fim",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "dtportar",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "portaria",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "maportar",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "competen",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2007-09",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "nat_jur",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013-10",
+      "periodo_fim": "2026-08"
+    }
+  ],
+  "arquivos": 5
+}

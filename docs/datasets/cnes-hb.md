@@ -1,33 +1,59 @@
-# `cnes-hb` — Habilitação
+---
+dataset:
+  id: cnes-hb
+  fonte: datasus
+  titulo: Habilitação
+  resumo: O cnes-hb contém os microdados do arquivo de Habilitações do Cadastro Nacional de Estabelecimentos de Saúde (CNES), que registra as habilitações de serviços dos estabelecimentos.
+  orgao: Ministério da Saúde — Secretaria de Atenção Especializada à Saúde (SAES) e DATASUS
+  pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/
+  licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
+  periodicidade: mensal (um arquivo por UF e competência)
+  cobertura:
+    inicio: 2007-03
+    fim: em-curso
+  unidade: uma habilitação concedida a um estabelecimento, em uma competência
+  granularidade:
+    espacial: estabelecimento de saúde (CNES) e município; um arquivo por UF
+    temporal: competência (mês)
+  formato_bruto: DBC (DBF comprimido com PKWARE DCL), codificação latin1, um arquivo por UF e competência mensal
+  lake:
+    estado: convertido
+    particoes:
+    - ano
+    - mes
+    chave: []
+    colunas: 34
+  unidades_de_medida:
+    nuleitos: 'número inteiro: contagem ou código numérico (ver Descrição)'
+  dados_pessoais:
+  - coluna: cpf_cnpj
+    categoria: CPF ou CNPJ (do estabelecimento ou do prestador; pode ser CPF de pessoa física)
+  - coluna: cod_cep
+    categoria: CEP
+  eras: []
+  revisado_em: '2026-11-16'
+  versao_fetcher: 0.19.0
+---
+
+# Habilitação (`cnes-hb`)
+
+## Resumo
 
 O `cnes-hb` contém os microdados do arquivo de **Habilitações** do Cadastro Nacional de Estabelecimentos de Saúde (CNES), que registra as habilitações de serviços dos estabelecimentos. Cada registro (linha) representa uma **habilitação concedida** a um estabelecimento, em uma competência, com o grupo de habilitação (`SGRUPHAB`), o período de vigência (`CMPT_INI`/`CMPT_FIM`) e a portaria que a concedeu. É a base que materializa as habilitações de alta complexidade e de serviços especializados previstas em portarias específicas do Ministério da Saúde.
 
-## Ficha Técnica
+## Ficha técnica
 
-| Atributo | Valor |
-|---|---|
-| **Sistema / Grupo** | `cnes` — CNES: Cadastro Nacional de Estabelecimentos de Saúde |
-| **Código no `datasus-fetcher`** | `cnes-hb` |
-| **Formato dos arquivos** | `.dbc` (comprimido dBASE, descompactável nativamente em Rust) |
-| **Particionamento** | `uf`, `yearmonth` (um arquivo por UF e competência mensal, além de `br`) |
-| **Periodicidade** | Mensal (extração por competência) |
-| **Cobertura temporal no FTP** | 2007-03 a 2026-09 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 6345 arquivos (~140 MB) |
-| **Arquivos preliminares** | Não |
-| **Documentação oficial no FTP** | `/dissemin/publicos/CNES/200508_/doc` (`IT_CNES_1706.pdf`) |
-| **Tabelas auxiliares no FTP** | `/dissemin/publicos/CNES/200508_/Auxiliar` (`TAB_CNES.zip`) |
+<!-- gerado:ficha -->
 
-## 1. Contexto Institucional e Epidemiológico
+## Origem e coleta
 
-O arquivo `HB` integra o CNES (Portarias SAS/MS nº 403/2000 e nº 511/2000; Portaria GM/MS nº 1.646/2015), mantido pelo Ministério da Saúde/DATASUS. As habilitações registram o reconhecimento formal, por portaria, de que um estabelecimento atende aos requisitos para ofertar serviços específicos — por exemplo, Unidade de Alta Complexidade em Oncologia (UNACON/CACON), Centro de Referência em Saúde do Trabalhador (CEREST), habilitação em alta complexidade cardiovascular, nefrologia, fisioterapia, entre outras.
-
-O **evento gerador** é a concessão/mantenação da habilitação, refletida no SCNES a cada competência. A **unidade de análise é a habilitação de um estabelecimento na competência** (`CNES` + `SGRUPHAB` + `COMPETEN`). O código `SGRUPHAB` (4 dígitos) identifica o grupo/subgrupo de habilitação conforme a tabela de domínio do CNES; `CMPT_INI` e `CMPT_FIM` delimitam a validade da habilitação; `DTPORTAR`/`PORTARIA`/`MAPORTAR` documentam a portaria concessora; e `NULEITOS` registra a quantidade de leitos associada quando aplicável.
-
-A série histórica no FTP começa em março de 2007. Como as habilitações dependem de portarias específicas que são publicadas e revogadas ao longo do tempo, a base funciona como um retrato mensal das habilitações vigentes. Não há diretório preliminar.
-
-Aplicações analíticas típicas: mapeamento de estabelecimentos habilitados por tipo de serviço, distribuição regional de referências de alta complexidade, acompanhamento temporal de concessões e revogações de habilitações, apoio à regulação regional e à verificação de pré-requisitos para procedimentos de alta complexidade e custeio.
-
-## 2. Metadados Técnicos no FTP DATASUS
+- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
+- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `yearmonth` (um arquivo por UF e competência mensal, além de `br`)
+- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2007-03 a 2026-09 (conforme `index.json`)
+- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 6345 arquivos (~140 MB)
+- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
+- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/CNES/200508_/doc` (`IT_CNES_1706.pdf`)
+- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/CNES/200508_/Auxiliar` (`TAB_CNES.zip`)
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -41,9 +67,22 @@ Aplicações analíticas típicas: mapeamento de estabelecimentos habilitados po
 - **No armazenamento local do `datasus-fetcher`**: `data/cnes-hb/2024-01/cnes-hb_202401-sp@20261015.dbc`.
 - **Documentação e Tabelas Auxiliares associadas**: `IT_CNES_1706.pdf` (seção "Layout dos arquivos de Habilitações — HB*.dbf") e `TAB_CNES.zip` (tabela de grupos de habilitação e portarias).
 
-## 3. Principais Variáveis e Qualidade dos Dados
+## Conteúdo
 
-### Variáveis-Chave dos Microdados
+O arquivo `HB` integra o CNES (Portarias SAS/MS nº 403/2000 e nº 511/2000; Portaria GM/MS nº 1.646/2015), mantido pelo Ministério da Saúde/DATASUS. As habilitações registram o reconhecimento formal, por portaria, de que um estabelecimento atende aos requisitos para ofertar serviços específicos — por exemplo, Unidade de Alta Complexidade em Oncologia (UNACON/CACON), Centro de Referência em Saúde do Trabalhador (CEREST), habilitação em alta complexidade cardiovascular, nefrologia, fisioterapia, entre outras.
+
+O **evento gerador** é a concessão/mantenação da habilitação, refletida no SCNES a cada competência. A **unidade de análise é a habilitação de um estabelecimento na competência** (`CNES` + `SGRUPHAB` + `COMPETEN`). O código `SGRUPHAB` (4 dígitos) identifica o grupo/subgrupo de habilitação conforme a tabela de domínio do CNES; `CMPT_INI` e `CMPT_FIM` delimitam a validade da habilitação; `DTPORTAR`/`PORTARIA`/`MAPORTAR` documentam a portaria concessora; e `NULEITOS` registra a quantidade de leitos associada quando aplicável.
+
+A série histórica no FTP começa em março de 2007. Como as habilitações dependem de portarias específicas que são publicadas e revogadas ao longo do tempo, a base funciona como um retrato mensal das habilitações vigentes. Não há diretório preliminar.
+
+Aplicações analíticas típicas: mapeamento de estabelecimentos habilitados por tipo de serviço, distribuição regional de referências de alta complexidade, acompanhamento temporal de concessões e revogações de habilitações, apoio à regulação regional e à verificação de pré-requisitos para procedimentos de alta complexidade e custeio.
+
+### Cobertura observada
+
+- Índice do FTP (2026-10): 6345 arquivos, de 2007-03 a 2026-09, 27 UF(s) com arquivos, última atualização em 2026-10-15.
+- Conversão local de amostras (5 arquivo(s) Parquet, de 2007-11 a 2026-01), feita em 2026-11-16 com o `datasus-fetcher` 0.19.0: serve de base ao esquema de referência. Períodos fora das amostras podem ter colunas que não aparecem aqui.
+
+### Variáveis de uso mais frequente (resumo da versão anterior desta página)
 
 | Coluna (DBF) | Tipo / Formato | Descrição |
 |---|---|---|
@@ -62,14 +101,79 @@ Aplicações analíticas típicas: mapeamento de estabelecimentos habilitados po
 | `TP_UNID` | String (2) | Tipo de unidade (estabelecimento) |
 | `TERCEIRO` | String (1) | O estabelecimento é terceiro: 1 - Sim, 0 - Não |
 
-### Observações de Tratamento e Saneamento (`wrangle_datasus`)
+## Variáveis
 
-- **Preservação de códigos estruturados**: `CNES` (7), `CODUFMUN` (6), `SGRUPHAB`, `TP_PREST`, `NAT_JUR` e `PORTARIA` permanecem `String` com zeros à esquerda; o número de portaria nunca deve ser convertido a número.
-- **Datas e competências**: `CMPT_INI`, `CMPT_FIM` e `MAPORTAR` são competências `AAAAMM` (textuais); `DTPORTAR` tem 10 caracteres e formato de data e não é convertido automaticamente pela rotina de `AAAAMMDD`.
-- **Valores ausentes e sentinelas**: espaços, `""` e códigos ignorados são convertidos para nulo por `SENTINEL_NULLS`; registros `_deleted` são removidos.
-- **Particularidades do dataset**: as habilitações têm vigência, de modo que o recorte de um estabelecimento "habilitado" em determinada competência exige checar `CMPT_INI`/`CMPT_FIM`; um mesmo CNES pode acumular várias habilitações; o leiaute `HB` compartilha o bloco de habilitação com os arquivos `RC`, `GM`, `EE`, `EF` e `IN`, cujo significado difere apenas no contexto; e `PORTARIA`/`DTPORTAR` podem conter erros de digitação, exigindo tratamento textual.
+| Coluna no lake | Na fonte | Tipo | Descrição | Unidade / códigos | Período |
+|---|---|---|---|---|---|
+| `cnes` | `CNES` | texto | Número nacional do estabelecimento de saúde | — | todos |
+| `codufmun` | `CODUFMUN` | texto | Código do município do estabelecimento UF+ MUNIC (sem dígito) | — | todos |
+| `regsaude` | `REGSAUDE` | texto | Código da região de saúde | — | todos |
+| `micr_reg` | `MICR_REG` | texto | Código da micro-região de saúde | — | todos |
+| `distrsan` | `DISTRSAN` | texto | Código do distrito sanitário | — | todos |
+| `distradm` | `DISTRADM` | texto | Código do distrito administrativo | — | todos |
+| `tpgestao` | `TPGESTAO` | texto | Gestão de saúde | — | todos |
+| `pf_pj` | `PF_PJ` | texto | Indicador de pessoa: 1-Física 3-Jurídica | — | todos |
+| `cpf_cnpj` | `CPF_CNPJ` | texto | CPF do Estabelecimento, caso pessoa física OU CNPJ, caso pessoa jurídica | — | todos |
+| `niv_dep` | `NIV_DEP` | texto | Grau de dependência: 1-Individual 3-Mantida | — | todos |
+| `cnpj_man` | `CNPJ_MAN` | texto | CNPJ da mantenedora do Estabelecimento | — | todos |
+| `esfera_a` | `ESFERA_A` | texto | Código da esfera administrativa | — | todos |
+| `retencao` | `RETENCAO` | texto | Código de retenção de tributos | — | todos |
+| `atividad` | `ATIVIDAD` | texto | Código da atividade de ensino | — | todos |
+| `natureza` | `NATUREZA` | texto | Código da natureza da organização | — | todos |
+| `clientel` | `CLIENTEL` | texto | Código de fluxo da clientela | — | todos |
+| `tp_unid` | `TP_UNID` | texto | Tipo de unidade (Estabelecimento) | — | todos |
+| `turno_at` | `TURNO_AT` | texto | Código de turno de atendimento | — | todos |
+| `niv_hier` | `NIV_HIER` | texto | Código do nível de hierarquia | — | todos |
+| `terceiro` | `TERCEIRO` | texto | O estabelecimento é terceiro: 1-Sim 0-Não 2-não | — | todos |
+| `cod_cep` | `COD_CEP` | texto | CEP do estabelecimento | — | todos |
+| `vinc_sus` | `VINC_SUS` | texto | Vínculo com SUS: 1-Sim 0-Não | — | todos |
+| `tp_prest` | `TP_PREST` | texto | Tipo de Prestador | — | todos |
+| `sgruphab` | `SGRUPHAB` | texto | Código da habilitação | — | todos |
+| `cmpt_ini` | `CMPT_INI` | texto | Competência inicial | — | todos |
+| `cmpt_fim` | `CMPT_FIM` | texto | Competência final | — | todos |
+| `dtportar` | `DTPORTAR` | texto | Data da portaria | — | todos |
+| `portaria` | `PORTARIA` | texto | Portaria | — | todos |
+| `maportar` | `MAPORTAR` | texto | Campo DT_PORTARIA formatado como AAAAMM | — | todos |
+| `nuleitos` | `NULEITOS` | inteiro | Quantidade de leitos | — | todos |
+| `competen` | `COMPETEN` | texto | Ano e Mês de competência da informação (AAAAMM) | — | todos |
+| `uf` | — | texto | UF do arquivo de origem (sigla em minúsculas, `br` para arquivos nacionais), gravada pelo conversor; as linhas do período saem ordenadas por ela | sigla da UF | todos |
+| `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
+| `nat_jur` | `NAT_JUR` | texto | Natureza Jurídica Regras Contratuais - Nomenclatura (RC*.dbf ) | — | 2013-01 a 2026-01 |
 
-## 4. Exemplos Práticos
+## No lake
+
+- **Dataset no lake:** `datasus/cnes-hb`, particionado por `ano`, `mes` (diretórios `chave=valor`). A UF do arquivo de origem vai na coluna `uf` (as linhas do período saem ordenadas por ela) e o nome do arquivo bruto, na coluna `_origem`; os arquivos de uma mesma partição compartilham um Parquet.
+- **Chave:** sem chave natural declarada. Nenhuma combinação de colunas foi conferida como única nas amostras; para tirar duplicatas, defina a chave por consulta (ver Cuidados de uso).
+- **Tipos nas amostras** (número de colunas): inteiro: 1, texto: 33.
+- **Transformações do conversor** (`datasus-fetcher` 0.19.0, `wrangle_datasus` e `LakeConverter`): nomes de coluna em minúsculas; textos aparados (espaços das pontas saem); valores de preenchimento (texto vazio, `NA`, `null`, `None` e códigos como `999999` e `00000000`, conforme a lista `SENTINEL_NULLS` do pacote) viram nulo; colunas de código (CID, CNES, município, procedimento, CEP, número de AIH e semelhantes) ficam como texto, preservando zeros à esquerda; colunas de data no formato `AAAAMMDD` viram data (valores inválidos interrompem a conversão em vez de virarem nulo); valores monetários com casas decimais ficam como decimal exato; registros marcados como excluídos no DBF são descartados; arquivos DBC sem nenhuma linha não passam pela limpeza (ver Cuidados de uso).
+- **Esquema de referência:** `cnes-hb.schema.json`, gerado por conversão local de amostras. Tipos listados com mais de um valor variam entre partições.
+
+## Cuidados de uso
+
+- as habilitações têm vigência, de modo que o recorte de um estabelecimento "habilitado" em determinada competência exige checar `CMPT_INI`/`CMPT_FIM`; um mesmo CNES pode acumular várias habilitações; o leiaute `HB` compartilha o bloco de habilitação com os arquivos `RC`, `GM`, `EE`, `EF` e `IN`, cujo significado difere apenas no contexto; e `PORTARIA`/`DTPORTAR` podem conter erros de digitação, exigindo tratamento textual. (texto da versão anterior desta página; não reconferido nesta revisão.)
+- **Colunas que não existem em todo o período:** 1 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
+- **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
+- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
+
+## Exemplos
+
+### Consulta sobre o lake (polars)
+
+Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
+
+```python
+import polars as pl
+
+(
+    pl.scan_parquet("lake/datasus/cnes-hb/**/*.parquet", hive_partitioning=True)
+    .group_by("ano", "mes", "uf")
+    .agg(pl.len().alias("linhas"))
+    .sort("ano", "mes", "uf")
+    .collect()
+)
+```
+
+O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
 ### Via CLI (`quantilica datasus` / `datasus-fetcher`)
 
@@ -105,8 +209,7 @@ hab = (
 )
 print(hab)
 ```
-
-## 5. Referências Oficiais
+## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/200508_/Dados/HB`
 - **Portal de Transferência de Arquivos do DATASUS**: https://datasus.saude.gov.br/transferencia-de-arquivos/
