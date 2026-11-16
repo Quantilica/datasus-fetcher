@@ -1,0 +1,651 @@
+{
+  "fonte": "datasus",
+  "dataset": "resp",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [
+    "ano"
+  ],
+  "colunas": [
+    {
+      "nome": "co_seq",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "dt_notific",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "ano_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "tp_notific",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "dt_nascmae",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "idadeges",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "racacor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "regiaores",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "ufres",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "codmunres",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "sexo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "dt_nasc",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "ano_nasc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "peso",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "compriment",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "perimcefal",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "diamcefal",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "microcefal",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "def_neuro",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "def_audit",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "def_visual",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "tpdeteccao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "gest_diag",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "gravidez",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "class_feto",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "dt_sintoma",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "febre_ges",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "exant_ges",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "prurido",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "conjuntiv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "dor_artic",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "dor_musc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "edema",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "cefaleia",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "hipert_gan",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "neurolog",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "exa_torsch",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "resul_s",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "resul_to",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "resul_c",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "resul_h",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "resul_z",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "so_igg_z",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "so_igm_z",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "tr_igg_z",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "tr_igm_z",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "pcr_z",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "hist_arbov",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "hist_malfo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "rnexa_tors",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "rnresul_s",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "rnresul_to",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "rnresul_c",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "rnresul_h",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "rnresul_z",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "rnso_igg_z",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "rnso_igm_z",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "rntr_igg_z",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "rntr_igm_z",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "rnpcr_z",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "exame_uss",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "dt_uss",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "exa_transf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "dt_transf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "exame_tc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "dt_tc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "exame_rs",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "dt_rs",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "regiaonot",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "ufnot",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "codmunnot",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "st_obito",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "dt_obito",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "classifin",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "etiologia",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "criterio",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "status_not",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "dt_ult_alt",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2015",
+      "periodo_fim": "2024"
+    }
+  ],
+  "arquivos": 5
+}

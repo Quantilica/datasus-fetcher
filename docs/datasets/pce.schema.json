@@ -1,0 +1,370 @@
+{
+  "fonte": "datasus",
+  "dataset": "pce",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [
+    "ano"
+  ],
+  "colunas": [
+    {
+      "nome": "id_uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "sg_uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2017"
+    },
+    {
+      "nome": "id_distr",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_loc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_comp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_pop",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_pred",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_exam",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_nrecol",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_1a4",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_5a16",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_17",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_pos",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_atrat",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_trat",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_ci",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_rec",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_aus",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_asc",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_anc",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_tae",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_tt",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_ev",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_se",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_hn",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_out",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_cap",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_pesq",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_bgla",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_bstr",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_bten",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_out1",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_posbgla",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_posbten",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_posbstr",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "qt_posout",
+      "tipos": [
+        "int64",
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "cs_fase",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2026",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "nu_fase",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2026",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "id_drs",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2026",
+      "periodo_fim": "2026"
+    }
+  ],
+  "arquivos": 5
+}

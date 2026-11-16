@@ -1,0 +1,211 @@
+{
+  "fonte": "datasus",
+  "dataset": "po",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [
+    "ano"
+  ],
+  "colunas": [
+    {
+      "nome": "ano_diagn",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "anomes_dia",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "ano_tratam",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "anomes_tra",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "uf_resid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "mun_resid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "uf_tratam",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "mun_tratam",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "uf_diagn",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "mun_diag",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "tratamento",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "diagnostic",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "idade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "sexo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "estadiam",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "cnes_diag",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "cnes_trat",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "tempo_trat",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "cns_pac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "diag_deth",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_diag",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_trat",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "dt_nasc",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2013",
+      "periodo_fim": "2026"
+    }
+  ],
+  "arquivos": 4
+}
