@@ -108,6 +108,8 @@ Nomes verificados contra o arquivo real `HCSP1505.dbc` (115 colunas; resultado d
 
 ## Variáveis
 
+Descrições tiradas do informe técnico ou do dicionário de dados do DATASUS quando o campo consta do documento; textos marcados "inferido do nome do campo" não têm definição oficial; "Sem descrição na documentação oficial consultada" é lacuna a preencher. `Tipo` e `Período` vêm do esquema de referência (conversão local de amostras): `Período` é o intervalo de partições amostradas em que a coluna existe, e `todos` significa todas as amostras. `Na fonte` é o nome do campo no DBF.
+
 | Coluna no lake | Na fonte | Tipo | Descrição | Unidade / códigos | Período |
 |---|---|---|---|---|---|
 | `co_us` | `CO_US` | texto | Código da unidade de saúde solicitante do exame (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |

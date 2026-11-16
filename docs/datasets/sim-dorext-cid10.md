@@ -118,6 +118,8 @@ Nomes verificados contra o arquivo real `DOREXT25.dbc` (87 colunas); o layout é
 
 ## Variáveis
 
+Descrições tiradas do informe técnico ou do dicionário de dados do DATASUS quando o campo consta do documento; textos marcados "inferido do nome do campo" não têm definição oficial; "Sem descrição na documentação oficial consultada" é lacuna a preencher. `Tipo` e `Período` vêm do esquema de referência (conversão local de amostras): `Período` é o intervalo de partições amostradas em que a coluna existe, e `todos` significa todas as amostras. `Na fonte` é o nome do campo no DBF.
+
 | Coluna no lake | Na fonte | Tipo | Descrição | Unidade / códigos | Período |
 |---|---|---|---|---|---|
 | `origem` | `ORIGEM` | texto | Origem do registro: 01 Oracle; 02 banco estadual disponibilizado via FTP; 03 banco SEADE; 9 ignorado | — | todos |

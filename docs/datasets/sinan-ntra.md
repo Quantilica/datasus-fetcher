@@ -101,6 +101,8 @@ As colunas abaixo foram extraídas do cabeçalho do arquivo mais recente (`NTRAB
 
 ## Variáveis
 
+Descrições tiradas do informe técnico ou do dicionário de dados do DATASUS quando o campo consta do documento; textos marcados "inferido do nome do campo" não têm definição oficial; "Sem descrição na documentação oficial consultada" é lacuna a preencher. `Tipo` e `Período` vêm do esquema de referência (conversão local de amostras): `Período` é o intervalo de partições amostradas em que a coluna existe, e `todos` significa todas as amostras. `Na fonte` é o nome do campo no DBF.
+
 | Coluna no lake | Na fonte | Tipo | Descrição | Unidade / códigos | Período |
 |---|---|---|---|---|---|
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
