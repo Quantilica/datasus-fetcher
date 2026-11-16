@@ -7,6 +7,8 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+
+## [0.20.0] - 2026-11-16
 ### Adicionado
 - Documentação dos dados conforme a norma: `docs/README.md` (página da fonte), uma página por dataset em `docs/datasets/<id>.md` (113 datasets, cabeçalho verificado, dicionário de todas as variáveis, ficha técnica gerada) e o esquema de referência do lake em `docs/datasets/<id>.schema.json` (gerado por conversão local de amostras). O índice geral antigo (`docs/datasets/README.md`) sai e seu conteúdo passa para `docs/README.md`.
 - Testes: identidade do registro conferida; `tests/test_docs.py` verifica a documentação dos dados (`quantilica-core[docs]` no grupo `dev`).
