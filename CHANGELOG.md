@@ -7,6 +7,8 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Alterado
+- CI e infraestrutura alinhados ao template (fetcher-template v0.2.1).
 
 ## [0.20.0] - 2026-11-16
 ### Adicionado

@@ -1,48 +1,62 @@
-# Build / packaging
 __pycache__/
 *.py[cod]
-*.egg-info/
+*$py.class
+*.so
+.Python
 build/
+develop-eggs/
 dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Virtual envs e caches do uv
-.venv/
-.uv-cache/
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
 
-# Lockfile — libs não versionam uv.lock
-uv.lock
-
-# Caches de teste / lint / tipos
+# Testing and linters
 .pytest_cache/
+.coverage
+htmlcov/
 .ruff_cache/
 .mypy_cache/
 
-# Cobertura
-.coverage
-.coverage.*
-htmlcov/
-
-# Editor / IDE / OS
-.vscode/
+# IDEs
 .idea/
-.DS_Store
-Thumbs.db
+.vscode/
 *.swp
-*.sublime-*
+*.swo
 
-# Logs e env locais
-*.log
-.env
-.env.local
-
-# Claude
-.claude/
+# Project specific
+uv.lock
+.backfill/
+data/
+lake/
 
 # Específico do repo
-(nenhum — logging.ini é versionado como template documentado no README)
+# logging.ini é versionado como template documentado no README
+.uv-cache/
+.coverage.*
+.DS_Store
+Thumbs.db
+*.sublime-*
+*.log
+.env.local
+.claude/
 
 # Rust / Maturin
 target/
-*.so
 *.pyd
 *.dylib

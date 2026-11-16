@@ -1,3 +1,10 @@
+# Notas de manutenção deste workflow (mantidas no topo para o `copier update` não
+# conflitar com as particularidades de cada repositório):
+# - Matriz: o template gera 3.12 e 3.13. Um repositório cujas dependências
+#   (polars, quantilica-*) já passam no 3.14 pode incluí-lo na matriz.
+# - pyright: passo informativo (continue-on-error: true), porque os fetchers mais
+#   antigos ainda têm erros de tipo. Vira bloqueante (remover o continue-on-error)
+#   quando o repositório zerar os erros do pyright.
 name: Test
 
 on:

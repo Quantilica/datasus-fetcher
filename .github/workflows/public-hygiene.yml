@@ -1,11 +1,5 @@
 name: Public hygiene
 
-# Veta termos internos (planos, decisões, repositórios privados, infraestrutura)
-# em CHANGELOG.md, README e nas mensagens de commit de PRs. O repositório é
-# público: o que entra aqui fica no histórico para sempre.
-# Regra e lista de termos: docs/normas/changelog.md, seção 5.1.
-# Falso positivo legítimo: termine a linha com `<!-- hygiene-ok -->`.
-
 on:
   push:
     branches: [main]
@@ -79,27 +73,29 @@ jobs:
             echo "Nenhum CHANGELOG/README para verificar."
             exit 0
           fi
-          # shellcheck disable=SC2086
           hits=$(grep -nIiE -f "$RUNNER_TEMP/termos-todos.txt" $files /dev/null \
             | grep -v 'hygiene-ok' || true)
           if [ -n "$hits" ]; then
             echo "$hits"
-            echo "::error::Termos internos em changelog/README. Reescreva em termos públicos (docs/normas/changelog.md, seção 5.1)."
+            echo "::error::Termos internos em changelog/README. Reescreva em termos públicos."
             exit 1
           fi
           echo "Limpo."
 
       - name: Mensagens de commit do PR
         if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          range="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+          range="${BASE_SHA}..${HEAD_SHA}"
           msgs=$(git log --format='%h %s%n%b' "$range")
           hits=$(printf '%s\n' "$msgs" \
             | grep -iE -f "$RUNNER_TEMP/termos-comuns.txt" \
             | grep -v 'hygiene-ok' || true)
           if [ -n "$hits" ]; then
             echo "$hits"
-            echo "::error::Termos internos em mensagem de commit. Reescreva o commit (docs/normas/changelog.md, seção 5.1)."
+            echo "::error::Termos internos em mensagem de commit."
             exit 1
           fi
           echo "Limpo."
