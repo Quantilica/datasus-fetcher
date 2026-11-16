@@ -1,0 +1,1011 @@
+{
+  "fonte": "datasus",
+  "dataset": "sim-dofet-cid10",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [
+    "ano"
+  ],
+  "colunas": [
+    {
+      "nome": "contador",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dtobito",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "tipobito",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "estciv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "esc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "sexo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dtnasc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "idade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "lococor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "codigo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "codmunocor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "codmunres",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "baires",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "areares",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "ocupacao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "natural",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "instrucao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "ocuppai",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "instrpai",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "ocupmae",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "idademae",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "escmae",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "instrmae",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "filhvivos",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "qtdfilvivo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "qtdfilmort",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "filhmort",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "semangest",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "gestacao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "tipograv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "gravidez",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "parto",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "obitoparto",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "tipoparto",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "peso",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "pesonasc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "assistmed",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "atestante",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "exame",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cirurgia",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "necropsia",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "obitograv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "obitopuerp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "causabas",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "tipoviol",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "tipoacid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "fontinfo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "acidtrab",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "locacid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "critica",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "numexport",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "crsocor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "crsres",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "racacor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "etnia",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "1996"
+    },
+    {
+      "nome": "ufinform",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2005"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1996",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "codbaires",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2005",
+      "periodo_fim": "2005"
+    },
+    {
+      "nome": "ocup",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2005",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "codestab",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2005",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "linhaa",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2005",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "linhab",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2005",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "linhac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2005",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "linhad",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2005",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "linhaii",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2005",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "circobito",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2005",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "fonte",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2005",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "horaobito",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "comunsvoim",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dtatestado",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "tppos",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dtinvestig",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "causabas_o",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dtcadastro",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "fonteinv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dtrecebim",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dtrecorig",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dtrecoriga",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "causamat",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "esc2010",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "escmae2010",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "stdoepidem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "stdonova",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dtcadinv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "tpobitocor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dtcadinf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "morteparto",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "codmuncart",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "numregcart",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "codcart",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dtregcart",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "codmunnatu",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "seriescfal",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "estabdescr",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "seriescmae",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "semagestac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "tpmorteoco",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "cb_pre",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "medico",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "crm",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2017"
+    },
+    {
+      "nome": "numerolote",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "linhaa_o",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "linhab_o",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "linhac_o",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "linhad_o",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "linhaii_o",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "stcodifica",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "codificado",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "versaosist",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "versaoscb",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "atestado",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "escmaeagr1",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "escfalagr1",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "difdata",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "nudiasobco",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "nudiasobin",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dtconinv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "fontes",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "tpresginfo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "tpnivelinv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "nudiasinf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "dtconcaso",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "fontesinf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    },
+    {
+      "nome": "altcausa",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2017",
+      "periodo_fim": "2025"
+    }
+  ],
+  "arquivos": 5
+}

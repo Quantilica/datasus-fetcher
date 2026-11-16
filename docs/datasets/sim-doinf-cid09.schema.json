@@ -1,0 +1,419 @@
+{
+  "fonte": "datasus",
+  "dataset": "sim-doinf-cid09",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [
+    "ano"
+  ],
+  "colunas": [
+    {
+      "nome": "contador",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "cartorio",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "registro",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "datareg",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "tipobito",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "dataobito",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "estcivil",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "sexo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "datanasc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "idade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "lococor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "codigo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "muniocor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "munires",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "baires",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "areares",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "ocupacao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "natural",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "instrucao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "ocuppai",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "instrpai",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "ocupmae",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "idademae",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "instrmae",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "filhvivos",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "filhmort",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "semangest",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "tipograv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "tipoparto",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "pesonasc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "assistmed",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "atestante",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "exame",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "cirurgia",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "necropsia",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "obitofe1",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "obitofe2",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "causabas",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "tipoviol",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "tipoacid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "fontinfo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "acidtrab",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "locacid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "critica",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "numexport",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "crsocor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "crsres",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "ufinform",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1979",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "racacor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "1995"
+    },
+    {
+      "nome": "etnia",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "1995",
+      "periodo_fim": "1995"
+    }
+  ],
+  "arquivos": 5
+}
