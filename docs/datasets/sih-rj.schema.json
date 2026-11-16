@@ -1,0 +1,756 @@
+{
+  "fonte": "datasus",
+  "dataset": "sih-rj",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [
+    "ano",
+    "mes"
+  ],
+  "colunas": [
+    {
+      "nome": "uf_zi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "ano_cmpt",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "mes_cmpt",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "espec",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "cgc_hosp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "n_aih",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "ident",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "cep",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "munic_res",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "nasc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "sexo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "uti_mes_in",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "uti_mes_an",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "uti_mes_al",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "uti_mes_to",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "marca_uti",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "uti_int_in",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "uti_int_an",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "uti_int_al",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "uti_int_to",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "diar_acom",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "qt_diarias",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "proc_solic",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "proc_rea",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "val_sh",
+      "tipos": [
+        "decimal128(13, 2)"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "val_sp",
+      "tipos": [
+        "decimal128(13, 2)"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "val_sadt",
+      "tipos": [
+        "decimal128(13, 2)"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "val_rn",
+      "tipos": [
+        "decimal128(13, 2)"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "val_acomp",
+      "tipos": [
+        "decimal128(13, 2)"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "val_ortp",
+      "tipos": [
+        "decimal128(13, 2)"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "val_sangue",
+      "tipos": [
+        "decimal128(13, 2)"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "val_sadtsr",
+      "tipos": [
+        "decimal128(11, 2)"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "val_transp",
+      "tipos": [
+        "decimal128(13, 2)"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "val_obsang",
+      "tipos": [
+        "decimal128(11, 2)"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "val_ped1ac",
+      "tipos": [
+        "decimal128(11, 2)"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "val_tot",
+      "tipos": [
+        "decimal128(14, 2)"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "val_uti",
+      "tipos": [
+        "decimal128(8, 2)"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "us_tot",
+      "tipos": [
+        "decimal128(10, 2)"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "dt_inter",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "dt_saida",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "diag_princ",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "diag_secun",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "cobranca",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "natureza",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "gestao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "rubrica",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "ind_vdrl",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "munic_mov",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "cod_idade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "idade",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "dias_perm",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "morte",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "nacional",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "num_proc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "car_int",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "tot_pt_sp",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "cpf_aut",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "homonimo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "num_filhos",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "instru",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "cid_notif",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "contracep1",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "contracep2",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "gestrisco",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "insc_pn",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "seq_aih5",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "cbor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "cnaer",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "vincprev",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "gestor_cod",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "gestor_tp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "gestor_cpf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "gestor_dt",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "cnes",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "cnpj_mant",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "infehosp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "cid_asso",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "cid_morte",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "complex",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "financ",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "faec_tp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "regct",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "raca_cor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "etnia",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "st_situac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "st_bloq",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "st_mot_blo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "sequencia",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "remessa",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-04",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "nat_jur",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2014-06",
+      "periodo_fim": "2026-03"
+    },
+    {
+      "nome": "fonte_orc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2026-03",
+      "periodo_fim": "2026-03"
+    }
+  ],
+  "arquivos": 5
+}

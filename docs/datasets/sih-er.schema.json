@@ -1,0 +1,116 @@
+{
+  "fonte": "datasus",
+  "dataset": "sih-er",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [
+    "ano",
+    "mes"
+  ],
+  "colunas": [
+    {
+      "nome": "sequencia",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2011-06",
+      "periodo_fim": "2026-05"
+    },
+    {
+      "nome": "remessa",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-06",
+      "periodo_fim": "2026-05"
+    },
+    {
+      "nome": "cnes",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-06",
+      "periodo_fim": "2026-05"
+    },
+    {
+      "nome": "aih",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-06",
+      "periodo_fim": "2026-05"
+    },
+    {
+      "nome": "dt_inter",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2011-06",
+      "periodo_fim": "2026-05"
+    },
+    {
+      "nome": "dt_saida",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2011-06",
+      "periodo_fim": "2026-05"
+    },
+    {
+      "nome": "mun_mov",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-06",
+      "periodo_fim": "2026-05"
+    },
+    {
+      "nome": "uf_zi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-06",
+      "periodo_fim": "2026-05"
+    },
+    {
+      "nome": "mun_res",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-06",
+      "periodo_fim": "2026-05"
+    },
+    {
+      "nome": "uf_res",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-06",
+      "periodo_fim": "2026-05"
+    },
+    {
+      "nome": "co_erro",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-06",
+      "periodo_fim": "2026-05"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-06",
+      "periodo_fim": "2026-05"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-06",
+      "periodo_fim": "2026-05"
+    }
+  ],
+  "arquivos": 5
+}
