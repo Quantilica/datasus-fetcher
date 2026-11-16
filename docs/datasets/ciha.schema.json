@@ -1,0 +1,268 @@
+{
+  "fonte": "datasus",
+  "dataset": "ciha",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [
+    "ano",
+    "mes"
+  ],
+  "colunas": [
+    {
+      "nome": "ano_cmpt",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "mes_cmpt",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "espec",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "cgc_hosp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "munic_res",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "nasc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "sexo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "uti_mes_to",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "uti_int_to",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "proc_rea",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "qt_proc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "dt_atend",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "dt_saida",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "diag_princ",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "diag_secun",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "cobranca",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "natureza",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "gestao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "munic_mov",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "cod_idade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "idade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "dias_perm",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "morte",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "nacional",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "car_int",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "homonimo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "cnes",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "fonte",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "cgc_consor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "modalidade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-10",
+      "periodo_fim": "2026-08"
+    }
+  ],
+  "arquivos": 5
+}

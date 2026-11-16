@@ -1,33 +1,57 @@
-# `sisprenatal-pn` — Pré-Natal
+---
+dataset:
+  id: sisprenatal-pn
+  fonte: datasus
+  titulo: Pré-Natal
+  resumo: Microdados do SISPRENATAL (Sistema de Monitoramento e Avaliação do Pré-Natal, Parto, Puerpério e Criança) do Ministério da Saúde, com registros de acompanhamento de gestantes no SUS entre 2012 e 2014.
+  orgao: Ministério da Saúde — DATASUS
+  pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SISPRENATAL/
+  licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
+  periodicidade: mensal (um arquivo por UF e competência)
+  cobertura:
+    inicio: 2012-01
+    fim: 2014-12
+  unidade: um registro de acompanhamento de gestante
+  granularidade:
+    espacial: município de residência da gestante e da unidade de saúde; um arquivo por UF
+    temporal: competência (mês)
+  formato_bruto: DBC (DBF comprimido com PKWARE DCL), codificação latin1, um arquivo por UF e competência mensal
+  lake:
+    estado: convertido
+    particoes:
+    - ano
+    - mes
+    chave: []
+    colunas: 38
+  unidades_de_medida:
+    qt_cons: quantidade
+  dados_pessoais:
+  - coluna: nu_cns
+    categoria: Cartão Nacional de Saúde (CNS)
+  eras: []
+  revisado_em: '2026-11-16'
+  versao_fetcher: 0.19.0
+---
+
+# Pré-Natal (`sisprenatal-pn`)
+
+## Resumo
 
 Microdados do SISPRENATAL (Sistema de Monitoramento e Avaliação do Pré-Natal, Parto, Puerpério e Criança) do Ministério da Saúde, com registros de acompanhamento de gestantes no SUS entre 2012 e 2014. A unidade de registro é o acompanhamento da gestante, por UF e mês.
 
-## Ficha Técnica
+## Ficha técnica
 
-| Atributo | Valor |
-|---|---|
-| **Sistema / Grupo** | `sisprenatal` — SISPRENATAL: Sistema de Monitoramento e Avaliação do Pré-Natal, Parto, Puepério e Criança |
-| **Código no `datasus-fetcher`** | `sisprenatal-pn` |
-| **Formato dos arquivos** | `.dbc` (dBASE comprimido no formato DATASUS; descompactado nativamente em Rust para `.dbf`) |
-| **Particionamento** | `uf / yearmonth` |
-| **Periodicidade** | Mensal |
-| **Cobertura temporal no FTP** | 2012-01 a 2014-12 (conforme `index.json`) |
-| **Volume aproximado no FTP** | 944 arquivos (~232,4 MB); 27 UF(s) na partição; última atualização 2015-01-06 |
-| **Arquivos preliminares** | Não |
-| **Documentação oficial no FTP** | Não aplicável (o catálogo `meta.docs` não define diretório de documentação para este sistema) |
-| **Tabelas auxiliares no FTP** | `/dissemin/publicos/SISPRENATAL/201201_/Auxiliar` |
+<!-- gerado:ficha -->
 
-## 1. Contexto Institucional e Epidemiológico
+## Origem e coleta
 
-O SISPRENATAL foi criado pelo Ministério da Saúde para acompanhar a implementação do Programa de Humanização no Pré-Natal e Nascimento (PHPN, Portaria GM/MS nº 569/2000) e, depois, da Rede Cegonha (2011), registrando o cadastro da gestante, as consultas, os exames e a imunização do pré-natal, além de dados do parto e do puerpério. Sua gestão cabe à área técnica de saúde da mulher (SAPS/MS), com o DATASUS como desenvolvedor.
-
-O instrumento de coleta é a ficha de cadastramento da gestante e as fichas de acompanhamento do pré-natal, digitadas pelas unidades de saúde no sistema. A unidade de análise é a gestante acompanhada (ou o evento de acompanhamento, conforme o arquivo mensal), o que implica atenção a duplicidades entre meses.
-
-A versão disponibilizada no FTP cobre janeiro/2012 a dezembro/2014 (36 competências, 27 UF, ~232 MB), a fase final do sistema legado antes da migração para os sistemas de informação da atenção básica (e-SUS AB/SISAB) e para a estratégia de pré-natal via cadastros ambulatoriais. A cobertura é parcial: municípios que não digitavam no SISPRENATAL ficam fora ou subrepresentados.
-
-Aplicações: proporção de gestantes com 6 ou mais consultas (adequação do pré-natal), início precoce do pré-natal (1º trimestre), realização de exames de rotina (sífilis, HIV), imunização antitetânica e realização de consulta puerperal; análises de qualidade do pré-natal comparadas aos dados do SINASC (`sinasc-dn`).
-
-## 2. Metadados Técnicos no FTP DATASUS
+- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido no formato DATASUS; descompactado nativamente em Rust para `.dbf`)
+- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf / yearmonth`
+- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2012-01 a 2014-12 (conforme `index.json`)
+- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 944 arquivos (~232,4 MB); 27 UF(s) na partição; última atualização 2015-01-06
+- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
+- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): Não aplicável (o catálogo `meta.docs` não define diretório de documentação para este sistema)
+- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SISPRENATAL/201201_/Auxiliar`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -44,9 +68,22 @@ Aplicações: proporção de gestantes com 6 ou mais consultas (adequação do p
   - Tabelas auxiliares (`datasus-metadata/metadata/auxiliary/sisprenatal.json`):
     - `/dissemin/publicos/SISPRENATAL/201201_/Auxiliar/TAB_SISPRENATAL.zip` (3.8 MB)
 
-## 3. Principais Variáveis e Qualidade dos Dados
+## Conteúdo
 
-### Variáveis-Chave dos Microdados
+O SISPRENATAL foi criado pelo Ministério da Saúde para acompanhar a implementação do Programa de Humanização no Pré-Natal e Nascimento (PHPN, Portaria GM/MS nº 569/2000) e, depois, da Rede Cegonha (2011), registrando o cadastro da gestante, as consultas, os exames e a imunização do pré-natal, além de dados do parto e do puerpério. Sua gestão cabe à área técnica de saúde da mulher (SAPS/MS), com o DATASUS como desenvolvedor.
+
+O instrumento de coleta é a ficha de cadastramento da gestante e as fichas de acompanhamento do pré-natal, digitadas pelas unidades de saúde no sistema. A unidade de análise é a gestante acompanhada (ou o evento de acompanhamento, conforme o arquivo mensal), o que implica atenção a duplicidades entre meses.
+
+A versão disponibilizada no FTP cobre janeiro/2012 a dezembro/2014 (36 competências, 27 UF, ~232 MB), a fase final do sistema legado antes da migração para os sistemas de informação da atenção básica (e-SUS AB/SISAB) e para a estratégia de pré-natal via cadastros ambulatoriais. A cobertura é parcial: municípios que não digitavam no SISPRENATAL ficam fora ou subrepresentados.
+
+Aplicações: proporção de gestantes com 6 ou mais consultas (adequação do pré-natal), início precoce do pré-natal (1º trimestre), realização de exames de rotina (sífilis, HIV), imunização antitetânica e realização de consulta puerperal; análises de qualidade do pré-natal comparadas aos dados do SINASC (`sinasc-dn`).
+
+### Cobertura observada
+
+- Índice do FTP (2026-10): 944 arquivos, de 2012-01 a 2014-12, 27 UF(s) com arquivos, última atualização em 2015-01-06.
+- Conversão local de amostras (3 arquivo(s) Parquet, de 2012-02 a 2014-03), feita em 2026-11-16 com o `datasus-fetcher` 0.19.0: serve de base ao esquema de referência. Períodos fora das amostras podem ter colunas que não aparecem aqui.
+
+### Variáveis de uso mais frequente (resumo da versão anterior desta página)
 
 Nomes verificados contra o arquivo real `PNSP1408.dbc` (36 colunas). Não há municípios de residência da gestante, apenas o da UBS.
 
@@ -71,15 +108,81 @@ Nomes verificados contra o arquivo real `PNSP1408.dbc` (36 colunas). Não há mu
 | `QT_PRT_CIR` / `QT_PRT_FOR` / `QT_PRT_VAG` | String (3) | Partos anteriores: cesáreos, fórceps e vaginais. |
 | `QT_CONS` / `QT_CONSULT` | Inteiro / String (3) | Número de consultas de pré-natal (mesma informação em duas colunas). |
 
-### Observações de Tratamento e Saneamento (`wrangle_datasus`)
+## Variáveis
 
-- **Preservação de códigos estruturados**: `CO_MUN_UBS`, `CO_UF_IBGE`, `NU_CNS`, `NU_NIS` e `CO_GESTANT` devem permanecer `String` (os campos caractere do DBF são lidos como texto), preservando zeros à esquerda; os códigos de município têm 7 caracteres (IBGE com dígito verificador).
-- **Datas e competências**: `DT_ATEND` é a competência (`AAAAMM`) e `NU_ANO_GES` o ano; `DT_DUM`, `DT_DPP` e `DT_INC` vêm como texto `AAAAMMDD` e devem ser convertidas explicitamente (`str.to_date("%Y%m%d", strict=False)`).
-- **Valores ausentes e sentinelas**: o `wrangle_datasus` faz `strip` das strings e converte `""` e sentinelas em nulo. Códigos categóricos de "ignorado" (por exemplo `9`) **não** viram nulo automaticamente. Registros marcados como excluídos no dBASE (`_deleted`) são removidos.
+| Coluna no lake | Na fonte | Tipo | Descrição | Unidade / códigos | Período |
+|---|---|---|---|---|---|
+| `nu_ano_ges` | `NU_ANO_GES` | texto | Ano da gestação (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `dt_atend` | `DT_ATEND` | data | Data do atendimento (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `co_uf_ibge` | `CO_UF_IBGE` | texto | UF do atendimento (código IBGE) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `nu_gesta` | `NU_GESTA` | texto | Número de gestações da gestante (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `co_gestant` | `CO_GESTANT` | texto | Código da gestante (identificador codificado) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `co_pais` | `CO_PAIS` | texto | Código do país de nascimento da gestante (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `nu_cns` | `NU_CNS` | texto | Número do Cartão Nacional de Saúde da gestante (codificado) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `nu_idade` | `NU_IDADE` | texto | Idade da gestante (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `nu_nis` | `NU_NIS` | texto | Número de Identificação Social (NIS) da gestante (codificado) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `nu_nis_rep` | `NU_NIS_REP` | texto | Número de Identificação Social (NIS) do responsável (codificado) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `ds_zona` | `DS_ZONA` | texto | Zona de residência (urbana ou rural) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `qt_ab_ect` | `QT_AB_ECT` | texto | Quantidade de abortos por gravidez ectópica (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `qt_ab_ger` | `QT_AB_GER` | texto | Quantidade de abortos (geral) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `qt_ab_mol` | `QT_AB_MOL` | texto | Quantidade de abortos por gravidez molar (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `qt_mor_aps` | `QT_MOR_APS` | texto | Quantidade de filhos mortos após o parto (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `qt_mor_ps` | `QT_MOR_PS` | texto | Quantidade de filhos mortos antes do parto (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `qt_nsc_mor` | `QT_NSC_MOR` | texto | Quantidade de nascidos mortos (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `qt_nsc_viv` | `QT_NSC_VIV` | texto | Quantidade de nascidos vivos (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `qt_prt_cir` | `QT_PRT_CIR` | texto | Quantidade de partos cirúrgicos (cesáreas) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `qt_prt_for` | `QT_PRT_FOR` | texto | Quantidade de partos com fórceps (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `qt_prt_vag` | `QT_PRT_VAG` | texto | Quantidade de partos vaginais (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `st_aux_dsl` | `ST_AUX_DSL` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
+| `st_gra_ant` | `ST_GRA_ANT` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
+| `st_gra_pla` | `ST_GRA_PLA` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
+| `dt_dum` | `DT_DUM` | texto | Data da última menstruação (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `dt_dpp` | `DT_DPP` | texto | Data provável do parto (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `co_tpo_gra` | `CO_TPO_GRA` | texto | Tipo de gravidez (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `co_esc_gp` | `CO_ESC_GP` | texto | Escolaridade da gestante (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `co_rac_gp` | `CO_RAC_GP` | texto | Raça/cor da gestante (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `co_etn_gp` | `CO_ETN_GP` | texto | Etnia da gestante (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `co_stf_gp` | `CO_STF_GP` | texto | Situação familiar da gestante (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `co_mun_ubs` | `CO_MUN_UBS` | texto | Município da unidade básica de saúde (código IBGE) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `qt_cons` | `QT_CONS` | inteiro | Quantidade de consultas (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `qt_consult` | `QT_CONSULT` | texto | Quantidade de consultas de pré-natal (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `st_gestac` | `ST_GESTAC` | texto | Situação da gestação (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `dt_inc` | `DT_INC` | texto | Data de inclusão do registro (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `uf` | — | texto | UF do arquivo de origem (sigla em minúsculas, `br` para arquivos nacionais), gravada pelo conversor; as linhas do período saem ordenadas por ela | sigla da UF | todos |
+| `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
 
-Os registros são mensais e uma mesma gestante pode aparecer em vários meses: deduplique antes de calcular indicadores por gestante. Municípios que não digitaram no sistema aparecem como lacuna, e não como zero.
+## No lake
 
-## 4. Exemplos Práticos
+- **Dataset no lake:** `datasus/sisprenatal-pn`, particionado por `ano`, `mes` (diretórios `chave=valor`). A UF do arquivo de origem vai na coluna `uf` (as linhas do período saem ordenadas por ela) e o nome do arquivo bruto, na coluna `_origem`; os arquivos de uma mesma partição compartilham um Parquet.
+- **Chave:** sem chave natural declarada. Nenhuma combinação de colunas foi conferida como única nas amostras; para tirar duplicatas, defina a chave por consulta (ver Cuidados de uso).
+- **Tipos nas amostras** (número de colunas): data: 1, inteiro: 1, texto: 36.
+- **Transformações do conversor** (`datasus-fetcher` 0.19.0, `wrangle_datasus` e `LakeConverter`): nomes de coluna em minúsculas; textos aparados (espaços das pontas saem); valores de preenchimento (texto vazio, `NA`, `null`, `None` e códigos como `999999` e `00000000`, conforme a lista `SENTINEL_NULLS` do pacote) viram nulo; colunas de código (CID, CNES, município, procedimento, CEP, número de AIH e semelhantes) ficam como texto, preservando zeros à esquerda; colunas de data no formato `AAAAMMDD` viram data (valores inválidos interrompem a conversão em vez de virarem nulo); valores monetários com casas decimais ficam como decimal exato; registros marcados como excluídos no DBF são descartados; arquivos DBC sem nenhuma linha não passam pela limpeza (ver Cuidados de uso).
+- **Esquema de referência:** `sisprenatal-pn.schema.json`, gerado por conversão local de amostras. Tipos listados com mais de um valor variam entre partições.
+
+## Cuidados de uso
+
+- **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
+- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
+
+## Exemplos
+
+### Consulta sobre o lake (polars)
+
+Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
+
+```python
+import polars as pl
+
+(
+    pl.scan_parquet("lake/datasus/sisprenatal-pn/**/*.parquet", hive_partitioning=True)
+    .group_by("ano", "mes", "uf")
+    .agg(pl.len().alias("linhas"))
+    .sort("ano", "mes", "uf")
+    .collect()
+)
+```
+
+O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
 ### Via CLI (`quantilica datasus` / `datasus-fetcher`)
 
@@ -105,14 +208,16 @@ quantilica datasus pipeline sisprenatal-pn -o ./data/raw --parquet-dir ./data/pa
 import datasus_fetcher as df
 import polars as pl
 
-frame = df.read_dbc("data/sisprenatal-pn/201201/sisprenatal-pn_201201-sp@20150106.dbc", dataset="sisprenatal-pn")
+frame = df.read_dbc(
+    "data/sisprenatal-pn/201201/sisprenatal-pn_201201-sp@20150106.dbc",
+    dataset="sisprenatal-pn",
+)
 print(frame.shape)
 print(frame.columns)
 
 print(frame.group_by("qt_cons").len().sort("qt_cons"))
 ```
-
-## 5. Referências Oficiais
+## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SISPRENATAL/201201_/Dados`
 - **Portal de Transferência de Arquivos do DATASUS**: https://datasus.saude.gov.br/transferencia-de-arquivos/

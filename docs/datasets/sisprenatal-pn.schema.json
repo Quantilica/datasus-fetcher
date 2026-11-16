@@ -1,0 +1,316 @@
+{
+  "fonte": "datasus",
+  "dataset": "sisprenatal-pn",
+  "gerado_em": "2026-11-16T18:27:31+00:00",
+  "particoes": [
+    "ano",
+    "mes"
+  ],
+  "colunas": [
+    {
+      "nome": "nu_ano_ges",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "dt_atend",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "co_uf_ibge",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "nu_gesta",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "co_gestant",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "co_pais",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "nu_cns",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "nu_idade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "nu_nis",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "nu_nis_rep",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "ds_zona",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "qt_ab_ect",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "qt_ab_ger",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "qt_ab_mol",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "qt_mor_aps",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "qt_mor_ps",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "qt_nsc_mor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "qt_nsc_viv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "qt_prt_cir",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "qt_prt_for",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "qt_prt_vag",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "st_aux_dsl",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "st_gra_ant",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "st_gra_pla",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "dt_dum",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "dt_dpp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "co_tpo_gra",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "co_esc_gp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "co_rac_gp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "co_etn_gp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "co_stf_gp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "co_mun_ubs",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "qt_cons",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "qt_consult",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "st_gestac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "dt_inc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2012-02",
+      "periodo_fim": "2014-03"
+    }
+  ],
+  "arquivos": 3
+}

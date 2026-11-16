@@ -1,0 +1,244 @@
+{
+  "fonte": "datasus",
+  "dataset": "cih-cr",
+  "gerado_em": "2026-11-16T18:27:30+00:00",
+  "particoes": [
+    "ano",
+    "mes"
+  ],
+  "colunas": [
+    {
+      "nome": "ano_cmpt",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "mes_cmpt",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "espec",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "cgc_hosp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "munic_res",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "nasc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "sexo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "uti_mes_to",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "uti_int_to",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "proc_rea",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "dt_inter",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "dt_saida",
+      "tipos": [
+        "date32[day]"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "diag_princ",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "diag_secun",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "cobranca",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "natureza",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "gestao",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "munic_mov",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "cod_idade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "idade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "dias_perm",
+      "tipos": [
+        "int64"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "morte",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "nacional",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "car_int",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "homonimo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "cnes",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "fonte",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2008-02",
+      "periodo_fim": "2011-04"
+    }
+  ],
+  "arquivos": 4
+}
