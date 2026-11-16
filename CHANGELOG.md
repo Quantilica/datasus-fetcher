@@ -8,7 +8,8 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ## [Não lançado]
 
 ### Adicionado
-- Testes: identidade do registro conferida.
+- Documentação dos dados conforme a norma: `docs/README.md` (página da fonte), uma página por dataset em `docs/datasets/<id>.md` (113 datasets, cabeçalho verificado, dicionário de todas as variáveis, ficha técnica gerada) e o esquema de referência do lake em `docs/datasets/<id>.schema.json` (gerado por conversão local de amostras). O índice geral antigo (`docs/datasets/README.md`) sai e seu conteúdo passa para `docs/README.md`.
+- Testes: identidade do registro conferida; `tests/test_docs.py` verifica a documentação dos dados (`quantilica-core[docs]` no grupo `dev`).
 
 ### Corrigido
 - CI: o pyproject declara o PyPI antes do índice Quantilica (`[[tool.uv.index]]`), e o workflow perde `--index` e `--index-strategy`. Com a estratégia padrão `first-index`, o `uv sync` só consulta o índice para o que não está no PyPI (`quantilica-analytics`) e deixa de receber o 503 intermitente que o GitHub Pages devolve a caminhos inexistentes.

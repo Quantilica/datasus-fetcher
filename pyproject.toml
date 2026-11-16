@@ -76,6 +76,7 @@ dev = [
     # Só para os testes: tests/test_lake.py exercita o comando convert do plugin Typer,
     # que depende do host (quantilica-cli). Não são dependências do pacote.
     "quantilica-cli>=0.17.0",
+    "quantilica-core[docs]>=0.19.0",
     "typer>=0.15.0",
     "rich>=13.0.0",
 ]
