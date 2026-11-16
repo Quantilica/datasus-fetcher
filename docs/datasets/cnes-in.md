@@ -3,7 +3,7 @@ dataset:
   id: cnes-in
   fonte: datasus
   titulo: Incentivos
-  resumo: O cnes-in contém os microdados do arquivo de Incentivos do Cadastro Nacional de Estabelecimentos de Saúde (CNES), que registra os incentivos vinculados aos estabelecimentos de saúde.
+  resumo: 'Incentivos do DATASUS: um incentivo vinculado a um estabelecimento, em uma competência.'
   orgao: Ministério da Saúde — Secretaria de Atenção Especializada à Saúde (SAES) e DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -45,13 +45,9 @@ O `cnes-in` contém os microdados do arquivo de **Incentivos** do Cadastro Nacio
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `yearmonth` (um arquivo por UF e competência mensal, além de `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2007-10 a 2026-09 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 6060 arquivos (~44 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/CNES/200508_/doc` (`IT_CNES_1706.pdf`)
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/CNES/200508_/Auxiliar` (`TAB_CNES.zip`)
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/CNES/200508_/doc` (`IT_CNES_1706.pdf`)
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/CNES/200508_/Auxiliar` (`TAB_CNES.zip`)
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -62,7 +58,7 @@ O `cnes-in` contém os microdados do arquivo de **Incentivos** do Cadastro Nacio
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `INSP2410.dbc` — `IN` (Incentivos), `SP` (UF), `24` (ano), `10` (mês). Há também `INBR<AA><MM>.dbc`.
-- **No armazenamento local do `datasus-fetcher`**: `data/cnes-in/2024-10/cnes-in_202410-sp@20261015.dbc`.
+- **No armazenamento local do `datasus-fetcher`**: `data/cnes-in/<AAAAMM>/cnes-in_<AAAAMM>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/cnes-in/202401/cnes-in_202401-sp@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: `IT_CNES_1706.pdf` (seção "Layout dos arquivos de Incentivos — IN*.dbf") e `TAB_CNES.zip`.
 
 ## Conteúdo
@@ -150,7 +146,6 @@ Aplicações analíticas típicas: mapeamento de incentivos por estabelecimento 
 - leiaute quase idêntico a `HB`, `GM`, `RC`, `EE` e `EF`, diferindo no contexto de `SGRUPHAB`; a vigência deve ser considerada para saber quais incentivos estavam ativos; e a interpretação de cada código exige as tabelas de domínio do `TAB_CNES.zip`. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Colunas que não existem em todo o período:** 1 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -159,11 +154,18 @@ Aplicações analíticas típicas: mapeamento de incentivos por estabelecimento 
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/cnes-in").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/cnes-in/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "mes", "uf")
+    dados.group_by("ano", "mes", "uf")
     .agg(pl.len().alias("linhas"))
     .sort("ano", "mes", "uf")
     .collect()
@@ -172,33 +174,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para cnes-in
-quantilica datasus list cnes-in
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list cnes-in
 
-# 2. Baixar microdados de cnes-in (uf+yearmonth)
-quantilica datasus sync cnes-in -o ./data --start 2024-01 --end 2024-12 --regions sp
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync cnes-in -o ./data --start 2024-01 --end 2024-12 --regions sp rj --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync cnes-in -o ./data --docs --aux --start 2024-01 --end 2024-12
-
-# 4. Pipeline completo até Parquet tratado
-quantilica datasus pipeline cnes-in -o ./data/raw --parquet-dir ./data/parquet --start 2024-01 --end 2024-12
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset cnes-in
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-qdf = read_dbc("data/cnes-in/2024-10/cnes-in_202410-sp@20261015.dbc", clean=True)
-
-print(qdf.group_by("sgruphab").len().sort("len", descending=True).head(10))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/200508_/Dados/IN`

@@ -3,7 +3,7 @@ dataset:
   id: pce
   fonte: datasus
   titulo: Programa de Controle da Esquistossomose
-  resumo: O pce contém os registros de atividades de controle da esquistossomose realizadas pelo Programa de Controle da Esquistossomose (PCE) do Ministério da Saúde.
+  resumo: 'Programa de Controle da Esquistossomose do DATASUS: a produção de uma localidade em uma competência (contagens de exames e atividades do programa).'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), Programa de Controle da Esquistossomose
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/PCE/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -73,13 +73,9 @@ O `pce` contém os registros de **atividades de controle da esquistossomose** re
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (compactado do DBF)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (um arquivo por UF e ano)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 1995 a 2026 (conforme `index.json`; 20 UFs com dados)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 460 arquivos (~15,5 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/PCE/DOCS` (`DIC_DADOS_SISPCE_PCE-DG.txt`)
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/PCE/AUXILIAR` (`tab_pce.zip`)
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/PCE/DOCS` (`DIC_DADOS_SISPCE_PCE-DG.txt`)
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/PCE/AUXILIAR` (`tab_pce.zip`)
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -90,7 +86,7 @@ O `pce` contém os registros de **atividades de controle da esquistossomose** re
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `PESP00.dbc` — `PCE` é o prefixo, `SP` a UF e `00` o ano (2000). Há variações de dois dígitos (`PCEP00`, `PCESP15`). O `.dbc` é a versão compactada do DBF (`DBC`/DATASUS).
-- **No armazenamento local do `datasus-fetcher`**: `data/pce/2024/pce_2024-sp@20251029.dbc` (partição por UF e ano).
+- **No armazenamento local do `datasus-fetcher`**: `data/pce/<AAAA>/pce_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/pce/2024/pce_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: em `PCE/DOCS` está `DIC_DADOS_SISPCE_PCE-DG.txt` (dicionário de dados, com a lista completa de `QT_*` e suas descrições); em `PCE/AUXILIAR` está `tab_pce.zip`, com o arquivo `pce.def` (definições) e tabelas de conversão `.cnv` (UF, município, localidade, região), usados pelo TabWin.
 
 ## Conteúdo
@@ -171,9 +167,9 @@ Aplicações analíticas típicas: séries históricas de positividade e exames 
 | `qt_posout` | `QT_POSOUT` | inteiro ou texto | Quantidade de caramujos positivos de outras espécies. | — | todos |
 | `uf` | — | texto | UF do arquivo de origem (sigla em minúsculas, `br` para arquivos nacionais), gravada pelo conversor; as linhas do período saem ordenadas por ela | sigla da UF | todos |
 | `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
-| `cs_fase` | `CS_FASE` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2026 a 2026 |
-| `nu_fase` | `NU_FASE` | inteiro | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2026 a 2026 |
-| `id_drs` | `ID_DRS` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2026 a 2026 |
+| `cs_fase` | `CS_FASE` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2026 |
+| `nu_fase` | `NU_FASE` | inteiro | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2026 |
+| `id_drs` | `ID_DRS` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2026 |
 
 ## No lake
 
@@ -189,7 +185,6 @@ Aplicações analíticas típicas: séries históricas de positividade e exames 
 - **Tipo que varia entre períodos:** `qt_pop`, `qt_pred`, `qt_exam`, `qt_nrecol`, `qt_1a4`, `qt_5a16`, `qt_17`, `qt_pos`, `qt_atrat`, `qt_trat`, `qt_ci`, `qt_rec`, `qt_aus`, `qt_asc`, `qt_anc`, `qt_tae`, `qt_tt`, `qt_ev`, `qt_se`, `qt_hn`, `qt_out`, `qt_cap`, `qt_pesq`, `qt_bgla`, `qt_bstr` e outras aparecem com mais de um tipo nas amostras (por exemplo, inteiro em alguns períodos e texto em outros); leia a coluna `Tipo` do dicionário e converta explicitamente antes de empilhar períodos. Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Colunas que não existem em todo o período:** 4 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -198,58 +193,34 @@ Aplicações analíticas típicas: séries históricas de positividade e exames 
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
-(
-    pl.scan_parquet("lake/datasus/pce/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "uf")
-    .agg(pl.len().alias("linhas"))
-    .sort("ano", "uf")
-    .collect()
+arquivos = sorted(Path("lake/datasus/pce").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
 )
+
+(dados.group_by("ano", "uf").agg(pl.len().alias("linhas")).sort("ano", "uf").collect())
 ```
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para pce
-quantilica datasus list pce
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list pce
 
-# 2. Baixar microdados com recorte de anos e UFs (partition uf+year)
-quantilica datasus sync pce -o ./data --start 2000 --end 2024 --regions pe al ba
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync pce -o ./data --start 2020 --end 2024 --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync pce -o ./data --docs --aux --start 2000 --end 2024 --regions pe
-
-# 4. Pipeline completo: download, descompactação do .dbc e conversão para Parquet
-quantilica datasus pipeline pce -o ./data/raw --parquet-dir ./data/parquet --start 2000 --end 2024 --regions pe
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset pce
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-pce = read_dbc("data/raw/pce/2024/pce_2024-pe.dbc", clean=True)
-
-# Positividade por competência
-resumo = (
-    pce.group_by("dt_comp")
-    .agg(
-        [
-            pl.col("qt_exam").sum().alias("exames"),
-            pl.col("qt_pos").sum().alias("positivos"),
-        ]
-    )
-    .with_columns((pl.col("positivos") / pl.col("exames")).alias("positividade"))
-    .sort("dt_comp")
-)
-print(resumo)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/PCE/DADOS`

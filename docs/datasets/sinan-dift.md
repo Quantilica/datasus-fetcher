@@ -3,7 +3,7 @@ dataset:
   id: sinan-dift
   fonte: datasus
   titulo: Difteria
-  resumo: O sinan-dift contém os microdados das notificações e investigações epidemiológicas de casos de Difteria (CID-10 A36) registrados no Sistema de Informação de Agravos de Notificação (SINAN) do Ministério da Saúde.
+  resumo: 'Difteria do DATASUS: uma ficha de notificação/investigação de difteria.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -48,13 +48,9 @@ O `sinan-dift` contém os microdados das notificações e investigações epidem
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (arquivos consolidados anuais, praticamente sempre `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2007 a 2026 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 20 arquivos (~0,2 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório `PRELIM`)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório `PRELIM`)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -66,7 +62,7 @@ O `sinan-dift` contém os microdados das notificações e investigações epidem
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `DIFTBR25.dbc` — `DIFT` é o prefixo do agravo, `BR` indica a consolidação nacional de todo o país e `25` é o ano de notificação (2025). As consolidações até 2023 estão em `FINAIS` e os anos de 2024 a 2026 estão apenas em `PRELIM` (ex.: `DIFTBR26.dbc`, atualização de 07/10/2026).
-- **No armazenamento local do `datasus-fetcher`**: caminho padronizado `data/sinan-dift/<ano>/sinan-dift_<período>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-dift/2026/sinan-dift_preliminar_2026-br@20261007.dbc`; arquivos preliminares recebem o sufixo `-preliminar` no nome do dataset.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-dift/<AAAA>/sinan-dift_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-dift/2024/sinan-dift_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: no diretório `SINAN/DOCS` estão `Docs_TAB_SINAN.zip` e as instruções POP_I/II/III de acesso, descompactação e tabulação; em `SINAN/AUXILIAR` estão `TAB_SINANNET.zip`, `TAB_SINANONLINE.zip` (definições/tabulações do Sinan Net e Online) e `POPT_Estimativa_TCU_2019_Sinan.zip` (denominadores populacionais).
 
 ## Conteúdo
@@ -117,14 +113,14 @@ Schema extraído de `DIFTBR25.dbc` (92 colunas depois de remover `_deleted`).
 | `tp_not` | `TP_NOT` | texto | Tipo de Notificação. Identifica o tipo da notificação | 1 – Negativa 2 – Individual 3 – Surto 4 – Agregado | todos |
 | `id_agravo` | `ID_AGRAVO` | texto | Agravo. Tabela de agravos do sistema com códigos (classificação internacional de doenças –CID 10) e nomes dos agravos classificados como notificação compulsória ( nacional, estadual ou municipal) e as síndromes ( febre hemorragia aguda;respiratória aguda; diarréia aguda; sanguinolenta; | — | todos |
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
-| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_notifi cacao | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno) | — | todos |
 | `nu_ano` | `NU_ANO` | texto | (campo interno). Ano da notificação | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
 | `id_regiona` | `ID_REGIONA` | texto | (campo interno). Regional de saúde onde está localizado o município da unidade de saúde ou outra fonte notificadora | — | todos |
-| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora. co_unidade_notifi cacao | — | todos |
-| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico. dt_diagnostico_si ntoma | — | todos |
-| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno). ds_semana_sinto ma | — | todos |
+| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora | — | todos |
+| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico | — | todos |
+| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno) | — | todos |
 | `ano_nasc` | `ANO_NASC` | texto | Ano de nascimento do paciente (campo do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `nu_idade_n` | `NU_IDADE_N` | inteiro | Idade. A composição da variável obedece o seguinte critério: 1o | — | todos |
 | `cs_sexo` | `CS_SEXO` | texto | Sexo. M- Masculino F- Feminino I- Ignorado | — | todos |
@@ -132,9 +128,9 @@ Schema extraído de `DIFTBR25.dbc` (92 colunas depois de remover `_deleted`).
 | `cs_raca` | `CS_RACA` | texto | Raça/Cor. Considera-se cor ou raça declarada pela pessoa. 1. branca 2. preta 3. amarela (pessoa que se declarou de raça amarela) 4. parda (pessoa que se declarou mulata, cabocla, cafuza, mameluca ou mestiça de preto com pessoa de outra cor ou raça) 5. indígena (pessoa que se declarou indígena ou índia) | 1- branca 2- preta 3- amarela 4- parda 5- indígena 9 Ignorado | todos |
 | `cs_escol_n` | `CS_ESCOL_N` | texto | Escolaridade. 43 Analfabeto 1. 1ª a 4ª série incompleta do EF 2. 4ª série completa do EF ( antigo 1° grau) 3. 5ª à 8ª série incompleta do EF (antigo ginásio ou 1° grau) 4. Ensino fundamental completo (antigo ginásio ou 1° grau) 5. Ensino médio incompleto (antigo colegial ou 2° grau) 6. Ensino médio completo (antigo colegial ou 2° grau) 7. Educação superior incompleta 8. Educação superior completa 9. Ignorado 10. N... | — | todos |
 | `sg_uf` | `SG_UF` | texto | UF. Sigla da Unidade Federada de residência do paciente por ocasião da notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência. co_municipio_res idencia | — | todos |
+| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência | — | todos |
 | `id_rg_resi` | `ID_RG_RESI` | texto | (campo interno). Regional de saúde onde está localizado o município de residência do paciente por ocasião da notificação | — | todos |
-| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil). co_pais_residenc ia | — | todos |
+| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil) | — | todos |
 | `nduplic_n` | `NDUPLIC_N` | texto | Não Listar/ Não Contar. 0 ou branco – Não identificado 1 – Não é duplicidade (não listar) 2 – Duplicidade (não contar) | — | todos |
 | `dt_digita` | `DT_DIGITA` | data | Data de digitação. Data de Digitação da primeira inclusão da notificação no sistema | — | todos |
 | `dt_transus` | `DT_TRANSUS` | data | Data de transferência da unidade de saúde. Data de Transferência do registro da Unidade de Saúde para do nível superior do sistema | — | todos |
@@ -144,7 +140,7 @@ Schema extraído de `DIFTBR25.dbc` (92 colunas depois de remover `_deleted`).
 | `dt_transrs` | `DT_TRANSRS` | data | Data de transferência da regional de saúde. Data de Transferência do registro da Regional de Saúde para do nível superior do sistema | — | todos |
 | `dt_transse` | `DT_TRANSSE` | data | Data de transferência da secretaria estadual de saúde. Data de Transferência do registro da Secretaria Estadual para do nível superior do sistema | — | todos |
 | `nu_lote_v` | `NU_LOTE_V` | texto | Número do lote vertical. Descrever aqui a estrutura da composição do número do lote | — | todos |
-| `nu_lote_h` | `NU_LOTE_H` | texto | Número do lote horizontal. nu_lote_horizont al | — | todos |
+| `nu_lote_h` | `NU_LOTE_H` | texto | Número do lote horizontal | — | todos |
 | `cs_flxret` | `CS_FLXRET` | texto | Fluxo de retorno. Identifica se o registro está habilitado ou foi enviado pelo fluxo de retorno para o município de residência | 0 - Não 1 - habilitado para envio. 2 - enviado | todos |
 | `flxrecebi` | `FLXRECEBI` | texto | Recebida por fluxo de retorno (campo interno). Colocar a estrutura do nº atribuído pelo sistema | — | todos |
 | `migrado_w` | `MIGRADO_W` | texto | Identifica migração (campo interno). Identifica se o registro é oriundo da rotina de migração da base Windows | 1- migrado do Sinan Windows | todos |
@@ -154,27 +150,27 @@ Schema extraído de `DIFTBR25.dbc` (92 colunas depois de remover `_deleted`).
 | `ant_outros` | `ANT_OUTROS` | texto | Se Outro contato (Especificar). Identificação de outro local em que o paciente teve contato não referido acima | — | todos |
 | `ant_dos_n` | `ANT_DOS_N` | texto | N.º de Doses da Vacina Tríplice (DTP) ou Tetravalente (DTP+Hib). Número de doses da vacina tríplice (DPT) ou tetravalente | 1. Uma 2. Duas 3. Três | todos |
 | `ant_ulti_d` | `ANT_ULTI_D` | data | Data da última dose. Informe a Data da última dose da vacina tríplice (DTP) ou dupla (DT ou dT) que o paciente recebeu | — | todos |
-| `cli_edemag` | `CLI_EDEMAG` | texto | Sinais e Sintomas (Edema Ganglionar). st_sinais_edema_ganglio nar | 1. Sim 2. Não 9. Ignorado | todos |
-| `cli_pescoc` | `CLI_PESCOC` | texto | Sinais e Sintomas (Edema de Pescoço). st_sinais_edema_pescoc o | 1. Sim 2. Não 9. Ignorado | todos |
+| `cli_edemag` | `CLI_EDEMAG` | texto | Sinais e Sintomas (Edema Ganglionar) | 1. Sim 2. Não 9. Ignorado | todos |
+| `cli_pescoc` | `CLI_PESCOC` | texto | Sinais e Sintomas (Edema de Pescoço). o | 1. Sim 2. Não 9. Ignorado | todos |
 | `cli_febre` | `CLI_FEBRE` | texto | Sinais e Sintomas (Febre). 1 Sim 2 Não 9. Ignorado | — | todos |
 | `cli_prostr` | `CLI_PROSTR` | texto | Sinais e Sintomas (Prostração). Informa se o paciente apresentou prostração | 1. Sim 2. Não 9. Ignorado | todos |
-| `cli_pseudo` | `CLI_PSEUDO` | texto | Sinais e Sintomas (Pseudomembrana). st_sinais_pseudomenbra na | 1. Sim 2. Não 9. Ignorado | todos |
+| `cli_pseudo` | `CLI_PSEUDO` | texto | Sinais e Sintomas (Pseudomembrana) | 1. Sim 2. Não 9. Ignorado | todos |
 | `cli_palide` | `CLI_PALIDE` | texto | Sinais e Sintomas (Palidez). Informa se o paciente apresentou palidez | 1. Sim 2. Não | todos |
 | `cli_temper` | `CLI_TEMPER` | inteiro | Temperatura Corporal. Informa a temperatura corporal apresentada pelo paciente durante a fase inicial da doença, em graus centígrados | — | todos |
-| `cli_cavida` | `CLI_CAVIDA` | texto | Localização da Pseudomembrana (Placas) (Cavidade Nasal). st_pseudomembrana_nas al | 1. Sim 2. Não 9. Ignorado | todos |
-| `cli_amigda` | `CLI_AMIGDA` | texto | Localização da Pseudomembrana (Placas) (Amígdalas). st_pseudomembrana_ami gdala | 1. Sim 2. Não 9. Ignorado | todos |
-| `cli_cordao` | `CLI_CORDAO` | texto | Localização da Pseudomembrana (Placas) Cordão Umbilical). st_pseudomembrana_cor dao | 1. Sim 2. Não 9. Ignorado | todos |
-| `cli_faring` | `CLI_FARING` | texto | Localização da Pseudomembrana (Placas) (Faringe). st_pseudomembrana_fari nge | 1. Sim 2. Não 9. Ignorado | todos |
-| `cli_laring` | `CLI_LARING` | texto | Localização da Pseudomembrana (Placas) (Laringe). st_pseudomembrana_lari nge | 1. Sim 2. Não 9. Ignorado | todos |
-| `cli_orgaos` | `CLI_ORGAOS` | texto | Localização da Pseudomembrana (Placas) (Órgãos Genitais). st_pseudomembrana_gen ital | 1. Sim 2. Não 9. Ignorado | todos |
+| `cli_cavida` | `CLI_CAVIDA` | texto | Localização da Pseudomembrana (Placas) (Cavidade Nasal) | 1. Sim 2. Não 9. Ignorado | todos |
+| `cli_amigda` | `CLI_AMIGDA` | texto | Localização da Pseudomembrana (Placas) (Amígdalas) | 1. Sim 2. Não 9. Ignorado | todos |
+| `cli_cordao` | `CLI_CORDAO` | texto | Localização da Pseudomembrana (Placas) Cordão Umbilical) | 1. Sim 2. Não 9. Ignorado | todos |
+| `cli_faring` | `CLI_FARING` | texto | Localização da Pseudomembrana (Placas) (Faringe) | 1. Sim 2. Não 9. Ignorado | todos |
+| `cli_laring` | `CLI_LARING` | texto | Localização da Pseudomembrana (Placas) (Laringe) | 1. Sim 2. Não 9. Ignorado | todos |
+| `cli_orgaos` | `CLI_ORGAOS` | texto | Localização da Pseudomembrana (Placas) (Órgãos Genitais) | 1. Sim 2. Não 9. Ignorado | todos |
 | `cli_palato` | `CLI_PALATO` | texto | Localização da. Informa se a | 1. Sim | todos |
-| `cli_condut` | `CLI_CONDUT` | texto | Localização da Pseudomembrana (Placas) (Conduto Auditivo). st_pseudomembrana_aud itivo | 1. Sim 2. Não 9. Ignorado | todos |
-| `cli_traque` | `CLI_TRAQUE` | texto | Localização da Pseudomembrana (Placas) (Traquéia). st_pseudomembrana_tra queia | 1. Sim 2. Não 9. Ignorado | todos |
-| `cli_pele` | `CLI_PELE` | texto | Localização da Pseudomembrana (Placas) (Pele). st_pseudomembrana_pel e | 1. Sim 2. Não 9. Ignorado | todos |
-| `cli_conjun` | `CLI_CONJUN` | texto | Localização da Pseudomembrana (Placas) (Conjuntiva). st_pseudomembrana_con juntiva | 1. Sim 2. Não 9. Ignorado | todos |
-| `cli_miocar` | `CLI_MIOCAR` | texto | Complicações Existiram (Miocardite). st_complicacao_miocardit e | 1. Sim 2. Não 9. Ignorado | todos |
+| `cli_condut` | `CLI_CONDUT` | texto | Localização da Pseudomembrana (Placas) (Conduto Auditivo) | 1. Sim 2. Não 9. Ignorado | todos |
+| `cli_traque` | `CLI_TRAQUE` | texto | Localização da Pseudomembrana (Placas) (Traquéia) | 1. Sim 2. Não 9. Ignorado | todos |
+| `cli_pele` | `CLI_PELE` | texto | Localização da Pseudomembrana (Placas) (Pele). e | 1. Sim 2. Não 9. Ignorado | todos |
+| `cli_conjun` | `CLI_CONJUN` | texto | Localização da Pseudomembrana (Placas) (Conjuntiva) | 1. Sim 2. Não 9. Ignorado | todos |
+| `cli_miocar` | `CLI_MIOCAR` | texto | Complicações Existiram (Miocardite). e | 1. Sim 2. Não 9. Ignorado | todos |
 | `cli_nefrit` | `CLI_NEFRIT` | texto | Complicações Existiram (Nefrite). Informa se a complicação foi nefrite | 1. Sim 2. Não 9. Ignorado | todos |
-| `cli_paralb` | `CLI_PARALB` | texto | Complicações Existiram (Paralisia Bilateral e Simetrica das Extremidades). st_complicacao_bilateral ) | 1. Sim 2. Não 9. Ignorado | todos |
+| `cli_paralb` | `CLI_PARALB` | texto | Complicações Existiram (Paralisia Bilateral e Simetrica das Extremidades). ) | 1. Sim 2. Não 9. Ignorado | todos |
 | `cli_paralp` | `CLI_PARALP` | texto | Complicações Existiram Paralisia do Palato. Informa se a complicação foi paralisia do palato | 1. Sim 2. Não 9. Ignorado | todos |
 | `cli_arritm` | `CLI_ARRITM` | texto | Complicações Existiram (Arritmias Cardíacas). Informa se a complicação foram arritmias cardíacas | 1. Sim 2. Não 9. Ignorado | todos |
 | `cli_paralm` | `CLI_PARALM` | texto | Complicações Existiram (Paralisia dos Músculos Intercostais e Diafragma). Informa se a complicação foi paralisia dos músculos intercostais e diafragma | 1. Sim 2. Não 9. Ignorado | todos |
@@ -193,9 +189,9 @@ Schema extraído de `DIFTBR25.dbc` (92 colunas depois de remover `_deleted`).
 | `tra_data_a` | `TRA_DATA_A` | data | Data da Adm. do Antibiótico. Data de início da administração do antibiótico utilizado no tratamento | — | todos |
 | `med_iden_c` | `MED_IDEN_C` | texto | Realizada Identificação dos Comunicantes Íntimos. Informa se foi realizada identificação dos comunicantes íntimos(os comunicantes podem ser identificados na residência, creche, escola, orfanatos, quartéis e outros locais que possibilitam o contato íntimo com o caso) | 1. Sim 2. Não 9. Ignorado | todos |
 | `med_quan_c` | `MED_QUAN_C` | inteiro | Se Sim, Quantos?. número de comunicantes íntimos identificados | — | todos |
-| `med_caso_s` | `MED_CASO_S` | texto | Quantos casos secundários foram confirmados entre os comunicantes. tp_comunicante_confirma do | 1. Nenhum 2. Um 3. Dois ou mais 9. Ignorado | todos |
+| `med_caso_s` | `MED_CASO_S` | texto | Quantos casos secundários foram confirmados entre os comunicantes | 1. Nenhum 2. Um 3. Dois ou mais 9. Ignorado | todos |
 | `med_materi` | `MED_MATERI` | texto | Realizada Coleta de Material dos Comunicantes. Informa se foi realizada coleta de material de comunicantes | 1-Sim 2-Não 9.Ignorado | todos |
-| `med_quan_m` | `MED_QUAN_M` | inteiro | Se Sim, Em Quantos?. qt_comunicante_material ) | — | todos |
+| `med_quan_m` | `MED_QUAN_M` | inteiro | Se Sim, Em Quantos?. ) | — | todos |
 | `med_quan_p` | `MED_QUAN_P` | inteiro | Quantos portadores foram Identificados entre os comunicantes?. Nº de portadores identificados entre os comunicantes | — | todos |
 | `med_preven` | `MED_PREVEN` | texto | Medidas de Prevenção/ Controle. Informa o tipo de bloqueio realizado | 1. Bloqueio vacinal 2. Quimioprofilaxia 3. Ambos 4. Não 9. Ignorado | todos |
 | `classi_fin` | `CLASSI_FIN` | texto | Classificação Final. Classificação final da notificação | 1. Confirmado 2. Descartado | todos |
@@ -221,20 +217,26 @@ Schema extraído de `DIFTBR25.dbc` (92 colunas depois de remover `_deleted`).
 
 - a base tem poucos casos por ano (doença rara na era pós-vacinal), de modo que tabelas agregadas simples tendem a ser esparsas; os dois critérios de cultura (com/sem prova de toxigenicidade) marcam a diferença entre confirmação definitiva (`CRITERIO` = 1) e isolamento sem prova da toxigenicidade (`CRITERIO` = 2); a evolução com/sem sequela (`EVOLUCAO` = 1/2) requer mapeamento antes de qualquer tabulação; e a série de 2024 a 2026 está apenas em `PRELIM`, com casos ainda passíveis de revisão. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-dift").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-dift/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -243,43 +245,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-dift
-quantilica datasus list sinan-dift
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-dift
 
-# 2. Baixar microdados de sinan-dift com recorte adequado à partição do dataset
-# (SINAN usa uf+year com consolidações BR anuais)
-quantilica datasus sync sinan-dift -o ./data --start 2007 --end 2026 --regions br
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-dift -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-dift -o ./data --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-dift -o ./data/raw --parquet-dir ./data/parquet --start 2010
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-dift
 ```
 
-### Em Python e Polars
-
-```python
-import polars as pl
-
-from datasus_fetcher.reader import read_dbc
-
-# Descompacta o .dbc via extensão nativa em Rust e lê o .dbf tratado com polars
-qdf = read_dbc(
-    "data/sinan-dift/2025/sinan-dift_preliminar_2025-br@20261007.dbc", clean=True
-)
-
-# Casos confirmados e o critério de confirmação utilizado
-conf = qdf.filter(pl.col("classi_fin") == 1).group_by("criterio").len().sort("criterio")
-print(conf)
-
-# Evolução do caso (com/sem sequela, óbitos)
-evol = qdf.filter(pl.col("classi_fin") == 1).group_by("evolucao").len().sort("evolucao")
-print(evol)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS` e `.../SINAN/DADOS/PRELIM`

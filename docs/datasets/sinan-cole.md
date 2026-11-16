@@ -3,7 +3,7 @@ dataset:
   id: sinan-cole
   fonte: datasus
   titulo: Cólera
-  resumo: O sinan-cole contém os microdados das notificações e investigações epidemiológicas de casos de Cólera (CID-10 A00) registrados no Sistema de Informação de Agravos de Notificação (SINAN) do Ministério da Saúde.
+  resumo: 'Cólera do DATASUS: uma ficha de notificação/investigação de cólera.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -47,13 +47,9 @@ O `sinan-cole` contém os microdados das notificações e investigações epidem
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (arquivos consolidados anuais, praticamente sempre `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2007 a 2025, com o ano de 2023 ausente no FTP (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 18 arquivos (~49 KB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório `PRELIM`)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório `PRELIM`)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -65,7 +61,7 @@ O `sinan-cole` contém os microdados das notificações e investigações epidem
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `COLEBR24.dbc` — `COLE` é o prefixo do agravo, `BR` indica a consolidação nacional de todo o país e `24` é o ano de notificação (2024). As consolidações até 2022 estão em `FINAIS` e os anos de 2024 a 2025 estão apenas em `PRELIM` (ex.: `COLEBR25.dbc`); **o arquivo de 2023 não consta no FTP** (lacuna verificável no inventário `index.json`).
-- **No armazenamento local do `datasus-fetcher`**: caminho padronizado `data/sinan-cole/<ano>/sinan-cole_<período>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-cole/2025/sinan-cole_preliminar_2025-br@20260120.dbc`; arquivos preliminares recebem o sufixo `-preliminar` no nome do dataset.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-cole/<AAAA>/sinan-cole_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-cole/2024/sinan-cole_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: no diretório `SINAN/DOCS` estão `Docs_TAB_SINAN.zip` e as instruções POP_I/II/III de acesso, descompactação e tabulação; em `SINAN/AUXILIAR` estão `TAB_SINANNET.zip`, `TAB_SINANONLINE.zip` (definições/tabulações do Sinan Net e Online) e `POPT_Estimativa_TCU_2019_Sinan.zip` (denominadores populacionais).
 
 ## Conteúdo
@@ -123,13 +119,13 @@ Schema extraído de `COLEBR24.dbc` (91 colunas depois de remover `_deleted`).
 | `tp_not` | `TP_NOT` | texto | Tipo de Notificação. Identifica o tipo da notificação | 1 – Negativa 2 – Individual 3 – Surto 4 – Agregado | todos |
 | `id_agravo` | `ID_AGRAVO` | texto | Agravo. Tabela de agravos do sistema com códigos (classificação internacional de doenças –CID 10) e nomes dos agravos classificados como notificação compulsória ( nacional, estadual ou municipal) e as síndromes ( febre hemorragia aguda;respiratória aguda; diarréia aguda; sanguinolenta; | — | todos |
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
-| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_notifi cacao | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno) | — | todos |
 | `nu_ano` | `NU_ANO` | texto | (campo interno). Ano da notificação | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
 | `id_regiona` | `ID_REGIONA` | texto | (campo interno). Regional de saúde onde está localizado o município da unidade de saúde ou outra fonte notificadora | — | todos |
-| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico. dt_diagnostico_si ntoma | — | todos |
-| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno). ds_semana_sinto ma | — | todos |
+| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico | — | todos |
+| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno) | — | todos |
 | `dt_nasc` | `DT_NASC` | data | Data de nascimento. Data de nascimento do paciente | — | todos |
 | `nu_idade_n` | `NU_IDADE_N` | inteiro | Idade. A composição da variável obedece o seguinte critério: 1o | — | todos |
 | `cs_sexo` | `CS_SEXO` | texto | Sexo. M- Masculino F- Feminino I- Ignorado | — | todos |
@@ -137,9 +133,9 @@ Schema extraído de `COLEBR24.dbc` (91 colunas depois de remover `_deleted`).
 | `cs_raca` | `CS_RACA` | texto | Raça/Cor. Considera-se cor ou raça declarada pela pessoa. 1. branca 2. preta 3. amarela (pessoa que se declarou de raça amarela) 4. parda (pessoa que se declarou mulata, cabocla, cafuza, mameluca ou mestiça de preto com pessoa de outra cor ou raça) 5. indígena (pessoa que se declarou indígena ou índia) | 1- branca 2- preta 3- amarela 4- parda 5- indígena 9 Ignorado | todos |
 | `cs_escol_n` | `CS_ESCOL_N` | texto | Escolaridade. 43 Analfabeto 1. 1ª a 4ª série incompleta do EF 2. 4ª série completa do EF ( antigo 1° grau) 3. 5ª à 8ª série incompleta do EF (antigo ginásio ou 1° grau) 4. Ensino fundamental completo (antigo ginásio ou 1° grau) 5. Ensino médio incompleto (antigo colegial ou 2° grau) 6. Ensino médio completo (antigo colegial ou 2° grau) 7. Educação superior incompleta 8. Educação superior completa 9. Ignorado 10. N... | — | todos |
 | `sg_uf` | `SG_UF` | texto | UF. Sigla da Unidade Federada de residência do paciente por ocasião da notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência. co_municipio_res idencia | — | todos |
+| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência | — | todos |
 | `id_rg_resi` | `ID_RG_RESI` | texto | (campo interno). Regional de saúde onde está localizado o município de residência do paciente por ocasião da notificação | — | todos |
-| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil). co_pais_residenc ia | — | todos |
+| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil) | — | todos |
 | `dt_invest` | `DT_INVEST` | data | Data da investigação. data de início da investigação do caso | — | todos |
 | `id_ocupa_n` | `ID_OCUPA_N` | texto | Ocupação. Ocupação do indivíduo que sofreu o agravo | — | todos |
 | `fc_contato` | `FC_CONTATO` | texto | Contato com caso suspeito ou confirmado de cólera (até 10 dias antes do início dos sinais e sintomas). Local em que o paciente teve contato com caso semelhante nos últimos 10 dias, anteriores ao início dos sinais e sintomas | 1. Domicílio 2. Vizinhança 3. Trabalho 4. Creche/escola 5. Posto de saúde/hospital 6. Outro estado/município 7. Outros 8. Sem história de contato 9. Ignorado | todos |
@@ -164,7 +160,7 @@ Schema extraído de `COLEBR24.dbc` (91 colunas depois de remover `_deleted`).
 | `uf_hospita` | `UF_HOSPITA` | texto | UF. Sigla da UF onde o paciente foi internado | — | todos |
 | `nm_munic_h` | `NM_MUNIC_H` | texto | Município do hospital. Nome completo do município onde o paciente foi internado | — | todos |
 | `cs_materia` | `CS_MATERIA` | texto | Material colhido - Fezes. Colheu-se fezes para o exame | 1-sim 2-não 9-ignorado | todos |
-| `cs_vomito` | `CS_VOMITO` | texto | Material colhido - Vômito. st_materia_colhido_vomit o | 1-sim 2-não 9-ignorado | todos |
+| `cs_vomito` | `CS_VOMITO` | texto | Material colhido - Vômito. o | 1-sim 2-não 9-ignorado | todos |
 | `dt_coleta` | `DT_COLETA` | data | Data da coleta. Data da coleta do material para exame | — | todos |
 | `cs_antib` | `CS_ANTIB` | texto | Uso de antibiótico antes da coleta do material. Se o paciente fez uso de antibiótico antes da coleta para exame | 1-sim 2-não 9-ignorado | todos |
 | `nm_antibio` | `NM_ANTIBIO` | texto | Caso afirmativo, qual. Especificar o nome do antibiótico | — | todos |
@@ -189,15 +185,15 @@ Schema extraído de `COLEBR24.dbc` (91 colunas depois de remover `_deleted`).
 | `dt_desc1` | `DT_DESC1` | data | Informações complementares e observações Data de deslocamento 1. informar data de deslocamento 1 | — | todos |
 | `dt_desc2` | `DT_DESC2` | data | Informações complementares e observações Data de deslocamento 2. informar data de deslocamento 2 | — | todos |
 | `dt_desc3` | `DT_DESC3` | data | Informações complementares e observações Data de deslocamento 3. informar data de deslocamento 3 | — | todos |
-| `co_uf_des1` | `CO_UF_DES1` | texto | Informações complementares e observações UF deslocamento 1. co_uf_deslocamento_ 1 | — | todos |
-| `co_uf_des2` | `CO_UF_DES2` | texto | Informações complementares e observações UF deslocamento 2. co_uf_deslocamento_ 2 | — | todos |
-| `co_uf_des3` | `CO_UF_DES3` | texto | Informações complementares e. co_uf_deslocamento_ 3 | — | todos |
-| `mun_des1` | `MUN_DES1` | texto | Informações complementares e observações Município deslocamento 1. co_municipio_desloca mento_1 | — | todos |
-| `mun_des2` | `MUN_DES2` | texto | Informações complementares e observações Município deslocamento 2. co_municipio_desloca mento_2 | — | todos |
-| `mun_des3` | `MUN_DES3` | texto | Informações complementares e observações Município deslocamento 3. co_municipio_desloca mento_3 | — | todos |
-| `pa_des1` | `PA_DES1` | inteiro | Informações complementares e observações País deslocamento 1. co_pais_deslocament o_1 | — | todos |
-| `pa_des2` | `PA_DES2` | inteiro | Informações complementares e observações País deslocamento 2. co_pais_deslocament o_2 | — | todos |
-| `pa_des3` | `PA_DES3` | inteiro | Informações complementares e observações País deslocamento. co_pais_deslocament o_3 | — | todos |
+| `co_uf_des1` | `CO_UF_DES1` | texto | Informações complementares e observações UF deslocamento 1. 1 | — | todos |
+| `co_uf_des2` | `CO_UF_DES2` | texto | Informações complementares e observações UF deslocamento 2. 2 | — | todos |
+| `co_uf_des3` | `CO_UF_DES3` | texto | Informações complementares e. 3 | — | todos |
+| `mun_des1` | `MUN_DES1` | texto | Informações complementares e observações Município deslocamento 1. mento_1 | — | todos |
+| `mun_des2` | `MUN_DES2` | texto | Informações complementares e observações Município deslocamento 2. mento_2 | — | todos |
+| `mun_des3` | `MUN_DES3` | texto | Informações complementares e observações Município deslocamento 3. mento_3 | — | todos |
+| `pa_des1` | `PA_DES1` | inteiro | Informações complementares e observações País deslocamento 1. o_1 | — | todos |
+| `pa_des2` | `PA_DES2` | inteiro | Informações complementares e observações País deslocamento 2. o_2 | — | todos |
+| `pa_des3` | `PA_DES3` | inteiro | Informações complementares e observações País deslocamento. o_3 | — | todos |
 | `ds_trans1` | `DS_TRANS1` | texto | Informações complementares e observações Meio de transporte 1. informar o meio de transporte de deslocamento 1 | — | todos |
 | `ds_trans2` | `DS_TRANS2` | texto | Informações complementares e observações Meio de transporte 2. informar o meio de transporte de deslocamento 2 | — | todos |
 | `ds_trans3` | `DS_TRANS3` | texto | Informações complementares e observações Meio de transporte 3. informar o meio de transporte de deslocamento 3 | — | todos |
@@ -217,20 +213,27 @@ Schema extraído de `COLEBR24.dbc` (91 colunas depois de remover `_deleted`).
 
 - o volume anual de casos é mínimo (série com pouquíssimos registros); a **lacuna do ano 2023 no FTP** exige cuidado na consolidação da série anual em agregações; e os campos coleta/cultura (`CS_MATERIA`, `CS_VOMITO`, `CS_POSITIV`) devem ser lidos conforme a ficha revisada de fevereiro/2012 (definição de caso e amostragem obrigatória). (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
+- **Arquivos DBC vazios:** nas amostras, 4 arquivo(s) sem nenhuma linha escaparam da limpeza do conversor e gravaram as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre os arquivos de zero linha antes de empilhar partições. Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0. Achado do conversor, não corrigido aqui.
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-cole").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-cole/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -239,47 +242,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-cole
-quantilica datasus list sinan-cole
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-cole
 
-# 2. Baixar microdados de sinan-cole com recorte adequado à partição do dataset
-# (SINAN usa uf+year com consolidações BR anuais)
-quantilica datasus sync sinan-cole -o ./data --start 2007 --end 2025 --regions br
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-cole -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-cole -o ./data --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-cole -o ./data/raw --parquet-dir ./data/parquet --start 2010
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-cole
 ```
 
-### Em Python e Polars
-
-```python
-import polars as pl
-
-from datasus_fetcher.reader import read_dbc
-
-# Descompacta o .dbc via extensão nativa em Rust e lê o .dbf tratado com polars
-qdf = read_dbc(
-    "data/sinan-cole/2024/sinan-cole_preliminar_2024-br@20260120.dbc", clean=True
-)
-
-# Casos confirmados por ano e critério de confirmação
-conf = (
-    qdf.filter(pl.col("CLASSI_FIN") == 1)
-    .group_by(["NU_ANO", "CRITERIO"])
-    .len()
-    .sort("NU_ANO")
-)
-print(conf)
-
-# Evolução dos casos confirmados (incluindo letalidade)
-print(conf.filter(pl.col("EVOLUCAO") == 2))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS` e `.../SINAN/DADOS/PRELIM`

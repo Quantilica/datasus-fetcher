@@ -3,7 +3,7 @@ dataset:
   id: sinan-coqu
   fonte: datasus
   titulo: Coqueluche
-  resumo: O sinan-coqu contém os microdados das notificações e investigações epidemiológicas de casos de Coqueluche/Pertússis (CID-10 A37) registrados no Sistema de Informação de Agravos de Notificação (SINAN) do Ministério da Saúde.
+  resumo: 'Coqueluche do DATASUS: uma ficha de notificação/investigação de coqueluche.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -47,13 +47,9 @@ O `sinan-coqu` contém os microdados das notificações e investigações epidem
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (arquivos consolidados anuais, praticamente sempre `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2007 a 2026 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 20 arquivos (~10,8 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório `PRELIM`)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório `PRELIM`)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -65,7 +61,7 @@ O `sinan-coqu` contém os microdados das notificações e investigações epidem
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `COQUBR25.dbc` — `COQU` é o prefixo do agravo, `BR` indica a consolidação nacional de todo o país e `25` é o ano de notificação (2025). As consolidações até 2022 estão em `FINAIS` e os anos de 2023 a 2026 estão apenas em `PRELIM` (ex.: `COQUBR26.dbc`, atualização de 07/10/2026).
-- **No armazenamento local do `datasus-fetcher`**: caminho padronizado `data/sinan-coqu/<ano>/sinan-coqu_<período>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-coqu/2026/sinan-coqu_preliminar_2026-br@20261007.dbc`; arquivos preliminares recebem o sufixo `-preliminar` no nome do dataset.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-coqu/<AAAA>/sinan-coqu_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-coqu/2024/sinan-coqu_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: no diretório `SINAN/DOCS` estão `Docs_TAB_SINAN.zip` e as instruções POP_I/II/III de acesso, descompactação e tabulação; em `SINAN/AUXILIAR` estão `TAB_SINANNET.zip`, `TAB_SINANONLINE.zip` (definições/tabulações do Sinan Net e Online) e `POPT_Estimativa_TCU_2019_Sinan.zip` (denominadores populacionais).
 
 ## Conteúdo
@@ -120,14 +116,14 @@ Schema extraído de `COQUBR25.dbc` (83 colunas depois de remover `_deleted`).
 | `tp_not` | `TP_NOT` | texto | Tipo de Notificação. Identifica o tipo da notificação | 1 – Negativa 2 – Individual 3 – Surto 4 – Agregado | todos |
 | `id_agravo` | `ID_AGRAVO` | texto | Agravo. Tabela de agravos do sistema com códigos (classificação internacional de doenças –CID 10) e nomes dos agravos classificados como notificação compulsória ( nacional, estadual ou municipal) e as síndromes ( febre hemorragia aguda;respiratória aguda; diarréia aguda; sanguinolenta; | — | todos |
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
-| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_notifi cacao | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno) | — | todos |
 | `nu_ano` | `NU_ANO` | texto | (campo interno). Ano da notificação | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
 | `id_regiona` | `ID_REGIONA` | texto | (campo interno). Regional de saúde onde está localizado o município da unidade de saúde ou outra fonte notificadora | — | todos |
-| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora. co_unidade_notifi cacao | — | todos |
-| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico. dt_diagnostico_si ntoma | — | todos |
-| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno). ds_semana_sinto ma | — | todos |
+| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora | — | todos |
+| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico | — | todos |
+| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno) | — | todos |
 | `ano_nasc` | `ANO_NASC` | texto | Ano de nascimento do paciente (campo do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `nu_idade_n` | `NU_IDADE_N` | inteiro | Idade. A composição da variável obedece o seguinte critério: 1o | — | todos |
 | `cs_sexo` | `CS_SEXO` | texto | Sexo. M- Masculino F- Feminino I- Ignorado | — | todos |
@@ -135,9 +131,9 @@ Schema extraído de `COQUBR25.dbc` (83 colunas depois de remover `_deleted`).
 | `cs_raca` | `CS_RACA` | texto | Raça/Cor. Considera-se cor ou raça declarada pela pessoa. 1. branca 2. preta 3. amarela (pessoa que se declarou de raça amarela) 4. parda (pessoa que se declarou mulata, cabocla, cafuza, mameluca ou mestiça de preto com pessoa de outra cor ou raça) 5. indígena (pessoa que se declarou indígena ou índia) | 1- branca 2- preta 3- amarela 4- parda 5- indígena 9 Ignorado | todos |
 | `cs_escol_n` | `CS_ESCOL_N` | texto | Escolaridade. 43 Analfabeto 1. 1ª a 4ª série incompleta do EF 2. 4ª série completa do EF ( antigo 1° grau) 3. 5ª à 8ª série incompleta do EF (antigo ginásio ou 1° grau) 4. Ensino fundamental completo (antigo ginásio ou 1° grau) 5. Ensino médio incompleto (antigo colegial ou 2° grau) 6. Ensino médio completo (antigo colegial ou 2° grau) 7. Educação superior incompleta 8. Educação superior completa 9. Ignorado 10. N... | — | todos |
 | `sg_uf` | `SG_UF` | texto | UF. Sigla da Unidade Federada de residência do paciente por ocasião da notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência. co_municipio_res idencia | — | todos |
+| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência | — | todos |
 | `id_rg_resi` | `ID_RG_RESI` | texto | (campo interno). Regional de saúde onde está localizado o município de residência do paciente por ocasião da notificação | — | todos |
-| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil). co_pais_residenc ia | — | todos |
+| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil) | — | todos |
 | `nduplic_n` | `NDUPLIC_N` | texto | Não Listar/ Não Contar. 0 ou branco – Não identificado 1 – Não é duplicidade (não listar) 2 – Duplicidade (não contar) | — | todos |
 | `dt_digita` | `DT_DIGITA` | data | Data de digitação. Data de Digitação da primeira inclusão da notificação no sistema | — | todos |
 | `dt_transus` | `DT_TRANSUS` | data | Data de transferência da unidade de saúde. Data de Transferência do registro da Unidade de Saúde para do nível superior do sistema | — | todos |
@@ -147,7 +143,7 @@ Schema extraído de `COQUBR25.dbc` (83 colunas depois de remover `_deleted`).
 | `dt_transrs` | `DT_TRANSRS` | data | Data de transferência da regional de saúde. Data de Transferência do registro da Regional de Saúde para do nível superior do sistema | — | todos |
 | `dt_transse` | `DT_TRANSSE` | data | Data de transferência da secretaria estadual de saúde. Data de Transferência do registro da Secretaria Estadual para do nível superior do sistema | — | todos |
 | `nu_lote_v` | `NU_LOTE_V` | texto | Número do lote vertical. Descrever aqui a estrutura da composição do número do lote | — | todos |
-| `nu_lote_h` | `NU_LOTE_H` | texto | Número do lote horizontal. nu_lote_horizont al | — | todos |
+| `nu_lote_h` | `NU_LOTE_H` | texto | Número do lote horizontal | — | todos |
 | `cs_flxret` | `CS_FLXRET` | texto | Fluxo de retorno. Identifica se o registro está habilitado ou foi enviado pelo fluxo de retorno para o município de residência | 0 - Não 1 - habilitado para envio. 2 - enviado | todos |
 | `flxrecebi` | `FLXRECEBI` | texto | Recebida por fluxo de retorno (campo interno). Colocar a estrutura do nº atribuído pelo sistema | — | todos |
 | `migrado_w` | `MIGRADO_W` | texto | Identifica migração (campo interno). Identifica se o registro é oriundo da rotina de migração da base Windows | 1- migrado do Sinan Windows | todos |
@@ -165,8 +161,8 @@ Schema extraído de `COQUBR25.dbc` (83 colunas depois de remover `_deleted`).
 | `cs_cianose` | `CS_CIANOSE` | texto | Sinais e Sintomas (Cianose). Informa se o paciente apresentou Cianose | 1- Sim 2- Não 9 - Ignorado | todos |
 | `cs_vomitos` | `CS_VOMITOS` | texto | SinaiseE Sintomas (Vômitos). Informa se o paciente apresentou vômitos pós- tosse | 1- Sim 2- Não 9 - Ignorado | todos |
 | `cs_apneia` | `CS_APNEIA` | texto | Sinais e Sintomas (Apnéia). Informa se o paciente apresentou Apnéia | 1- Sim 2- Não 9 - Ignorado | todos |
-| `cs_temp37` | `CS_TEMP37` | texto | Sinais e Sintomas (Temperatura < 38ºc). st_sinais_temperatura_menor _38 | 1- Sim 2- Não 9 - Ignorado | todos |
-| `cs_temp_38` | `CS_TEMP_38` | texto | Sinais e Sintomas (Temperatura > Ou = 38ºc). st_sinais_temperatura_maior_ 38 | 1- Sim 2- Não 9 - Ignorado | todos |
+| `cs_temp37` | `CS_TEMP37` | texto | Sinais e Sintomas (Temperatura < 38ºc). _38 | 1- Sim 2- Não 9 - Ignorado | todos |
+| `cs_temp_38` | `CS_TEMP_38` | texto | Sinais e Sintomas (Temperatura > Ou = 38ºc). 38 | 1- Sim 2- Não 9 - Ignorado | todos |
 | `cs_out_sin` | `CS_OUT_SIN` | texto | Sinais e Sintomas (Outros). Informa se o paciente apresentou outros sintomas que não os descritos anteriormente | 1- Sim 2- Não 9 - Ignorado | todos |
 | `nm_out_sin` | `NM_OUT_SIN` | texto | Outros Sinais e Sintomas (Especificar). descreve outro sinal ou sintoma não referido nos campos anteriores | — | todos |
 | `cs_pneumon` | `CS_PNEUMON` | texto | Complicações (penumonia ou broncopneumonia). Informa se o paciente apresentou Pneumonia ou Broncopneumonia | 1. Sim 2. Não 9. Ignorado | todos |
@@ -188,13 +184,13 @@ Schema extraído de `COQUBR25.dbc` (83 colunas depois de remover `_deleted`).
 | `med_iden_c` | `MED_IDEN_C` | texto | Realizada Identificação Dos Comunicantes Íntimos. Informar se foram identificados comunicantes íntimos (os comunicantes podem ser identificados na residência, creche, escola, orfanatos, quartéis e outros locais que possibilitam o contato íntimo com o caso) | 1- Sim 2- Não 9. Ignorado | todos |
 | `med_quan_c` | `MED_QUAN_C` | inteiro | Se Sim, Quantos?. Número de comunicantes íntimos | — | todos |
 | `med_caso_s` | `MED_CASO_S` | texto | Quantos Casos Secundários Foram Confirmados Entre Os. Nº de casos secundários identificados entre os comunicantes | 0. Nenhum 1. Um 2. Dois ou mais | todos |
-| `colet_comu` | `COLET_COMU` | texto | Realizada Coleta de Material da Nasofaringe dos Comunicantes. st_coleta_material_comunican te | 1. Sim 2. Não 9. Ignorado | todos |
+| `colet_comu` | `COLET_COMU` | texto | Realizada Coleta de Material da Nasofaringe dos Comunicantes | 1. Sim 2. Não 9. Ignorado | todos |
 | `quan_comun` | `QUAN_COMUN` | inteiro | Se Sim, em Quantos?. número de comunicantes em que foi coletado o material | — | todos |
 | `quan_posit` | `QUAN_POSIT` | inteiro | Em Quantos Comunicantes o Resultado da Cultura Foi Positivo?. número de comunicantes com resultado da cultura positivo | — | todos |
 | `med_bloque` | `MED_BLOQUE` | texto | Medidas de Prevenção/ Controle. Informa se foi realizado bloqueio e qual tipo do bloqueio | 1. Bloqueio vacinal 2. Quimioprofilaxi a 3. Ambos 4. Não 9. Ignorado | todos |
 | `classi_fin` | `CLASSI_FIN` | texto | Classificação Final. Classificação final do caso | 1. Confirmado 2. Descartado | todos |
 | `criterio` | `CRITERIO` | texto | Critério de Confirmação/Descarte. critério utilizado para confirmação do caso ou descarte do suspeito | 1. Laboratorial 2. Vínculo Epidemiológico | todos |
-| `doenca_tra` | `DOENCA_TRA` | texto | Doença Relacionada ao Trabalho. varchar(1) st_doenca_tra balho TB_NOTIFIC ACAO | 1. Sim 2. Não 9. Ignorado | todos |
+| `doenca_tra` | `DOENCA_TRA` | texto | Doença Relacionada ao Trabalho. varchar(1) TB_NOTIFIC ACAO | 1. Sim 2. Não 9. Ignorado | todos |
 | `evolucao` | `EVOLUCAO` | texto | Evolução. Evolução do caso | 1. Cura 2. Óbito por coqueluche 3. Óbito por outras causas 9.Ignorado | todos |
 | `dt_obito` | `DT_OBITO` | data | Data do Óbito | — | todos |
 | `dt_encerra` | `DT_ENCERRA` | data | Data do Encerramento. Data do encerramento do caso | — | todos |
@@ -215,20 +211,26 @@ Schema extraído de `COQUBR25.dbc` (83 colunas depois de remover `_deleted`).
 
 - a classificação final segue o vocabulário do dicionário revisado em fevereiro/2012 (confirmado/descartado, com critérios laboratorial, vínculo epidemiológico e clínico); o período catarral (`DT_CATARRA`) pode anteceder `DT_SIN_PRI` e sustenta a janela de 14 dias usada na investigação de contatos; o histórico vacinal (`CS_VAC_N`) exige cuidado com os códigos de reforços (três doses + um ou dois reforços) e nunca vacinado; e o campo `ANT_SENTIN` identifica casos notificados em unidades-sentinela do agravo, com as bases de 2023 a 2026 disponibilizadas apenas em `PRELIM`. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-coqu").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-coqu/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -237,48 +239,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-coqu
-quantilica datasus list sinan-coqu
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-coqu
 
-# 2. Baixar microdados de sinan-coqu com recorte adequado à partição do dataset
-# (SINAN usa uf+year com consolidações BR anuais)
-quantilica datasus sync sinan-coqu -o ./data --start 2007 --end 2026 --regions br
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-coqu -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-coqu -o ./data --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-coqu -o ./data/raw --parquet-dir ./data/parquet --start 2010
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-coqu
 ```
 
-### Em Python e Polars
-
-```python
-import polars as pl
-
-from datasus_fetcher.reader import read_dbc
-
-# Descompacta o .dbc via extensão nativa em Rust e lê o .dbf tratado com polars
-qdf = read_dbc(
-    "data/sinan-coqu/2025/sinan-coqu_preliminar_2025-br@20261007.dbc", clean=True
-)
-
-# Casos confirmados por critério de confirmação e evolução do caso
-conf = qdf.filter(pl.col("classi_fin") == 1).group_by("criterio").len().sort("criterio")
-print(conf)
-
-# Hospitalização e complicações (pneumonia) nos casos confirmados
-hosp = (
-    qdf.filter((pl.col("classi_fin") == 1) & (pl.col("cs_hospita") == 1))
-    .group_by("cs_pneumon")
-    .len()
-    .sort("cs_pneumon")
-)
-print(hosp)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS` e `.../SINAN/DADOS/PRELIM`

@@ -3,7 +3,7 @@ dataset:
   id: sinan-sdta
   fonte: datasus
   titulo: Surto Doenças Transmitidas por Alimentos
-  resumo: O sinan-sdta contém os microdados dos inquéritos e planilhas de acompanhamento de surtos de Doenças Transmitidas por Alimentos (DTA — CID-10 A04–A09, inclusive Rotavírus/Norovírus/Adenovírus por veículo comum) registrados no Sistema de Informação de Agravos de
+  resumo: 'Surto Doenças Transmitidas por Alimentos do DATASUS: uma ficha de notificação de surto de doença transmitida por alimentos.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -99,13 +99,9 @@ O `sinan-sdta` contém os microdados dos **inquéritos e planilhas de acompanham
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (arquivos consolidados anuais, praticamente sempre `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2007 a 2018 em `FINAIS` (com lacuna em 2014) e 2019 a 2024 em `PRELIM` (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 17 arquivos (~1,2 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório `PRELIM`, sem arquivo em 2014)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório `PRELIM`, sem arquivo em 2014)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -117,7 +113,7 @@ O `sinan-sdta` contém os microdados dos **inquéritos e planilhas de acompanham
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `SDTABR24.dbc` — `SDTA` é o prefixo do agravo (Surto DTA), `BR` indica a consolidação nacional de todo o país e `24` é o ano de notificação (2024). A série em `FINAIS` vai de 2007 a 2018 (com lacuna em 2014) e os anos de 2019 a 2024 estão apenas em `PRELIM` (ex.: `SDTABR24.dbc`, atualização de 24/07/2025).
-- **No armazenamento local do `datasus-fetcher`**: caminho padronizado `data/sinan-sdta/<ano>/sinan-sdta_<período>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-sdta/2024/sinan-sdta_preliminar_2024-br@20250724.dbc`; arquivos preliminares recebem o sufixo `-preliminar` no nome do dataset.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-sdta/<AAAA>/sinan-sdta_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-sdta/2024/sinan-sdta_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: no diretório `SINAN/DOCS` estão `Docs_TAB_SINAN.zip`, as instruções POP_I/II/III de acesso, descompactação e tabulação e os manuais de vigilância de surtos de DTA; em `SINAN/AUXILIAR` estão `TAB_SINANNET.zip`, `TAB_SINANONLINE.zip` e `POPT_Estimativa_TCU_2019_Sinan.zip` (denominadores populacionais).
 
 ## Conteúdo
@@ -172,21 +168,21 @@ Schema extraído de `SDTABR24.dbc` (102 colunas depois de remover `_deleted`).
 |---|---|---|---|---|---|
 | `id_agravo` | `ID_AGRAVO` | texto | Agravo | — | todos |
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação | — | todos |
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_no tificacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
 | `tp_not` | `TP_NOT` | texto | Tipo de Notificação. 3 | 3 – Notificação de Surto | todos |
-| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_noti ficacao | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno) | — | todos |
 | `nu_ano` | `NU_ANO` | texto | Ano da notificação | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de. Sigla da Unidade | — | todos |
-| `id_regiona` | `ID_REGIONA` | texto | Campo com código da regional de saúde da tabela de município do sistema (campo interno). tb_regional_svs _.co_seq_region al | — | todos |
-| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora. co_unidade_noti ficacao | — | todos |
-| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos 1ºs sintomas do 1º caso suspeito. dt_diagnostico_s intoma | — | todos |
-| `sem_pri` | `SEM_PRI` | inteiro | Semana epidemiológic a dos primeiros sintomas do caso índice (campo interno). ds_semana_noti ficacao | — | todos |
-| `qt_total_c` | `QT_TOTAL_C` | texto | N° de casos Suspeitos / Expostos até a data de notificação. nu_caso_suspeit o | — | todos |
+| `id_regiona` | `ID_REGIONA` | texto | Campo com código da regional de saúde da tabela de município do sistema (campo interno). tb_regional_svs _ | — | todos |
+| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora | — | todos |
+| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos 1ºs sintomas do 1º caso suspeito | — | todos |
+| `sem_pri` | `SEM_PRI` | inteiro | Semana epidemiológic a dos primeiros sintomas do caso índice (campo interno) | — | todos |
+| `qt_total_c` | `QT_TOTAL_C` | texto | N° de casos Suspeitos / Expostos até a data de notificação. o | — | todos |
 | `cs_local` | `CS_LOCAL` | texto | Local inicial de Ocorrência do Surto | 1- Residência 2- Hospital / Unidade de saúde 3- Creche / | todos |
 | `sg_uf` | `SG_UF` | texto | UF de Ocorrência. co_uf_residênci a | — | todos |
 | `id_muni_re` | `ID_MUNI_RE` | texto | Município. Código do | — | todos |
-| `id_rg_resi` | `ID_RG_RESI` | texto | Campo com código da regional de saúde da tabela de município do sistema (campo interno). tb_regional_svs. co_seq_regional | — | todos |
-| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil. co_pais_residen cia | — | todos |
+| `id_rg_resi` | `ID_RG_RESI` | texto | Campo com código da regional de saúde da tabela de município do sistema (campo interno). tb_regional_svs | — | todos |
+| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil | — | todos |
 | `dt_digita` | `DT_DIGITA` | data | Data de digitação. Data de Digitação da primeira inclusão da notificação no sistema | — | todos |
 | `dttransus` | `DTTRANSUS` | data | Data de transferência da unidade de saúde (campo interno). Data de Transferência da Unidade de Saúde | — | todos |
 | `dttransdm` | `DTTRANSDM` | data | Data de transferência do distrito municipal (campo interno). Data de Transferência do Distrito Municipal | — | todos |
@@ -195,87 +191,87 @@ Schema extraído de `SDTABR24.dbc` (102 colunas depois de remover `_deleted`).
 | `dttransrs` | `DTTRANSRS` | data | Data de transferência da regional de. Data de Transferência da Regional de Saúde | — | todos |
 | `dttransse` | `DTTRANSSE` | data | Data de transferência da secretaria (campo interno). Data de Transferência da Secretaria Estadual | — | todos |
 | `dt_invest` | `DT_INVEST` | data | Data da investigação | — | todos |
-| `cs_trans` | `CS_TRANS` | texto | Modo provável da transmissão. st_modo_transm issao | 1-Direta(pessoa a pessoa) 2-Indireta(veículo comum ou vetor) 9-Ignorado | todos |
-| `tp_indiret` | `TP_INDIRET` | texto | Se indireta, qual o veículo de transmissão provável. tp_veiculo_trans missao | 1-Alimento//água 2-Recursos hídricos contaminados(poço, rio, reservatório de água) 3-Vetor 4- Produto(medicament os, agrotóxico, imunobiológicos, sangue, etc) 5-Fômite(faca, lençóis,etc) | todos |
+| `cs_trans` | `CS_TRANS` | texto | Modo provável da transmissão | 1-Direta(pessoa a pessoa) 2-Indireta(veículo comum ou vetor) 9-Ignorado | todos |
+| `tp_indiret` | `TP_INDIRET` | texto | Se indireta, qual o veículo de transmissão provável | 1-Alimento//água 2-Recursos hídricos contaminados(poço, rio, reservatório de água) 3-Vetor 4- Produto(medicament os, agrotóxico, imunobiológicos, sangue, etc) 5-Fômite(faca, lençóis,etc) | todos |
 | `tp_local` | `TP_LOCAL` | texto | Código (tipo, identificação ou classificação) registrado na ficha de Surto Doenças Transmitidas por Alimentos (`TP_LOCAL`); o dicionário consultado não define o campo isoladamente | — | todos |
 | `nu_entr` | `NU_ENTR` | inteiro | Número de Entrevistados. Registrar o total de pessoas entrevistadas (total de doentes e não doentes) pela Vigilância Epidemiológica | — | todos |
-| `nu_ent_doe` | `NU_ENT_DOE` | inteiro | Número de Doentes Entrevistados. nu_entrevistado_ doente | — | todos |
+| `nu_ent_doe` | `NU_ENT_DOE` | inteiro | Número de Doentes Entrevistados | — | todos |
 | `nu_tot` | `NU_TOT` | inteiro | Número Total de Doentes | — | todos |
-| `nu_tot_hos` | `NU_TOT_HOS` | inteiro | Número Total de. nu_total_hospitali zado | — | todos |
+| `nu_tot_hos` | `NU_TOT_HOS` | inteiro | Número Total de | — | todos |
 | `nu_obito` | `NU_OBITO` | inteiro | Número de Óbitos | — | todos |
-| `nu_1_m_nu` | `NU_1_M_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Masculino < 1 Número. nu_faixa_menor_ 1_m_nu | — | todos |
-| `nu_1_4_nu` | `NU_1_4_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Masculino 1 a 4 Número. nu_faixa_1_a_4_ m_nu | — | todos |
-| `nu_5_9_nu` | `NU_5_9_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Masculino 5 a 9 Número. nu_faixa_5_a_9_ m_nu | — | todos |
-| `nu_10_19_m` | `NU_10_19_M` | inteiro | Número de Doentes por Faixa Etária e Sexo Masculino 10 a 19 Número. nu_faixa_10_a_1 9_m_nu | — | todos |
-| `nu_20_49_n` | `NU_20_49_N` | inteiro | Número de Doentes por Faixa Etária e Sexo Masculino 20 a 49 Número. nu_faixa_20_a_4 9_m_nu | — | todos |
+| `nu_1_m_nu` | `NU_1_M_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Masculino < 1 Número. 1_m_nu | — | todos |
+| `nu_1_4_nu` | `NU_1_4_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Masculino 1 a 4 Número. m_nu | — | todos |
+| `nu_5_9_nu` | `NU_5_9_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Masculino 5 a 9 Número. m_nu | — | todos |
+| `nu_10_19_m` | `NU_10_19_M` | inteiro | Número de Doentes por Faixa Etária e Sexo Masculino 10 a 19 Número. 9_m_nu | — | todos |
+| `nu_20_49_n` | `NU_20_49_N` | inteiro | Número de Doentes por Faixa Etária e Sexo Masculino 20 a 49 Número. 9_m_nu | — | todos |
 | `nu_50_m_nu` | `NU_50_M_NU` | inteiro | Número de. O número total de doentes por | — | todos |
-| `nu_igra_nu` | `NU_IGRA_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Masculino Ignorada - Número. nu_faixa_ignorad a_m_nu | — | todos |
-| `nu_f_tot_n` | `NU_F_TOT_N` | inteiro | Número de Doentes por Faixa Etária e Sexo Masculino- Total Número. nu_faixa_total_m _nu | — | todos |
-| `nu_1_f_nu` | `NU_1_F_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Feminino < 1 Número. nu_faixa_menor_ 1_f_nu | — | todos |
-| `nu1_4_f_nu` | `NU1_4_F_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Feminino 1 a 4 Número. nu_faixa_1_a_4_ f_nu | — | todos |
-| `nu5_9_f_nu` | `NU5_9_F_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Feminino 5 a. nu_faixa_5_a_9_ f_nu | — | todos |
-| `nu10_19_n` | `NU10_19_N` | inteiro | Número de Doentes por Faixa Etária e Sexo Feminino 10 a 19 Número. nu_faixa_10_a_1 9_f_nu | — | todos |
-| `nu_20_49_f` | `NU_20_49_F` | inteiro | Número de Doentes por Faixa Etária e Sexo Feminino 20 a 49 Número. nu_faixa_20_a_4 9_f_nu | — | todos |
-| `nu_50_f_nu` | `NU_50_F_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Feminino 50 e + Número. nu_faixa_50_e_ mais_f_nu | — | todos |
-| `nu_ig_f_nu` | `NU_IG_F_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Feminino Ignorada- Número. nu_faixa_ignorad a_f_nu | — | todos |
-| `nu_to_f_nu` | `NU_TO_F_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Feminino Total- Número. nu_faixa_total_f_ nu | — | todos |
-| `nu_1_ign` | `NU_1_IGN` | inteiro | Número de Doentes por. nu_faixa_menor_ 1_ign | — | todos |
-| `nu_1_4_ign` | `NU_1_4_IGN` | inteiro | Número de Doentes por Faixa Etária e Sexo Ignorado 1 a 4. nu_faixa_1_a_4_ ign | — | todos |
-| `nu_5_9_ign` | `NU_5_9_IGN` | inteiro | Número de Doentes por Faixa Etária e Sexo Ignorado 5 a 9. nu_faixa_5_a_9_ ign | — | todos |
-| `nu_10_19ig` | `NU_10_19IG` | inteiro | Número de Doentes por Faixa Etária e Sexo Ignorado10 a 19. nu_faixa_10_a_1 9_ign | — | todos |
-| `nu_20_49ig` | `NU_20_49IG` | inteiro | Número de Doentes por Faixa Etária e Sexo Ignorado 20 a 49. nu_faixa_20_a_4 9_ign | — | todos |
-| `nu_50_ign` | `NU_50_IGN` | inteiro | Número de Doentes por Faixa Etária e Sexo Ignorado 50 e +. nu_faixa_50_e_ mais_ign | — | todos |
-| `nu_ig_ign` | `NU_IG_IGN` | inteiro | Número de Doentes por Faixa Etária e Sexo Ignorado Ignorada. nu_faixa_ignorad a_ign | — | todos |
-| `nu_tot_ign` | `NU_TOT_IGN` | inteiro | Número de Doentes por Faixa Etária e Sexo Ignorado Total. nu_faixa_total_ig n | — | todos |
-| `nu_1_tot_n` | `NU_1_TOT_N` | inteiro | Número de Doentes por Faixa Etária e Sexo Total <1 Número. nu_faixa_menor_ 1_tot_nu | — | todos |
-| `nu_1_4_tot` | `NU_1_4_TOT` | inteiro | Número de Doentes por Faixa Etária e Sexo Total 1 a 4 Número. nu_faixa_1_a_4_ tot_nu | — | todos |
-| `nu_5_9_tot` | `NU_5_9_TOT` | inteiro | Número de Doentes por Faixa Etária e Sexo Total 5 a 9 Número. nu_faixa_5_a_9_ tot_nu | — | todos |
-| `nu_10_19` | `NU_10_19` | inteiro | Número de Doentes por Faixa Etária e Sexo Total 10 a 19 Número. nu_faixa_10_a_1 9_tot_nu | — | todos |
-| `nu_20_49` | `NU_20_49` | inteiro | Número de Doentes por Faixa Etária e Sexo Total 20 a 49 Número. nu_faixa_20_a_4 9_tot_nu | — | todos |
-| `nu_50_tot` | `NU_50_TOT` | inteiro | Número de Doentes por Faixa Etária e Sexo Total 50. nu_faixa_50_e_ mais_tot_nu | — | todos |
-| `nu_ign_nu` | `NU_IGN_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Total Ignorada Número. nu_faixa_ignorad a_tot_nu | — | todos |
-| `nu_f_tot` | `NU_F_TOT` | inteiro | Número de Doentes por Faixa Etária e Sexo Total – Total Número. nu_faixa_total_to t_nu | — | todos |
-| `nu_nause_p` | `NU_NAUSE_P` | inteiro | Sinais e sintomas Doentes Náuseas Número. nu_sinais_nause a_nu | — | todos |
-| `nu_vomto_n` | `NU_VOMTO_N` | inteiro | Sinais e sintomas Doentes Vômitos Número. nu_sinais_vomito _nu | — | todos |
-| `nu_diarr_n` | `NU_DIARR_N` | inteiro | Sinais e sintomas Doentes Diarréia Número. nu_sinais_diarrei a_nu | — | todos |
-| `nu_cefal_n` | `NU_CEFAL_N` | inteiro | Sinais e sintomas Doentes Cefaléia Número. nu_sinais_cefalei a_nu | — | todos |
-| `nu_abdom_n` | `NU_ABDOM_N` | inteiro | Sinais e sintomas Doentes Dor Abdominal Número. nu_sinais_dor_a bdominal_nu | — | todos |
-| `nu_neuro_n` | `NU_NEURO_N` | inteiro | Sinais e sintomas Doentes Neurológicos Percentual. nu_sinais_neurol ogico_nu | — | todos |
-| `nu_outro_n` | `NU_OUTRO_N` | inteiro | Sinais e sintomas Doentes Outros Número. nu_sinais_outro_ nu | — | todos |
+| `nu_igra_nu` | `NU_IGRA_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Masculino Ignorada - Número. a_m_nu | — | todos |
+| `nu_f_tot_n` | `NU_F_TOT_N` | inteiro | Número de Doentes por Faixa Etária e Sexo Masculino- Total Número. _nu | — | todos |
+| `nu_1_f_nu` | `NU_1_F_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Feminino < 1 Número. 1_f_nu | — | todos |
+| `nu1_4_f_nu` | `NU1_4_F_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Feminino 1 a 4 Número. f_nu | — | todos |
+| `nu5_9_f_nu` | `NU5_9_F_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Feminino 5 a. f_nu | — | todos |
+| `nu10_19_n` | `NU10_19_N` | inteiro | Número de Doentes por Faixa Etária e Sexo Feminino 10 a 19 Número. 9_f_nu | — | todos |
+| `nu_20_49_f` | `NU_20_49_F` | inteiro | Número de Doentes por Faixa Etária e Sexo Feminino 20 a 49 Número. 9_f_nu | — | todos |
+| `nu_50_f_nu` | `NU_50_F_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Feminino 50 e + Número. mais_f_nu | — | todos |
+| `nu_ig_f_nu` | `NU_IG_F_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Feminino Ignorada- Número. a_f_nu | — | todos |
+| `nu_to_f_nu` | `NU_TO_F_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Feminino Total- Número | — | todos |
+| `nu_1_ign` | `NU_1_IGN` | inteiro | Número de Doentes por. 1_ign | — | todos |
+| `nu_1_4_ign` | `NU_1_4_IGN` | inteiro | Número de Doentes por Faixa Etária e Sexo Ignorado 1 a 4 | — | todos |
+| `nu_5_9_ign` | `NU_5_9_IGN` | inteiro | Número de Doentes por Faixa Etária e Sexo Ignorado 5 a 9 | — | todos |
+| `nu_10_19ig` | `NU_10_19IG` | inteiro | Número de Doentes por Faixa Etária e Sexo Ignorado10 a 19. 9_ign | — | todos |
+| `nu_20_49ig` | `NU_20_49IG` | inteiro | Número de Doentes por Faixa Etária e Sexo Ignorado 20 a 49. 9_ign | — | todos |
+| `nu_50_ign` | `NU_50_IGN` | inteiro | Número de Doentes por Faixa Etária e Sexo Ignorado 50 e +. mais_ign | — | todos |
+| `nu_ig_ign` | `NU_IG_IGN` | inteiro | Número de Doentes por Faixa Etária e Sexo Ignorado Ignorada. a_ign | — | todos |
+| `nu_tot_ign` | `NU_TOT_IGN` | inteiro | Número de Doentes por Faixa Etária e Sexo Ignorado Total. n | — | todos |
+| `nu_1_tot_n` | `NU_1_TOT_N` | inteiro | Número de Doentes por Faixa Etária e Sexo Total <1 Número. 1_tot_nu | — | todos |
+| `nu_1_4_tot` | `NU_1_4_TOT` | inteiro | Número de Doentes por Faixa Etária e Sexo Total 1 a 4 Número. tot_nu | — | todos |
+| `nu_5_9_tot` | `NU_5_9_TOT` | inteiro | Número de Doentes por Faixa Etária e Sexo Total 5 a 9 Número. tot_nu | — | todos |
+| `nu_10_19` | `NU_10_19` | inteiro | Número de Doentes por Faixa Etária e Sexo Total 10 a 19 Número. 9_tot_nu | — | todos |
+| `nu_20_49` | `NU_20_49` | inteiro | Número de Doentes por Faixa Etária e Sexo Total 20 a 49 Número. 9_tot_nu | — | todos |
+| `nu_50_tot` | `NU_50_TOT` | inteiro | Número de Doentes por Faixa Etária e Sexo Total 50. mais_tot_nu | — | todos |
+| `nu_ign_nu` | `NU_IGN_NU` | inteiro | Número de Doentes por Faixa Etária e Sexo Total Ignorada Número. a_tot_nu | — | todos |
+| `nu_f_tot` | `NU_F_TOT` | inteiro | Número de Doentes por Faixa Etária e Sexo Total – Total Número. t_nu | — | todos |
+| `nu_nause_p` | `NU_NAUSE_P` | inteiro | Sinais e sintomas Doentes Náuseas Número. a_nu | — | todos |
+| `nu_vomto_n` | `NU_VOMTO_N` | inteiro | Sinais e sintomas Doentes Vômitos Número. _nu | — | todos |
+| `nu_diarr_n` | `NU_DIARR_N` | inteiro | Sinais e sintomas Doentes Diarréia Número. a_nu | — | todos |
+| `nu_cefal_n` | `NU_CEFAL_N` | inteiro | Sinais e sintomas Doentes Cefaléia Número. a_nu | — | todos |
+| `nu_abdom_n` | `NU_ABDOM_N` | inteiro | Sinais e sintomas Doentes Dor Abdominal Número. bdominal_nu | — | todos |
+| `nu_neuro_n` | `NU_NEURO_N` | inteiro | Sinais e sintomas Doentes Neurológicos Percentual. ogico_nu | — | todos |
+| `nu_outro_n` | `NU_OUTRO_N` | inteiro | Sinais e sintomas Doentes Outros Número | — | todos |
 | `nu_febre_n` | `NU_FEBRE_N` | inteiro | Sinais e sintomas Doentes Febre Número | — | todos |
-| `nu_incub_m` | `NU_INCUB_M` | inteiro | Período de Incubação Mínimo (em horas ou dias) – Período. nu_incubacao_m inino | — | todos |
-| `st_incub_m` | `ST_INCUB_M` | texto | Período de Incubação Mínimo (em horas ou dias) – Horas/Dias. st_incubacao_mi nino | — | todos |
+| `nu_incub_m` | `NU_INCUB_M` | inteiro | Período de Incubação Mínimo (em horas ou dias) – Período | — | todos |
+| `st_incub_m` | `ST_INCUB_M` | texto | Período de Incubação Mínimo (em horas ou dias) – Horas/Dias | — | todos |
 | `max_inc` | `MAX_INC` | inteiro | Período de. Quando o período | — | todos |
-| `max_st_inc` | `MAX_ST_INC` | texto | Período de Incubação Máximo (em horas ou dias) – Horas/Dias. st_incubacao_m aximo | — | todos |
-| `nu_inc_me` | `NU_INC_ME` | inteiro | Mediana do Período de Incubação (em horas ou dias) – Período. nu_incubacao_m edia | — | todos |
-| `st_inc_me` | `ST_INC_ME` | texto | Mediana do Período de Incubação (em horas ou dias) – Horas/Dias. st_incubacao_m edia | — | todos |
+| `max_st_inc` | `MAX_ST_INC` | texto | Período de Incubação Máximo (em horas ou dias) – Horas/Dias | — | todos |
+| `nu_inc_me` | `NU_INC_ME` | inteiro | Mediana do Período de Incubação (em horas ou dias) – Período | — | todos |
+| `st_inc_me` | `ST_INC_ME` | texto | Mediana do Período de Incubação (em horas ou dias) – Horas/Dias | — | todos |
 | `tp_pro_pre` | `TP_PRO_PRE` | texto | Local de Produção / Preparação | 01- Ambulantes 02- Comemoraçõ es 03- Creche / | todos |
-| `st_impro` | `ST_IMPRO` | texto | Fatores Causais Matéria – prima Imprópria. st_fator_mat_pri ma_impropria | 1- Sim 2- Não 9- Ignorado | todos |
-| `st_inad` | `ST_INAD` | texto | Fatores Causais Conservação Inadequada. st_fator_conserv a_inadequada | 1- Sim 2- Não 9- Ignorado | todos |
-| `st_manip` | `ST_MANIP` | texto | Fatores Causais Manipulação / Preparação Inadequada. st_fator_manipul a_inadequada | 1- Sim 2- Não 9- Ignorado | todos |
+| `st_impro` | `ST_IMPRO` | texto | Fatores Causais Matéria – prima Imprópria. ma_impropria | 1- Sim 2- Não 9- Ignorado | todos |
+| `st_inad` | `ST_INAD` | texto | Fatores Causais Conservação Inadequada. a_inadequada | 1- Sim 2- Não 9- Ignorado | todos |
+| `st_manip` | `ST_MANIP` | texto | Fatores Causais Manipulação / Preparação Inadequada. a_inadequada | 1- Sim 2- Não 9- Ignorado | todos |
 | `st_f_outro` | `ST_F_OUTRO` | texto | Fatores Causais Outros | 1- Sim 2- Não 9- Ignorado | todos |
 | `ds_f_outro` | `DS_F_OUTRO` | texto | Fatores Causais Outros Especificar | — | todos |
-| `st_a_clini` | `ST_A_CLINI` | texto | Coletadas amostras Clínicas. st_amostra_clinic a | 1- Sim 2- Não 9- Ignorado | todos |
+| `st_a_clini` | `ST_A_CLINI` | texto | Coletadas amostras Clínicas. a | 1- Sim 2- Não 9- Ignorado | todos |
 | `nu_num_3` | `NU_NUM_3` | inteiro | N° de. Se o agente for | — | todos |
-| `st_alimen` | `ST_ALIMEN` | texto | Coletadas Amostras de Alimentos. st_amostra_alim ento | 1- Sim 2- Não 9- Ignorado | todos |
-| `nu_a_num_3` | `NU_A_NUM_3` | inteiro | N° de Positivas. nu_amostra_alim ento_num_3 | — | todos |
+| `st_alimen` | `ST_ALIMEN` | texto | Coletadas Amostras de Alimentos | 1- Sim 2- Não 9- Ignorado | todos |
+| `nu_a_num_3` | `NU_A_NUM_3` | inteiro | N° de Positivas. ento_num_3 | — | todos |
 | `agente_eti` | `AGENTE_ETI` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2007 a 2021 |
 | `agente_et0` | `AGENTE_ET0` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2007 a 2021 |
 | `agente_et1` | `AGENTE_ET1` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
 | `alimento_c` | `ALIMENTO_C` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
-| `criterio` | `CRITERIO` | texto | Critério confirmação. tp_criterio_confir macao | 1 - Clínico- Epidemiológico 2 - Laboratorial Clínico 3 - Laboratorial Bromatológico 4 - Laboratorial Clínico - Bromatológico 5 - Inconclusivo | todos |
+| `criterio` | `CRITERIO` | texto | Critério confirmação | 1 - Clínico- Epidemiológico 2 - Laboratorial Clínico 3 - Laboratorial Bromatológico 4 - Laboratorial Clínico - Bromatológico 5 - Inconclusivo | todos |
 | `dt_encerra` | `DT_ENCERRA` | data | Data de encerramento do surto DTA. Data do encerramento | — | todos |
 | `uf` | — | texto | UF do arquivo de origem (sigla em minúsculas, `br` para arquivos nacionais), gravada pelo conversor; as linhas do período saem ordenadas por ela | sigla da UF | todos |
 | `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
-| `nu_a_clini` | `NU_A_CLINI` | inteiro | Se SIM, n° de Amostras. nu_amostra_clini ca | — | 2026 a 2026 |
-| `nu_cli_num` | `NU_CLI_NUM` | inteiro | N° de Positivas. nu_amostra_clini ca_num_1 | — | 2026 a 2026 |
-| `nu_num_2` | `NU_NUM_2` | inteiro | N° de Positivas. nu_amostra_clini ca_num_2 | — | 2026 a 2026 |
-| `nu_resu_3` | `NU_RESU_3` | texto | Resultado 3 (Outro Achado). ds_amostra_clini ca_result_3 | — | 2026 a 2026 |
-| `nu_a_alim` | `NU_A_ALIM` | inteiro | Se SIM, n° de Amostras. nu_amostra_alim ento | — | 2026 a 2026 |
-| `nu_a_num_1` | `NU_A_NUM_1` | inteiro | N° de Positivas. nu_amostra_alim ento_num_1 | — | 2026 a 2026 |
-| `nu_a_num_2` | `NU_A_NUM_2` | inteiro | N° de Positivas. nu_amostra_alim ento_num_2 | — | 2026 a 2026 |
-| `agente_et2` | `AGENTE_ET2` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2026 a 2026 |
-| `agente_et3` | `AGENTE_ET3` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2026 a 2026 |
+| `nu_a_clini` | `NU_A_CLINI` | inteiro | Se SIM, n° de Amostras | — | só em 2026 |
+| `nu_cli_num` | `NU_CLI_NUM` | inteiro | N° de Positivas. ca_num_1 | — | só em 2026 |
+| `nu_num_2` | `NU_NUM_2` | inteiro | N° de Positivas. ca_num_2 | — | só em 2026 |
+| `nu_resu_3` | `NU_RESU_3` | texto | Resultado 3 (Outro Achado). ca_result_3 | — | só em 2026 |
+| `nu_a_alim` | `NU_A_ALIM` | inteiro | Se SIM, n° de Amostras | — | só em 2026 |
+| `nu_a_num_1` | `NU_A_NUM_1` | inteiro | N° de Positivas. ento_num_1 | — | só em 2026 |
+| `nu_a_num_2` | `NU_A_NUM_2` | inteiro | N° de Positivas. ento_num_2 | — | só em 2026 |
+| `agente_et2` | `AGENTE_ET2` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2026 |
+| `agente_et3` | `AGENTE_ET3` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2026 |
 
 ## No lake
 
@@ -291,20 +287,26 @@ Schema extraído de `SDTABR24.dbc` (102 colunas depois de remover `_deleted`).
 - a base é de **registros agregados por surto** — o cálculo de taxas deve sempre ser feito com as constantes de doentes (`NU_TOT`), hospitalizados (`NU_TOT_HOS`) e óbitos (`NU_OBITO`); a abertura da planilha condiciona-se ao modo de transmissão (`CS_TRANS` = 2 ou veículo indireto 2–9); "agentes etiológicos" (`AGENTE_ET1..3`) e "alimento causal" (`ALIMENTO_C`) são texto longo, *não* códigos de dicionário; e há lacunas no FTP (ausência do arquivo de 2014 em `FINAIS`). (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Colunas que não existem em todo o período:** 11 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-sdta").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-sdta/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -313,53 +315,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-sdta
-quantilica datasus list sinan-sdta
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-sdta
 
-# 2. Baixar microdados de sinan-sdta com recorte adequado à partição do dataset
-# (SINAN usa uf+year com consolidações BR anuais)
-quantilica datasus sync sinan-sdta -o ./data --start 2007 --end 2024 --regions br
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-sdta -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-sdta -o ./data --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-sdta -o ./data/raw --parquet-dir ./data/parquet --start 2007
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-sdta
 ```
 
-### Em Python e Polars
-
-```python
-import polars as pl
-
-from datasus_fetcher.reader import read_dbc
-
-# Descompacta o .dbc via extensão nativa em Rust e lê o .dbf tratado com polars
-qdf = read_dbc(
-    "data/sinan-sdta/2024/sinan-sdta_preliminar_2024-br@20250724.dbc", clean=True
-)
-
-# Surtos por modo provável de transmissão (direta x indireta/veículo comum)
-trans = qdf.group_by("cs_trans").len().sort("cs_trans")
-print(trans)
-
-# Letalidade hospitalar nos surtos registrados
-letal = qdf.select(
-    [
-        pl.col("nu_tot").sum().alias("doentes"),
-        pl.col("nu_tot_hos").sum().alias("hospitalizados"),
-        pl.col("nu_obito").sum().alias("obitos"),
-    ]
-)
-print(letal)
-
-# Agentes etiológicos mais frequentes (texto livre)
-agentes = qdf.group_by("agente_et1").len().sort("len", descending=True)
-print(agentes.head(15))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS` e `.../SINAN/DADOS/PRELIM`

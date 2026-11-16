@@ -3,7 +3,7 @@ dataset:
   id: base-territorial-conversao
   fonte: datasus
   titulo: Base Territorial - Conversão
-  resumo: O base-territorial-conversao contém as tabelas de conversão (.cnv) entre códigos territoriais usados pelos sistemas de informação do DATASUS e os códigos da Base Territorial.
+  resumo: 'Base Territorial - Conversão do DATASUS: um código de uma categoria de conversão do TabWin (arquivo `.cnv`), por UF.'
   orgao: Ministério da Saúde — DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/territorio/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -42,13 +42,9 @@ O `base-territorial-conversao` contém as **tabelas de conversão** (`.cnv`) ent
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.zip` (contendo arquivos `.cnv`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf` (um ZIP por UF, além de `br` e `todos` consolidados)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): Sem recorte temporal (versão corrente; 28 UFs/consolidados)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 28 arquivos (~21,1 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/territorio/doc` (`bases_territoriais.pdf`, `registro_de_alteracoes.pdf`)
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): Não aplicável
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/territorio/doc` (`bases_territoriais.pdf`, `registro_de_alteracoes.pdf`)
+- **Tabelas auxiliares no FTP:** Não aplicável
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -59,7 +55,7 @@ O `base-territorial-conversao` contém as **tabelas de conversão** (`.cnv`) ent
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `sp_cnv.zip` — `sp` é a UF e `cnv` indica conversões. Contém arquivos como `sp_divadm.cnv`, `sp_municip.cnv`, `SP_macsaud.cnv`, `sp_regsaud.cnv`, `SP_regsaudmun.cnv`, `sp_regmetr.cnv`, `sp_micibge.cnv`, `sp_municgestor.cnv`. Existem também `br_cnv.zip` e `todos_cnv.zip`.
-- **No armazenamento local do `datasus-fetcher`**: como o particionamento é por UF, o arquivo vai para `data/base-territorial-conversao/base-territorial-conversao_<uf>@<AAAAMMDD>.zip`, por exemplo `data/base-territorial-conversao/base-territorial-conversao_sp@20261015.zip`.
+- **No armazenamento local do `datasus-fetcher`**: `data/base-territorial-conversao/base-territorial-conversao_<uf>@<AAAAMMDD>.zip` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: `bases_territoriais.pdf` e `registro_de_alteracoes.pdf` em `/territorio/doc` explicam a estrutura das conversões e o histórico de mudanças territoriais. As conversões também são acompanhadas pelos pacotes de auxiliares dos sistemas produtores (ex.: `TAB_POP.zip`, `tab_pce.zip`, `tabresp.zip`), que repetem conversões de município/região.
 
 ## Conteúdo
@@ -74,6 +70,7 @@ Aplicações analíticas típicas: compatibilizar bases de SIH/SIA/SINAN/SIM com
 
 ### Cobertura observada
 
+- Sem recorte temporal: o FTP publica o cadastro vigente (última atualização em 2026-10-15); o início da cobertura no cabeçalho é o ano de publicação da versão mais antiga ou da atual, não um período de dados.
 - Conversão local de amostras (1 arquivo(s) Parquet, de — a —), feita em 2026-11-16 com o `datasus-fetcher` 0.19.0: serve de base ao esquema de referência. Períodos fora das amostras podem ter colunas que não aparecem aqui.
 
 ### Variáveis de uso mais frequente (resumo da versão anterior desta página)
@@ -115,7 +112,6 @@ Os `.cnv` seguem o formato texto indexado do TabWin (tipicamente `chave;descriç
 
 - os `.cnv` **não são DBF** e exigem leitura própria (parser TabWin) ou conversão prévia; existem múltiplas variantes por recorte no mesmo ZIP (`*`, `*c`, `*mun`, `*n`) com significados distintos; a conversão é **muitos-para-um** (vários códigos antigos convergem para um novo município em fusões) e pode ser **um-para-muitos** em desmembramentos, exigindo definir a regra de rateio; e, por ser versionada, recomenda-se fixar a versão usada na análise. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -124,51 +120,34 @@ Os `.cnv` seguem o formato texto indexado do TabWin (tipicamente `chave;descriç
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
-(
-    pl.scan_parquet(
-        "lake/datasus/base-territorial-conversao/**/*.parquet", hive_partitioning=True
-    )
-    .group_by("ano", "uf")
-    .agg(pl.len().alias("linhas"))
-    .sort("ano", "uf")
-    .collect()
+arquivos = sorted(Path("lake/datasus/base-territorial-conversao").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
 )
+
+(dados.group_by("uf").agg(pl.len().alias("linhas")).sort("uf").collect())
 ```
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para base-territorial-conversao
-quantilica datasus list base-territorial-conversao
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list base-territorial-conversao
 
-# 2. Baixar conversões de UFs específicas (partition uf)
-quantilica datasus sync base-territorial-conversao -o ./data --regions sp rj mg
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync base-territorial-conversao -o ./data --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial
-quantilica datasus sync base-territorial-conversao -o ./data --docs --regions sp
-
-# 4. Pipeline completo: download e extração dos .cnv
-quantilica datasus pipeline base-territorial-conversao -o ./data/raw --parquet-dir ./data/parquet --regions sp
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset base-territorial-conversao
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-import zipfile, io
-
-with zipfile.ZipFile("data/raw/base-territorial-conversao/sp_cnv.zip") as z:
-    raw = z.read("sp_municip.cnv").decode("latin1")
-
-# O .cnv é um texto indexado (chave;descrição) do TabWin
-linhas = [l.split(";")[:2] for l in raw.splitlines() if l.strip()]
-print(pl.DataFrame(linhas, schema=["chave", "descricao"], orient="row").head())
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/territorio/conversoes`

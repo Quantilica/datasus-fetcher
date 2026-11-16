@@ -3,7 +3,7 @@ dataset:
   id: sih-sp
   fonte: datasus
   titulo: SP - Serviços Profissionais
-  resumo: sih-sp contém os Serviços Profissionais do SIH/SUS
+  resumo: 'SP - Serviços Profissionais do DATASUS: um serviço profissional (ato) lançado em uma AIH aprovada.'
   orgao: Ministério da Saúde — Secretaria de Atenção Especializada à Saúde (SAES) e DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -63,13 +63,9 @@ dataset:
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido com PKWARE DCL/blast, descompactado nativamente pelo `datasus-fetcher`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf / yearmonth`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 1997-06 a 2026-08 (conforme `index.json`; 27 UFs com arquivos; última atualização no FTP em 2026-10-16)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 9.466 arquivos (~57,0 GB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIHSUS/200801_/Doc`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIHSUS/200801_/Auxiliar`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/SIHSUS/200801_/Doc`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SIHSUS/200801_/Auxiliar`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -81,7 +77,7 @@ dataset:
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `SPSP2401.dbc` — `SP` (Serviços Profissionais) + `SP` (UF) + `24` (ano) + `01` (mês de competência). Atenção: prefixo e UF podem coincidir (`SPSP…`), o que é esperado.
-- **No armazenamento local do `datasus-fetcher`**: `data/sih-sp/<AAAAMM>/sih-sp_<uf>_<AAAAMM>_<AAAAMMDD>.dbc`, por exemplo `data/sih-sp/202401/sih-sp_sp_202401_20261018.dbc` (o sufixo `AAAAMMDD` é a data do download).
+- **No armazenamento local do `datasus-fetcher`**: `data/sih-sp/<AAAAMM>/sih-sp_<AAAAMM>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sih-sp/202401/sih-sp_202401-sp@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: `Doc/IT_SIHSUS_1603.pdf` (Informe Técnico do SIHSUS, 57 KB, 2016) é o dicionário oficial de variáveis; `Auxiliar/TAB_SIH.zip` (~6,1 MB, tabelas e conversores `.cnv`/`.def` atuais) e as versões históricas `TAB_SIH_199201-199712.zip`, `TAB_SIH_199801-200307.zip` e `TAB_SIH_200308-200712.zip` trazem as tabelas de procedimentos, CID e códigos usadas em cada fase.
 
 ## Conteúdo
@@ -170,7 +166,7 @@ Usos principais: análise do gasto com serviços profissionais por procedimento,
 | `sp_cidsec` | `SP_CIDSEC` | texto | CID Secundário. | — | 2012-10 a 2026-08 |
 | `sp_qt_proc` | `SP_QT_PROC` | inteiro | Quantidade de procedimentos realizados. | — | 2012-10 a 2026-08 |
 | `sp_u_aih` | `SP_U_AIH` | texto | Indicador único da AIH. Contabiliza a AIH sem repetições. | — | 2012-10 a 2026-08 |
-| `fonte_orc` | `FONTE_ORC` | texto | Fonte orçamentária do pagamento (campo presente só nas partições mais recentes) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2026-08 a 2026-08 |
+| `fonte_orc` | `FONTE_ORC` | texto | Fonte orçamentária do pagamento (campo presente só nas partições mais recentes) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2026-08 |
 
 ## No lake
 
@@ -186,7 +182,6 @@ Usos principais: análise do gasto com serviços profissionais por procedimento,
 - **Tipo que varia entre períodos:** `sp_aa`, `sp_mm`, `sp_naih`, `sp_procrea`, `sp_dtinter`, `sp_dtsaida`, `sp_num_pr`, `sp_tipo`, `sp_cpfcgc`, `sp_atoprof`, `sp_tp_ato` aparecem com mais de um tipo nas amostras (por exemplo, inteiro em alguns períodos e texto em outros); leia a coluna `Tipo` do dicionário e converta explicitamente antes de empilhar períodos. Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Colunas que não existem em todo o período:** 25 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -195,11 +190,18 @@ Usos principais: análise do gasto com serviços profissionais por procedimento,
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sih-sp").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sih-sp/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "mes", "uf")
+    dados.group_by("ano", "mes", "uf")
     .agg(pl.len().alias("linhas"))
     .sort("ano", "mes", "uf")
     .collect()
@@ -208,46 +210,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sih-sp
-quantilica datasus list sih-sp
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sih-sp
 
-# 2. Baixar microdados de sih-sp com recorte adequado à partição (uf + yearmonth)
-quantilica datasus sync sih-sp -o ./data --start 2024-01 --end 2024-03 --regions sp
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sih-sp -o ./data --start 2024-01 --end 2024-12 --regions sp rj --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sih-sp -o ./data --start 2024-01 --end 2024-03 --regions sp --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sih-sp -o ./data/raw --parquet-dir ./data/parquet --start 2024-01 --end 2024-03 --regions sp
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sih-sp
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from pathlib import Path
-
-arquivo = next(Path("./data/sih-sp/202401").glob("sih-sp_sp_202401_*.dbc"))
-sp = df.read_dbc(arquivo, dataset="sih-sp")
-
-# Valor de serviços profissionais por ocupação (CBO) do executor
-por_cbo = (
-    sp.group_by("sp_pf_cbo")
-    .agg(
-        pl.col("sp_qtd_ato").sum().alias("atos"),
-        pl.col("sp_valato").sum().alias("valor"),
-    )
-    .sort("valor", descending=True)
-)
-print(por_cbo.head(10))
-
-# Valor de SP por AIH, pronto para conferir com VAL_SP do RD
-sp_por_aih = sp.group_by("sp_naih").agg(pl.col("sp_valato").sum().alias("val_sp_atos"))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/200801_/`

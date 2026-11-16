@@ -3,7 +3,7 @@ dataset:
   id: sia-am
   fonte: datasus
   titulo: APAC de Medicamentos
-  resumo: sia-am contém as APAC de Medicamentos do SIA/SUS
+  resumo: 'APAC de Medicamentos do DATASUS: uma APAC de medicamentos (dispensação de um medicamento), por competência.'
   orgao: Ministério da Saúde — Secretaria de Atenção Especializada à Saúde (SAES) e DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SIASUS/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -49,13 +49,9 @@ dataset:
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido com PKWARE DCL/blast, descompactado nativamente pelo `datasus-fetcher`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf / yearmonth`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2008-01 a 2026-07 (conforme `index.json`; 27 UFs com arquivos; última atualização no FTP em 2026-09-14)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 5.957 arquivos (~18,6 GB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIASUS/200801_/Doc`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIASUS/200801_/Auxiliar`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/SIASUS/200801_/Doc`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SIASUS/200801_/Auxiliar`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -66,7 +62,7 @@ dataset:
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `AMSP2401.dbc` — `AM` (APAC de Medicamentos) + `SP` (UF) + `24` + `01`.
-- **No armazenamento local do `datasus-fetcher`**: `data/sia-am/<AAAAMM>/sia-am_<uf>_<AAAAMM>_<AAAAMMDD>.dbc`, por exemplo `data/sia-am/202401/sia-am_ac_202401_20261018.dbc` (o sufixo `AAAAMMDD` é a data do download).
+- **No armazenamento local do `datasus-fetcher`**: `data/sia-am/<AAAAMM>/sia-am_<AAAAMM>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sia-am/202401/sia-am_202401-sp@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: `Doc/Informe_Tecnico_SIASUS_2019_07.pdf` (~1,1 MB, julho/2019) descreve o leiaute dos arquivos do SIA; `Auxiliar/TAB_SIA.zip` (~73,8 MB, tabelas SIGTAP e conversores) e as versões históricas `TAB_SIA_199407-199910.zip`, `TAB_SIA_199911-200307.zip` e `TAB_SIA_200308-200712.zip` cobrem as fases anteriores à Tabela Unificada.
 
 ## Conteúdo
@@ -181,7 +177,6 @@ Aplicações: gasto federal e estadual com medicamentos de alto custo por doenç
 - (i) cada linha é um procedimento/medicamento por APAC e competência; `AP_VL_AP` pode ser `0.0` em linhas de medicamentos sem valor financiado na competência — filtre por `AP_VL_AP > 0` para análises de gasto; (ii) `AP_CIDPRI` indica a doença que justifica o tratamento; (iii) a base é grande (>18 GB) — use `--regions` e janelas curtas e, se possível, converta para Parquet particionado; (iv) `AM_PESO`/`AM_ALTURA` são `String` de largura fixa; converta com `cast(pl.Int64, strict=False)` e trate zeros como não informado. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Colunas que não existem em todo o período:** 1 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -190,11 +185,18 @@ Aplicações: gasto federal e estadual com medicamentos de alto custo por doenç
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sia-am").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sia-am/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "mes", "uf")
+    dados.group_by("ano", "mes", "uf")
     .agg(pl.len().alias("linhas"))
     .sort("ano", "mes", "uf")
     .collect()
@@ -203,43 +205,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sia-am
-quantilica datasus list sia-am
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sia-am
 
-# 2. Baixar microdados de sia-am com recorte adequado à partição (uf + yearmonth)
-quantilica datasus sync sia-am -o ./data --start 2024-01 --end 2024-06 --regions sp
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sia-am -o ./data --start 2024-01 --end 2024-12 --regions sp rj --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sia-am -o ./data --start 2024-01 --end 2024-06 --regions sp --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sia-am -o ./data/raw --parquet-dir ./data/parquet --start 2024-01 --end 2024-06 --regions sp
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sia-am
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from pathlib import Path
-
-arquivo = next(Path("./data/sia-am/202401").glob("sia-am_ac_202401_*.dbc"))
-am = df.read_dbc(arquivo, dataset="sia-am")
-
-# Medicamentos (procedimentos SIGTAP) com maior valor aprovado e pacientes distintos
-top = (
-    am.group_by("ap_pripal")
-    .agg(
-        pl.col("ap_vl_ap").sum().alias("valor"),
-        pl.col("ap_cnspcn").n_unique().alias("pacientes"),
-    )
-    .sort("valor", descending=True)
-)
-print(top.head(10))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SIASUS/200801_/`

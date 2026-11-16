@@ -3,7 +3,7 @@ dataset:
   id: sim-domat-cid10
   fonte: datasus
   titulo: Declarações de Óbitos Maternos CID-10
-  resumo: Microdados nacionais do SIM/SVSA-MS com os óbitos maternos de 1996 a 2025 (CID-10).
+  resumo: 'Declarações de Óbitos Maternos CID-10 do DATASUS: um óbito materno, a partir de 1996 (CID-10).'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), Coordenação-Geral de Informações e Análise Epidemiológicas (CGIAE)
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -46,13 +46,9 @@ Microdados nacionais do SIM/SVSA-MS com os óbitos maternos de 1996 a 2025 (CID-
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido no formato DATASUS; descompactado nativamente em Rust para `.dbf`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `year`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 1996 a 2025 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 30 arquivos (~4,6 MB); 1 UF(s) na partição; última atualização 2026-08-28
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIM/CID9/DOCS`, `/dissemin/publicos/SIM/CID10/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIM/CID9/TAB`, `/dissemin/publicos/SIM/CID10/TAB`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/SIM/CID9/DOCS`, `/dissemin/publicos/SIM/CID10/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SIM/CID9/TAB`, `/dissemin/publicos/SIM/CID10/TAB`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -63,7 +59,7 @@ Microdados nacionais do SIM/SVSA-MS com os óbitos maternos de 1996 a 2025 (CID-
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `DOMAT23.dbc` — `DOMAT` (óbitos maternos) + `23` (ano com 2 dígitos, 2023); arquivo nacional, sem sufixo de UF.
-- **No armazenamento local do `datasus-fetcher`**: `data/sim-domat-cid10/<AAAA>/sim-domat-cid10_<AAAA>@<AAAAMMDD>.dbc` (ex.: `data/sim-domat-cid10/2023/sim-domat-cid10_2023@20260828.dbc`); como não há UF na partição, o nome contém apenas o ano.
+- **No armazenamento local do `datasus-fetcher`**: `data/sim-domat-cid10/<AAAA>/sim-domat-cid10_<AAAA>@<AAAAMMDD>.dbc`, por exemplo `data/sim-domat-cid10/2024/sim-domat-cid10_2024@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**:
   - Documentação (`datasus-metadata/metadata/documentation/sim.json`):
     - `/dissemin/publicos/SIM/CID9/DOCS/Docs-Tabs-CID9.zip` (0.7 MB)
@@ -166,7 +162,7 @@ Layout CID-10 do recorte materno; confirme `OBITOGRAV`, `OBITOPUERP` e `TPMORTEO
 | `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
 | `codestab` | `CODESTAB` | texto | Código do estabelecimento de saúde constante do Cadastro Nacional de Estabelecimento de Saúde | Números | 2005 a 2025 |
 | `atestante` | `ATESTANTE` | texto | Condição do médico atestante | 1 - Assistente; 2 – Substituto; 3 – IML; 4 – SVO; 5 – Outro | 2005 a 2025 |
-| `ufinform` | `UFINFORM` | texto | UF que informou o registro (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2005 a 2005 |
+| `ufinform` | `UFINFORM` | texto | UF que informou o registro (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2005 |
 | `origem` | `ORIGEM` | texto | Origem do registro: 01 Oracle; 02 banco estadual disponibilizado via FTP; 03 banco SEADE; 9 ignorado | — | 2011 a 2025 |
 | `horaobito` | `HORAOBITO` | texto | Horário do óbito | Números (padrão 24 horas 00:00) | 2011 a 2025 |
 | `comunsvoim` | `COMUNSVOIM` | texto | Código do município do SVO ou do IML | Números | 2011 a 2025 |
@@ -177,7 +173,7 @@ Layout CID-10 do recorte materno; confirme `OBITOGRAV`, `OBITOPUERP` e `TPMORTEO
 | `dtcadastro` | `DTCADASTRO` | texto | Data do cadastro do óbito | Data no padrão ddmmaaaa | 2011 a 2025 |
 | `fonteinv` | `FONTEINV` | texto | Fonte de investigação | 1 – Comitê de Morte Materna e/ou Infantil; 2 – Visita domiciliar / Entrevista família; 3 – Estabelecimento de Saúde / Prontuário; 4 – Relacionado com outros bancos de dados; 5 – S V O; 6 – I M L; 7 – Outra fonte; 8 – ... | 2011 a 2025 |
 | `dtrecebim` | `DTRECEBIM` | texto | Data do recebimento | Data no padrão ddmmaaaa | 2011 a 2025 |
-| `dtrecorig` | `DTRECORIG` | texto | Data de recebimento original do registro (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2011 a 2011 |
+| `dtrecorig` | `DTRECORIG` | texto | Data de recebimento original do registro (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2011 |
 | `dtrecoriga` | `DTRECORIGA` | texto | Campo Criado no Tratamento para Data do recebimento original | Data no padrão ddmmaaaa | 2011 a 2025 |
 | `causamat` | `CAUSAMAT` | texto | CID da causa externa associada a uma causa materna | Letras; números; * ; / | 2011 a 2025 |
 | `esc2010` | `ESC2010` | texto | Escolaridade 2010. Nível da última série concluída pelo falecido | 0 – Sem escolaridade; 1 – Fundamental I (1ª a 4ª série); 2 – Fundamental II (5ª a 8ª série); 3 – Médio (antigo 2º Grau); 4 – Superior incompleto; 5 – Superior completo; 9 – Ignorado | 2011 a 2025 |
@@ -195,7 +191,7 @@ Layout CID-10 do recorte materno; confirme `OBITOGRAV`, `OBITOPUERP` e `TPMORTEO
 | `semagestac` | `SEMAGESTAC` | texto | Semanas de gestação com dois algarismos | Números com dois algarismos; 9 - igonorado | 2017 a 2025 |
 | `tpmorteoco` | `TPMORTEOCO` | texto | Situação gestacional ou pósgestacional em que ocorreu o óbito | 1 – na gravidez; 2 – no parto; 3 – no abortamento; 4 – até 42 dias após o término do parto; 5 – de 43 dias a 1 ano após o término da gestação ; 8 – não ocorreu nestes períodos; 9 – ignorado. | 2017 a 2025 |
 | `cb_pre` | `CB_PRE` | texto | Causa básica (CID-10) antes da investigação do óbito (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2017 a 2025 |
-| `crm` | `CRM` | texto | Número do CRM do médico que assinou a declaração de óbito | — | 2017 a 2017 |
+| `crm` | `CRM` | texto | Número do CRM do médico que assinou a declaração de óbito | — | só em 2017 |
 | `numerolote` | `NUMEROLOTE` | texto | Número do lote | Números | 2017 a 2025 |
 | `stcodifica` | `STCODIFICA` | texto | Status de instalação | Se codificadora (valor: S) ou não (valor: N) | 2017 a 2025 |
 | `codificado` | `CODIFICADO` | texto | Informa se formulario foi codificado | Se estiver codificado (valor: S) ou não (valor: N) | 2017 a 2025 |
@@ -228,63 +224,42 @@ Layout CID-10 do recorte materno; confirme `OBITOGRAV`, `OBITOPUERP` e `TPMORTEO
 
 - **Colunas que não existem em todo o período:** 52 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
+Quantas linhas há por período? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
-(
-    pl.scan_parquet("lake/datasus/sim-domat-cid10/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "uf")
-    .agg(pl.len().alias("linhas"))
-    .sort("ano", "uf")
-    .collect()
+arquivos = sorted(Path("lake/datasus/sim-domat-cid10").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
 )
+
+(dados.group_by("ano").agg(pl.len().alias("linhas")).sort("ano").collect())
 ```
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
-
-> `quantilica datasus <subcomando>` e `datasus-fetcher <subcomando>` são equivalentes.
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sim-domat-cid10
-quantilica datasus list sim-domat-cid10
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sim-domat-cid10
 
-# 2. Baixar microdados de sim-domat-cid10 com recorte adequado à partição (year)
-quantilica datasus sync sim-domat-cid10 -o ./data --start 2015 --end 2023
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sim-domat-cid10 -o ./data --start 2020 --end 2024 --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sim-domat-cid10 -o ./data --start 2015 --end 2023 --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sim-domat-cid10 -o ./data/raw --parquet-dir ./data/parquet --start 2015 --end 2023
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sim-domat-cid10
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-
-frame = df.read_dbc(
-    "data/sim-domat-cid10/2023/sim-domat-cid10_2023@20260828.dbc",
-    dataset="sim-domat-cid10",
-)
-print(frame.shape)
-
-frame = frame.with_columns(
-    pl.col("dtobito").str.to_date("%d%m%Y", strict=False).alias("data_obito"),
-)
-print(frame.group_by("causabas").len().sort("len", descending=True).head(10))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/DOFET`

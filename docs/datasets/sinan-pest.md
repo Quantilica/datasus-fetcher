@@ -3,7 +3,7 @@ dataset:
   id: sinan-pest
   fonte: datasus
   titulo: Peste
-  resumo: O sinan-pest contém os microdados das notificações e investigações de casos de Peste (CID-10 A20) registrados no Sistema de Informação de Agravos de Notificação (SINAN).
+  resumo: 'Peste do DATASUS: uma ficha de notificação/investigação de peste.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -42,13 +42,9 @@ O `sinan-pest` contém os microdados das notificações e investigações de cas
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (arquivos consolidados anuais, praticamente sempre `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2007 a 2025 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 19 arquivos (~42,8 KB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório `PRELIM`)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório `PRELIM`)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -60,7 +56,7 @@ O `sinan-pest` contém os microdados das notificações e investigações de cas
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `PESTBR07.dbc` — prefixo `PEST`, `BR` (consolidação nacional) e `07` (ano 2007), até `PESTBR24.dbc` (2024); o arquivo do ano corrente fica em `PRELIM` (ex.: `PESTBR25.dbc`). A série é minúscula: ~42 kB no total, refletindo poucas notificações.
-- **No armazenamento local do `datasus-fetcher`**: caminho padronizado `data/sinan-pest/<ano>/sinan-pest_<período>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-pest/2024/sinan-pest_2024-br@20260212.dbc`; arquivos preliminares recebem o sufixo `-preliminar`.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-pest/<AAAA>/sinan-pest_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-pest/2024/sinan-pest_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: em `SINAN/DOCS`: `Docs_TAB_SINAN.zip` e os PDFs de acesso/conversão/tabulação (`POP_I`, `POP_II`, `POP_III`); em `SINAN/AUXILIAR`: `TAB_SINANNET.zip`, `TAB_SINANONLINE.zip` e `POPT_Estimativa_TCU_2019_Sinan.zip`.
 
 ## Conteúdo
@@ -110,29 +106,29 @@ Aplicações analíticas: monitoramento da endemicidade e da reativação nos bo
 | `tp_not` | `TP_NOT` | texto | Tipo de Notificação. Identifica o tipo da notificação | 1 – Negativa 2 – Individual 3 – Surto 4 – Agregado | todos |
 | `id_agravo` | `ID_AGRAVO` | texto | Agravo. Tabela de agravos do sistema com códigos (classificação internacional de doenças –CID 10) e nomes dos agravos classificados como notificação compulsória ( nacional, estadual ou municipal) e as síndromes ( febre hemorragia aguda;respiratória aguda; diarréia aguda; sanguinolenta; | — | todos |
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
-| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_notifi cacao | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno) | — | todos |
 | `nu_ano` | `NU_ANO` | texto | (campo interno). Ano da notificação | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
 | `id_regiona` | `ID_REGIONA` | texto | (campo interno). Regional de saúde onde está localizado o município da unidade de saúde ou outra fonte notificadora | — | todos |
-| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora. co_unidade_notifi cacao | — | todos |
-| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico. dt_diagnostico_si ntoma | — | todos |
-| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno). ds_semana_sinto ma | — | todos |
+| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora | — | todos |
+| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico | — | todos |
+| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno) | — | todos |
 | `nu_idade_n` | `NU_IDADE_N` | inteiro | Idade. A composição da variável obedece o seguinte critério: 1o | — | todos |
 | `cs_sexo` | `CS_SEXO` | texto | Sexo. M- Masculino F- Feminino I- Ignorado | — | todos |
 | `cs_gestant` | `CS_GESTANT` | texto | Gestante. Gestante 1. 1º Trimestre 2. 2º Trimestre 3. 3º Trimestre 4. Idade gestacional ignorada 5. Não 6. Não se aplica 9. Ignorado | — | todos |
 | `cs_raca` | `CS_RACA` | texto | Raça/Cor. Considera-se cor ou raça declarada pela pessoa. 1. branca 2. preta 3. amarela (pessoa que se declarou de raça amarela) 4. parda (pessoa que se declarou mulata, cabocla, cafuza, mameluca ou mestiça de preto com pessoa de outra cor ou raça) 5. indígena (pessoa que se declarou indígena ou índia) | 1- branca 2- preta 3- amarela 4- parda 5- indígena 9 Ignorado | todos |
 | `cs_escol_n` | `CS_ESCOL_N` | texto | Escolaridade. 43 Analfabeto 1. 1ª a 4ª série incompleta do EF 2. 4ª série completa do EF ( antigo 1° grau) 3. 5ª à 8ª série incompleta do EF (antigo ginásio ou 1° grau) 4. Ensino fundamental completo (antigo ginásio ou 1° grau) 5. Ensino médio incompleto (antigo colegial ou 2° grau) 6. Ensino médio completo (antigo colegial ou 2° grau) 7. Educação superior incompleta 8. Educação superior completa 9. Ignorado 10. N... | — | todos |
 | `sg_uf` | `SG_UF` | texto | UF. Sigla da Unidade Federada de residência do paciente por ocasião da notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência. co_municipio_res idencia | — | todos |
+| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência | — | todos |
 | `id_rg_resi` | `ID_RG_RESI` | texto | (campo interno). Regional de saúde onde está localizado o município de residência do paciente por ocasião da notificação | — | todos |
-| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil). co_pais_residenc ia | — | todos |
+| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil) | — | todos |
 | `dt_invest` | `DT_INVEST` | data | Data da Investigação. Data em que ocorreu a investigação – informar a data da 1ª visita ao paciente | — | todos |
 | `id_ocupa_n` | `ID_OCUPA_N` | texto | Ocupação/Ramo de atividade econômica. Informar a atividade exercida pelo paciente no setor formal, informal ou autônomo ou sua última atividade exercida quando paciente for desempregado. O ramo de atividade econômica do | — | todos |
 | `co_risco` | `CO_RISCO` | texto | A ocorrência cumpre condições básicas de risco ? | 1-Sim 2-Não 9-Ignorado | todos |
 | `epi_peste` | `EPI_PESTE` | texto | O caso está associado a eventos positivos de importância epidemiológica para Peste ? | 1-Sim 2-Não 9-Ignorado | todos |
 | `com_pest` | `COM_PEST` | texto | Os sinais e sintomas são compatíveis com a definição de caso ? | 1-Sim 2-Não 9-Ignorado | todos |
-| `sin_gang` | `SIN_GANG` | texto | Sintomatologia específica ganglionar. st_sintomatologia_gangli onar | 1-Sim 2-Não 9-Ignorado | todos |
+| `sin_gang` | `SIN_GANG` | texto | Sintomatologia específica ganglionar | 1-Sim 2-Não 9-Ignorado | todos |
 | `sin_pulm` | `SIN_PULM` | texto | Manifestação clínica registrada na ficha de Peste (`SIN_PULM`); o dicionário consultado não define o campo isoladamente | — | todos |
 | `tratado` | `TRATADO` | texto | Caso Tratado | 1-Sim 2-Não 9-Ignorado | todos |
 | `criterio` | `CRITERIO` | texto | Critério de confirmação/descarte | 1-Laboratorial 2-Clínico 3-Indeterminado | todos |
@@ -175,20 +171,27 @@ Aplicações analíticas: monitoramento da endemicidade e da reativação nos bo
 
 - volume minúsculo (~42 kB em 19 consolidações) — quase todas as fichas correspondem a casos investigados nos bolsões; maior parte das fichas corresponde a casos descartados e poucos confirmados; atenção ao município provável de infecção ao usar as colunas de residência, pois a exposição de campo pode ocorrer em município diverso do de notificação. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
+- **Arquivos DBC vazios:** nas amostras, 2 arquivo(s) sem nenhuma linha escaparam da limpeza do conversor e gravaram as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre os arquivos de zero linha antes de empilhar partições. Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0. Achado do conversor, não corrigido aqui.
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-pest").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-pest/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -197,38 +200,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-pest
-quantilica datasus list sinan-pest
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-pest
 
-# 2. Baixar microdados de sinan-pest com recorte adequado à partição do dataset
-quantilica datasus sync sinan-pest -o ./data --start 2007 --end 2024 --regions br
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-pest -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-pest -o ./data --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-pest -o ./data/raw --parquet-dir ./data/parquet --start 2007
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-pest
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-# A base de peste é pequena; abaixo, uma leitura consolidada com polars
-qdf = read_dbc("data/sinan-pest/2024/sinan-pest_2024-br@20260212.dbc", clean=True)
-
-# Distribuição dos casos por classificação final e ano
-print(qdf.group_by("nu_ano", "classi_fin").len().sort(["nu_ano", "classi_fin"]))
-
-# UF de notificação dos casos registrados
-print(qdf.group_by("sg_uf_not").len().sort("len", descending=True))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS` e `.../SINAN/DADOS/PRELIM`

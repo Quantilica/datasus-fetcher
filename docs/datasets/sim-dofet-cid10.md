@@ -3,7 +3,7 @@ dataset:
   id: sim-dofet-cid10
   fonte: datasus
   titulo: Declarações de Óbito Fetais CID-10
-  resumo: Microdados nacionais do SIM/SVSA-MS com as Declarações de Óbito fetais de 1996 a 2025 (CID-10).
+  resumo: 'Declarações de Óbito Fetais CID-10 do DATASUS: um óbito fetal, a partir de 1996 (CID-10).'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), Coordenação-Geral de Informações e Análise Epidemiológicas (CGIAE)
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -48,13 +48,9 @@ Microdados nacionais do SIM/SVSA-MS com as Declarações de Óbito fetais de 199
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido no formato DATASUS; descompactado nativamente em Rust para `.dbf`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `year`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 1996 a 2025 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 30 arquivos (~68,7 MB); 1 UF(s) na partição; última atualização 2026-08-28
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIM/CID9/DOCS`, `/dissemin/publicos/SIM/CID10/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIM/CID9/TAB`, `/dissemin/publicos/SIM/CID10/TAB`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/SIM/CID9/DOCS`, `/dissemin/publicos/SIM/CID10/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SIM/CID9/TAB`, `/dissemin/publicos/SIM/CID10/TAB`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -65,7 +61,7 @@ Microdados nacionais do SIM/SVSA-MS com as Declarações de Óbito fetais de 199
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `DOFET23.dbc` — `DOFET` (óbitos fetais) + `23` (ano com 2 dígitos, 2023); arquivo nacional, sem sufixo de UF.
-- **No armazenamento local do `datasus-fetcher`**: `data/sim-dofet-cid10/<AAAA>/sim-dofet-cid10_<AAAA>@<AAAAMMDD>.dbc` (ex.: `data/sim-dofet-cid10/2023/sim-dofet-cid10_2023@20260828.dbc`); como não há UF na partição, o nome contém apenas o ano.
+- **No armazenamento local do `datasus-fetcher`**: `data/sim-dofet-cid10/<AAAA>/sim-dofet-cid10_<AAAA>@<AAAAMMDD>.dbc`, por exemplo `data/sim-dofet-cid10/2024/sim-dofet-cid10_2024@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**:
   - Documentação (`datasus-metadata/metadata/documentation/sim.json`):
     - `/dissemin/publicos/SIM/CID9/DOCS/Docs-Tabs-CID9.zip` (0.7 MB)
@@ -134,33 +130,33 @@ Layout CID-10 nacional publicado em `SIM/CID10/DOFET`; os nomes abaixo seguem o 
 | `dtnasc` | `DTNASC` | texto | Data do nascimento do falecido. Em caso de óbito fetal as datas de óbito e nascimento deverão ser iguais. | Data no padrão ddmmaaaa | todos |
 | `idade` | `IDADE` | texto | Idade do falecido em minutos, horas, dias, meses ou anos | Idade: composto de dois subcampos. - O primeiro, de 1 dígito, indica a unidade da idade (se 1 = minuto, se 2 = hora, se 3 = mês, se 4 = ano, se = 5 idade maior que 100 anos). - O segundo, de dois dígitos, indica a qua... | todos |
 | `lococor` | `LOCOCOR` | texto | Local de ocorrência do óbito | 1 – hospital; 2 – outros estabelecimentos de saúde; 3 – domicílio; 4 – via pública; 5 – outros; 6 - aldeia indígena; 9 – ignorado. | todos |
-| `codigo` | `CODIGO` | texto | Código do leiaute antigo do SIM sem definição na documentação consultada | — | 1996 a 1996 |
+| `codigo` | `CODIGO` | texto | Código do leiaute antigo do SIM sem definição na documentação consultada | — | só em 1996 |
 | `codmunocor` | `CODMUNOCOR` | texto | Código relativo ao município onde ocorreu o óbito | Números | todos |
 | `codmunres` | `CODMUNRES` | texto | Código do município de residência. Em caso de óbito fetal, considerar o município de residência da mãe | Números | todos |
-| `baires` | `BAIRES` | texto | Bairro de residência do falecido (código) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1996 a 1996 |
-| `areares` | `AREARES` | texto | Área de residência do falecido (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1996 a 1996 |
-| `ocupacao` | `OCUPACAO` | texto | Ocupação do falecido (leiaute antigo; equivale a `OCUP`) | — | 1996 a 1996 |
+| `baires` | `BAIRES` | texto | Bairro de residência do falecido (código) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 1996 |
+| `areares` | `AREARES` | texto | Área de residência do falecido (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 1996 |
+| `ocupacao` | `OCUPACAO` | texto | Ocupação do falecido (leiaute antigo; equivale a `OCUP`) | — | só em 1996 |
 | `natural` | `NATURAL` | texto | Município e Unidade da Federação onde o falecido nasceu. Se estrangeiro informar País | Números | todos |
-| `instrucao` | `INSTRUCAO` | texto | Escolaridade do falecido (leiaute antigo; equivale a `ESC`) | — | 1996 a 1996 |
-| `ocuppai` | `OCUPPAI` | texto | Ocupação do pai (leiaute antigo) | — | 1996 a 1996 |
-| `instrpai` | `INSTRPAI` | texto | Escolaridade do pai (leiaute antigo) | — | 1996 a 1996 |
+| `instrucao` | `INSTRUCAO` | texto | Escolaridade do falecido (leiaute antigo; equivale a `ESC`) | — | só em 1996 |
+| `ocuppai` | `OCUPPAI` | texto | Ocupação do pai (leiaute antigo) | — | só em 1996 |
+| `instrpai` | `INSTRPAI` | texto | Escolaridade do pai (leiaute antigo) | — | só em 1996 |
 | `ocupmae` | `OCUPMAE` | texto | Tipo de trabalho exercido habitualmente pela Mãe, de acordo com Classificação Brasileira de Ocupações – CBO 2002. No caso da mãe do falecido(a) ser “aposentada”, preencher com a ocupação habitual anterior. | — | todos |
 | `idademae` | `IDADEMAE` | texto | Idade da mãe | Números | todos |
 | `escmae` | `ESCMAE` | texto | Escolaridade da mãe em anos | 1 – Nenhuma; 2 – de 1 a 3 anos; 3 – de 4 a 7 anos; 4 – de 8 a 11 anos; 5 – 12 anos e mais; 9 – Ignorado | todos |
-| `instrmae` | `INSTRMAE` | texto | Escolaridade da mãe (leiaute antigo; equivale a `ESCMAE`) | — | 1996 a 1996 |
-| `filhvivos` | `FILHVIVOS` | texto | Número de filhos tidos vivos pela mãe (leiaute antigo; equivale a `QTDFILVIVO`) | — | 1996 a 1996 |
+| `instrmae` | `INSTRMAE` | texto | Escolaridade da mãe (leiaute antigo; equivale a `ESCMAE`) | — | só em 1996 |
+| `filhvivos` | `FILHVIVOS` | texto | Número de filhos tidos vivos pela mãe (leiaute antigo; equivale a `QTDFILVIVO`) | — | só em 1996 |
 | `qtdfilvivo` | `QTDFILVIVO` | texto | Número de filhos vivos | Número; 9 - igonorado | todos |
 | `qtdfilmort` | `QTDFILMORT` | texto | Número de filhos mortos. Não incluir a criança cujo óbito se notifica na respectiva DO | Número; 9 - igonorado | todos |
-| `filhmort` | `FILHMORT` | texto | Número de filhos tidos mortos pela mãe (leiaute antigo; equivale a `QTDFILMORT`) | — | 1996 a 1996 |
-| `semangest` | `SEMANGEST` | texto | Semanas de gestação (leiaute antigo; equivale a `GESTACAO`) | — | 1996 a 1996 |
+| `filhmort` | `FILHMORT` | texto | Número de filhos tidos mortos pela mãe (leiaute antigo; equivale a `QTDFILMORT`) | — | só em 1996 |
+| `semangest` | `SEMANGEST` | texto | Semanas de gestação (leiaute antigo; equivale a `GESTACAO`) | — | só em 1996 |
 | `gestacao` | `GESTACAO` | texto | Faixas de semanas de gestação | 1 - Menos de 22 semanas; 2 - 22 a 27 semanas; 3 - 28 a 31 semanas; 4 - 32 a 36 semanas; 5 - 37 a 41 semanas; 6 - 42 e + semanas | todos |
-| `tipograv` | `TIPOGRAV` | texto | Tipo de gravidez (leiaute antigo; equivale a `GRAVIDEZ`) | — | 1996 a 1996 |
+| `tipograv` | `TIPOGRAV` | texto | Tipo de gravidez (leiaute antigo; equivale a `GRAVIDEZ`) | — | só em 1996 |
 | `gravidez` | `GRAVIDEZ` | texto | Tipo de gravidez | 1 – única; 2 – dupla; 3 – tripla e mais; 9 – ignorada | todos |
 | `parto` | `PARTO` | texto | Tipo de parto | 1 – vaginal; 2 – cesáreo; 9 – ignorado | todos |
 | `obitoparto` | `OBITOPARTO` | texto | Momento do óbito em relação ao parto | 1 - antes; 2– durante; 3–depois; 9– Ignorado | todos |
-| `tipoparto` | `TIPOPARTO` | texto | Tipo de parto (leiaute antigo; equivale a `PARTO`) | — | 1996 a 1996 |
+| `tipoparto` | `TIPOPARTO` | texto | Tipo de parto (leiaute antigo; equivale a `PARTO`) | — | só em 1996 |
 | `peso` | `PESO` | texto | Peso ao nascer em gramas | Número (quatro algarismos) | todos |
-| `pesonasc` | `PESONASC` | texto | Peso ao nascer em gramas (leiaute antigo; equivale a `PESO`) | — | 1996 a 1996 |
+| `pesonasc` | `PESONASC` | texto | Peso ao nascer em gramas (leiaute antigo; equivale a `PESO`) | — | só em 1996 |
 | `assistmed` | `ASSISTMED` | texto | Se refere ao atendimento médico continuado que o paciente recebeu, ou não, durante a enfermidade que ocasionou o óbito | 1 – sim; 2 – não; 9 – ignorado | todos |
 | `atestante` | `ATESTANTE` | texto | Condição do médico atestante | 1 - Assistente; 2 – Substituto; 3 – IML; 4 – SVO; 5 – Outro | todos |
 | `exame` | `EXAME` | texto | Realização de exame | 1 – sim; 2 – não; 9 – ignorado | todos |
@@ -169,20 +165,20 @@ Layout CID-10 nacional publicado em `SIM/CID10/DOFET`; os nomes abaixo seguem o 
 | `obitograv` | `OBITOGRAV` | texto | Óbito na gravidez | 1 – sim; 2 – não; 9 – ignorado | todos |
 | `obitopuerp` | `OBITOPUERP` | texto | Óbito no puerpério | 1 – Sim, até 42 dias após o parto; 2 – Sim, de 43 dias a 1 ano; 3 – Não; 9 – Ignorado. | todos |
 | `causabas` | `CAUSABAS` | texto | Causa básica da DO | *;letras; números; | todos |
-| `tipoviol` | `TIPOVIOL` | texto | Tipo de violência (leiaute antigo) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1996 a 1996 |
-| `tipoacid` | `TIPOACID` | texto | Tipo de acidente (leiaute antigo) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1996 a 1996 |
-| `fontinfo` | `FONTINFO` | texto | Fonte de informação sobre a circunstância do óbito por causa externa (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1996 a 1996 |
+| `tipoviol` | `TIPOVIOL` | texto | Tipo de violência (leiaute antigo) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 1996 |
+| `tipoacid` | `TIPOACID` | texto | Tipo de acidente (leiaute antigo) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 1996 |
+| `fontinfo` | `FONTINFO` | texto | Fonte de informação sobre a circunstância do óbito por causa externa (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 1996 |
 | `acidtrab` | `ACIDTRAB` | texto | Indica se o evento que desencadeou o óbito está relacionado ao processo de trabalho | 1 – sim; 2 – não; 9 – ignorado | todos |
-| `locacid` | `LOCACID` | texto | Local de ocorrência do acidente ou da violência (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1996 a 1996 |
-| `critica` | `CRITICA` | texto | Código da crítica aplicada ao registro (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1996 a 1996 |
-| `numexport` | `NUMEXPORT` | texto | Número de exportação do lote (campo interno) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1996 a 1996 |
-| `crsocor` | `CRSOCOR` | texto | Coordenadoria Regional de Saúde (CRS) do local de ocorrência (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1996 a 1996 |
-| `crsres` | `CRSRES` | texto | Coordenadoria Regional de Saúde (CRS) do local de residência (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1996 a 1996 |
+| `locacid` | `LOCACID` | texto | Local de ocorrência do acidente ou da violência (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 1996 |
+| `critica` | `CRITICA` | texto | Código da crítica aplicada ao registro (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 1996 |
+| `numexport` | `NUMEXPORT` | texto | Número de exportação do lote (campo interno) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 1996 |
+| `crsocor` | `CRSOCOR` | texto | Coordenadoria Regional de Saúde (CRS) do local de ocorrência (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 1996 |
+| `crsres` | `CRSRES` | texto | Coordenadoria Regional de Saúde (CRS) do local de residência (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 1996 |
 | `racacor` | `RACACOR` | texto | Cor informada pelo responsável pelas informações do falecido | 1 – Branca; 2 – Preta; 3 – Amarela; 4 – Parda; 5 – Indígena | todos |
-| `etnia` | `ETNIA` | texto | Etnia do falecido, quando indígena (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1996 a 1996 |
+| `etnia` | `ETNIA` | texto | Etnia do falecido, quando indígena (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 1996 |
 | `ufinform` | `UFINFORM` | texto | UF que informou o registro (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1996 a 2005 |
 | `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
-| `codbaires` | `CODBAIRES` | texto | Código do bairro de residência do falecido (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2005 a 2005 |
+| `codbaires` | `CODBAIRES` | texto | Código do bairro de residência do falecido (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2005 |
 | `ocup` | `OCUP` | texto | Tipo de trabalho que o falecido desenvolveu na maior parte de sua vida produtiva. Preenchimento de acordo com Classificação Brasileira de Ocupações – CBO 2002 | Números | 2005 a 2025 |
 | `codestab` | `CODESTAB` | texto | Código do estabelecimento de saúde constante do Cadastro Nacional de Estabelecimento de Saúde | Números | 2005 a 2025 |
 | `linhaa` | `LINHAA` | texto | CIDs informados na Linha A da DO referente ao diagnóstico na Linha A da DO (causa terminal - doença ou estado mórbido que causou diretamente a morte) | *;letras; números; | 2005 a 2025 |
@@ -225,7 +221,7 @@ Layout CID-10 nacional publicado em `SIM/CID10/DOFET`; os nomes abaixo seguem o 
 | `tpmorteoco` | `TPMORTEOCO` | texto | Situação gestacional ou pósgestacional em que ocorreu o óbito | 1 – na gravidez; 2 – no parto; 3 – no abortamento; 4 – até 42 dias após o término do parto; 5 – de 43 dias a 1 ano após o término da gestação ; 8 – não ocorreu nestes períodos; 9 – ignorado. | 2017 a 2025 |
 | `cb_pre` | `CB_PRE` | texto | Causa básica (CID-10) antes da investigação do óbito (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2017 a 2025 |
 | `medico` | `MEDICO` | texto | Identificação do médico que atestou o óbito (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2017 a 2025 |
-| `crm` | `CRM` | texto | Número do CRM do médico que assinou a declaração de óbito | — | 2017 a 2017 |
+| `crm` | `CRM` | texto | Número do CRM do médico que assinou a declaração de óbito | — | só em 2017 |
 | `numerolote` | `NUMEROLOTE` | texto | Número do lote | Números | 2017 a 2025 |
 | `linhaa_o` | `LINHAA_O` | texto | Linha A do atestado de óbito, conforme informada na origem (antes de qualquer correção) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2017 a 2025 |
 | `linhab_o` | `LINHAB_O` | texto | Linha B do atestado de óbito, conforme informada na origem (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2017 a 2025 |
@@ -263,64 +259,42 @@ Layout CID-10 nacional publicado em `SIM/CID10/DOFET`; os nomes abaixo seguem o 
 
 - **Colunas que não existem em todo o período:** 92 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
+Quantas linhas há por período? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
-(
-    pl.scan_parquet("lake/datasus/sim-dofet-cid10/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "uf")
-    .agg(pl.len().alias("linhas"))
-    .sort("ano", "uf")
-    .collect()
+arquivos = sorted(Path("lake/datasus/sim-dofet-cid10").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
 )
+
+(dados.group_by("ano").agg(pl.len().alias("linhas")).sort("ano").collect())
 ```
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
-
-> `quantilica datasus <subcomando>` e `datasus-fetcher <subcomando>` são equivalentes.
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sim-dofet-cid10
-quantilica datasus list sim-dofet-cid10
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sim-dofet-cid10
 
-# 2. Baixar microdados de sim-dofet-cid10 com recorte adequado à partição (year)
-quantilica datasus sync sim-dofet-cid10 -o ./data --start 2015 --end 2023
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sim-dofet-cid10 -o ./data --start 2020 --end 2024 --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sim-dofet-cid10 -o ./data --start 2015 --end 2023 --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sim-dofet-cid10 -o ./data/raw --parquet-dir ./data/parquet --start 2015 --end 2023
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sim-dofet-cid10
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-
-frame = df.read_dbc(
-    "data/sim-dofet-cid10/2023/sim-dofet-cid10_2023@20260828.dbc",
-    dataset="sim-dofet-cid10",
-)
-print(frame.shape)
-
-frame = frame.with_columns(
-    pl.col("dtobito").str.to_date("%d%m%Y", strict=False).alias("data_obito"),
-)
-# Óbitos fetais por faixa de peso e tipo de parto
-print(frame.group_by(["gestacao", "parto"]).len().sort("len", descending=True).head(10))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/DOFET`

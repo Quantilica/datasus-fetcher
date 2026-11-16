@@ -3,7 +3,7 @@ dataset:
   id: cnes-ee
   fonte: datasus
   titulo: Estabelecimento de Ensino
-  resumo: O cnes-ee contém os microdados do arquivo de Estabelecimento de Ensino do Cadastro Nacional de Estabelecimentos de Saúde (CNES), que registra a condição de ensino/pesquisa dos estabelecimentos de saúde.
+  resumo: 'Estabelecimento de Ensino do DATASUS: um registro de ensino/pesquisa de um estabelecimento, em uma competência.'
   orgao: Ministério da Saúde — Secretaria de Atenção Especializada à Saúde (SAES) e DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -45,13 +45,9 @@ O `cnes-ee` contém os microdados do arquivo de **Estabelecimento de Ensino** do
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `yearmonth` (um arquivo por UF e competência mensal, além de `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2007-03 a 2021-07 (conforme `index.json`) — **série descontinuada**
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 3201 arquivos (~4,6 MB, 23 UFs)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/CNES/200508_/doc` (`IT_CNES_1706.pdf`)
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/CNES/200508_/Auxiliar` (`TAB_CNES.zip`)
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/CNES/200508_/doc` (`IT_CNES_1706.pdf`)
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/CNES/200508_/Auxiliar` (`TAB_CNES.zip`)
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -62,7 +58,7 @@ O `cnes-ee` contém os microdados do arquivo de **Estabelecimento de Ensino** do
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `EESP2101.dbc` — `EE` (Estabelecimento de Ensino), `SP` (UF), `21` (ano), `01` (mês).
-- **No armazenamento local do `datasus-fetcher`**: `data/cnes-ee/<YYYY-MM>/cnes-ee_<YYYYMM>-<uf>@<AAAAMMDD>.dbc`.
+- **No armazenamento local do `datasus-fetcher`**: `data/cnes-ee/<AAAAMM>/cnes-ee_<AAAAMM>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/cnes-ee/202401/cnes-ee_202401-sp@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: `IT_CNES_1706.pdf` (seção "Layout dos arquivos de Estabelecimento de Ensino — EE*.dbf") e `TAB_CNES.zip`.
 
 ## Conteúdo
@@ -150,7 +146,7 @@ Aplicações analíticas típicas: identificação de hospitais e unidades de en
 - série descontinuada em julho/2021 (não usar para datas posteriores); cobertura parcial em algumas UFs; leiaute quase idêntico a `HB`, `GM`, `RC`, `EF` e `IN`; e a vigência (`CMPT_INI`/`CMPT_FIM`) define os registros válidos na competência. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Colunas que não existem em todo o período:** 1 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
+- **Arquivos DBC vazios:** nas amostras, 1 arquivo(s) sem nenhuma linha escaparam da limpeza do conversor e gravaram as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre os arquivos de zero linha antes de empilhar partições. Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0. Achado do conversor, não corrigido aqui.
 
 ## Exemplos
 
@@ -159,11 +155,18 @@ Aplicações analíticas típicas: identificação de hospitais e unidades de en
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/cnes-ee").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/cnes-ee/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "mes", "uf")
+    dados.group_by("ano", "mes", "uf")
     .agg(pl.len().alias("linhas"))
     .sort("ano", "mes", "uf")
     .collect()
@@ -172,33 +175,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para cnes-ee
-quantilica datasus list cnes-ee
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list cnes-ee
 
-# 2. Baixar microdados de cnes-ee (uf+yearmonth; série termina em 2021-07)
-quantilica datasus sync cnes-ee -o ./data --start 2020-01 --end 2021-07 --regions sp
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync cnes-ee -o ./data --start 2024-01 --end 2024-12 --regions sp rj --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync cnes-ee -o ./data --docs --aux --start 2020-01 --end 2021-07
-
-# 4. Pipeline completo até Parquet tratado
-quantilica datasus pipeline cnes-ee -o ./data/raw --parquet-dir ./data/parquet --start 2020-01 --end 2021-07
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset cnes-ee
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-qdf = read_dbc("data/cnes-ee/2021-07/cnes-ee_202107-sp@20210818.dbc", clean=True)
-
-print(qdf.group_by("sgruphab").len().sort("len", descending=True).head(10))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/200508_/Dados/EE`

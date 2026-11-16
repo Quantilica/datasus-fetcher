@@ -3,7 +3,7 @@ dataset:
   id: sia-ab
   fonte: datasus
   titulo: APAC de Acompanhamento a Cirurgia Bariátrica
-  resumo: sia-ab registra as APAC de Acompanhamento a Cirurgia Bariátrica do SIA/SUS
+  resumo: 'APAC de Acompanhamento a Cirurgia Bariátrica do DATASUS: uma APAC de acompanhamento a cirurgia bariátrica, por competência.'
   orgao: Ministério da Saúde — Secretaria de Atenção Especializada à Saúde (SAES) e DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SIASUS/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -49,13 +49,9 @@ dataset:
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido com PKWARE DCL/blast, descompactado nativamente pelo `datasus-fetcher`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf / yearmonth`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2008-01 a 2025-07 (conforme `index.json`; 18 UFs com arquivos; última atualização no FTP em 2026-02-10)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 635 arquivos (~16,1 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIASUS/200801_/Doc`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIASUS/200801_/Auxiliar`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/SIASUS/200801_/Doc`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SIASUS/200801_/Auxiliar`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -66,7 +62,7 @@ dataset:
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `ABSP2401.dbc` — `AB` (APAC de Acompanhamento a Cirurgia Bariátrica) + `SP` (UF) + `24` (ano) + `01` (mês). Disponível em `200801_/Dados`.
-- **No armazenamento local do `datasus-fetcher`**: `data/sia-ab/<AAAAMM>/sia-ab_<uf>_<AAAAMM>_<AAAAMMDD>.dbc`, por exemplo `data/sia-ab/201001/sia-ab_sp_201001_20261018.dbc` (o sufixo `AAAAMMDD` é a data do download).
+- **No armazenamento local do `datasus-fetcher`**: `data/sia-ab/<AAAAMM>/sia-ab_<AAAAMM>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sia-ab/202401/sia-ab_202401-sp@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: `Doc/Informe_Tecnico_SIASUS_2019_07.pdf` (~1,1 MB, julho/2019) descreve o leiaute dos arquivos do SIA; `Auxiliar/TAB_SIA.zip` (~73,8 MB, tabelas SIGTAP e conversores) e as versões históricas `TAB_SIA_199407-199910.zip`, `TAB_SIA_199911-200307.zip` e `TAB_SIA_200308-200712.zip` cobrem as fases anteriores à Tabela Unificada.
 
 ## Conteúdo
@@ -175,7 +171,7 @@ Aplicações: volume de pacientes em acompanhamento por serviço e UF; perfil de
 | `ab_tabbarr` | `AB_TABBARR` | texto | Tabela de Baros | — | todos |
 | `uf` | — | texto | UF do arquivo de origem (sigla em minúsculas, `br` para arquivos nacionais), gravada pelo conversor; as linhas do período saem ordenadas por ela | sigla da UF | todos |
 | `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
-| `ap_natjur` | `AP_NATJUR` | texto | Código da Natureza Jurídica | — | 2025-06 a 2025-06 |
+| `ap_natjur` | `AP_NATJUR` | texto | Código da Natureza Jurídica | — | só em 2025-06 |
 
 ## No lake
 
@@ -190,7 +186,6 @@ Aplicações: volume de pacientes em acompanhamento por serviço e UF; perfil de
 - (i) as colunas `AB_*` pertencem apenas a esta APAC e não existem em outros arquivos do SIA; (ii) combine com `sih-rd` pelo número da AIH (`AB_NUMAIH` ↔ `N_AIH`) para estudar a internação cirúrgica; (iii) o mesmo paciente aparece em várias competências — use `AP_AUTORIZ` e o CNS codificado (`AP_CNSPCN`) para contar pacientes distintos, e `AP_TPAPAC` para identificar APAC inicial/continuidade; (iv) apenas 18 UFs têm arquivos publicados; a ausência de uma UF não deve ser lida como zero casos. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Colunas que não existem em todo o período:** 1 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -199,11 +194,18 @@ Aplicações: volume de pacientes em acompanhamento por serviço e UF; perfil de
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sia-ab").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sia-ab/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "mes", "uf")
+    dados.group_by("ano", "mes", "uf")
     .agg(pl.len().alias("linhas"))
     .sort("ano", "mes", "uf")
     .collect()
@@ -212,43 +214,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sia-ab
-quantilica datasus list sia-ab
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sia-ab
 
-# 2. Baixar microdados de sia-ab com recorte adequado à partição (uf + yearmonth)
-quantilica datasus sync sia-ab -o ./data --start 2024-01 --end 2025-07 --regions sp mg
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sia-ab -o ./data --start 2024-01 --end 2024-12 --regions sp rj --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sia-ab -o ./data --start 2024-01 --end 2025-07 --regions sp mg --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sia-ab -o ./data/raw --parquet-dir ./data/parquet --start 2024-01 --end 2025-07 --regions sp mg
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sia-ab
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from pathlib import Path
-
-arquivo = next(Path("./data/sia-ab/201001").glob("sia-ab_sp_201001_*.dbc"))
-ab = df.read_dbc(arquivo, dataset="sia-ab")
-
-# Pacientes em acompanhamento por estabelecimento e IMC médio
-resumo = (
-    ab.group_by("ap_coduni")
-    .agg(
-        pl.len().alias("apacs"),
-        pl.col("ab_imc").cast(pl.Float64, strict=False).mean().alias("imc_medio"),
-    )
-    .sort("apacs", descending=True)
-)
-print(resumo.head(10))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SIASUS/200801_/`

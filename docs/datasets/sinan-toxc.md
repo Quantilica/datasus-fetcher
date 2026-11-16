@@ -3,7 +3,7 @@ dataset:
   id: sinan-toxc
   fonte: datasus
   titulo: Toxoplasmose Congênita
-  resumo: Notificações de toxoplasmose congênita registradas no SINAN.
+  resumo: 'Toxoplasmose Congênita do DATASUS: uma ficha de notificação/investigação de toxoplasmose Congênita.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -44,13 +44,9 @@ Notificações de toxoplasmose congênita registradas no SINAN. Cada linha repre
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (no FTP há apenas arquivos nacionais `BR`: `partition_n_ufs` = 1)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2019 a 2026 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 8 arquivos (~1,1 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório PRELIM)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório PRELIM)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -62,7 +58,7 @@ Notificações de toxoplasmose congênita registradas no SINAN. Cada linha repre
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo `TOXCBR26.dbc`, em que `TOXC` é o prefixo do agravo, `BR` indica a base nacional (o SINAN publica um único arquivo por ano para o Brasil) e `26` é o ano com 2 dígitos (2026).
-- **No armazenamento local do `datasus-fetcher`**: `data/sinan-toxc/<partição>/sinan-toxc_br_2026_<AAAAMMDD>.dbc`, em que `<AAAAMMDD>` é a data de modificação do arquivo no FTP.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-toxc/<AAAA>/sinan-toxc_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-toxc/2024/sinan-toxc_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e tabelas auxiliares associadas** (grupo `sinan`, compartilhadas por todos os agravos):
   - Documentação (`/SINAN/DOCS`):
   - `Docs_TAB_SINAN.zip` — pacote de documentação e dicionários para tabulação (~65 MB)
@@ -144,14 +140,14 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 | `tp_not` | `TP_NOT` | texto | Tipo de Notificação. Identifica o tipo da notificação | 1 – Negativa 2 – Individual 3 – Surto 4 – Agregado | todos |
 | `id_agravo` | `ID_AGRAVO` | texto | Agravo. Tabela de agravos do sistema com códigos (classificação internacional de doenças –CID 10) e nomes dos agravos classificados como notificação compulsória ( nacional, estadual ou municipal) e as síndromes ( febre hemorragia aguda;respiratória aguda; diarréia aguda; sanguinolenta; | — | todos |
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
-| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_notifi cacao | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno) | — | todos |
 | `nu_ano` | `NU_ANO` | texto | (campo interno). Ano da notificação | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
 | `id_regiona` | `ID_REGIONA` | texto | (campo interno). Regional de saúde onde está localizado o município da unidade de saúde ou outra fonte notificadora | — | todos |
-| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora. co_unidade_notifi cacao | — | todos |
-| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico. dt_diagnostico_si ntoma | — | todos |
-| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno). ds_semana_sinto ma | — | todos |
+| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora | — | todos |
+| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico | — | todos |
+| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno) | — | todos |
 | `ano_nasc` | `ANO_NASC` | texto | Ano de nascimento do paciente (campo do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `nu_idade_n` | `NU_IDADE_N` | inteiro | Idade. A composição da variável obedece o seguinte critério: 1o | — | todos |
 | `cs_sexo` | `CS_SEXO` | texto | Sexo. M- Masculino F- Feminino I- Ignorado | — | todos |
@@ -159,21 +155,21 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 | `cs_raca` | `CS_RACA` | texto | Raça/Cor. Considera-se cor ou raça declarada pela pessoa. 1. branca 2. preta 3. amarela (pessoa que se declarou de raça amarela) 4. parda (pessoa que se declarou mulata, cabocla, cafuza, mameluca ou mestiça de preto com pessoa de outra cor ou raça) 5. indígena (pessoa que se declarou indígena ou índia) | 1- branca 2- preta 3- amarela 4- parda 5- indígena 9 Ignorado | todos |
 | `cs_escol_n` | `CS_ESCOL_N` | texto | Escolaridade. 43 Analfabeto 1. 1ª a 4ª série incompleta do EF 2. 4ª série completa do EF ( antigo 1° grau) 3. 5ª à 8ª série incompleta do EF (antigo ginásio ou 1° grau) 4. Ensino fundamental completo (antigo ginásio ou 1° grau) 5. Ensino médio incompleto (antigo colegial ou 2° grau) 6. Ensino médio completo (antigo colegial ou 2° grau) 7. Educação superior incompleta 8. Educação superior completa 9. Ignorado 10. N... | — | todos |
 | `sg_uf` | `SG_UF` | texto | UF. Sigla da Unidade Federada de residência do paciente por ocasião da notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência. co_municipio_res idencia | — | todos |
+| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência | — | todos |
 | `id_rg_resi` | `ID_RG_RESI` | texto | (campo interno). Regional de saúde onde está localizado o município de residência do paciente por ocasião da notificação | — | todos |
-| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil). co_pais_residenc ia | — | todos |
+| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil) | — | todos |
 | `nduplic_n` | `NDUPLIC_N` | texto | Não Listar/ Não Contar. 0 ou branco – Não identificado 1 – Não é duplicidade (não listar) 2 – Duplicidade (não contar) | — | todos |
 | `in_vincula` | `IN_VINCULA` | texto | Vinculação. 0 ou branco – Não Vinculado 1 – Vinculado | — | todos |
 | `dt_invest` | `DT_INVEST` | data | Data da investigação. data de início da investigação do caso | — | todos |
 | `id_ocupa_n` | `ID_OCUPA_N` | texto | Ocupação. Ocupação do indivíduo que sofreu o agravo | — | todos |
-| `classi_fin` | `CLASSI_FIN` | texto | Classificação final. tp_classificacao_f inal | — | todos |
-| `criterio` | `CRITERIO` | texto | Critério confirmação. tp_criterio_confir macao | — | todos |
+| `classi_fin` | `CLASSI_FIN` | texto | Classificação final | — | todos |
+| `criterio` | `CRITERIO` | texto | Critério confirmação | — | todos |
 | `tpautocto` | `TPAUTOCTO` | texto | O caso é. Tp_autoctone_re | 1 – Sim | todos |
 | `coufinf` | `COUFINF` | texto | UF (provável da fonte de infecção). Sigla da unidade federada onde o paciente foi provavelmente infectado | — | todos |
 | `copaisinf` | `COPAISINF` | texto | País (provável da fonte de infecção). País onde o paciente foi provavelmente infectado | — | todos |
-| `comuninf` | `COMUNINF` | texto | Município (provável da fonte de infecção). co_municipio_inf eccao | — | todos |
-| `doenca_tra` | `DOENCA_TRA` | texto | Doença relacionada ao trabalho. st_doenca_trabal ho | 1 – Sim 2 – Não 9 – Ignorado | todos |
-| `evolucao` | `EVOLUCAO` | texto | Evolução do caso. tp_evolucao_cas o | — | todos |
+| `comuninf` | `COMUNINF` | texto | Município (provável da fonte de infecção) | — | todos |
+| `doenca_tra` | `DOENCA_TRA` | texto | Doença relacionada ao trabalho | 1 – Sim 2 – Não 9 – Ignorado | todos |
+| `evolucao` | `EVOLUCAO` | texto | Evolução do caso. o | — | todos |
 | `dt_obito` | `DT_OBITO` | data | Data de óbito | — | todos |
 | `dt_encerra` | `DT_ENCERRA` | data | encerramento | — | todos |
 | `dt_digita` | `DT_DIGITA` | data | Data de digitação. Data de Digitação da primeira inclusão da notificação no sistema | — | todos |
@@ -195,20 +191,26 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 
 - Série curta e dados do ano corrente (2026) preliminares. Cruzar com `sinan-toxg` por UF/ano, e não por identificador de pessoa, pois não há vinculação mãe-filho pública. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` (UF de notificação) ou `SG_UF`/`ID_MN_RESI` (residência) conforme a pergunta, pois os dois podem diferir. Arquivos do diretório PRELIM são preliminares e substituídos pelos finais; prefira sempre os arquivos finais quando o mesmo ano existir nas duas fontes, evitando somar PRELIM e FINAIS. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-toxc").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-toxc/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -217,43 +219,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-toxc
-quantilica datasus list sinan-toxc
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-toxc
 
-# 2. Baixar microdados de sinan-toxc (partição uf + year; no SINAN a UF é sempre BR)
-quantilica datasus sync sinan-toxc -o ./data --start 2024 --end 2026 --regions BR
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-toxc -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-toxc -o ./data --docs --aux --start 2024 --end 2026 --regions BR
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-toxc -o ./data/raw --parquet-dir ./data/parquet --start 2024 --end 2026 --regions BR
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-toxc
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-# Leitura direta de um .dbc nacional (descompacta, lê e aplica o saneamento padrão)
-frame = read_dbc("data/raw/TOXCBR26.dbc", dataset="sinan-toxc")
-
-# Contagem de notificações por UF de notificação e ano
-resumo = (
-    frame.group_by("sg_uf_not", "nu_ano")
-    .agg(pl.len().alias("notificacoes"))
-    .sort("sg_uf_not", "nu_ano")
-)
-
-# Distribuição por cs_raca, nu_ano
-print(frame.group_by("cs_raca").agg(pl.len().alias("n")).sort("n", descending=True))
-print(resumo.head())
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/`

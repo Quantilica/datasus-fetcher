@@ -3,7 +3,7 @@ dataset:
   id: sinasc-dnex
   fonte: datasus
   titulo: Declarações de nascidos vivos no exterior
-  resumo: Microdados do SINASC/SVSA-MS com Declarações de Nascido Vivo de nascimentos ocorridos no exterior, de 2014 a 2024.
+  resumo: 'Declarações de nascidos vivos no exterior do DATASUS: uma Declaração de Nascido Vivo de nascimento ocorrido no exterior.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), Coordenação-Geral de Informações e Análise Epidemiológicas (CGIAE)
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINASC/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -48,13 +48,9 @@ Microdados do SINASC/SVSA-MS com Declarações de Nascido Vivo de nascimentos oc
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido no formato DATASUS; descompactado nativamente em Rust para `.dbf`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `year`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2014 a 2024 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 11 arquivos (~0,6 MB); 1 UF(s) na partição; última atualização 2025-12-23
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINASC/ANT/DOCS`, `/dissemin/publicos/SINASC/NOV/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINASC/1994_1995/Auxiliar`, `/dissemin/publicos/SINASC/1996_/Auxiliar`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINASC/ANT/DOCS`, `/dissemin/publicos/SINASC/NOV/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINASC/1994_1995/Auxiliar`, `/dissemin/publicos/SINASC/1996_/Auxiliar`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -65,7 +61,7 @@ Microdados do SINASC/SVSA-MS com Declarações de Nascido Vivo de nascimentos oc
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `DNEX2023.dbc` — `DNEX` (declaração de nascido vivo no exterior) + `2023` (ano com 4 dígitos); arquivo nacional, sem UF.
-- **No armazenamento local do `datasus-fetcher`**: `data/sinasc-dnex/<AAAA>/sinasc-dnex_<AAAA>@<AAAAMMDD>.dbc` (ex.: `data/sinasc-dnex/2023/sinasc-dnex_2023@20251223.dbc`).
+- **No armazenamento local do `datasus-fetcher`**: `data/sinasc-dnex/<AAAA>/sinasc-dnex_<AAAA>@<AAAAMMDD>.dbc`, por exemplo `data/sinasc-dnex/2024/sinasc-dnex_2024@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**:
   - Documentação (`datasus-metadata/metadata/documentation/sinasc.json`):
     - `/dissemin/publicos/SINASC/ANT/DOCS/NASC98.HLP` (0.1 MB)
@@ -200,60 +196,42 @@ Nomes verificados contra o arquivo real `DNEX2024.dbc` (61 colunas, layout próp
 ## Cuidados de uso
 
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
+Quantas linhas há por período? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
-(
-    pl.scan_parquet("lake/datasus/sinasc-dnex/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "uf")
-    .agg(pl.len().alias("linhas"))
-    .sort("ano", "uf")
-    .collect()
+arquivos = sorted(Path("lake/datasus/sinasc-dnex").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
 )
+
+(dados.group_by("ano").agg(pl.len().alias("linhas")).sort("ano").collect())
 ```
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
-
-> `quantilica datasus <subcomando>` e `datasus-fetcher <subcomando>` são equivalentes.
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinasc-dnex
-quantilica datasus list sinasc-dnex
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinasc-dnex
 
-# 2. Baixar microdados de sinasc-dnex com recorte adequado à partição (year)
-quantilica datasus sync sinasc-dnex -o ./data --start 2015 --end 2023
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinasc-dnex -o ./data --start 2020 --end 2024 --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinasc-dnex -o ./data --start 2015 --end 2023 --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinasc-dnex -o ./data/raw --parquet-dir ./data/parquet --start 2015 --end 2023
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinasc-dnex
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-
-frame = df.read_dbc(
-    "data/sinasc-dnex/2023/sinasc-dnex_2023@20251223.dbc", dataset="sinasc-dnex"
-)
-print(frame.shape)
-
-frame = frame.with_columns(pl.col("dtnasc").str.to_date("%d%m%Y", strict=False))
-print(frame.group_by(pl.col("dtnasc").dt.year()).len().sort("dtnasc"))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINASC/1996_/Dados/DNRES`

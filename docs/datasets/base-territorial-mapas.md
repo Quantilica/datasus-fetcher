@@ -3,7 +3,7 @@ dataset:
   id: base-territorial-mapas
   fonte: datasus
   titulo: Base Territorial - Mapas
-  resumo: O base-territorial-mapas contém os mapas digitais em formato TabWin (.MAP) da divisão territorial brasileira, usados para a representação cartográfica dos dados de saúde.
+  resumo: 'Base Territorial - Mapas do DATASUS: um mapa digital em formato TabWin (`.MAP`), por UF e ano de referência.'
   orgao: Ministério da Saúde — DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/territorio/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -81,33 +81,19 @@ O dataset está só no bruto: o conversor ignora os ZIPs de mapas (`nao_tabular`
 
 ## Exemplos
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para base-territorial-mapas
-quantilica datasus list base-territorial-mapas
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list base-territorial-mapas
 
-# 2. Baixar mapas de UFs e anos específicos (partition uf+year)
-quantilica datasus sync base-territorial-mapas -o ./data --start 2025 --end 2025 --regions es sp
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync base-territorial-mapas -o ./data --start 2020 --end 2024 --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial
-quantilica datasus sync base-territorial-mapas -o ./data --docs --start 2025 --end 2025
-
-# 4. Pipeline completo: download e extração dos .MAP
-quantilica datasus pipeline base-territorial-mapas -o ./data/raw --parquet-dir ./data/parquet --start 2025 --end 2025
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset base-territorial-mapas
 ```
 
-### Em Python e Polars
-
-```python
-import zipfile
-import polars as pl
-
-# Lista os arquivos .MAP disponíveis sem extrair
-with zipfile.ZipFile("data/raw/base-territorial-mapas/2025/es_mapas_2025.zip") as z:
-    print(pl.Series("mapas", [n for n in z.namelist() if n.upper().endswith(".MAP")]))
-# A visualização/análise espacial é feita no TabWin do DATASUS (formato binário proprietário).
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/territorio/mapas`

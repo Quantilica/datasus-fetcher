@@ -3,7 +3,7 @@ dataset:
   id: sinan-leiv
   fonte: datasus
   titulo: Leishmaniose Visceral
-  resumo: O sinan-leiv contém os microdados das notificações e investigações de casos de Leishmaniose Visceral (LV, ou calazar; CID-10 B55.0) registrados no Sistema de Informação de Agravos de Notificação (SINAN).
+  resumo: 'Leishmaniose Visceral do DATASUS: uma ficha de notificação/investigação de leishmaniose Visceral.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -49,13 +49,9 @@ O `sinan-leiv` contém os microdados das notificações e investigações de cas
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (arquivos consolidados anuais, praticamente sempre `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2000 a 2025 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 26 arquivos (~13,4 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório `PRELIM`)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório `PRELIM`)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -67,7 +63,7 @@ O `sinan-leiv` contém os microdados das notificações e investigações de cas
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `LEIVBR00.dbc` — prefixo `LEIV`, `BR` (consolidação nacional) e `00` (ano 2000, início da série disponível); a série vai até `LEIVBR25.dbc` (2025). Conforme o inventário atual do FTP não há arquivo em `PRELIM` para este agravo no momento.
-- **No armazenamento local do `datasus-fetcher`**: caminho padronizado `data/sinan-leiv/<ano>/sinan-leiv_<período>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-leiv/2025/sinan-leiv_2025-br@20260903.dbc`; arquivos preliminares (quando publicados) recebem o sufixo `-preliminar`.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-leiv/<AAAA>/sinan-leiv_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-leiv/2024/sinan-leiv_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: em `SINAN/DOCS`: `Docs_TAB_SINAN.zip` e os PDFs de acesso/descompactação/tabulação (`POP_I`, `POP_II`, `POP_III`); em `SINAN/AUXILIAR`: `TAB_SINANNET.zip`, `TAB_SINANONLINE.zip` e `POPT_Estimativa_TCU_2019_Sinan.zip`.
 
 ## Conteúdo
@@ -115,57 +111,57 @@ Aplicações analíticas: coeficiente de detecção anual (casos/100 mil), letal
 
 | Coluna no lake | Na fonte | Tipo | Descrição | Unidade / códigos | Período |
 |---|---|---|---|---|---|
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
-| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora. co_unidade_notifi cacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
+| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora | — | todos |
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
 | `cs_raca` | `CS_RACA` | texto | Raça/Cor. Considera-se cor ou raça declarada pela pessoa. 1. branca 2. preta 3. amarela (pessoa que se declarou de raça amarela) 4. parda (pessoa que se declarou mulata, cabocla, cafuza, mameluca ou mestiça de preto com pessoa de outra cor ou raça) 5. indígena (pessoa que se declarou indígena ou índia) | 1- branca 2- preta 3- amarela 4- parda 5- indígena 9 Ignorado | todos |
-| `cs_escolar` | `CS_ESCOLAR` | texto | Escolaridade do paciente (formato do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2000 a 2000 |
+| `cs_escolar` | `CS_ESCOLAR` | texto | Escolaridade do paciente (formato do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2000 |
 | `nu_ano` | `NU_ANO` | texto | (campo interno). Ano da notificação | — | todos |
-| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_notifi cacao | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno) | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
 | `id_regiona` | `ID_REGIONA` | texto | (campo interno). Regional de saúde onde está localizado o município da unidade de saúde ou outra fonte notificadora | — | todos |
-| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico. dt_diagnostico_si ntoma | — | todos |
-| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno). ds_semana_sinto ma | — | todos |
+| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico | — | todos |
+| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno) | — | todos |
 | `ano_nasc` | `ANO_NASC` | texto | Ano de nascimento do paciente (campo do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
-| `nu_idade` | `NU_IDADE` | texto | Idade do paciente (formato do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2000 a 2000 |
+| `nu_idade` | `NU_IDADE` | texto | Idade do paciente (formato do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2000 |
 | `cs_sexo` | `CS_SEXO` | texto | Sexo. M- Masculino F- Feminino I- Ignorado | — | todos |
-| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência. co_municipio_res idencia | — | todos |
+| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência | — | todos |
 | `sg_uf` | `SG_UF` | texto | UF. Sigla da Unidade Federada de residência do paciente por ocasião da notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil). co_pais_residenc ia | — | todos |
-| `id_dg_not` | `ID_DG_NOT` | texto | Código (tipo, identificação ou classificação) registrado na ficha de Leishmaniose Visceral (`ID_DG_NOT`); o dicionário consultado não define o campo isoladamente | — | 2000 a 2000 |
-| `id_ev_not` | `ID_EV_NOT` | texto | Código (tipo, identificação ou classificação) registrado na ficha de Leishmaniose Visceral (`ID_EV_NOT`); o dicionário consultado não define o campo isoladamente | — | 2000 a 2000 |
-| `ant_dt_inv` | `ANT_DT_INV` | data | Data da investigação | — | 2000 a 2000 |
-| `ocupacao` | `OCUPACAO` | texto | Ocupação do paciente (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2000 a 2000 |
-| `caso` | `CASO` | texto | Indica caso (confirmado ou não) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2000 a 2000 |
-| `endemico` | `ENDEMICO` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2000 a 2000 |
+| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil) | — | todos |
+| `id_dg_not` | `ID_DG_NOT` | texto | Código (tipo, identificação ou classificação) registrado na ficha de Leishmaniose Visceral (`ID_DG_NOT`); o dicionário consultado não define o campo isoladamente | — | só em 2000 |
+| `id_ev_not` | `ID_EV_NOT` | texto | Código (tipo, identificação ou classificação) registrado na ficha de Leishmaniose Visceral (`ID_EV_NOT`); o dicionário consultado não define o campo isoladamente | — | só em 2000 |
+| `ant_dt_inv` | `ANT_DT_INV` | data | Data da investigação | — | só em 2000 |
+| `ocupacao` | `OCUPACAO` | texto | Ocupação do paciente (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2000 |
+| `caso` | `CASO` | texto | Indica caso (confirmado ou não) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2000 |
+| `endemico` | `ENDEMICO` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2000 |
 | `febre` | `FEBRE` | texto | Sinais e Sintomas Febre. Informar se o paciente apresenta febre | 1- Sim 2- Não 9 -Ignorado | todos |
-| `fraqueza` | `FRAQUEZA` | texto | Sinais e Sintomas Fraqueza. st_sinais_fraque za | 1-Sim 2 Não 9 Ignorado | todos |
-| `emagra` | `EMAGRA` | texto | Sinais e Sintomas Emagrecimento. st_sinais_emagr ecimento | 1- Sim 2-Não 9- Ignorado | todos |
+| `fraqueza` | `FRAQUEZA` | texto | Sinais e Sintomas Fraqueza | 1-Sim 2 Não 9 Ignorado | todos |
+| `emagra` | `EMAGRA` | texto | Sinais e Sintomas Emagrecimento | 1- Sim 2-Não 9- Ignorado | todos |
 | `tosse` | `TOSSE` | texto | Sinais e Sintomas Tosse e/ou diarréia. Informar se o paciente apresenta tosse e/ou diarréia | 1- Sim 2- Não 9-Ignorado | todos |
-| `baco` | `BACO` | texto | Sinais e Sintomas Aumento do Baço. st_sinais_aumen to_baco | 1- Sim 2 - Não 9 - Ignorado | todos |
+| `baco` | `BACO` | texto | Sinais e Sintomas Aumento do Baço. to_baco | 1- Sim 2 - Não 9 - Ignorado | todos |
 | `figado` | `FIGADO` | texto | Sinais e Sintomas Aumento do Fígado. Informar se o paciente apresenta aumento do fígado | 1-Sim 2-Não 9-Ignorado | todos |
 | `hiv` | `HIV` | texto | Co-infecção HIV. Informar se o paciente apresenta infecções intercorrentes – HIV | 1-Sim 2-Não 9-Ignorado | todos |
-| `tube` | `TUBE` | texto | Agravos associados Tuberculose. Condição associada ao agravo – Tuberculose | 1- Sim 2- Não 9- Ignorado | 2000 a 2000 |
-| `outras` | `OUTRAS` | texto | O paciente foi submetido ou exposto à: Outras. Informar se o paciente submeteu-se outras situações de risco diferentes das existentes no campo, há quanto tempo. Se sim, especificar a situação. (considerar a data da investigação como parâmetro) | 1. Sim há menos de 6 meses 2. Sim há mais de seis meses 3. Não 9- Ignorado | 2000 a 2000 |
-| `ifi` | `IFI` | texto | Diagnóstico Imunológico IFI. st_diagnostico_i munologico | 1. Positivo 2. Negativo 3. Não realizado | todos |
-| `elisa` | `ELISA` | texto | Dado de exame laboratorial registrado na ficha de Leishmaniose Visceral (`ELISA`); o dicionário consultado não define o campo isoladamente | — | 2000 a 2000 |
-| `outro` | `OUTRO` | texto | Diagnóstico Imunológico Outro. st_diagnostico_o utro | 1. Positivo 2. Negativo 3. Não realizado | todos |
-| `diag_para` | `DIAG_PARA` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2000 a 2000 |
+| `tube` | `TUBE` | texto | Agravos associados Tuberculose. Condição associada ao agravo – Tuberculose | 1- Sim 2- Não 9- Ignorado | só em 2000 |
+| `outras` | `OUTRAS` | texto | O paciente foi submetido ou exposto à: Outras. Informar se o paciente submeteu-se outras situações de risco diferentes das existentes no campo, há quanto tempo. Se sim, especificar a situação. (considerar a data da investigação como parâmetro) | 1. Sim há menos de 6 meses 2. Sim há mais de seis meses 3. Não 9- Ignorado | só em 2000 |
+| `ifi` | `IFI` | texto | Diagnóstico Imunológico IFI | 1. Positivo 2. Negativo 3. Não realizado | todos |
+| `elisa` | `ELISA` | texto | Dado de exame laboratorial registrado na ficha de Leishmaniose Visceral (`ELISA`); o dicionário consultado não define o campo isoladamente | — | só em 2000 |
+| `outro` | `OUTRO` | texto | Diagnóstico Imunológico Outro | 1. Positivo 2. Negativo 3. Não realizado | todos |
+| `diag_para` | `DIAG_PARA` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2000 |
 | `droga` | `DROGA` | texto | Droga Inicial Administrada. Informar o medicamento prescrito para o tratamento inicial | 1. Antimonial Pentavalente 2. anfotericina b 3. Pentamidina 4. anfotericina b lipossomal 5. outras 6. Não utilizada | todos |
-| `doses` | `DOSES` | texto | Registro de vacinação (`DOSES`) | — | 2000 a 2000 |
-| `duracao` | `DURACAO` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2000 a 2000 |
-| `falencia` | `FALENCIA` | texto | Outra droga utilizada, na falência do tratamento inicial. tp_droga_utilizad a | 1 – Anfotericina B 2 – Anfotericina B lipossomal 3 – Outras 4 – Não se aplica | todos |
-| `con_classi` | `CON_CLASSI` | texto | Classificação da forma clínica | 1. Forma bubônica 2. Forma pneumônica 3. Forma septicêmica 4 outra | 2000 a 2000 |
-| `con_inf_ou` | `CON_INF_OU` | texto | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_INF_OU`): classificação, critério de confirmação, local provável de infecção ou evolução | — | 2000 a 2000 |
-| `con_inf_ba` | `CON_INF_BA` | texto | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_INF_BA`): classificação, critério de confirmação, local provável de infecção ou evolução | — | 2000 a 2000 |
-| `con_inf_di` | `CON_INF_DI` | texto | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_INF_DI`): classificação, critério de confirmação, local provável de infecção ou evolução | — | 2000 a 2000 |
-| `con_inf_mu` | `CON_INF_MU` | texto | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_INF_MU`): classificação, critério de confirmação, local provável de infecção ou evolução | — | 2000 a 2000 |
-| `con_inf_uf` | `CON_INF_UF` | texto | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_INF_UF`): classificação, critério de confirmação, local provável de infecção ou evolução | — | 2000 a 2000 |
-| `con_inf_pa` | `CON_INF_PA` | texto | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_INF_PA`): classificação, critério de confirmação, local provável de infecção ou evolução | — | 2000 a 2000 |
-| `con_doenca` | `CON_DOENCA` | texto | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_DOENCA`): classificação, critério de confirmação, local provável de infecção ou evolução | — | 2000 a 2000 |
-| `con_evoluc` | `CON_EVOLUC` | texto | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_EVOLUC`): classificação, critério de confirmação, local provável de infecção ou evolução | — | 2000 a 2000 |
-| `con_dt_obi` | `CON_DT_OBI` | texto | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_DT_OBI`): classificação, critério de confirmação, local provável de infecção ou evolução | — | 2000 a 2000 |
-| `con_dt_enc` | `CON_DT_ENC` | data | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_DT_ENC`): classificação, critério de confirmação, local provável de infecção ou evolução | — | 2000 a 2000 |
+| `doses` | `DOSES` | texto | Registro de vacinação (`DOSES`) | — | só em 2000 |
+| `duracao` | `DURACAO` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2000 |
+| `falencia` | `FALENCIA` | texto | Outra droga utilizada, na falência do tratamento inicial. a | 1 – Anfotericina B 2 – Anfotericina B lipossomal 3 – Outras 4 – Não se aplica | todos |
+| `con_classi` | `CON_CLASSI` | texto | Classificação da forma clínica | 1. Forma bubônica 2. Forma pneumônica 3. Forma septicêmica 4 outra | só em 2000 |
+| `con_inf_ou` | `CON_INF_OU` | texto | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_INF_OU`): classificação, critério de confirmação, local provável de infecção ou evolução | — | só em 2000 |
+| `con_inf_ba` | `CON_INF_BA` | texto | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_INF_BA`): classificação, critério de confirmação, local provável de infecção ou evolução | — | só em 2000 |
+| `con_inf_di` | `CON_INF_DI` | texto | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_INF_DI`): classificação, critério de confirmação, local provável de infecção ou evolução | — | só em 2000 |
+| `con_inf_mu` | `CON_INF_MU` | texto | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_INF_MU`): classificação, critério de confirmação, local provável de infecção ou evolução | — | só em 2000 |
+| `con_inf_uf` | `CON_INF_UF` | texto | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_INF_UF`): classificação, critério de confirmação, local provável de infecção ou evolução | — | só em 2000 |
+| `con_inf_pa` | `CON_INF_PA` | texto | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_INF_PA`): classificação, critério de confirmação, local provável de infecção ou evolução | — | só em 2000 |
+| `con_doenca` | `CON_DOENCA` | texto | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_DOENCA`): classificação, critério de confirmação, local provável de infecção ou evolução | — | só em 2000 |
+| `con_evoluc` | `CON_EVOLUC` | texto | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_EVOLUC`): classificação, critério de confirmação, local provável de infecção ou evolução | — | só em 2000 |
+| `con_dt_obi` | `CON_DT_OBI` | texto | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_DT_OBI`): classificação, critério de confirmação, local provável de infecção ou evolução | — | só em 2000 |
+| `con_dt_enc` | `CON_DT_ENC` | data | Dado de conclusão do caso na ficha de Leishmaniose Visceral (`CON_DT_ENC`): classificação, critério de confirmação, local provável de infecção ou evolução | — | só em 2000 |
 | `uf` | — | texto | UF do arquivo de origem (sigla em minúsculas, `br` para arquivos nacionais), gravada pelo conversor; as linhas do período saem ordenadas por ela | sigla da UF | todos |
 | `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
 | `tp_not` | `TP_NOT` | texto | Tipo de Notificação. Identifica o tipo da notificação | 1 – Negativa 2 – Individual 3 – Surto 4 – Agregado | 2007 a 2025 |
@@ -180,55 +176,55 @@ Aplicações analíticas: coeficiente de detecção anual (casos/100 mil), letal
 | `flxrecebi` | `FLXRECEBI` | texto | Recebida por fluxo de retorno (campo interno). Colocar a estrutura do nº atribuído pelo sistema | — | 2007 a 2025 |
 | `migrado_w` | `MIGRADO_W` | texto | Identifica migração (campo interno). Identifica se o registro é oriundo da rotina de migração da base Windows | 1- migrado do Sinan Windows | 2007 a 2025 |
 | `dt_invest` | `DT_INVEST` | data | Data de investigação. Data em que ocorreu a investigação – informar a data da 1ª visita ao paciente | — | 2007 a 2025 |
-| `id_ocupa_n` | `ID_OCUPA_N` | texto | Ocupação/ Ramo de Atividade Econômica. co_cbo_ocupaca o | — | 2007 a 2025 |
+| `id_ocupa_n` | `ID_OCUPA_N` | texto | Ocupação/ Ramo de Atividade Econômica. o | — | 2007 a 2025 |
 | `edema` | `EDEMA` | texto | Sinais e Sintomas Edema. Informar se o paciente apresenta edema | 1- Sim 2- Não 9- Ignorado | 2007 a 2025 |
 | `palidez` | `PALIDEZ` | texto | Sinais e Sintomas Palidez. Informar se o paciente apresenta palidez | 1- Sim 2- Não 9- Ignorado | 2007 a 2025 |
-| `infeccioso` | `INFECCIOSO` | texto | Sinais e Sintomas Quadro infeccioso. st_sinais_infecci oso | 1-Sim 2-Não 9- Ignorado | 2007 a 2025 |
-| `fen_hemorr` | `FEN_HEMORR` | texto | Sinais e Sintomas Fenômenos hemorrágicos. st_sinais_hemorr agico | 1- Sim 2 -Não 9 -Ignorado | 2007 a 2025 |
-| `ictericia` | `ICTERICIA` | texto | Sinais e Sintomas Icterícia. st_sinais_icterici a | 1-Sim 2-Não 9 -Ignorado | 2007 a 2025 |
+| `infeccioso` | `INFECCIOSO` | texto | Sinais e Sintomas Quadro infeccioso | 1-Sim 2-Não 9- Ignorado | 2007 a 2025 |
+| `fen_hemorr` | `FEN_HEMORR` | texto | Sinais e Sintomas Fenômenos hemorrágicos | 1- Sim 2 -Não 9 -Ignorado | 2007 a 2025 |
+| `ictericia` | `ICTERICIA` | texto | Sinais e Sintomas Icterícia. a | 1-Sim 2-Não 9 -Ignorado | 2007 a 2025 |
 | `outros` | `OUTROS` | texto | Sinais e Sintomas Outros. Informar se o paciente apresenta outros sinais e sintomas | 1-Sim 2-Não 9-Ignorado | 2007 a 2025 |
-| `outros_esp` | `OUTROS_ESP` | texto | Sinais e Sintomas Outros (especificação). ds_sinal_sintoma _outro | — | 2007 a 2025 |
-| `diag_par_n` | `DIAG_PAR_N` | texto | Diagnóstico Parasitológico. st_diagnostico_p arasitologico | 1. Positivo 2. Negativo 3. Não realizado | 2007 a 2025 |
+| `outros_esp` | `OUTROS_ESP` | texto | Sinais e Sintomas Outros (especificação). _outro | — | 2007 a 2025 |
+| `diag_par_n` | `DIAG_PAR_N` | texto | Diagnóstico Parasitológico. arasitologico | 1. Positivo 2. Negativo 3. Não realizado | 2007 a 2025 |
 | `entrada` | `ENTRADA` | texto | Tipo de entrada | 1. Caso novo 2. Recidiva 3. Transferência 9. Ignorado | 2007 a 2025 |
-| `tratamento` | `TRATAMENTO` | data | Data do início do tratamento. dt_inicio_tratame nto | — | 2007 a 2025 |
+| `tratamento` | `TRATAMENTO` | data | Data do início do tratamento | — | 2007 a 2025 |
 | `peso` | `PESO` | inteiro | Peso. Informar o peso do paciente em Kg | — | 2007 a 2025 |
-| `dose` | `DOSE` | texto | Dose Prescrita em mg/kg/dia Sb+5. tp_dose_prescrit a | 1. Maior ou igual a 10 e menor que 15 2. Maior ou igual a 15 e menor que 20 3. Maior ou igual a 20 | 2007 a 2025 |
-| `ampolas` | `AMPOLAS` | inteiro | Nº total de ampolas prescritas. nu_total_ampola _pescrita | — | 2007 a 2025 |
-| `classi_fin` | `CLASSI_FIN` | texto | Classificação final. tp_classificacao_ final | 1. Confirmado 2. Descartado | 2007 a 2025 |
-| `criterio` | `CRITERIO` | texto | Critério de confirmação. tp_criterio_confir macao | — | 2007 a 2025 |
+| `dose` | `DOSE` | texto | Dose Prescrita em mg/kg/dia Sb+5. a | 1. Maior ou igual a 10 e menor que 15 2. Maior ou igual a 15 e menor que 20 3. Maior ou igual a 20 | 2007 a 2025 |
+| `ampolas` | `AMPOLAS` | inteiro | Nº total de ampolas prescritas. _pescrita | — | 2007 a 2025 |
+| `classi_fin` | `CLASSI_FIN` | texto | Classificação final | 1. Confirmado 2. Descartado | 2007 a 2025 |
+| `criterio` | `CRITERIO` | texto | Critério de confirmação | — | 2007 a 2025 |
 | `tpautocto` | `TPAUTOCTO` | texto | O caso é. Tp_autoctone_re | 1 – Sim | 2007 a 2025 |
-| `coufinf` | `COUFINF` | texto | Local provável da fonte de infecção UF. co_uf_infecca o | — | 2007 a 2025 |
-| `copaisinf` | `COPAISINF` | texto | Local provável da fonte de infecção País. co_pais_infec cao | — | 2007 a 2025 |
-| `comuninf` | `COMUNINF` | texto | Local provável da fonte de infecção Município. co_municipio_ infeccao | — | 2007 a 2025 |
-| `doenca_tra` | `DOENCA_TRA` | texto | Doença relacionada ao trabalho. st_doenca_tra balho | 1. Sim 2. Não 9. Ignorado | 2007 a 2025 |
-| `evolucao` | `EVOLUCAO` | texto | Evolução do caso. tp_evolucao_c aso | 1. Cura 2. Abandono 3. Óbito por LV 4. Óbito por outras causas 5. Transferênci a | 2007 a 2025 |
+| `coufinf` | `COUFINF` | texto | Local provável da fonte de infecção UF. o | — | 2007 a 2025 |
+| `copaisinf` | `COPAISINF` | texto | Local provável da fonte de infecção País | — | 2007 a 2025 |
+| `comuninf` | `COMUNINF` | texto | Local provável da fonte de infecção Município | — | 2007 a 2025 |
+| `doenca_tra` | `DOENCA_TRA` | texto | Doença relacionada ao trabalho | 1. Sim 2. Não 9. Ignorado | 2007 a 2025 |
+| `evolucao` | `EVOLUCAO` | texto | Evolução do caso | 1. Cura 2. Abandono 3. Óbito por LV 4. Óbito por outras causas 5. Transferênci a | 2007 a 2025 |
 | `dt_obito` | `DT_OBITO` | data | Data do óbito. Informar a data do óbito | — | 2007 a 2025 |
-| `dt_encerra` | `DT_ENCERRA` | data | Data do encerramento. dt_encerrame nto | — | 2007 a 2025 |
+| `dt_encerra` | `DT_ENCERRA` | data | Data do encerramento | — | 2007 a 2025 |
 | `dt_deslc1` | `DT_DESLC1` | data | Informações complementares Data 1. Informações complementares e observações Deslocamento(datas e locais freqüentados nos últimos seis meses anterior ao início dos sinais e sintomas) Data | — | 2007 a 2025 |
-| `ds_mun_1` | `DS_MUN_1` | texto | Informações complementares Local/Município 1. ds_desloca_lo cal_municipio _1 | — | 2007 a 2025 |
-| `co_uf_1` | `CO_UF_1` | texto | Informações complementares UF 1. co_uf_desloca _1 | — | 2007 a 2025 |
-| `co_pais_1` | `CO_PAIS_1` | inteiro | Informações complementares País 1. co_pais_deslo ca_1 | — | 2007 a 2025 |
-| `ds_trans_1` | `DS_TRANS_1` | texto | Informações complementares Meio de transporte 1. ds_meio_trans porte_1 | — | 2007 a 2025 |
+| `ds_mun_1` | `DS_MUN_1` | texto | Informações complementares Local/Município 1. cal_municipio _1 | — | 2007 a 2025 |
+| `co_uf_1` | `CO_UF_1` | texto | Informações complementares UF 1. _1 | — | 2007 a 2025 |
+| `co_pais_1` | `CO_PAIS_1` | inteiro | Informações complementares País 1. ca_1 | — | 2007 a 2025 |
+| `ds_trans_1` | `DS_TRANS_1` | texto | Informações complementares Meio de transporte 1. porte_1 | — | 2007 a 2025 |
 | `dt_deslc2` | `DT_DESLC2` | data | Informações complementares Data 2. Informações complementares e observações Deslocamento(datas e locais freqüentados nos últimos seis meses anterior ao início dos sinais e sintomas) Data | — | 2007 a 2025 |
-| `ds_mun_2` | `DS_MUN_2` | texto | Informações complementares Local/Município 2. ds_desloca_lo cal_municipio _2 | — | 2007 a 2025 |
-| `co_uf_2` | `CO_UF_2` | texto | Informações complementares UF 2. co_uf_desloca _2 | — | 2007 a 2025 |
-| `co_pais_2` | `CO_PAIS_2` | inteiro | Informações complementares País 2. co_pais_deslo ca_2 | — | 2007 a 2025 |
-| `ds_trans_2` | `DS_TRANS_2` | texto | Informações complementares Meio de transporte 2. ds_meio_trans porte_2 | — | 2007 a 2025 |
+| `ds_mun_2` | `DS_MUN_2` | texto | Informações complementares Local/Município 2. cal_municipio _2 | — | 2007 a 2025 |
+| `co_uf_2` | `CO_UF_2` | texto | Informações complementares UF 2. _2 | — | 2007 a 2025 |
+| `co_pais_2` | `CO_PAIS_2` | inteiro | Informações complementares País 2. ca_2 | — | 2007 a 2025 |
+| `ds_trans_2` | `DS_TRANS_2` | texto | Informações complementares Meio de transporte 2. porte_2 | — | 2007 a 2025 |
 | `dt_deslc3` | `DT_DESLC3` | data | Informações complementares Data 3. Informações complementares e observações Deslocamento (datas e locais freqüentados nos últimos seis meses anterior ao início dos sinais e sintomas) Data | — | 2007 a 2025 |
-| `ds_mun_3` | `DS_MUN_3` | texto | Informações complementares Local/Município 3. ds_desloca_lo cal_municipio _3 | — | 2007 a 2025 |
-| `co_uf_3` | `CO_UF_3` | texto | Informações complementares UF 3. co_uf_desloca _3 | — | 2007 a 2025 |
-| `co_pais_3` | `CO_PAIS_3` | inteiro | Informações complementares País 3. co_pais_deslo ca_3 | — | 2007 a 2025 |
-| `dt_transus` | `DT_TRANSUS` | data | Data de transferência da unidade de saúde. Data de Transferência do registro da Unidade de Saúde para do nível superior do sistema | — | 2025 a 2025 |
-| `dt_transdm` | `DT_TRANSDM` | data | Data de transferência do distrito municipal. Data de Transferência do registro do Distrito Municipal para do nível superior do sistema | — | 2025 a 2025 |
-| `dt_transsm` | `DT_TRANSSM` | data | Data de transferência da secretaria municipal de saúde. Data de Transferência do registro da secretaria municipal para do nível superior do sistema | — | 2025 a 2025 |
-| `dt_transrm` | `DT_TRANSRM` | nulo (vazio nas amostras) | Data de transferência da regional municipal. Data de Transferência do registro da Regional Municipal para do nível superior do sistema | — | 2025 a 2025 |
-| `dt_transrs` | `DT_TRANSRS` | data | Data de transferência da regional de saúde. Data de Transferência do registro da Regional de Saúde para do nível superior do sistema | — | 2025 a 2025 |
-| `dt_transse` | `DT_TRANSSE` | data | Data de transferência da secretaria estadual de saúde. Data de Transferência do registro da Secretaria Estadual para do nível superior do sistema | — | 2025 a 2025 |
-| `nu_lote_v` | `NU_LOTE_V` | texto | Número do lote vertical. Descrever aqui a estrutura da composição do número do lote | — | 2025 a 2025 |
-| `nu_lote_h` | `NU_LOTE_H` | texto | Número do lote horizontal. nu_lote_horizont al | — | 2025 a 2025 |
-| `ident_micr` | `IDENT_MICR` | texto | Identificação do micro (campo interno). ds_identificador_r egistro | — | 2025 a 2025 |
-| `ds_trans_3` | `DS_TRANS_3` | texto | Informações complementares Meio de transporte 3. ds_meio_trans porte_3 | — | 2025 a 2025 |
-| `nu_lote_i` | `NU_LOTE_I` | texto | Transferência vertical da investigação. Descrever aqui a estrutura da composição do número do lote | — | 2025 a 2025 |
+| `ds_mun_3` | `DS_MUN_3` | texto | Informações complementares Local/Município 3. cal_municipio _3 | — | 2007 a 2025 |
+| `co_uf_3` | `CO_UF_3` | texto | Informações complementares UF 3. _3 | — | 2007 a 2025 |
+| `co_pais_3` | `CO_PAIS_3` | inteiro | Informações complementares País 3. ca_3 | — | 2007 a 2025 |
+| `dt_transus` | `DT_TRANSUS` | data | Data de transferência da unidade de saúde. Data de Transferência do registro da Unidade de Saúde para do nível superior do sistema | — | só em 2025 |
+| `dt_transdm` | `DT_TRANSDM` | data | Data de transferência do distrito municipal. Data de Transferência do registro do Distrito Municipal para do nível superior do sistema | — | só em 2025 |
+| `dt_transsm` | `DT_TRANSSM` | data | Data de transferência da secretaria municipal de saúde. Data de Transferência do registro da secretaria municipal para do nível superior do sistema | — | só em 2025 |
+| `dt_transrm` | `DT_TRANSRM` | nulo (vazio nas amostras) | Data de transferência da regional municipal. Data de Transferência do registro da Regional Municipal para do nível superior do sistema | — | só em 2025 |
+| `dt_transrs` | `DT_TRANSRS` | data | Data de transferência da regional de saúde. Data de Transferência do registro da Regional de Saúde para do nível superior do sistema | — | só em 2025 |
+| `dt_transse` | `DT_TRANSSE` | data | Data de transferência da secretaria estadual de saúde. Data de Transferência do registro da Secretaria Estadual para do nível superior do sistema | — | só em 2025 |
+| `nu_lote_v` | `NU_LOTE_V` | texto | Número do lote vertical. Descrever aqui a estrutura da composição do número do lote | — | só em 2025 |
+| `nu_lote_h` | `NU_LOTE_H` | texto | Número do lote horizontal | — | só em 2025 |
+| `ident_micr` | `IDENT_MICR` | texto | Identificação do micro (campo interno) | — | só em 2025 |
+| `ds_trans_3` | `DS_TRANS_3` | texto | Informações complementares Meio de transporte 3. porte_3 | — | só em 2025 |
+| `nu_lote_i` | `NU_LOTE_I` | texto | Transferência vertical da investigação. Descrever aqui a estrutura da composição do número do lote | — | só em 2025 |
 
 ## No lake
 
@@ -245,20 +241,26 @@ Aplicações analíticas: coeficiente de detecção anual (casos/100 mil), letal
 - **Colunas vazias nas amostras:** `dt_transrm` (tipo nulo: todas as linhas amostradas vieram vazias). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Colunas que não existem em todo o período:** 86 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-leiv").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-leiv/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -267,52 +269,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-leiv
-quantilica datasus list sinan-leiv
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-leiv
 
-# 2. Baixar microdados de sinan-leiv com recorte adequado à partição do dataset
-quantilica datasus sync sinan-leiv -o ./data --start 2000 --end 2024 --regions br
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-leiv -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-leiv -o ./data --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-leiv -o ./data/raw --parquet-dir ./data/parquet --start 2000
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-leiv
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-# Lê o arquivo consolidado de leishmaniose visceral já tratado
-qdf = read_dbc("data/sinan-leiv/2025/sinan-leiv_2025-br@20260903.dbc", clean=True)
-
-# Casos confirmados por ano e letalidade específica
-confirmados = qdf.filter(pl.col("classi_fin") == 1)
-resumo = confirmados.group_by("nu_ano").agg(
-    casos=pl.len(),
-    obitos_lv=(pl.col("evolucao") == 3).sum(),
-)
-print(
-    resumo.sort("nu_ano").with_columns(
-        (pl.col("obitos_lv") / pl.col("casos")).alias("letalidade")
-    )
-)
-
-# Distribuição por faixa etária (anos)
-faixas = (
-    confirmados.select((pl.col("nu_idade_n") // 1000).alias("idade_anos"))
-    .group_by(pl.when(pl.col("idade_anos").cut([1, 4, 9, 19, 39, 59])).alias("faixa"))
-    .len()
-)
-print(faixas)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS` e `.../SINAN/DADOS/PRELIM`

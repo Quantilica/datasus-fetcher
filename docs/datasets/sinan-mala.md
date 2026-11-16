@@ -3,7 +3,7 @@ dataset:
   id: sinan-mala
   fonte: datasus
   titulo: Malária
-  resumo: O sinan-mala contém os microdados das notificações e investigações de casos de Malária (CID-10 B50-B54) registrados no Sistema de Informação de Agravos de Notificação (SINAN).
+  resumo: 'Malária do DATASUS: uma ficha de notificação/investigação de malária.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -45,13 +45,9 @@ O `sinan-mala` contém os microdados das notificações e investigações de cas
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (arquivos consolidados anuais, praticamente sempre `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2004 a 2026 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 23 arquivos (~2,9 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório `PRELIM`)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório `PRELIM`)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -63,7 +59,7 @@ O `sinan-mala` contém os microdados das notificações e investigações de cas
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `MALABR04.dbc` — prefixo `MALA`, `BR` (consolidação nacional) e `04` (ano 2004, primeiro ano da série do SINAN no FTP); a série de arquivos finais vai até `MALABR23.dbc` (2023), com os anos recentes em `PRELIM` (ex.: `MALABR26.dbc`).
-- **No armazenamento local do `datasus-fetcher`**: caminho padronizado `data/sinan-mala/<ano>/sinan-mala_<período>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-mala/2023/sinan-mala_2023-br@20260831.dbc`; o dataset também mantém a variante `-preliminar` para os arquivos do `PRELIM`.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-mala/<AAAA>/sinan-mala_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-mala/2024/sinan-mala_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: em `SINAN/DOCS`: `Docs_TAB_SINAN.zip` e os PDFs de acesso/descompactação/tabulação (`POP_I`, `POP_II`, `POP_III`); em `SINAN/AUXILIAR`: `TAB_SINANNET.zip`, `TAB_SINANONLINE.zip` e `POPT_Estimativa_TCU_2019_Sinan.zip`.
 
 ## Conteúdo
@@ -110,77 +106,77 @@ Aplicações analíticas: coeficiente parasitário anual (casos confirmados por 
 
 | Coluna no lake | Na fonte | Tipo | Descrição | Unidade / códigos | Período |
 |---|---|---|---|---|---|
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
-| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora. co_unidade_notifi cacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
+| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora | — | todos |
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
 | `cs_raca` | `CS_RACA` | texto | Raça/Cor. Considera-se cor ou raça declarada pela pessoa. 1. branca 2. preta 3. amarela (pessoa que se declarou de raça amarela) 4. parda (pessoa que se declarou mulata, cabocla, cafuza, mameluca ou mestiça de preto com pessoa de outra cor ou raça) 5. indígena (pessoa que se declarou indígena ou índia) | 1- branca 2- preta 3- amarela 4- parda 5- indígena 9 Ignorado | todos |
-| `cs_escolar` | `CS_ESCOLAR` | texto | Escolaridade do paciente (formato do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2004 a 2004 |
+| `cs_escolar` | `CS_ESCOLAR` | texto | Escolaridade do paciente (formato do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
 | `nu_ano` | `NU_ANO` | texto | (campo interno). Ano da notificação | — | todos |
-| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_notifi cacao | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno) | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
 | `id_regiona` | `ID_REGIONA` | texto | (campo interno). Regional de saúde onde está localizado o município da unidade de saúde ou outra fonte notificadora | — | todos |
-| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico. dt_diagnostico_si ntoma | — | todos |
-| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno). ds_semana_sinto ma | — | todos |
-| `nu_idade` | `NU_IDADE` | texto | Idade do paciente (formato do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2004 a 2004 |
+| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico | — | todos |
+| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno) | — | todos |
+| `nu_idade` | `NU_IDADE` | texto | Idade do paciente (formato do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
 | `cs_sexo` | `CS_SEXO` | texto | Sexo. M- Masculino F- Feminino I- Ignorado | — | todos |
-| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência. co_municipio_res idencia | — | todos |
+| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência | — | todos |
 | `sg_uf` | `SG_UF` | texto | UF. Sigla da Unidade Federada de residência do paciente por ocasião da notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil). co_pais_residenc ia | — | todos |
-| `id_dg_not` | `ID_DG_NOT` | texto | Código (tipo, identificação ou classificação) registrado na ficha de Malária (`ID_DG_NOT`); o dicionário consultado não define o campo isoladamente | — | 2004 a 2004 |
-| `id_ev_not` | `ID_EV_NOT` | texto | Código (tipo, identificação ou classificação) registrado na ficha de Malária (`ID_EV_NOT`); o dicionário consultado não define o campo isoladamente | — | 2004 a 2004 |
-| `ant_dt_inv` | `ANT_DT_INV` | data | Data da investigação | — | 2004 a 2004 |
-| `ocupacao` | `OCUPACAO` | texto | Ocupação do paciente (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2004 a 2004 |
-| `transfu` | `TRANSFU` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `dttransfu` | `DTTRANSFU` | data | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `utransfu` | `UTRANSFU` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `uftransfu` | `UFTRANSFU` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `ptransfu` | `PTRANSFU` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `mtransfu` | `MTRANSFU` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `pusuario` | `PUSUARIO` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `pmalaria` | `PMALARIA` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `amalaria` | `AMALARIA` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `assintom` | `ASSINTOM` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `febre` | `FEBRE` | texto | Sinais e sintomas FEBRE PERSISTENTE. st_sinais_febre_persist ente | 1-sim; 2-não; 9-ignorado | 2004 a 2004 |
-| `calafrio` | `CALAFRIO` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `sudorese` | `SUDORESE` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `cli_outro` | `CLI_OUTRO` | texto | Manifestação clínica registrada na ficha de Malária (`CLI_OUTRO`); o dicionário consultado não define o campo isoladamente | — | 2004 a 2004 |
-| `cd_outro` | `CD_OUTRO` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `gestante` | `GESTANTE` | texto | Indica se a paciente está gestante (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2004 a 2004 |
-| `hospital` | `HOSPITAL` | texto | Nome Do Hospital. VARCHAR (8) | — | 2004 a 2004 |
-| `dinterna` | `DINTERNA` | data | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `ufinterna` | `UFINTERNA` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `minterna` | `MINTERNA` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
+| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil) | — | todos |
+| `id_dg_not` | `ID_DG_NOT` | texto | Código (tipo, identificação ou classificação) registrado na ficha de Malária (`ID_DG_NOT`); o dicionário consultado não define o campo isoladamente | — | só em 2004 |
+| `id_ev_not` | `ID_EV_NOT` | texto | Código (tipo, identificação ou classificação) registrado na ficha de Malária (`ID_EV_NOT`); o dicionário consultado não define o campo isoladamente | — | só em 2004 |
+| `ant_dt_inv` | `ANT_DT_INV` | data | Data da investigação | — | só em 2004 |
+| `ocupacao` | `OCUPACAO` | texto | Ocupação do paciente (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `transfu` | `TRANSFU` | texto | Antecedente de transfusão (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `dttransfu` | `DTTRANSFU` | data | Data da transfusão (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `utransfu` | `UTRANSFU` | texto | UF da transfusão (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `uftransfu` | `UFTRANSFU` | texto | UF da transfusão (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `ptransfu` | `PTRANSFU` | texto | País da transfusão (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `mtransfu` | `MTRANSFU` | texto | Município da transfusão (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `pusuario` | `PUSUARIO` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2004 |
+| `pmalaria` | `PMALARIA` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2004 |
+| `amalaria` | `AMALARIA` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2004 |
+| `assintom` | `ASSINTOM` | texto | Paciente assintomático (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `febre` | `FEBRE` | texto | Sinais e sintomas FEBRE PERSISTENTE | 1-sim; 2-não; 9-ignorado | só em 2004 |
+| `calafrio` | `CALAFRIO` | texto | Sintoma: calafrio (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `sudorese` | `SUDORESE` | texto | Sintoma: sudorese (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `cli_outro` | `CLI_OUTRO` | texto | Manifestação clínica registrada na ficha de Malária (`CLI_OUTRO`); o dicionário consultado não define o campo isoladamente | — | só em 2004 |
+| `cd_outro` | `CD_OUTRO` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2004 |
+| `gestante` | `GESTANTE` | texto | Indica se a paciente está gestante (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `hospital` | `HOSPITAL` | texto | Nome Do Hospital. VARCHAR (8) | — | só em 2004 |
+| `dinterna` | `DINTERNA` | data | Data de internação (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `ufinterna` | `UFINTERNA` | texto | UF da internação (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `minterna` | `MINTERNA` | texto | Município da internação (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
 | `dexame` | `DEXAME` | data | Data do exame. Data em que foi realizado o exame. Permite avaliar se o exame está sendo realizado no prazo previsto | — | todos |
 | `pmm` | `PMM` | inteiro ou texto | Parasitos por mm³. Densidade parasitária por plasmódio em mm3. Permite avaliar o nível de gravidade da doença e atraso no tratamento | — | todos |
 | `pcruz` | `PCRUZ` | texto | Parasitemia em cruzes. Densidade parasitária por plasmódio em cruzes. Permite avaliar o nível de gravidade da doença e atraso no tratamento | 1. menor ½ + (Menor que meia cruz) 2. 1/2 + (Meia cruz) 3. + (Uma cruz) 4. ++ (Duas cruzes) 5. +++ (Três cruzes) 6. ++++ (Quatro cruzes) | todos |
 | `result` | `RESULT` | texto | Resultado do exame. Resultado do exame identificando as espécies e formas parasitárias. Orienta o tratamento e permite a avaliação das espécies parasitárias existentes | 1 – negativo 2 – F 3 – F + FG 4 – V 5 – F+ V 6 – V + FG 7 – FG | todos |
-| `cloroq` | `CLOROQ` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `primaq` | `PRIMAQ` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `tetrac` | `TETRAC` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `mefloq` | `MEFLOQ` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `artesu` | `ARTESU` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `quinino` | `QUININO` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `artem` | `ARTEM` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `clind` | `CLIND` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `cloroqi` | `CLOROQI` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `quininoi` | `QUININOI` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `artei` | `ARTEI` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `artemi` | `ARTEMI` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `clindi` | `CLINDI` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `doxoci` | `DOXOCI` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
-| `soutros` | `SOUTROS` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004 a 2004 |
+| `cloroq` | `CLOROQ` | texto | Tratamento com cloroquina (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `primaq` | `PRIMAQ` | texto | Tratamento com primaquina (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `tetrac` | `TETRAC` | texto | Tratamento com tetraciclina (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `mefloq` | `MEFLOQ` | texto | Tratamento com mefloquina (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `artesu` | `ARTESU` | texto | Tratamento com artesunato (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `quinino` | `QUININO` | texto | Tratamento com quinina (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `artem` | `ARTEM` | texto | Tratamento com arteméter (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `clind` | `CLIND` | texto | Tratamento com clindamicina (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
+| `cloroqi` | `CLOROQI` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2004 |
+| `quininoi` | `QUININOI` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2004 |
+| `artei` | `ARTEI` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2004 |
+| `artemi` | `ARTEMI` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2004 |
+| `clindi` | `CLINDI` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2004 |
+| `doxoci` | `DOXOCI` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2004 |
+| `soutros` | `SOUTROS` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2004 |
 | `dtrata` | `DTRATA` | data | Data do inicio do tratamento. Data em que iniciou o tratamento. Permite avaliar se o tratamento está sendo realizado imediatamente após o diagnóstico | — | todos |
-| `con_classi` | `CON_CLASSI` | texto | Classificação da forma clínica | 1. Forma bubônica 2. Forma pneumônica 3. Forma septicêmica 4 outra | 2004 a 2004 |
-| `con_confir` | `CON_CONFIR` | texto | Dado de conclusão do caso na ficha de Malária (`CON_CONFIR`): classificação, critério de confirmação, local provável de infecção ou evolução | — | 2004 a 2004 |
-| `con_inf_mu` | `CON_INF_MU` | texto | Dado de conclusão do caso na ficha de Malária (`CON_INF_MU`): classificação, critério de confirmação, local provável de infecção ou evolução | — | 2004 a 2004 |
-| `con_inf_uf` | `CON_INF_UF` | texto | Dado de conclusão do caso na ficha de Malária (`CON_INF_UF`): classificação, critério de confirmação, local provável de infecção ou evolução | — | 2004 a 2004 |
-| `con_inf_pa` | `CON_INF_PA` | texto | Dado de conclusão do caso na ficha de Malária (`CON_INF_PA`): classificação, critério de confirmação, local provável de infecção ou evolução | — | 2004 a 2004 |
-| `con_doenca` | `CON_DOENCA` | texto | Dado de conclusão do caso na ficha de Malária (`CON_DOENCA`): classificação, critério de confirmação, local provável de infecção ou evolução | — | 2004 a 2004 |
-| `con_evoluc` | `CON_EVOLUC` | texto | Dado de conclusão do caso na ficha de Malária (`CON_EVOLUC`): classificação, critério de confirmação, local provável de infecção ou evolução | — | 2004 a 2004 |
-| `con_dt_obi` | `CON_DT_OBI` | data | Dado de conclusão do caso na ficha de Malária (`CON_DT_OBI`): classificação, critério de confirmação, local provável de infecção ou evolução | — | 2004 a 2004 |
-| `con_dt_enc` | `CON_DT_ENC` | data | Dado de conclusão do caso na ficha de Malária (`CON_DT_ENC`): classificação, critério de confirmação, local provável de infecção ou evolução | — | 2004 a 2004 |
-| `in_vincula` | `IN_VINCULA` | texto | Vinculação. 0 ou branco – Não Vinculado 1 – Vinculado | — | 2004 a 2004 |
-| `nduplic` | `NDUPLIC` | texto | Indicador de duplicidade do registro (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2004 a 2004 |
+| `con_classi` | `CON_CLASSI` | texto | Classificação da forma clínica | 1. Forma bubônica 2. Forma pneumônica 3. Forma septicêmica 4 outra | só em 2004 |
+| `con_confir` | `CON_CONFIR` | texto | Dado de conclusão do caso na ficha de Malária (`CON_CONFIR`): classificação, critério de confirmação, local provável de infecção ou evolução | — | só em 2004 |
+| `con_inf_mu` | `CON_INF_MU` | texto | Dado de conclusão do caso na ficha de Malária (`CON_INF_MU`): classificação, critério de confirmação, local provável de infecção ou evolução | — | só em 2004 |
+| `con_inf_uf` | `CON_INF_UF` | texto | Dado de conclusão do caso na ficha de Malária (`CON_INF_UF`): classificação, critério de confirmação, local provável de infecção ou evolução | — | só em 2004 |
+| `con_inf_pa` | `CON_INF_PA` | texto | Dado de conclusão do caso na ficha de Malária (`CON_INF_PA`): classificação, critério de confirmação, local provável de infecção ou evolução | — | só em 2004 |
+| `con_doenca` | `CON_DOENCA` | texto | Dado de conclusão do caso na ficha de Malária (`CON_DOENCA`): classificação, critério de confirmação, local provável de infecção ou evolução | — | só em 2004 |
+| `con_evoluc` | `CON_EVOLUC` | texto | Dado de conclusão do caso na ficha de Malária (`CON_EVOLUC`): classificação, critério de confirmação, local provável de infecção ou evolução | — | só em 2004 |
+| `con_dt_obi` | `CON_DT_OBI` | data | Dado de conclusão do caso na ficha de Malária (`CON_DT_OBI`): classificação, critério de confirmação, local provável de infecção ou evolução | — | só em 2004 |
+| `con_dt_enc` | `CON_DT_ENC` | data | Dado de conclusão do caso na ficha de Malária (`CON_DT_ENC`): classificação, critério de confirmação, local provável de infecção ou evolução | — | só em 2004 |
+| `in_vincula` | `IN_VINCULA` | texto | Vinculação. 0 ou branco – Não Vinculado 1 – Vinculado | — | só em 2004 |
+| `nduplic` | `NDUPLIC` | texto | Indicador de duplicidade do registro (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004 |
 | `uf` | — | texto | UF do arquivo de origem (sigla em minúsculas, `br` para arquivos nacionais), gravada pelo conversor; as linhas do período saem ordenadas por ela | sigla da UF | todos |
 | `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
 | `tp_not` | `TP_NOT` | texto | Tipo de Notificação. Identifica o tipo da notificação | 1 – Negativa 2 – Individual 3 – Surto 4 – Agregado | 2011 a 2026 |
@@ -192,17 +188,17 @@ Aplicações analíticas: coeficiente parasitário anual (casos confirmados por 
 | `id_rg_resi` | `ID_RG_RESI` | texto | (campo interno). Regional de saúde onde está localizado o município de residência do paciente por ocasião da notificação | — | 2011 a 2026 |
 | `dt_invest` | `DT_INVEST` | data | Data da investigação. Informe a data do início da investigação | — | 2011 a 2026 |
 | `id_ocupa_n` | `ID_OCUPA_N` | texto | Ocupação/ Ramo de Atividade Econômica. Informar a atividade exercida pelo paciente no setor formal, informal ou autônomo ou sua última atividade exercida quando paciente for desempregado. O ramo de atividade econômica do paciente refere-se as atividades econômicas | — | 2011 a 2026 |
-| `classi_fin` | `CLASSI_FIN` | texto | Classificação final. tp_classificacao_fi nal | 1. Confirmado 2. Descartado | 2011 a 2026 |
-| `at_ativida` | `AT_ATIVIDA` | texto | Principal atividade nos últimos 15 dias. tp_principal_atividad e | 1 – agricultura 2 – Pecuária 3 – Doméstica 4- Turismo 5 – Garimpagem 6 – Exploração vegetal 7- caça/pesca 8 – construtor de estradas / barragens 9 – Mineração 10 – Viajante 11 – Outros 99 - ignorado | 2011 a 2026 |
+| `classi_fin` | `CLASSI_FIN` | texto | Classificação final | 1. Confirmado 2. Descartado | 2011 a 2026 |
+| `at_ativida` | `AT_ATIVIDA` | texto | Principal atividade nos últimos 15 dias. e | 1 – agricultura 2 – Pecuária 3 – Doméstica 4- Turismo 5 – Garimpagem 6 – Exploração vegetal 7- caça/pesca 8 – construtor de estradas / barragens 9 – Mineração 10 – Viajante 11 – Outros 99 - ignorado | 2011 a 2026 |
 | `at_lamina` | `AT_LAMINA` | texto | Tipo de lâmina. Identificar se é um caso novo (BA/BP) ou uma recaída/recrudescência (LVC) | 1 – BP 2 – BA 3 - LVC | 2011 a 2026 |
 | `at_sintoma` | `AT_SINTOMA` | texto | Sintomas. Identificar se o paciente está com ou sem sintomas característicos da malária. Permite avaliar a existência de assintomáticos interferindo na transmissão da doença | 1. Com sintomas 2. Sem sintomas | 2011 a 2026 |
-| `tpautocto` | `TPAUTOCTO` | texto | O caso é Autóctone de residência?. tp_autoctone_reside ncia | 1 – Sim 2 – Não 3 – Indeterminado | 2011 a 2026 |
+| `tpautocto` | `TPAUTOCTO` | texto | O caso é Autóctone de residência? | 1 – Sim 2 – Não 3 – Indeterminado | 2011 a 2026 |
 | `coufinf` | `COUFINF` | texto | UF (provável da fonte de infecção) | — | 2011 a 2026 |
 | `copaisinf` | `COPAISINF` | texto | País (provável da fonte de infecção). País onde o paciente foi provavelmente infectado | — | 2011 a 2026 |
-| `comuninf` | `COMUNINF` | texto | Município (provável da fonte de infecção). co_municipio_infecc ao | — | 2011 a 2026 |
-| `loc_inf` | `LOC_INF` | texto | Localidade provável de infecção. no_localidade_infec cao | — | 2011 a 2026 |
-| `tra_esquem` | `TRA_ESQUEM` | texto | Esquema de tratamento utilizado. tp_esquema_tratam ento | 1- Infecções por Pv com Cloroquina em 3 dias e Primaquina em 7 dias; 2- Infecções por Pf com Quinina em 3 dias + Doxiciclina em 5 dias + primaquina no 6º dia; 3- Infecções mistas por Pv + Pf com Mefloquina em dose úni... | 2011 a 2026 |
-| `dstraesque` | `DSTRAESQUE` | texto | Esquema de tratamento utilizado - Outro. ds_esquema_tratam ento_outro | — | 2011 a 2026 |
+| `comuninf` | `COMUNINF` | texto | Município (provável da fonte de infecção) | — | 2011 a 2026 |
+| `loc_inf` | `LOC_INF` | texto | Localidade provável de infecção | — | 2011 a 2026 |
+| `tra_esquem` | `TRA_ESQUEM` | texto | Esquema de tratamento utilizado | 1- Infecções por Pv com Cloroquina em 3 dias e Primaquina em 7 dias; 2- Infecções por Pf com Quinina em 3 dias + Doxiciclina em 5 dias + primaquina no 6º dia; 3- Infecções mistas por Pv + Pf com Mefloquina em dose úni... | 2011 a 2026 |
+| `dstraesque` | `DSTRAESQUE` | texto | Esquema de tratamento utilizado - Outro. ento_outro | — | 2011 a 2026 |
 | `nu_lote_i` | `NU_LOTE_I` | texto | Transferência vertical da investigação. Descrever aqui a estrutura da composição do número do lote | — | 2011 a 2026 |
 | `dt_encerra` | `DT_ENCERRA` | data | Data de Encerramento. Data do encerramento da investigação | — | 2011 a 2026 |
 | `dt_digita` | `DT_DIGITA` | data | Data de digitação. Data de Digitação da primeira inclusão da notificação no sistema | — | 2011 a 2026 |
@@ -213,7 +209,7 @@ Aplicações analíticas: coeficiente parasitário anual (casos confirmados por 
 | `dt_transrs` | `DT_TRANSRS` | data | Data de transferência da regional de saúde. Data de Transferência do registro da Regional de Saúde para do nível superior do sistema | — | 2011 a 2026 |
 | `dt_transse` | `DT_TRANSSE` | data | Data de transferência da secretaria estadual de saúde. Data de Transferência do registro da Secretaria Estadual para do nível superior do sistema | — | 2011 a 2026 |
 | `nu_lote_v` | `NU_LOTE_V` | texto | Número do lote vertical. Descrever aqui a estrutura da composição do número do lote | — | 2011 a 2026 |
-| `nu_lote_h` | `NU_LOTE_H` | texto | Número do lote horizontal. nu_lote_horizont al | — | 2011 a 2026 |
+| `nu_lote_h` | `NU_LOTE_H` | texto | Número do lote horizontal | — | 2011 a 2026 |
 
 ## No lake
 
@@ -230,20 +226,26 @@ Aplicações analíticas: coeficiente parasitário anual (casos confirmados por 
 - **Tipo que varia entre períodos:** `pmm` aparecem com mais de um tipo nas amostras (por exemplo, inteiro em alguns períodos e texto em outros); leia a coluna `Tipo` do dicionário e converta explicitamente antes de empilhar períodos. Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Colunas que não existem em todo o período:** 83 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-mala").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-mala/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -252,48 +254,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-mala
-quantilica datasus list sinan-mala
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-mala
 
-# 2. Baixar microdados de sinan-mala com recorte adequado à partição do dataset
-quantilica datasus sync sinan-mala -o ./data --start 2004 --end 2024 --regions br
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-mala -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-mala -o ./data --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-mala -o ./data/raw --parquet-dir ./data/parquet --start 2004
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-mala
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-# Lê o arquivo consolidado de malária (casos SINAN, visão extra-amazônica)
-qdf = read_dbc("data/sinan-mala/2023/sinan-mala_2023-br@20260831.dbc", clean=True)
-
-# Casos confirmados por ano e UF
-print(
-    qdf.filter(pl.col("classi_fin") == 1)
-    .group_by("nu_ano", "sg_uf_not")
-    .len()
-    .sort(["nu_ano", "sg_uf_not"])
-)
-
-# Casos confirmados por município de residência, para vigilância extra-amazônica
-print(
-    qdf.filter(pl.col("classi_fin") == 1)
-    .group_by("id_mn_resi")
-    .len()
-    .sort("len", descending=True)
-)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS` e `.../SINAN/DADOS/PRELIM`

@@ -3,7 +3,7 @@ dataset:
   id: sinan-espo
   fonte: datasus
   titulo: Esporotricose (Epizootia)
-  resumo: O sinan-espo contém os registros de notificação de epizootias e casos animais de Esporotricose (dermatofitose por *Sporothrix* spp., transmissível de felinos a humanos) registrados no módulo específico do Sistema de Informação de Agravos de Notificação (SINAN)
+  resumo: 'Esporotricose (Epizootia) do DATASUS: uma ficha de notificação/investigação de esporotricose (Epizootia).'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -48,13 +48,9 @@ O `sinan-espo` contém os registros de **notificação de epizootias e casos ani
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (arquivos consolidados anuais, praticamente sempre `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2013 a 2022, apenas em `FINAIS` (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 10 arquivos (~0,4 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim — `meta.py` também consulta `PRELIM`, mas hoje o diretório não contém arquivos do agravo (toda a série está em `FINAIS`)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim — `meta.py` também consulta `PRELIM`, mas hoje o diretório não contém arquivos do agravo (toda a série está em `FINAIS`)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -66,7 +62,7 @@ O `sinan-espo` contém os registros de **notificação de epizootias e casos ani
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `ESPOBR22.dbc` — `ESPO` é o prefixo do agravo (Esporotricose), `BR` indica a consolidação nacional de todo o país e `22` é o ano de notificação (2022). O agravo publica apenas em `FINAIS`, de 2013 a 2022 (sem `PRELIM`), com atualizações em 08–18/01/2024.
-- **No armazenamento local do `datasus-fetcher`**: caminho padronizado `data/sinan-espo/<ano>/sinan-espo_<período>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-espo/2022/sinan-espo_2022-br@20240108.dbc`.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-espo/<AAAA>/sinan-espo_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-espo/2024/sinan-espo_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: no diretório `SINAN/DOCS` estão `Docs_TAB_SINAN.zip` e as instruções POP_I/II/III de acesso, descompactação e tabulação; em `SINAN/AUXILIAR` estão `TAB_SINANNET.zip`, `TAB_SINANONLINE.zip` e `POPT_Estimativa_TCU_2019_Sinan.zip` (denominadores populacionais). A normatização do agravo está na **Nota Técnica nº 60/2023-CGZV/DEDT** (Vigilância da Esporotricose).
 
 ## Conteúdo
@@ -112,9 +108,9 @@ Schema extraído de `ESPOBR13.dbc` (17 colunas depois de remover `_deleted`).
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
 | `dt_digita` | `DT_DIGITA` | data | Data de digitação. Data de Digitação da primeira inclusão da notificação no sistema | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
-| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_notifi cacao | — | todos |
-| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno). ds_semana_sinto ma | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno) | — | todos |
+| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno) | — | todos |
 | `dt_ini_epi` | `DT_INI_EPI` | data | Data de início da epizootia (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `tp_zn_oco` | `TP_ZN_OCO` | texto | Zona de ocorrência da epizootia (urbana, rural ou periurbana) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `tp_amb_oco` | `TP_AMB_OCO` | texto | Ambiente de ocorrência da epizootia (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
@@ -141,20 +137,26 @@ Schema extraído de `ESPOBR13.dbc` (17 colunas depois de remover `_deleted`).
 - base de **notificação de epizootia/casos animais** — não há registros individuais de pacientes, dados clínicos, exames ou desfechos humanos neste dataset (casos humanos de esporotricose migraram para vigilância integrada à parte, via NT 60/2023); cobertura restrita a `FINAIS` 2013–2022 sem arquivos preliminares; e os campos `G_D`/`G_M`/`C_D`/`C_M` frequentemente vêm em branco (ex.: em `ESPOBR13.dbc` `C_D`/`C_M` vazios), exigindo tratamento cuidadoso de nulos para não confundir "sem info" com "não ocorreu". (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Tipo que varia entre períodos:** `c_m` aparecem com mais de um tipo nas amostras (por exemplo, inteiro em alguns períodos e texto em outros); leia a coluna `Tipo` do dicionário e converta explicitamente antes de empilhar períodos. Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-espo").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-espo/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -163,45 +165,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-espo
-quantilica datasus list sinan-espo
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-espo
 
-# 2. Baixar microdados de sinan-espo com recorte adequado à partição do dataset
-# (SINAN usa uf+year com consolidações BR anuais)
-quantilica datasus sync sinan-espo -o ./data --start 2013 --end 2022 --regions br
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-espo -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-espo -o ./data --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-espo -o ./data/raw --parquet-dir ./data/parquet --start 2013
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-espo
 ```
 
-### Em Python e Polars
-
-```python
-import polars as pl
-
-from datasus_fetcher.reader import read_dbc
-
-# Descompacta o .dbc via extensão nativa em Rust e lê o .dbf tratado com polars
-qdf = read_dbc("data/sinan-espo/2022/sinan-espo_2022-br@20240108.dbc", clean=True)
-
-# Notificações por UF e zona de ocorrência
-zonas = qdf.group_by(["sg_uf_not", "tp_zn_oco"]).len().sort("sg_uf_not")
-print(zonas)
-
-# Ambientes onde ocorreram as epizootias de esporotricose
-amb = qdf.group_by("tp_amb_oco").len().sort("tp_amb_oco")
-print(amb)
-
-# Municípios com mais notificações no arquivo
-mun = qdf.group_by("id_municip").len().sort("len", descending=True)
-print(mun.head(10))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS`

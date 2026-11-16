@@ -3,7 +3,7 @@ dataset:
   id: sinan-teta
   fonte: datasus
   titulo: Tétano Acidental
-  resumo: O sinan-teta contém os microdados das notificações e investigações epidemiológicas de casos de Tétano Acidental (CID-10 A35) registrados no Sistema de Informação de Agravos de Notificação (SINAN) do Ministério da Saúde.
+  resumo: 'Tétano Acidental do DATASUS: uma ficha de notificação/investigação de tétano Acidental.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -44,13 +44,9 @@ O `sinan-teta` contém os microdados das notificações e investigações epidem
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (arquivos consolidados anuais, praticamente sempre `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2007 a 2026 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 20 arquivos (~0,8 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório `PRELIM`)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório `PRELIM`)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -62,7 +58,7 @@ O `sinan-teta` contém os microdados das notificações e investigações epidem
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `TETABR25.dbc` — `TETA` é o prefixo do agravo, `BR` indica a consolidação nacional de todo o país e `25` é o ano de notificação (2025). As consolidações até 2023 estão em `FINAIS` e os anos de 2024 a 2026 estão apenas em `PRELIM` (ex.: `TETABR26.dbc`, atualização de 07/10/2026).
-- **No armazenamento local do `datasus-fetcher`**: caminho padronizado `data/sinan-teta/<ano>/sinan-teta_<período>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-teta/2026/sinan-teta_preliminar_2026-br@20261007.dbc`; arquivos preliminares recebem o sufixo `-preliminar` no nome do dataset.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-teta/<AAAA>/sinan-teta_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-teta/2024/sinan-teta_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: no diretório `SINAN/DOCS` estão `Docs_TAB_SINAN.zip` e as instruções POP_I/II/III de acesso, descompactação e tabulação; em `SINAN/AUXILIAR` estão `TAB_SINANNET.zip`, `TAB_SINANONLINE.zip` (definições/tabulações do Sinan Net e Online) e `POPT_Estimativa_TCU_2019_Sinan.zip` (denominadores populacionais).
 
 ## Conteúdo
@@ -114,14 +110,14 @@ Schema extraído de `TETABR25.dbc` (66 colunas depois de remover `_deleted`).
 | `tp_not` | `TP_NOT` | texto | Tipo de Notificação. Identifica o tipo da notificação | 1 – Negativa 2 – Individual 3 – Surto 4 – Agregado | todos |
 | `id_agravo` | `ID_AGRAVO` | texto | Agravo. Tabela de agravos do sistema com códigos (classificação internacional de doenças –CID 10) e nomes dos agravos classificados como notificação compulsória ( nacional, estadual ou municipal) e as síndromes ( febre hemorragia aguda;respiratória aguda; diarréia aguda; sanguinolenta; | — | todos |
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
-| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_notifi cacao | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno) | — | todos |
 | `nu_ano` | `NU_ANO` | texto | (campo interno). Ano da notificação | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
 | `id_regiona` | `ID_REGIONA` | texto | (campo interno). Regional de saúde onde está localizado o município da unidade de saúde ou outra fonte notificadora | — | todos |
-| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora. co_unidade_notifi cacao | — | todos |
-| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico. dt_diagnostico_si ntoma | — | todos |
-| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno). ds_semana_sinto ma | — | todos |
+| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora | — | todos |
+| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico | — | todos |
+| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno) | — | todos |
 | `ano_nasc` | `ANO_NASC` | texto | Ano de nascimento do paciente (campo do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `nu_idade_n` | `NU_IDADE_N` | inteiro | Idade. A composição da variável obedece o seguinte critério: 1o | — | todos |
 | `cs_sexo` | `CS_SEXO` | texto | Sexo. M- Masculino F- Feminino I- Ignorado | — | todos |
@@ -129,28 +125,28 @@ Schema extraído de `TETABR25.dbc` (66 colunas depois de remover `_deleted`).
 | `cs_raca` | `CS_RACA` | texto | Raça/Cor. Considera-se cor ou raça declarada pela pessoa. 1. branca 2. preta 3. amarela (pessoa que se declarou de raça amarela) 4. parda (pessoa que se declarou mulata, cabocla, cafuza, mameluca ou mestiça de preto com pessoa de outra cor ou raça) 5. indígena (pessoa que se declarou indígena ou índia) | 1- branca 2- preta 3- amarela 4- parda 5- indígena 9 Ignorado | todos |
 | `cs_escol_n` | `CS_ESCOL_N` | texto | Escolaridade. 43 Analfabeto 1. 1ª a 4ª série incompleta do EF 2. 4ª série completa do EF ( antigo 1° grau) 3. 5ª à 8ª série incompleta do EF (antigo ginásio ou 1° grau) 4. Ensino fundamental completo (antigo ginásio ou 1° grau) 5. Ensino médio incompleto (antigo colegial ou 2° grau) 6. Ensino médio completo (antigo colegial ou 2° grau) 7. Educação superior incompleta 8. Educação superior completa 9. Ignorado 10. N... | — | todos |
 | `sg_uf` | `SG_UF` | texto | UF. Sigla da Unidade Federada de residência do paciente por ocasião da notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência. co_municipio_res idencia | — | todos |
+| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência | — | todos |
 | `id_rg_resi` | `ID_RG_RESI` | texto | (campo interno). Regional de saúde onde está localizado o município de residência do paciente por ocasião da notificação | — | todos |
-| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil). co_pais_residenc ia | — | todos |
+| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil) | — | todos |
 | `dt_invest` | `DT_INVEST` | data | Data de investigação. Data completa do inicio da investigação iniciada (Data da primeira ação desenvolvida após o conhecimento do caso) | — | todos |
 | `id_ocupa_n` | `ID_OCUPA_N` | texto | Ocupação/ Ramo de Atividade Econômica. Atividade exercida pelo paciente no setor formal, informal ou autônomo ou sua última | — | todos |
 | `tp_causa` | `TP_CAUSA` | texto | Possível Causa. varcha r2(1) | 1-Injeção 2-Laceração 3-Queimadura 4-Cirúrgico 5-Perfuração 6-Escoriação 7-Abortamento Séptico 8-Outros 9-Ignorado | todos |
-| `tp_causout` | `TP_CAUSOUT` | texto | Possível causa Outros (Descrição). ds_possivel_causa_o utro | — | todos |
+| `tp_causout` | `TP_CAUSOUT` | texto | Possível causa Outros (Descrição) | — | todos |
 | `tp_localle` | `TP_LOCALLE` | texto | Local da lesão. Local da lesão que provavelmente foi a porta de entrada para o agente etiológico | 1- Membros Inferiores 2- Membros Superiores 3- Tronco 4- Cabeça/ Pescoço 5- Cavidade Oral 9- Ignorado | todos |
 | `nu_dose` | `NU_DOSE` | texto | Registro de vacinação (`NU_DOSE`) | — | todos |
 | `dt_ult_dos` | `DT_ULT_DOS` | data | Data da última dose. Data da última dose da vacina contra tétano (DPT,DT,dT,TT Tetra) | — | todos |
-| `tp_profila` | `TP_PROFILA` | texto | Tratamento específico e outras medidas. tp_tratamento_especi fico | 1- Soro Antitetânico 2- Imunoglobulina 3- Vacina 4- Antibiótico 5- Nenhum | todos |
-| `cs_trismo` | `CS_TRISMO` | texto | Manifestações clínicas Trismo. st_manifestacao_tris mo | 1-Sim 2-Não 9-Ignorado | todos |
+| `tp_profila` | `TP_PROFILA` | texto | Tratamento específico e outras medidas | 1- Soro Antitetânico 2- Imunoglobulina 3- Vacina 4- Antibiótico 5- Nenhum | todos |
+| `cs_trismo` | `CS_TRISMO` | texto | Manifestações clínicas Trismo | 1-Sim 2-Não 9-Ignorado | todos |
 | `cs_riso` | `CS_RISO` | texto | Manifestações clínicas Riso sardônico. Se o paciente apresentou riso sarcástico | 1-Sim 2-Não 9-Ignorado | todos |
-| `cs_opistot` | `CS_OPISTOT` | texto | Manifestações clínicas Opistótono. st_manifestacao_opis totono | 1-Sim 2-Não 9-Ignorado | todos |
-| `cs_nuca` | `CS_NUCA` | texto | Manifestações clínicas Rigidez de nuca. st_manifestacao_nuc a | 1-Sim 2-Não 9-Ignorado | todos |
-| `cs_abdomin` | `CS_ABDOMIN` | texto | Manifestações clínicas Rigidez abdominal. st_manifestacao_abd ominal | 1-Sim 2-Não 9-Ignorado | todos |
+| `cs_opistot` | `CS_OPISTOT` | texto | Manifestações clínicas Opistótono | 1-Sim 2-Não 9-Ignorado | todos |
+| `cs_nuca` | `CS_NUCA` | texto | Manifestações clínicas Rigidez de nuca. a | 1-Sim 2-Não 9-Ignorado | todos |
+| `cs_abdomin` | `CS_ABDOMIN` | texto | Manifestações clínicas Rigidez abdominal | 1-Sim 2-Não 9-Ignorado | todos |
 | `cs_membros` | `CS_MEMBROS` | texto | Sinais e sintomas Rigidez de membros. Se o recém-nascido apresentou contratura da musculatura das pernas e/ou braços | 1. sim 2. não 9. ignorado | todos |
-| `cs_crises` | `CS_CRISES` | texto | Manifestações clínicas Crises de contraturas. st_manifestacao_cris e | 1-Sim 2-Não 9-Ignorado | todos |
-| `cs_sin_out` | `CS_SIN_OUT` | texto | Manifestações clínicas Outros. st_manifestacao_outr o | 1-Sim 2-Não 9-Ignorado | todos |
-| `nm_sin_out` | `NM_SIN_OUT` | texto | Manifestações clínicas Outros (Especificar). ds_manifestacao_outr o | — | todos |
+| `cs_crises` | `CS_CRISES` | texto | Manifestações clínicas Crises de contraturas. e | 1-Sim 2-Não 9-Ignorado | todos |
+| `cs_sin_out` | `CS_SIN_OUT` | texto | Manifestações clínicas Outros. o | 1-Sim 2-Não 9-Ignorado | todos |
+| `nm_sin_out` | `NM_SIN_OUT` | texto | Manifestações clínicas Outros (Especificar). o | — | todos |
 | `tp_origem` | `TP_ORIGEM` | texto | Origem do caso. Identificar se o conhecimento do caso se deu por notificação possível ou por ocasião da busca ativa, ou pela declaração de óbito | 1-Notificação 2-Busca ativa 3-Declaração de óbito | todos |
-| `cs_hospita` | `CS_HOSPITA` | texto | Ocorreu hospitalização. st_ocorreu_hostpitaliz acao | 1-Sim 2-Não 9-Ignorado | todos |
+| `cs_hospita` | `CS_HOSPITA` | texto | Ocorreu hospitalização | 1-Sim 2-Não 9-Ignorado | todos |
 | `dt_interna` | `DT_INTERNA` | data | Data da internação. Data de internação, caso tenha ocorrido | — | todos |
 | `sg_uf_inte` | `SG_UF_INTE` | texto | UF de hospitalização. Sigla da UF onde o paciente foi internado | — | todos |
 | `nm_munic_h` | `NM_MUNIC_H` | texto | Município de hospitalização. Nome do município onde o paciente foi internado | — | todos |
@@ -159,10 +155,10 @@ Schema extraído de `TETABR25.dbc` (66 colunas depois de remover `_deleted`).
 | `tp_analise` | `TP_ANALISE` | texto | Medidas de controle Vacinação da população suscetível. Se foi realizada vacinação nas pessoas vulneráveis | 1. Sim 2. Não 9. Ignorado | todos |
 | `classi_fin` | `CLASSI_FIN` | texto | Classificação final. Confirmação do caso ou descarte do suspeito que não atende aos critérios de confirmação após a investigação | 1. Confirmado 2. Descartado | todos |
 | `cs_local` | `CS_LOCAL` | texto | Local provável da fonte de infecção. Local onde provavelmente ocorreu a infecção | 1- Domicílio 2- Trabalho 3- Via pública 4- Escola 5- Campo 6- Unidade de saúde 7- Outro local 9- Ignorado | todos |
-| `tpautocto` | `TPAUTOCTO` | texto | O caso é Autóctone de residência?. tp_autoctone_residen cia | 1 – Sim 2 – Não 3 – Indeterminado | todos |
+| `tpautocto` | `TPAUTOCTO` | texto | O caso é Autóctone de residência? | 1 – Sim 2 – Não 3 – Indeterminado | todos |
 | `coufinf` | `COUFINF` | texto | UF (provável da fonte de infecção). Sigla da unidade federada onde o paciente foi provavelmente infectado | — | todos |
 | `copaisinf` | `COPAISINF` | texto | País (provável da fonte de infecção). País onde o paciente foi provavelmente infectado | — | todos |
-| `comuninf` | `COMUNINF` | texto | Município (provável da fonte de infecção). co_municipio_infecca o | — | todos |
+| `comuninf` | `COMUNINF` | texto | Município (provável da fonte de infecção). o | — | todos |
 | `evolucao` | `EVOLUCAO` | texto | Evolução do caso. Informar como o paciente evoluiu | 1. Cura 2. Óbito por tétano acidental 3. Óbito por outras causas 9. Ignorado | todos |
 | `dt_encerra` | `DT_ENCERRA` | data | Data do encerramento. Data do encerramento da investigação | — | todos |
 | `dt_obito` | `DT_OBITO` | data | Data do óbito. Data de óbito | — | todos |
@@ -175,7 +171,7 @@ Schema extraído de `TETABR25.dbc` (66 colunas depois de remover `_deleted`).
 | `dt_transrs` | `DT_TRANSRS` | data | Data de transferência da regional de saúde. Data de Transferência do registro da Regional de Saúde para do nível superior do sistema | — | todos |
 | `dt_transse` | `DT_TRANSSE` | data | Data de transferência da secretaria estadual de saúde. Data de Transferência do registro da Secretaria Estadual para do nível superior do sistema | — | todos |
 | `nu_lote_v` | `NU_LOTE_V` | texto | Número do lote vertical. Descrever aqui a estrutura da composição do número do lote | — | todos |
-| `nu_lote_h` | `NU_LOTE_H` | texto | Número do lote horizontal. nu_lote_horizont al | — | todos |
+| `nu_lote_h` | `NU_LOTE_H` | texto | Número do lote horizontal | — | todos |
 | `uf` | — | texto | UF do arquivo de origem (sigla em minúsculas, `br` para arquivos nacionais), gravada pelo conversor; as linhas do período saem ordenadas por ela | sigla da UF | todos |
 | `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
 
@@ -192,20 +188,26 @@ Schema extraído de `TETABR25.dbc` (66 colunas depois de remover `_deleted`).
 
 - o código 6 de `NU_DOSE` ("nunca vacinado") deve ser tratado como valor explícito, não nulo; `TP_CAUSOUT`/`NM_SIN_OUT` são campos de texto livre com descrições que demandam revisão ortográfica antes de agregar; o baixo número de casos anuais recomenda tabulações por agregações de anos; e o corte das janelas de 21/30 dias pós-ferimento (história de injeção nas últimas 3 semanas e demais causas nas últimas 4) deve ser replicado manualmente a partir das datas do caso. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-teta").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-teta/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -214,43 +216,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-teta
-quantilica datasus list sinan-teta
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-teta
 
-# 2. Baixar microdados de sinan-teta com recorte adequado à partição do dataset
-# (SINAN usa uf+year com consolidações BR anuais)
-quantilica datasus sync sinan-teta -o ./data --start 2007 --end 2026 --regions br
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-teta -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-teta -o ./data --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-teta -o ./data/raw --parquet-dir ./data/parquet --start 2010
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-teta
 ```
 
-### Em Python e Polars
-
-```python
-import polars as pl
-
-from datasus_fetcher.reader import read_dbc
-
-# Descompacta o .dbc via extensão nativa em Rust e lê o .dbf tratado com polars
-qdf = read_dbc(
-    "data/sinan-teta/2025/sinan-teta_preliminar_2025-br@20261007.dbc", clean=True
-)
-
-# Casos "nunca vacinados" ou com esquema incompleto previamente à lesão
-des = qdf.filter(pl.col("nu_dose").is_in([1, 2, 3, 6]).not_())  # 4 e 5 = com reforços
-print(des.group_by("evolucao").len().sort("evolucao"))
-
-# Portas de entrada mais frequentes (não "outros")
-causas = qdf.group_by("tp_causa").len().sort("tp_causa")
-print(causas)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS` e `.../SINAN/DADOS/PRELIM`

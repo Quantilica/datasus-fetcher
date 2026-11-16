@@ -3,7 +3,7 @@ dataset:
   id: sim-doext-cid10
   fonte: datasus
   titulo: Declarações de Óbito Externas CID-10
-  resumo: Microdados nacionais do SIM/SVSA-MS com as Declarações de Óbito por causas externas de 1996 a 2025 (CID-10).
+  resumo: 'Declarações de Óbito Externas CID-10 do DATASUS: um óbito por causa externa, a partir de 1996 (CID-10).'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), Coordenação-Geral de Informações e Análise Epidemiológicas (CGIAE)
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -44,13 +44,9 @@ Microdados nacionais do SIM/SVSA-MS com as Declarações de Óbito por causas ex
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido no formato DATASUS; descompactado nativamente em Rust para `.dbf`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `year`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 1996 a 2025 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 30 arquivos (~301,2 MB); 1 UF(s) na partição; última atualização 2026-08-28
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIM/CID9/DOCS`, `/dissemin/publicos/SIM/CID10/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIM/CID9/TAB`, `/dissemin/publicos/SIM/CID10/TAB`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/SIM/CID9/DOCS`, `/dissemin/publicos/SIM/CID10/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SIM/CID9/TAB`, `/dissemin/publicos/SIM/CID10/TAB`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -61,7 +57,7 @@ Microdados nacionais do SIM/SVSA-MS com as Declarações de Óbito por causas ex
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `DOEXT23.dbc` — `DOEXT` (óbitos por causas externas) + `23` (ano com 2 dígitos, 2023); arquivo nacional, sem sufixo de UF.
-- **No armazenamento local do `datasus-fetcher`**: `data/sim-doext-cid10/<AAAA>/sim-doext-cid10_<AAAA>@<AAAAMMDD>.dbc` (ex.: `data/sim-doext-cid10/2023/sim-doext-cid10_2023@20260828.dbc`); como não há UF na partição, o nome contém apenas o ano.
+- **No armazenamento local do `datasus-fetcher`**: `data/sim-doext-cid10/<AAAA>/sim-doext-cid10_<AAAA>@<AAAAMMDD>.dbc`, por exemplo `data/sim-doext-cid10/2024/sim-doext-cid10_2024@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**:
   - Documentação (`datasus-metadata/metadata/documentation/sim.json`):
     - `/dissemin/publicos/SIM/CID9/DOCS/Docs-Tabs-CID9.zip` (0.7 MB)
@@ -162,53 +158,53 @@ Layout CID-10 do recorte de causas externas; confirme os campos do bloco VII (`C
 | `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
 | `codestab` | `CODESTAB` | texto | Código do estabelecimento de saúde constante do Cadastro Nacional de Estabelecimento de Saúde | Números | 2005 a 2025 |
 | `atestante` | `ATESTANTE` | texto | Condição do médico atestante | 1 - Assistente; 2 – Substituto; 3 – IML; 4 – SVO; 5 – Outro | 2005 a 2025 |
-| `ufinform` | `UFINFORM` | texto | UF que informou o registro (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2005 a 2005 |
-| `origem` | `ORIGEM` | texto | Origem do registro: 01 Oracle; 02 banco estadual disponibilizado via FTP; 03 banco SEADE; 9 ignorado | — | 2025 a 2025 |
-| `horaobito` | `HORAOBITO` | texto | Horário do óbito | Números (padrão 24 horas 00:00) | 2025 a 2025 |
-| `codmunnatu` | `CODMUNNATU` | texto | Código do município de naturalidade do falecido. | Números | 2025 a 2025 |
-| `esc2010` | `ESC2010` | texto | Escolaridade 2010. Nível da última série concluída pelo falecido | 0 – Sem escolaridade; 1 – Fundamental I (1ª a 4ª série); 2 – Fundamental II (5ª a 8ª série); 3 – Médio (antigo 2º Grau); 4 – Superior incompleto; 5 – Superior completo; 9 – Ignorado | 2025 a 2025 |
-| `seriescfal` | `SERIESCFAL` | texto | Última série escolar concluída pelo falecido | Números de 1 a 8 | 2025 a 2025 |
-| `estabdescr` | `ESTABDESCR` | texto | Descrição do estabelecimento de ocorrência do óbito (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2025 a 2025 |
-| `escmae2010` | `ESCMAE2010` | texto | Escolaridade 2010. Nível da última série concluída pela mãe | 0 – Sem escolaridade; 1 – Fundamental I (1ª a 4ª série); 2 – Fundamental II (5ª a 8ª série); 3 – Médio (antigo 2º Grau); 4 – Superior incompleto; 5 – Superior completo; 9 – Ignorado | 2025 a 2025 |
-| `seriescmae` | `SERIESCMAE` | texto | Última série escolar concluída pela mãe | Números de 1 a 8 | 2025 a 2025 |
-| `semagestac` | `SEMAGESTAC` | texto | Semanas de gestação com dois algarismos | Números com dois algarismos; 9 - igonorado | 2025 a 2025 |
-| `tpmorteoco` | `TPMORTEOCO` | texto | Situação gestacional ou pósgestacional em que ocorreu o óbito | 1 – na gravidez; 2 – no parto; 3 – no abortamento; 4 – até 42 dias após o término do parto; 5 – de 43 dias a 1 ano após o término da gestação ; 8 – não ocorreu nestes períodos; 9 – ignorado. | 2025 a 2025 |
-| `cb_pre` | `CB_PRE` | texto | Causa básica (CID-10) antes da investigação do óbito (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2025 a 2025 |
-| `comunsvoim` | `COMUNSVOIM` | texto | Código do município do SVO ou do IML | Números | 2025 a 2025 |
-| `dtatestado` | `DTATESTADO` | texto | Data em que o atestado foi assinado | Data no padrão ddmmaaaa | 2025 a 2025 |
-| `numerolote` | `NUMEROLOTE` | texto | Número do lote | Números | 2025 a 2025 |
-| `tppos` | `TPPOS` | texto | Óbito investigado | 1 – sim; 2 – não | 2025 a 2025 |
-| `dtinvestig` | `DTINVESTIG` | texto | Data da investigação do óbito | Data no padrão ddmmaaaa | 2025 a 2025 |
-| `causabas_o` | `CAUSABAS_O` | texto | Causa básica informada antes da resseleção | *; letras;números | 2025 a 2025 |
-| `dtcadastro` | `DTCADASTRO` | texto | Data do cadastro do óbito | Data no padrão ddmmaaaa | 2025 a 2025 |
-| `stcodifica` | `STCODIFICA` | texto | Status de instalação | Se codificadora (valor: S) ou não (valor: N) | 2025 a 2025 |
-| `codificado` | `CODIFICADO` | texto | Informa se formulario foi codificado | Se estiver codificado (valor: S) ou não (valor: N) | 2025 a 2025 |
-| `versaosist` | `VERSAOSIST` | texto | Versão do sistema | Números; . | 2025 a 2025 |
-| `versaoscb` | `VERSAOSCB` | texto | Versão do seletor de causa básica | Números; . | 2025 a 2025 |
-| `fonteinv` | `FONTEINV` | texto | Fonte de investigação | 1 – Comitê de Morte Materna e/ou Infantil; 2 – Visita domiciliar / Entrevista família; 3 – Estabelecimento de Saúde / Prontuário; 4 – Relacionado com outros bancos de dados; 5 – S V O; 6 – I M L; 7 – Outra fonte; 8 – ... | 2025 a 2025 |
-| `dtrecebim` | `DTRECEBIM` | texto | Data do recebimento | Data no padrão ddmmaaaa | 2025 a 2025 |
-| `atestado` | `ATESTADO` | texto | CIDs informados no atestado | Letras; números; * ; / | 2025 a 2025 |
-| `dtrecoriga` | `DTRECORIGA` | texto | Campo Criado no Tratamento para Data do recebimento original | Data no padrão ddmmaaaa | 2025 a 2025 |
-| `causamat` | `CAUSAMAT` | texto | CID da causa externa associada a uma causa materna | Letras; números; * ; / | 2025 a 2025 |
-| `escmaeagr1` | `ESCMAEAGR1` | texto | Escolaridade da mãe agregada (ormulário a partir de 2010) | 00 – Sem Escolaridade; 01 – Fundamental I Incompleto; 02 – Fundamental I Completo; 03 – Fundamental II Incompleto; 04 – Fundamental II Completo; 05 – Ensino Médio Incompleto; 06 – Ensino Médio Completo; 07 – Superior ... | 2025 a 2025 |
-| `escfalagr1` | `ESCFALAGR1` | texto | Escolaridade do falecido agregada (formulário a partir de 2010) | 00 – Sem Escolaridade; 01 – Fundamental I Incompleto; 02 – Fundamental I Completo; 03 – Fundamental II Incompleto; 04 – Fundamental II Completo; 05 – Ensino Médio Incompleto; 06 – Ensino Médio Completo; 07 – Superior ... | 2025 a 2025 |
-| `stdoepidem` | `STDOEPIDEM` | texto | Status de DO Epidemiológica | 1 - Sim; 0 - Não | 2025 a 2025 |
-| `stdonova` | `STDONOVA` | texto | Status de DO Nova | 1 - Sim; 0 - Não | 2025 a 2025 |
-| `difdata` | `DIFDATA` | texto | Diferença entre a data de óbito e data do recebimento original da DO ([DTOBITO] – [DTRECORIG]) | Números | 2025 a 2025 |
-| `nudiasobco` | `NUDIASOBCO` | texto | Diferença entre a data óbito e a data conclusão da investigação, em dias. | Números | 2025 a 2025 |
-| `nudiasobin` | `NUDIASOBIN` | texto | Número de dias entre o óbito e o início da investigação | — | 2025 a 2025 |
-| `dtcadinv` | `DTCADINV` | texto | Data do cadastro de investigação | Data no padrão ddmmaaaa | 2025 a 2025 |
-| `tpobitocor` | `TPOBITOCOR` | texto | Momento do óbito em relação à gestação, parto ou puerpério (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2025 a 2025 |
-| `dtconinv` | `DTCONINV` | texto | Data da conclusão da investigação | Data no padrão ddmmaaaa | 2025 a 2025 |
-| `fontes` | `FONTES` | texto | Combinado de caracteres conforme o preenchimento dos campos de fontes (FONTENTREV, FONTEAMBUL, FONTEPRONT, FONTESVO, FONTEIML, FONTEPROF): se preenchido caractere “S”, se o campo estiver vazio caractere “X” | Letras | 2025 a 2025 |
-| `tpresginfo` | `TPRESGINFO` | texto | Informa se a investigação permitiu o resgate de alguma causa de óbito não informado, ou a correção de alguma antes informada | 01 - Não acrescentou nem corrigiu informação; 02 - Sim, permitiu o resgate de novas informações; 03 - Sim, permitiu a correção de alguma das causas informadas originalmente. | 2025 a 2025 |
-| `tpnivelinv` | `TPNIVELINV` | texto | Tipo de nível investigador | E – estadual; R- regional; M- Municipal | 2025 a 2025 |
-| `nudiasinf` | `NUDIASINF` | texto | Número de dias entre datas do processo de investigação do óbito (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2025 a 2025 |
-| `dtcadinf` | `DTCADINF` | texto | Quando preenchido indica se a investigação foi realizada | Data no padrão ddmmaaaa | 2025 a 2025 |
-| `morteparto` | `MORTEPARTO` | texto | Momento do óbito em relação ao parto após investigação | 1 - antes; 2– durante; 3–após; 9– Ignorado | 2025 a 2025 |
-| `dtconcaso` | `DTCONCASO` | texto | Data de conclusão do caso | Data no padrão ddmmaaaa | 2025 a 2025 |
-| `fontesinf` | `FONTESINF` | texto | Fontes de informação usadas na investigação do óbito (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2025 a 2025 |
-| `altcausa` | `ALTCAUSA` | texto | Indica se houve correção ou alteração da causa do óbito após investigação | 1- Sim; 2 – Não | 2025 a 2025 |
+| `ufinform` | `UFINFORM` | texto | UF que informou o registro (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2005 |
+| `origem` | `ORIGEM` | texto | Origem do registro: 01 Oracle; 02 banco estadual disponibilizado via FTP; 03 banco SEADE; 9 ignorado | — | só em 2025 |
+| `horaobito` | `HORAOBITO` | texto | Horário do óbito | Números (padrão 24 horas 00:00) | só em 2025 |
+| `codmunnatu` | `CODMUNNATU` | texto | Código do município de naturalidade do falecido. | Números | só em 2025 |
+| `esc2010` | `ESC2010` | texto | Escolaridade 2010. Nível da última série concluída pelo falecido | 0 – Sem escolaridade; 1 – Fundamental I (1ª a 4ª série); 2 – Fundamental II (5ª a 8ª série); 3 – Médio (antigo 2º Grau); 4 – Superior incompleto; 5 – Superior completo; 9 – Ignorado | só em 2025 |
+| `seriescfal` | `SERIESCFAL` | texto | Última série escolar concluída pelo falecido | Números de 1 a 8 | só em 2025 |
+| `estabdescr` | `ESTABDESCR` | texto | Descrição do estabelecimento de ocorrência do óbito (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2025 |
+| `escmae2010` | `ESCMAE2010` | texto | Escolaridade 2010. Nível da última série concluída pela mãe | 0 – Sem escolaridade; 1 – Fundamental I (1ª a 4ª série); 2 – Fundamental II (5ª a 8ª série); 3 – Médio (antigo 2º Grau); 4 – Superior incompleto; 5 – Superior completo; 9 – Ignorado | só em 2025 |
+| `seriescmae` | `SERIESCMAE` | texto | Última série escolar concluída pela mãe | Números de 1 a 8 | só em 2025 |
+| `semagestac` | `SEMAGESTAC` | texto | Semanas de gestação com dois algarismos | Números com dois algarismos; 9 - igonorado | só em 2025 |
+| `tpmorteoco` | `TPMORTEOCO` | texto | Situação gestacional ou pósgestacional em que ocorreu o óbito | 1 – na gravidez; 2 – no parto; 3 – no abortamento; 4 – até 42 dias após o término do parto; 5 – de 43 dias a 1 ano após o término da gestação ; 8 – não ocorreu nestes períodos; 9 – ignorado. | só em 2025 |
+| `cb_pre` | `CB_PRE` | texto | Causa básica (CID-10) antes da investigação do óbito (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2025 |
+| `comunsvoim` | `COMUNSVOIM` | texto | Código do município do SVO ou do IML | Números | só em 2025 |
+| `dtatestado` | `DTATESTADO` | texto | Data em que o atestado foi assinado | Data no padrão ddmmaaaa | só em 2025 |
+| `numerolote` | `NUMEROLOTE` | texto | Número do lote | Números | só em 2025 |
+| `tppos` | `TPPOS` | texto | Óbito investigado | 1 – sim; 2 – não | só em 2025 |
+| `dtinvestig` | `DTINVESTIG` | texto | Data da investigação do óbito | Data no padrão ddmmaaaa | só em 2025 |
+| `causabas_o` | `CAUSABAS_O` | texto | Causa básica informada antes da resseleção | *; letras;números | só em 2025 |
+| `dtcadastro` | `DTCADASTRO` | texto | Data do cadastro do óbito | Data no padrão ddmmaaaa | só em 2025 |
+| `stcodifica` | `STCODIFICA` | texto | Status de instalação | Se codificadora (valor: S) ou não (valor: N) | só em 2025 |
+| `codificado` | `CODIFICADO` | texto | Informa se formulario foi codificado | Se estiver codificado (valor: S) ou não (valor: N) | só em 2025 |
+| `versaosist` | `VERSAOSIST` | texto | Versão do sistema | Números; . | só em 2025 |
+| `versaoscb` | `VERSAOSCB` | texto | Versão do seletor de causa básica | Números; . | só em 2025 |
+| `fonteinv` | `FONTEINV` | texto | Fonte de investigação | 1 – Comitê de Morte Materna e/ou Infantil; 2 – Visita domiciliar / Entrevista família; 3 – Estabelecimento de Saúde / Prontuário; 4 – Relacionado com outros bancos de dados; 5 – S V O; 6 – I M L; 7 – Outra fonte; 8 – ... | só em 2025 |
+| `dtrecebim` | `DTRECEBIM` | texto | Data do recebimento | Data no padrão ddmmaaaa | só em 2025 |
+| `atestado` | `ATESTADO` | texto | CIDs informados no atestado | Letras; números; * ; / | só em 2025 |
+| `dtrecoriga` | `DTRECORIGA` | texto | Campo Criado no Tratamento para Data do recebimento original | Data no padrão ddmmaaaa | só em 2025 |
+| `causamat` | `CAUSAMAT` | texto | CID da causa externa associada a uma causa materna | Letras; números; * ; / | só em 2025 |
+| `escmaeagr1` | `ESCMAEAGR1` | texto | Escolaridade da mãe agregada (ormulário a partir de 2010) | 00 – Sem Escolaridade; 01 – Fundamental I Incompleto; 02 – Fundamental I Completo; 03 – Fundamental II Incompleto; 04 – Fundamental II Completo; 05 – Ensino Médio Incompleto; 06 – Ensino Médio Completo; 07 – Superior ... | só em 2025 |
+| `escfalagr1` | `ESCFALAGR1` | texto | Escolaridade do falecido agregada (formulário a partir de 2010) | 00 – Sem Escolaridade; 01 – Fundamental I Incompleto; 02 – Fundamental I Completo; 03 – Fundamental II Incompleto; 04 – Fundamental II Completo; 05 – Ensino Médio Incompleto; 06 – Ensino Médio Completo; 07 – Superior ... | só em 2025 |
+| `stdoepidem` | `STDOEPIDEM` | texto | Status de DO Epidemiológica | 1 - Sim; 0 - Não | só em 2025 |
+| `stdonova` | `STDONOVA` | texto | Status de DO Nova | 1 - Sim; 0 - Não | só em 2025 |
+| `difdata` | `DIFDATA` | texto | Diferença entre a data de óbito e data do recebimento original da DO ([DTOBITO] – [DTRECORIG]) | Números | só em 2025 |
+| `nudiasobco` | `NUDIASOBCO` | texto | Diferença entre a data óbito e a data conclusão da investigação, em dias. | Números | só em 2025 |
+| `nudiasobin` | `NUDIASOBIN` | texto | Número de dias entre o óbito e o início da investigação | — | só em 2025 |
+| `dtcadinv` | `DTCADINV` | texto | Data do cadastro de investigação | Data no padrão ddmmaaaa | só em 2025 |
+| `tpobitocor` | `TPOBITOCOR` | texto | Momento do óbito em relação à gestação, parto ou puerpério (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2025 |
+| `dtconinv` | `DTCONINV` | texto | Data da conclusão da investigação | Data no padrão ddmmaaaa | só em 2025 |
+| `fontes` | `FONTES` | texto | Combinado de caracteres conforme o preenchimento dos campos de fontes (FONTENTREV, FONTEAMBUL, FONTEPRONT, FONTESVO, FONTEIML, FONTEPROF): se preenchido caractere “S”, se o campo estiver vazio caractere “X” | Letras | só em 2025 |
+| `tpresginfo` | `TPRESGINFO` | texto | Informa se a investigação permitiu o resgate de alguma causa de óbito não informado, ou a correção de alguma antes informada | 01 - Não acrescentou nem corrigiu informação; 02 - Sim, permitiu o resgate de novas informações; 03 - Sim, permitiu a correção de alguma das causas informadas originalmente. | só em 2025 |
+| `tpnivelinv` | `TPNIVELINV` | texto | Tipo de nível investigador | E – estadual; R- regional; M- Municipal | só em 2025 |
+| `nudiasinf` | `NUDIASINF` | texto | Número de dias entre datas do processo de investigação do óbito (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2025 |
+| `dtcadinf` | `DTCADINF` | texto | Quando preenchido indica se a investigação foi realizada | Data no padrão ddmmaaaa | só em 2025 |
+| `morteparto` | `MORTEPARTO` | texto | Momento do óbito em relação ao parto após investigação | 1 - antes; 2– durante; 3–após; 9– Ignorado | só em 2025 |
+| `dtconcaso` | `DTCONCASO` | texto | Data de conclusão do caso | Data no padrão ddmmaaaa | só em 2025 |
+| `fontesinf` | `FONTESINF` | texto | Fontes de informação usadas na investigação do óbito (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2025 |
+| `altcausa` | `ALTCAUSA` | texto | Indica se houve correção ou alteração da causa do óbito após investigação | 1- Sim; 2 – Não | só em 2025 |
 
 ## No lake
 
@@ -222,63 +218,42 @@ Layout CID-10 do recorte de causas externas; confirme os campos do bloco VII (`C
 
 - **Colunas que não existem em todo o período:** 50 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
+Quantas linhas há por período? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
-(
-    pl.scan_parquet("lake/datasus/sim-doext-cid10/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "uf")
-    .agg(pl.len().alias("linhas"))
-    .sort("ano", "uf")
-    .collect()
+arquivos = sorted(Path("lake/datasus/sim-doext-cid10").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
 )
+
+(dados.group_by("ano").agg(pl.len().alias("linhas")).sort("ano").collect())
 ```
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
-
-> `quantilica datasus <subcomando>` e `datasus-fetcher <subcomando>` são equivalentes.
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sim-doext-cid10
-quantilica datasus list sim-doext-cid10
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sim-doext-cid10
 
-# 2. Baixar microdados de sim-doext-cid10 com recorte adequado à partição (year)
-quantilica datasus sync sim-doext-cid10 -o ./data --start 2015 --end 2023
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sim-doext-cid10 -o ./data --start 2020 --end 2024 --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sim-doext-cid10 -o ./data --start 2015 --end 2023 --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sim-doext-cid10 -o ./data/raw --parquet-dir ./data/parquet --start 2015 --end 2023
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sim-doext-cid10
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-
-frame = df.read_dbc(
-    "data/sim-doext-cid10/2023/sim-doext-cid10_2023@20260828.dbc",
-    dataset="sim-doext-cid10",
-)
-print(frame.shape)
-
-frame = frame.with_columns(
-    pl.col("dtobito").str.to_date("%d%m%Y", strict=False).alias("data_obito"),
-)
-print(frame.group_by("circobito").len().sort("len", descending=True))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/DOFET`

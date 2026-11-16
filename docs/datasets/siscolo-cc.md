@@ -3,7 +3,7 @@ dataset:
   id: siscolo-cc
   fonte: datasus
   titulo: Citopatológico de Colo de Útero
-  resumo: Microdados do SISCOLO (INCA/DATASUS) com os laudos citopatológicos do colo do útero realizados no SUS entre 2006 e 2015, por UF e mês.
+  resumo: 'Citopatológico de Colo de Útero do DATASUS: um exame citopatológico do colo do útero.'
   orgao: Ministério da Saúde — Instituto Nacional de Câncer (INCA) e DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SISCAN/SISCOLO4/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -41,13 +41,9 @@ Microdados do SISCOLO (INCA/DATASUS) com os laudos citopatológicos do colo do �
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido no formato DATASUS; descompactado nativamente em Rust para `.dbf`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf / yearmonth`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2006-01 a 2015-10 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 2858 arquivos (~2,5 GB); 27 UF(s) na partição; última atualização 2022-08-17
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): Não aplicável (o catálogo `meta.docs` não define diretório de documentação para este sistema)
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SISCAN/SISCOLO4/Auxiliar`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** Não aplicável (o catálogo `meta.docs` não define diretório de documentação para este sistema)
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SISCAN/SISCOLO4/Auxiliar`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -58,7 +54,7 @@ Microdados do SISCOLO (INCA/DATASUS) com os laudos citopatológicos do colo do �
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `CCSP1001.dbc` — `CC` (citopatológico) + `SP` (UF) + `10` (ano 2010) + `01` (mês).
-- **No armazenamento local do `datasus-fetcher`**: `data/siscolo-cc/<AAAAMM>/siscolo-cc_<AAAAMM>-<uf>@<AAAAMMDD>.dbc` (ex.: `data/siscolo-cc/201001/siscolo-cc_201001-sp@20220817.dbc`).
+- **No armazenamento local do `datasus-fetcher`**: `data/siscolo-cc/<AAAAMM>/siscolo-cc_<AAAAMM>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/siscolo-cc/202401/siscolo-cc_202401-sp@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**:
   - Documentação: nenhum arquivo catalogado em `documentation/siscolo.json` (não há `meta.docs` para `siscolo`); o dicionário de variáveis está dentro do pacote de tabulação listado abaixo.
   - Tabelas auxiliares (`datasus-metadata/metadata/auxiliary/siscolo.json`):
@@ -163,7 +159,7 @@ Nomes verificados contra o arquivo real `CCRJ1503.dbc` (102 colunas; resultado d
 | `dinttempex` | `DINTTEMPEX` | texto | Dias entre a coleta e o resultado (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `qtdexa` | `QTDEXA` | texto | Quantidade de exames do registro (agregação) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `reprezt` | `REPREZT` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
-| `resnorm` | `RESNORM` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
+| `resnorm` | `RESNORM` | texto | Resultado dentro dos limites da normalidade (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `posnaoneo` | `POSNAONEO` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
 | `lesaltgra` | `LESALTGRA` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
 | `psnaonpla` | `PSNAONPLA` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
@@ -187,9 +183,9 @@ Nomes verificados contra o arquivo real `CCRJ1503.dbc` (102 colunas; resultado d
 | `amosrejdan` | `AMOSREJDAN` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
 | `amosrejalh` | `AMOSREJALH` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
 | `amosrejout` | `AMOSREJOUT` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
-| `rejeitada` | `REJEITADA` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
-| `satisfact` | `SATISFACT` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
-| `insatsfac` | `INSATSFAC` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
+| `rejeitada` | `REJEITADA` | texto | Amostra rejeitada (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `satisfact` | `SATISFACT` | texto | Amostra satisfatória para avaliação (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `insatsfac` | `INSATSFAC` | texto | Amostra insatisfatória para avaliação (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `co_insa_ac` | `CO_INSA_AC` | texto | Campo do laudo do SISCOLO (`CO_INSA_AC`); sem dicionário oficial no FTP | — | todos |
 | `co_insa_sa` | `CO_INSA_SA` | texto | Campo do laudo do SISCOLO (`CO_INSA_SA`); sem dicionário oficial no FTP | — | todos |
 | `co_insa_pi` | `CO_INSA_PI` | texto | Campo do laudo do SISCOLO (`CO_INSA_PI`); sem dicionário oficial no FTP | — | todos |
@@ -229,7 +225,6 @@ Nomes verificados contra o arquivo real `CCRJ1503.dbc` (102 colunas; resultado d
 
 - **Colunas que não existem em todo o período:** 1 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -238,11 +233,18 @@ Nomes verificados contra o arquivo real `CCRJ1503.dbc` (102 colunas; resultado d
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/siscolo-cc").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/siscolo-cc/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "mes", "uf")
+    dados.group_by("ano", "mes", "uf")
     .agg(pl.len().alias("linhas"))
     .sort("ano", "mes", "uf")
     .collect()
@@ -251,38 +253,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
-
-> `quantilica datasus <subcomando>` e `datasus-fetcher <subcomando>` são equivalentes.
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para siscolo-cc
-quantilica datasus list siscolo-cc
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list siscolo-cc
 
-# 2. Baixar microdados de siscolo-cc com recorte adequado à partição (uf / yearmonth)
-quantilica datasus sync siscolo-cc -o ./data --start 2010-01 --end 2012-12 --regions sp rj
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync siscolo-cc -o ./data --start 2024-01 --end 2024-12 --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync siscolo-cc -o ./data --start 2010-01 --end 2012-12 --regions sp rj --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline siscolo-cc -o ./data/raw --parquet-dir ./data/parquet --start 2010-01 --end 2012-12 --regions sp rj
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset siscolo-cc
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-
-frame = df.read_dbc(
-    "data/siscolo-cc/201001/siscolo-cc_201001-sp@20220817.dbc", dataset="siscolo-cc"
-)
-print(frame.shape)
-print(frame.columns)
-
-print(frame.group_by("co_adeq_ma").len().sort("len", descending=True).head(10))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SISCAN/SISCOLO4/Dados`

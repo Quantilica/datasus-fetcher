@@ -3,7 +3,7 @@ dataset:
   id: sinan-anim
   fonte: datasus
   titulo: Acidente por Animais Peçonhentos
-  resumo: O sinan-anim contém os microdados das notificações de acidentes por animais peçonhentos (CID-10 X20-X29) registrados no Sistema de Informação de Agravos de Notificação (SINAN).
+  resumo: 'Acidente por Animais Peçonhentos do DATASUS: uma ficha de notificação/investigação de acidente por Animais Peçonhentos.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -54,13 +54,9 @@ O `sinan-anim` contém os microdados das notificações de acidentes por animais
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (arquivos consolidados anuais, praticamente sempre `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2007 a 2026 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 20 arquivos (~207 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório `PRELIM`)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório `PRELIM`)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -72,7 +68,7 @@ O `sinan-anim` contém os microdados das notificações de acidentes por animais
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `ANIMBR07.dbc` — prefixo `ANIM`, `BR` (consolidação nacional) e `07` (ano 2007), até `ANIMBR22.dbc` (2022); os anos recentes ficam em `PRELIM` (ex.: `ANIMBR26.dbc`).
-- **No armazenamento local do `datasus-fetcher`**: caminho padronizado `data/sinan-anim/<ano>/sinan-anim_<período>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-anim/2022/sinan-anim_2022-br@20260921.dbc`; arquivos preliminares recebem o sufixo `-preliminar`.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-anim/<AAAA>/sinan-anim_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-anim/2024/sinan-anim_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: em `SINAN/DOCS`: `Docs_TAB_SINAN.zip` e os PDFs de acesso/conversão/tabulação (`POP_I`, `POP_II`, `POP_III`); em `SINAN/AUXILIAR`: `TAB_SINANNET.zip`, `TAB_SINANONLINE.zip` e `POPT_Estimativa_TCU_2019_Sinan.zip`.
 
 ## Conteúdo
@@ -123,13 +119,13 @@ Aplicações analíticas: coeficiente de incidência por 100 mil habitantes, let
 | `tp_not` | `TP_NOT` | texto | Tipo de Notificação. Identifica o tipo da notificação | 1 – Negativa 2 – Individual 3 – Surto 4 – Agregado | todos |
 | `id_agravo` | `ID_AGRAVO` | texto | Agravo. Tabela de agravos do sistema com códigos (classificação internacional de doenças –CID 10) e nomes dos agravos classificados como notificação compulsória ( nacional, estadual ou municipal) e as síndromes ( febre hemorragia aguda;respiratória aguda; diarréia aguda; sanguinolenta; | — | todos |
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
-| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_notifi cacao | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno) | — | todos |
 | `nu_ano` | `NU_ANO` | texto | (campo interno). Ano da notificação | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
 | `id_regiona` | `ID_REGIONA` | texto | (campo interno). Regional de saúde onde está localizado o município da unidade de saúde ou outra fonte notificadora | — | todos |
-| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico. dt_diagnostico_si ntoma | — | todos |
-| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno). ds_semana_sinto ma | — | todos |
+| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico | — | todos |
+| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno) | — | todos |
 | `ano_nasc` | `ANO_NASC` | inteiro ou texto | Ano de nascimento do paciente (campo do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `nu_idade_n` | `NU_IDADE_N` | inteiro | Idade. A composição da variável obedece o seguinte critério: 1o | — | todos |
 | `cs_sexo` | `CS_SEXO` | texto | Sexo. M- Masculino F- Feminino I- Ignorado | — | todos |
@@ -137,9 +133,9 @@ Aplicações analíticas: coeficiente de incidência por 100 mil habitantes, let
 | `cs_raca` | `CS_RACA` | texto | Raça/Cor. Considera-se cor ou raça declarada pela pessoa. 1. branca 2. preta 3. amarela (pessoa que se declarou de raça amarela) 4. parda (pessoa que se declarou mulata, cabocla, cafuza, mameluca ou mestiça de preto com pessoa de outra cor ou raça) 5. indígena (pessoa que se declarou indígena ou índia) | 1- branca 2- preta 3- amarela 4- parda 5- indígena 9 Ignorado | todos |
 | `cs_escol_n` | `CS_ESCOL_N` | texto | Escolaridade. 43 Analfabeto 1. 1ª a 4ª série incompleta do EF 2. 4ª série completa do EF ( antigo 1° grau) 3. 5ª à 8ª série incompleta do EF (antigo ginásio ou 1° grau) 4. Ensino fundamental completo (antigo ginásio ou 1° grau) 5. Ensino médio incompleto (antigo colegial ou 2° grau) 6. Ensino médio completo (antigo colegial ou 2° grau) 7. Educação superior incompleta 8. Educação superior completa 9. Ignorado 10. N... | — | todos |
 | `sg_uf` | `SG_UF` | texto | UF. Sigla da Unidade Federada de residência do paciente por ocasião da notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência. co_municipio_res idencia | — | todos |
+| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência | — | todos |
 | `id_rg_resi` | `ID_RG_RESI` | texto | (campo interno). Regional de saúde onde está localizado o município de residência do paciente por ocasião da notificação | — | todos |
-| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil). co_pais_residenc ia | — | todos |
+| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil) | — | todos |
 | `dt_invest` | `DT_INVEST` | data | Data da investigação. data de início da investigação do caso | — | todos |
 | `id_ocupa_n` | `ID_OCUPA_N` | texto | Ocupação. Ocupação do indivíduo que sofreu o agravo | — | todos |
 | `ant_dt_aci` | `ANT_DT_ACI` | data | Data do acidente. Informar o nome do município onde ocorreu o acidente | — | todos |
@@ -155,10 +151,10 @@ Aplicações analíticas: coeficiente de incidência por 100 mil habitantes, let
 | `cli_local_` | `CLI_LOCAL_` | texto | Se Manifestações locais sim, especificar (Outras). Se manifestações locais sim, informar se houve (outras) | 1 – Sim 2 – Não 9 – Ignorado | todos |
 | `cli_loca_1` | `CLI_LOCA_1` | texto | No caso de Outras(especificar). Especificar outras manifestações locais | — | todos |
 | `mcli_sist` | `MCLI_SIST` | texto | Manifestações sistêmicas. Informar se houve manifestações sistêmicas | 1 – Sim 2 – Não 9 – Ignorado | todos |
-| `cli_neuro` | `CLI_NEURO` | texto | Se manifestações sistêmicas sim, especificar neuroparalíticas (ptose palpebral, turvação visual). st_manifestacao_sist_neurop ara | 1 – Sim 2 – Não 9 – Ignorado | todos |
-| `cli_hemorr` | `CLI_HEMORR` | texto | Se manifestações sistêmicas sim, especificar Hemorrágicas (gengivorragia, outros sangramentos). st_manifestacao_sist_hemorr ag | 1 – Sim 2 – Não 9 – Ignorado | todos |
+| `cli_neuro` | `CLI_NEURO` | texto | Se manifestações sistêmicas sim, especificar neuroparalíticas (ptose palpebral, turvação visual) | 1 – Sim 2 – Não 9 – Ignorado | todos |
+| `cli_hemorr` | `CLI_HEMORR` | texto | Se manifestações sistêmicas sim, especificar Hemorrágicas (gengivorragia, outros sangramentos) | 1 – Sim 2 – Não 9 – Ignorado | todos |
 | `cli_vagais` | `CLI_VAGAIS` | texto | Se manifestações sistêmicas sim, especificar vagais (vômitos/ diarréia). Se manifestações sistêmicas sim, informar se houve manifestações vagais (vômitos/ diarréia) | 1 – Sim 2 – Não 9 – Ignorado | todos |
-| `cli_miolit` | `CLI_MIOLIT` | texto | Se manifestações sistêmicas sim, especificar miolíticas/ hemolíticas (mialgia, anemia, urina escura). st_manifestacao_sist_miolitic a | 1 – Sim 2 – Não 9 – Ignorado | todos |
+| `cli_miolit` | `CLI_MIOLIT` | texto | Se manifestações sistêmicas sim, especificar miolíticas/ hemolíticas (mialgia, anemia, urina escura). a | 1 – Sim 2 – Não 9 – Ignorado | todos |
 | `cli_renal` | `CLI_RENAL` | texto | Se manifestações sistêmicas sim, especificar renais (oligúria/ anúria). Se manifestações sistêmicas sim, informar se houve manifestações renais (oligúria/ anúria) | 1 – Sim 2 – Não 9 – Ignorado | todos |
 | `cli_outr_2` | `CLI_OUTR_2` | texto | Se manifestações sistêmicas sim, especificar (Outras). Se manifestações sistêmicas sim informar se houve outras | 1 – Sim 2 – Não 9 – Ignorado | todos |
 | `cli_outr_3` | `CLI_OUTR_3` | texto | No caso de Outras(especificar). Especificar outras manifestações sistêmicas | — | todos |
@@ -180,15 +176,15 @@ Aplicações analíticas: coeficiente de incidência por 100 mil habitantes, let
 | `nu_ampol_9` | `NU_AMPOL_9` | inteiro | Se soroterapia sim, especificar, número de ampolas de soro: antiescorpiônico (SAEsc). Informar o número de ampolas aplicadas (soro antiescorpiônico) | — | todos |
 | `nu_ampol_3` | `NU_AMPOL_3` | inteiro | Se soroterapia sim, especificar, número. Informar o número de ampolas aplicadas (soro | — | todos |
 | `com_loc` | `COM_LOC` | texto | complicações Locais. Informar se houve complicações locais | 1 – Sim 2 – Não 9 – Ignorado | todos |
-| `com_secund` | `COM_SECUND` | texto | Se complicações locais Sim, especificar - Infecção Secundária. st_complicacao_local_infecca o | 1 – Sim 2 – Não 9 – Ignorado | todos |
-| `com_necros` | `COM_NECROS` | texto | Se complicações locais Sim, especificar - Necrose Extensa. st_complicacao_local_necros e | 1 – Sim 2 – Não 9 – Ignorado | todos |
+| `com_secund` | `COM_SECUND` | texto | Se complicações locais Sim, especificar - Infecção Secundária. o | 1 – Sim 2 – Não 9 – Ignorado | todos |
+| `com_necros` | `COM_NECROS` | texto | Se complicações locais Sim, especificar - Necrose Extensa. e | 1 – Sim 2 – Não 9 – Ignorado | todos |
 | `com_compor` | `COM_COMPOR` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
 | `com_defict` | `COM_DEFICT` | texto | Se complicações locais Sim, especificar - Déficit Funcional. Se complicações locais sim, informar se houve Déficit Funcional | 1 – Sim 2 – Não 9 – Ignorado | todos |
-| `com_aputac` | `COM_APUTAC` | texto | Se complicações locais Sim, especificar - Amputação. st_complicacao_local_amput acao | 1 – Sim 2 – Não 9 – Ignorado | todos |
+| `com_aputac` | `COM_APUTAC` | texto | Se complicações locais Sim, especificar - Amputação | 1 – Sim 2 – Não 9 – Ignorado | todos |
 | `com_sistem` | `COM_SISTEM` | texto | Complicações Sistêmicas. Informar se houve complicações sistêmicas | 1 – Sim 2 – Não 9 – Ignorado | todos |
 | `com_renal` | `COM_RENAL` | texto | Se complicações sistêmicas, especificar -. Se complicações sistemicas sim, informar se houve Insuficiência | 1 – Sim 2 – Não 9 – Ignorado | todos |
-| `com_edema` | `COM_EDEMA` | texto | Se complicações sistêmicas, especificar - Insuficiência Respiratória/ Edema Pulmonar Agudo. st_complicacao_sist_respirat oria | 1 – Sim 2 – Não 9 – Ignorado | todos |
-| `com_septic` | `COM_SEPTIC` | texto | Se complicações sistêmicas, especificar - Septicemia. st_complicacao_sist_septice mia | 1 – Sim 2 – Não 9 – Ignorado | todos |
+| `com_edema` | `COM_EDEMA` | texto | Se complicações sistêmicas, especificar - Insuficiência Respiratória/ Edema Pulmonar Agudo | 1 – Sim 2 – Não 9 – Ignorado | todos |
+| `com_septic` | `COM_SEPTIC` | texto | Se complicações sistêmicas, especificar - Septicemia | 1 – Sim 2 – Não 9 – Ignorado | todos |
 | `com_choque` | `COM_CHOQUE` | texto | Se complicações sistêmicas, especificar - Choque. Se complicações sistêmicas sim, Informar se houve Choque | 1 – Sim 2 – Não 9 – Ignorado | todos |
 | `doenca_tra` | `DOENCA_TRA` | texto | Acidente relacionada ao trabalho. Informar se a doença é relacionada ao trabalho | 1 – Sim 2 – Não 9 – Ignorado | todos |
 | `evolucao` | `EVOLUCAO` | texto | Evolução do Caso | 1 – Cura 2 – óbito por acidente por animais peçonhentos 3 – Óbito por outras causas 9 – Ignorado | todos |
@@ -212,20 +208,26 @@ Aplicações analíticas: coeficiente de incidência por 100 mil habitantes, let
 - volume enorme (20 consolidações anuais com ~207 MB) e sazonalidade de pico em estações quentes; o tipo de acidente e o gênero da serpente/aranha podem ficar em branco quando o animal não é identificado — não tratar blank como "outros"; município de residência vs. município de ocorrência do acidente podem divergir (campos específicos da ficha registram UF/localidade de ocorrência); acidentes de trabalho exigem o cruzamento de `DOENCA_TRA` com `ID_OCUPA_C`, como fazem as análises oficiais do Boletim Epidemiológico da SVSA. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Tipo que varia entre períodos:** `ano_nasc` aparecem com mais de um tipo nas amostras (por exemplo, inteiro em alguns períodos e texto em outros); leia a coluna `Tipo` do dicionário e converta explicitamente antes de empilhar períodos. Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-anim").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-anim/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -234,38 +236,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-anim
-quantilica datasus list sinan-anim
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-anim
 
-# 2. Baixar microdados de sinan-anim com recorte adequado à partição do dataset
-quantilica datasus sync sinan-anim -o ./data --start 2010 --end 2022 --regions br
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-anim -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-anim -o ./data --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-anim -o ./data/raw --parquet-dir ./data/parquet --start 2010
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-anim
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-# Lê o arquivo consolidado de acidentes por animais peçonhentos já tratado
-qdf = read_dbc("data/sinan-anim/2022/sinan-anim_2022-br@20260921.dbc", clean=True)
-
-# Volume de acidentes por ano e UF
-print(qdf.group_by("nu_ano", "sg_uf_not").len().sort(["nu_ano", "sg_uf_not"]))
-
-# Proporção de acidentes relacionados ao trabalho
-print(qdf.group_by("doenca_tra").len().sort("len", descending=True))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS` e `.../SINAN/DADOS/PRELIM`

@@ -3,7 +3,7 @@ dataset:
   id: sinan-canc
   fonte: datasus
   titulo: Câncer relacionado ao trabalho
-  resumo: Notificações de casos de câncer cuja causalidade inclui exposição a fatores, agentes ou situações de risco presentes no ambiente e no processo de trabalho, registradas no SINAN.
+  resumo: 'Câncer relacionado ao trabalho do DATASUS: uma ficha de notificação/investigação de câncer relacionado ao trabalho.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -42,13 +42,9 @@ Notificações de casos de câncer cuja causalidade inclui exposição a fatores
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (no FTP há apenas arquivos nacionais `BR`: `partition_n_ufs` = 1)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2007 a 2026 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 20 arquivos (~562 KB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório PRELIM, 2023–2026; Finais até 2022)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório PRELIM, 2023–2026; Finais até 2022)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -60,7 +56,7 @@ Notificações de casos de câncer cuja causalidade inclui exposição a fatores
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo `CANCBR24.dbc`, em que `CANC` é o prefixo do agravo, `BR` indica a base nacional (arquivo único por ano para o Brasil) e `24` é o ano com 2 dígitos (2024, preliminar).
-- **No armazenamento local do `datasus-fetcher`**: `data/sinan-canc/<partição>/sinan-canc_br_2007_<AAAAMMDD>.dbc`, em que `<AAAAMMDD>` é a data de modificação do arquivo no FTP.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-canc/<AAAA>/sinan-canc_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-canc/2024/sinan-canc_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e tabelas auxiliares associadas** (grupo `sinan`, compartilhadas por todos os agravos):
   - Documentação (`/SINAN/DOCS`): `Docs_TAB_SINAN.zip` (~65 MB), `POP_I_Acesso_a_Microdados_5.pdf`, `POP_II_Descompactacao_expansao_conversao_3.pdf`, `POP_III_Instalacao_do_tabulador_TabWin_3.pdf`.
   - Tabelas auxiliares (`/SINAN/AUXILIAR`): `TAB_SINANNET.zip` (~44 MB), `TAB_SINANONLINE.zip` (~240 KB), `POPT_Estimativa_TCU_2019_Sinan.zip`.
@@ -138,13 +134,13 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 |---|---|---|---|---|---|
 | `tp_not` | `TP_NOT` | texto | Tipo de Notificação. Identifica o tipo da notificação | 1 – Negativa 2 – Individual 3 – Surto 4 – Agregado | todos |
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
-| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_notifi cacao | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno) | — | todos |
 | `nu_ano` | `NU_ANO` | texto | (campo interno). Ano da notificação | — | todos |
 | `id_agravo` | `ID_AGRAVO` | texto | Agravo. Tabela de agravos do sistema com códigos (classificação internacional de doenças –CID 10) e nomes dos agravos classificados como notificação compulsória ( nacional, estadual ou municipal) e as síndromes ( febre hemorragia aguda;respiratória aguda; diarréia aguda; sanguinolenta; | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
 | `id_regiona` | `ID_REGIONA` | texto | (campo interno). Regional de saúde onde está localizado o município da unidade de saúde ou outra fonte notificadora | — | todos |
-| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora. co_unidade_notifi cacao | — | todos |
+| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora | — | todos |
 | `dt_diag` | `DT_DIAG` | data | Data dos primeiros sintomas / Diagnóstico. Data dos primeiros sintomas do caso de agravo agudo. Data do diagnóstico do caso de agravo crônico e DRTs Data do acidente nos acidentes da saúde do trabalhador | — | todos |
 | `sem_diag` | `SEM_DIAG` | texto | Semana epidemiológica dos primeiros sintomas/ diagnósticos. (campo interno). Semanas do calendário epidemiológico padronizado | — | todos |
 | `ano_nasc` | `ANO_NASC` | texto | Ano de nascimento do paciente (campo do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
@@ -154,24 +150,24 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 | `cs_raca` | `CS_RACA` | texto | Raça/Cor. Considera-se cor ou raça declarada pela pessoa. 1. branca 2. preta 3. amarela (pessoa que se declarou de raça amarela) 4. parda (pessoa que se declarou mulata, cabocla, cafuza, mameluca ou mestiça de preto com pessoa de outra cor ou raça) 5. indígena (pessoa que se declarou indígena ou índia) | 1- branca 2- preta 3- amarela 4- parda 5- indígena 9 Ignorado | todos |
 | `cs_escol_n` | `CS_ESCOL_N` | texto | Escolaridade. 43 Analfabeto 1. 1ª a 4ª série incompleta do EF 2. 4ª série completa do EF ( antigo 1° grau) 3. 5ª à 8ª série incompleta do EF (antigo ginásio ou 1° grau) 4. Ensino fundamental completo (antigo ginásio ou 1° grau) 5. Ensino médio incompleto (antigo colegial ou 2° grau) 6. Ensino médio completo (antigo colegial ou 2° grau) 7. Educação superior incompleta 8. Educação superior completa 9. Ignorado 10. N... | — | todos |
 | `sg_uf` | `SG_UF` | texto | UF. Sigla da Unidade Federada de residência do paciente por ocasião da notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência. co_municipio_res idencia | — | todos |
+| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência | — | todos |
 | `id_rg_resi` | `ID_RG_RESI` | texto | (campo interno). Regional de saúde onde está localizado o município de residência do paciente por ocasião da notificação | — | todos |
-| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil). co_pais_residenc ia | — | todos |
-| `id_ocupa_n` | `ID_OCUPA_N` | texto | Ocupação. co_cbo_ocupaca o | — | todos |
+| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil) | — | todos |
+| `id_ocupa_n` | `ID_OCUPA_N` | texto | Ocupação. o | — | todos |
 | `sit_trab` | `SIT_TRAB` | texto | Situação no mercado de trabalho. Situação de trabalho do indivíduo que sofreu o agravo | 01. Empregado registrado com carteira assinada 02. Empregado não registrado 03. Autônomo/conta | todos |
 | `nutempo` | `NUTEMPO` | texto | Número que compõe o tempo (de exposição ou de ocorrência); a unidade está em `tptempo` (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `tptempo` | `TPTEMPO` | texto | Unidade do tempo informado em `nutempo` (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `cnae` | `CNAE` | texto | Código da atividade Econômica(CNAE). Classificação Nacional da Atividade Econômica do Contratante | — | todos |
 | `uf_emp` | `UF_EMP` | texto | UF. Unidade da Federação da empresa contratante | — | todos |
-| `mun_emp` | `MUN_EMP` | texto | Município. co_municipio_empres a | — | todos |
-| `terceiriza` | `TERCEIRIZA` | texto | O empregador é empresa Terceirizada. tp_empresa_terceiriza da | 01- Sim 02- Não 03- Não se aplica 09- Ignorado | todos |
+| `mun_emp` | `MUN_EMP` | texto | Município. a | — | todos |
+| `terceiriza` | `TERCEIRIZA` | texto | O empregador é empresa Terceirizada | 01- Sim 02- Não 03- Não se aplica 09- Ignorado | todos |
 | `nutemporis` | `NUTEMPORIS` | texto | Número que compõe o tempo de exposição ao agente de risco; a unidade está em `tptemporis` (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `tptemporis` | `TPTEMPORIS` | texto | Unidade do tempo informado em `nutemporis` (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `regime` | `REGIME` | texto | Regime de tratamento. O tratamento ocorreu em regime hospitalar ou ambulatorial | 1 – hospitalar 2 - ambulatorial | todos |
 | `diag_esp` | `DIAG_ESP` | texto | Diagnóstico específico. co_cid_diagnóstico | — | todos |
-| `asbesto` | `ASBESTO` | texto | Houve exposição nos locais de trabalho, durante toda a sua vida profissional, a algum dos itens abaixo relacionados? Asbesto ou Amianto. st_exp_asbesto_amia nto | 1 – Sim 2 – Não 9 – Ignorado | todos |
+| `asbesto` | `ASBESTO` | texto | Houve exposição nos locais de trabalho, durante toda a sua vida profissional, a algum dos itens abaixo relacionados? Asbesto ou Amianto | 1 – Sim 2 – Não 9 – Ignorado | todos |
 | `silica` | `SILICA` | texto | Houve exposição nos locais de trabalho, durante toda a sua vida profissional, a algum dos itens abaixo relacionados? Sílica livre, arsênico e seus compostos arsenicais. Ocorreu exposição nos locais de trabalho, durante toda a sua vida profissional Sílica livre, arsênico e seus compostos arsenicais | 1 – Sim 2 – Não 9 – Ignorado | todos |
-| `amina` | `AMINA` | texto | Houve exposição nos locais de trabalho,. st_exp_amina_aromati ca | 1 – Sim 2 – Não | todos |
+| `amina` | `AMINA` | texto | Houve exposição nos locais de trabalho, | 1 – Sim 2 – Não | todos |
 | `benzeno` | `BENZENO` | texto | Houve exposição nos locais de trabalho, durante toda a sua vida profissional, a algum dos itens abaixo relacionados? Benzeno ou seus homólogos tóxicos. Ocorreu exposição nos locais de trabalho, durante toda a sua vida profissional Benzeno ou seus homólogos tóxicos | 1 – Sim 2 – Não 9 – Ignorado | todos |
 | `alcatrao` | `ALCATRAO` | texto | Houve exposição nos locais de trabalho, durante toda a sua vida profissional, a algum dos itens abaixo relacionados? Alcatrão, breu, betume, hulha mineral, parafina e produtos ou resíduos dessas substâncias. Ocorreu exposição nos locais de trabalho, durante toda a sua vida profissional Alcatrão, breu, betume, hulha mineral, parafina e produtos ou resíduos dessas substâncias | 1 – Sim 2 – Não 9 – Ignorado | todos |
 | `hidrocarbo` | `HIDROCARBO` | texto | Houve exposição nos locais de trabalho, durante toda a sua vida profissional, a algum dos itens abaixo relacionados? Hidrocarbonetos alifáticos ou aromáticos (seus derivados halogenados). Ocorreu exposição nos locais de trabalho, durante toda a sua vida profissional Hidrocarbonetos alifáticos ou aromáticos (seus derivados halogenados) | 1 – Sim 2 – Não 9 – Ignorado | todos |
@@ -179,8 +175,8 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 | `berilio` | `BERILIO` | texto | Houve exposição nos. Ocorreu exposição | 1 – Sim | todos |
 | `cadmio` | `CADMIO` | texto | Houve exposição nos locais de trabalho, durante toda a sua vida profissional, a algum dos itens abaixo relacionados? Cádmio ou seus compostos. Ocorreu exposição nos locais de trabalho, durante toda a sua vida profissional Cádmio ou seus compostos | 1 – Sim 2 – Não 9 – Ignorado | todos |
 | `cromo` | `CROMO` | texto | Houve exposição nos locais de trabalho, durante toda a sua vida profissional, a algum dos itens abaixo relacionados? Cromo ou seus compostos tóxicos. Ocorreu exposição nos locais de trabalho, durante toda a sua vida profissional Cromo ou seus compostos tóxicos | 1 – Sim 2 – Não 9 – Ignorado | todos |
-| `niquel` | `NIQUEL` | texto | Houve exposição nos locais de trabalho, durante toda a sua vida profissional, a algum dos itens abaixo relacionados? Composto de Níquel. st_exp_composto_niq uel | — | todos |
-| `ionizantes` | `IONIZANTES` | texto | Houve exposição nos locais de trabalho, durante toda a sua vida profissional, a algum dos itens abaixo relacionados? Radiações Ionizantes. st_exp_radiacao_ioniz ante | 1 – Sim 2 – Não 9 – Ignorado | todos |
+| `niquel` | `NIQUEL` | texto | Houve exposição nos locais de trabalho, durante toda a sua vida profissional, a algum dos itens abaixo relacionados? Composto de Níquel | — | todos |
+| `ionizantes` | `IONIZANTES` | texto | Houve exposição nos locais de trabalho, durante toda a sua vida profissional, a algum dos itens abaixo relacionados? Radiações Ionizantes | 1 – Sim 2 – Não 9 – Ignorado | todos |
 | `nao_ioniza` | `NAO_IONIZA` | texto | Houve exposição nos. Ocorreu exposição | 1 – Sim | todos |
 | `hormonio` | `HORMONIO` | texto | Houve exposição nos locais de trabalho, durante toda a sua vida profissional, a algum dos itens abaixo relacionados? Hormônios. Ocorreu exposição nos locais de trabalho, durante toda a sua vida profissional Hormônios | 1 – Sim 2 – Não 9 – Ignorado | todos |
 | `neoplasico` | `NEOPLASICO` | texto | Houve exposição nos locais de trabalho, durante toda a sua vida profissional, a algum dos itens abaixo relacionados? Antineoplásicos. Ocorreu exposição nos locais de trabalho, durante toda a sua vida profissional Antineoplásicos | 1 – Sim 2 – Não 9 – Ignorado | todos |
@@ -201,7 +197,7 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 | `dt_transrs` | `DT_TRANSRS` | data | Data de transferência da regional de saúde. Data de Transferência do registro da Regional de Saúde para do nível superior do sistema | — | todos |
 | `dt_transse` | `DT_TRANSSE` | data | Data de transferência da secretaria estadual de saúde. Data de Transferência do registro da Secretaria Estadual para do nível superior do sistema | — | todos |
 | `nu_lote_v` | `NU_LOTE_V` | texto | Número do lote vertical. Descrever aqui a estrutura da composição do número do lote | — | todos |
-| `nu_lote_h` | `NU_LOTE_H` | texto | Número do lote horizontal. nu_lote_horizont al | — | todos |
+| `nu_lote_h` | `NU_LOTE_H` | texto | Número do lote horizontal | — | todos |
 | `uf` | — | texto | UF do arquivo de origem (sigla em minúsculas, `br` para arquivos nacionais), gravada pelo conversor; as linhas do período saem ordenadas por ela | sigla da UF | todos |
 | `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
 
@@ -218,20 +214,26 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 
 - é uma base pequena e sensível à subnotificação; o CID-10 (`ID_AGRAVO`) pode não corresponder ao tipo histológico real, e o nexo ocupacional depende da qualidade da história ocupacional registrada. Não há separação por UF nos arquivos (`BR`); use `SG_UF_NOT` (notificação) ou `ID_MN_RESI` (residência) conforme a pergunta. Arquivos do diretório PRELIM (2023+) são preliminares; como `NU_NOTIFIC` não consta dos arquivos públicos, deduplique por combinação de campos (ex.: `ID_UNIDADE`, `DT_NOTIFIC`, `ID_MN_RESI`, `ANO_NASC`, `CS_SEXO`) ao combinar as duas fontes. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-canc").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-canc/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -240,49 +242,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-canc
-quantilica datasus list sinan-canc
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-canc
 
-# 2. Baixar microdados de sinan-canc (partição uf + year; no SINAN a UF é sempre BR)
-quantilica datasus sync sinan-canc -o ./data --start 2015 --end 2022 --regions BR
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-canc -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-canc -o ./data --docs --aux --start 2015 --end 2022 --regions BR
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-canc -o ./data/raw --parquet-dir ./data/parquet --start 2015 --end 2022 --regions BR
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-canc
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-# Leitura direta de um .dbc nacional (descompacta, lê e aplica o saneamento padrão)
-frame = read_dbc("data/raw/CANCBR22.dbc", dataset="sinan-canc")
-
-# Notificações por UF e ano
-resumo = (
-    frame.group_by("sg_uf_not", "nu_ano")
-    .agg(pl.len().alias("notificacoes"))
-    .sort("sg_uf_not", "nu_ano")
-)
-
-# Evolução do caso e principais CIDs notificados
-print(frame.group_by("evolucao").agg(pl.len().alias("n")).sort("n", descending=True))
-print(
-    frame.group_by("id_agravo")
-    .agg(pl.len().alias("n"))
-    .sort("n", descending=True)
-    .head()
-)
-print(resumo.head())
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/`

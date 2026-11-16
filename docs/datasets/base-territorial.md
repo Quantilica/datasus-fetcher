@@ -3,13 +3,13 @@ dataset:
   id: base-territorial
   fonte: datasus
   titulo: Base Territorial
-  resumo: O base-territorial contém as tabelas territoriais de referência do DATASUS, que descrevem a divisão político-administrativa e sanitária do Brasil
+  resumo: 'Base Territorial do DATASUS: uma entidade territorial (tabelas `tb_*`) ou um vínculo município–recorte (tabelas `rl_*`).'
   orgao: Ministério da Saúde — DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/territorio/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
   periodicidade: por versão publicada (sem periodicidade regular)
   cobertura:
-    inicio: '2026'
+    inicio: '2023'
     fim: em-curso
   unidade: uma entidade territorial (tabelas `tb_*`) ou um vínculo município–recorte (tabelas `rl_*`)
   granularidade:
@@ -338,46 +338,19 @@ import polars as pl
 )
 ```
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar versões disponíveis da Base Territorial
-quantilica datasus list base-territorial
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list base-territorial
 
-# 2. Baixar microdados (partition version; selecione a versão desejada)
-quantilica datasus sync base-territorial -o ./data --start 2026-01 --end 2026-06
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync base-territorial -o ./data --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial
-quantilica datasus sync base-territorial -o ./data --docs
-
-# 4. Pipeline completo: download, extração do .zip e conversão das tabelas para Parquet
-quantilica datasus pipeline base-territorial -o ./data/raw --parquet-dir ./data/parquet
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset base-territorial
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-
-munic = pl.read_csv(
-    "data/raw/base-territorial/base-territorial_2026-06/tb_municip.csv",
-    separator=";",
-    infer_schema_length=0,
-)
-
-# Municípios por UF com indicador de capital
-resumo = municip.group_by("CO_UF").agg(
-    [
-        pl.len().alias("municipios"),
-        pl.col("IN_CAPITAL")
-        .filter(pl.col("IN_CAPITAL") == "1")
-        .len()
-        .alias("capitais"),
-    ]
-)
-print(resumo)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/territorio/tabelas`

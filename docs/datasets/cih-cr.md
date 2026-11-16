@@ -3,7 +3,7 @@ dataset:
   id: cih-cr
   fonte: datasus
   titulo: Comunicação de Internação Hospitalar
-  resumo: cih-cr contém a Comunicação de Internação Hospitalar (CIH)
+  resumo: 'Comunicação de Internação Hospitalar do DATASUS: uma internação comunicada (CIH) por um estabelecimento, em uma competência.'
   orgao: Ministério da Saúde — DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/CIH/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -45,13 +45,9 @@ dataset:
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido com PKWARE DCL/blast, descompactado nativamente pelo `datasus-fetcher`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf / yearmonth`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2008-01 a 2011-04 (conforme `index.json`; 24 UFs com arquivos; última atualização no FTP em 2017-07-06)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 868 arquivos (~165,1 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): Não aplicável
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/CIH/200801_201012/Auxiliar`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** Não aplicável
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/CIH/200801_201012/Auxiliar`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -62,7 +58,7 @@ dataset:
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `CRSP0801.dbc` — `CR` (Comunicação de Internação Hospitalar) + `SP` (UF) + `08` (ano 2008) + `01` (mês de competência). Exemplo real de menor porte: `CRAC0801.dbc`.
-- **No armazenamento local do `datasus-fetcher`**: `data/cih-cr/<AAAAMM>/cih-cr_<uf>_<AAAAMM>_<AAAAMMDD>.dbc`, por exemplo `data/cih-cr/200801/cih-cr_sp_200801_20261018.dbc` (o sufixo `AAAAMMDD` é a data do download).
+- **No armazenamento local do `datasus-fetcher`**: `data/cih-cr/<AAAAMM>/cih-cr_<AAAAMM>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/cih-cr/202401/cih-cr_202401-sp@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: o grupo `cih` **não possui diretório de documentação** em `meta.docs` (sem Informe Técnico próprio no FTP); o leiaute é semelhante ao do SIH/RD (consulte `IT_SIHSUS_1603.pdf` em `SIHSUS/200801_/Doc`). Em `Auxiliar/` há `TAB_CIH.zip` (~15,3 MB, tabelas e conversores `.cnv`/`.def` de procedimento, CID e municípios).
 
 ## Conteúdo
@@ -148,7 +144,6 @@ Aplicações: completar o panorama de internações em municípios com hospitais
 
 - (i) é uma série **encerrada** e pequena; (ii) não substitui o SIH — não há identificador de AIH, portanto não é possível deduplicar contra o `sih-rd` pelo número; (iii) `CGC_HOSP` e `CNES` identificam o hospital, mas a cobertura varia por UF (24 UFs com arquivo); (iv) a CIH foi sucedida pelo `ciha` a partir de 2011-01 — há sobreposição em 2011-01 a 2011-04, cuja deduplicação deve ser feita por hospital+competência. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -157,11 +152,18 @@ Aplicações: completar o panorama de internações em municípios com hospitais
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/cih-cr").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/cih-cr/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "mes", "uf")
+    dados.group_by("ano", "mes", "uf")
     .agg(pl.len().alias("linhas"))
     .sort("ano", "mes", "uf")
     .collect()
@@ -170,46 +172,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para cih-cr
-quantilica datasus list cih-cr
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list cih-cr
 
-# 2. Baixar microdados de cih-cr com recorte adequado à partição (uf + yearmonth)
-quantilica datasus sync cih-cr -o ./data --start 2008-01 --end 2011-04 --regions sp rj
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync cih-cr -o ./data --start 2024-01 --end 2024-12 --regions sp rj --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync cih-cr -o ./data --start 2008-01 --end 2011-04 --regions sp rj --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline cih-cr -o ./data/raw --parquet-dir ./data/parquet --start 2008-01 --end 2011-04 --regions sp rj
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset cih-cr
 ```
 
-> O grupo `cih` não possui diretório de documentação mapeado em `meta.docs`; por isso a flag `--docs` foi omitida acima.
-
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from pathlib import Path
-
-arquivo = next(Path("./data/cih-cr/200801").glob("cih-cr_sp_200801_*.dbc"))
-cr = df.read_dbc(arquivo, dataset="cih-cr")
-
-# Internações comunicadas por diagnóstico principal e permanência média
-q = (
-    cr.with_columns(pl.col("diag_princ").str.slice(0, 3).alias("cid3"))
-    .group_by("cid3")
-    .agg(
-        pl.len().alias("internacoes"),
-        pl.col("dias_perm").mean().alias("permanencia_media"),
-    )
-    .sort("internacoes", descending=True)
-)
-print(q.head(10))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/CIH/200801_201012/`

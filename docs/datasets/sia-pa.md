@@ -3,7 +3,7 @@ dataset:
   id: sia-pa
   fonte: datasus
   titulo: Produção Ambulatorial
-  resumo: sia-pa é a Produção Ambulatorial do SIA/SUS
+  resumo: 'Produção Ambulatorial do DATASUS: a produção ambulatorial aprovada de um procedimento em um estabelecimento, agregada por competência, ocupação, faixa etária, sexo e município.'
   orgao: Ministério da Saúde — Secretaria de Atenção Especializada à Saúde (SAES) e DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SIASUS/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -59,13 +59,9 @@ dataset:
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido com PKWARE DCL/blast, descompactado nativamente pelo `datasus-fetcher`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf / yearmonth`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 1994-07 a 2026-07 (conforme `index.json`; 27 UFs com arquivos; última atualização no FTP em 2026-09-17)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 10.828 arquivos (~218,2 GB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIASUS/200801_/Doc`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIASUS/200801_/Auxiliar`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/SIASUS/200801_/Doc`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SIASUS/200801_/Auxiliar`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -77,7 +73,7 @@ dataset:
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `PASP2401a.dbc` — `PA` (Produção Ambulatorial) + `SP` (UF) + `24` (ano) + `01` (mês) + `a` (parte do arquivo, opcional a partir de 2008). Para a série antiga (1994–2007): `PAAC9407.dbc` (sem sufixo).
-- **No armazenamento local do `datasus-fetcher`**: `data/sia-pa/<AAAAMM>/sia-pa_<uf>_<AAAAMM>_<AAAAMMDD>.dbc`, por exemplo `data/sia-pa/202401/sia-pa_sp_202401_20261018.dbc` (o sufixo `AAAAMMDD` é a data do download).
+- **No armazenamento local do `datasus-fetcher`**: `data/sia-pa/<AAAAMM>/sia-pa_<AAAAMM>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sia-pa/202401/sia-pa_202401-sp@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: `Doc/Informe_Tecnico_SIASUS_2019_07.pdf` (~1,1 MB, julho/2019) descreve o leiaute dos arquivos do SIA; `Auxiliar/TAB_SIA.zip` (~73,8 MB, tabelas SIGTAP e conversores) e as versões históricas `TAB_SIA_199407-199910.zip`, `TAB_SIA_199911-200307.zip` e `TAB_SIA_200308-200712.zip` cobrem as fases anteriores à Tabela Unificada.
 
 ## Conteúdo
@@ -149,14 +145,14 @@ Aplicações: produção ambulatorial por procedimento, grupo/subgrupo/forma de 
 | `pa_docorig` | `PA_DOCORIG` | texto | Instrumento de Registro (conforme explicado na página 2) | — | todos |
 | `uf` | — | texto | UF do arquivo de origem (sigla em minúsculas, `br` para arquivos nacionais), gravada pelo conversor; as linhas do período saem ordenadas por ela | sigla da UF | todos |
 | `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
-| `pa_fxetar` | `PA_FXETAR` | texto | Faixa etária (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2004-08 a 2004-08 |
+| `pa_fxetar` | `PA_FXETAR` | texto | Faixa etária (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2004-08 |
 | `pa_cidpri` | `PA_CIDPRI` | texto | CID9 Principal (APAC ou BPA-I) | — | 2004-08 a 2026-04 |
 | `pa_cidsec` | `PA_CIDSEC` | texto | CID Secundário (APAC) | — | 2004-08 a 2026-04 |
-| `pa_morfol` | `PA_MORFOL` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004-08 a 2004-08 |
+| `pa_morfol` | `PA_MORFOL` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2004-08 |
 | `pa_cnpj_cc` | `PA_CNPJ_CC` | texto | CNPJ do Órgão que recebeu pela produção por cessão de crédito ou zeros, caso não o tenha | — | 2004-08 a 2026-04 |
-| `pa_rcb` | `PA_RCB` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004-08 a 2004-08 |
-| `pa_rcbdf` | `PA_RCBDF` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004-08 a 2004-08 |
-| `pa_nh` | `PA_NH` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2004-08 a 2004-08 |
+| `pa_rcb` | `PA_RCB` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2004-08 |
+| `pa_rcbdf` | `PA_RCBDF` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2004-08 |
+| `pa_nh` | `PA_NH` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2004-08 |
 | `pa_regct` | `PA_REGCT` | texto | Código da Regra Contratual | — | 2010-01 a 2026-04 |
 | `pa_incout` | `PA_INCOUT` | texto | Incremento Outros | — | 2010-01 a 2026-04 |
 | `pa_incurg` | `PA_INCURG` | texto | Incremento Urgência | — | 2010-01 a 2026-04 |
@@ -202,8 +198,8 @@ Aplicações: produção ambulatorial por procedimento, grupo/subgrupo/forma de 
 | `pa_srv_c` | `PA_SRV_C` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2017-11 a 2026-04 |
 | `pa_ine` | `PA_INE` | texto | Código de Identificação Nacional de Equipes10, para registrar a atuação das equipes na execução de ações de saúde | — | 2017-11 a 2026-04 |
 | `pa_nat_jur` | `PA_NAT_JUR` | texto | Código da Natureza Juridica11 | — | 2017-11 a 2026-04 |
-| `pa_fntorc` | `PA_FNTORC` | texto | Fonte orçamentária (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2026-04 a 2026-04 |
-| `pa_vl_crd` | `PA_VL_CRD` | decimal(20,2) | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2026-04 a 2026-04 |
+| `pa_fntorc` | `PA_FNTORC` | texto | Fonte orçamentária (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2026-04 |
+| `pa_vl_crd` | `PA_VL_CRD` | decimal(20,2) | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2026-04 |
 
 ## No lake
 
@@ -219,7 +215,6 @@ Aplicações: produção ambulatorial por procedimento, grupo/subgrupo/forma de 
 - **Tipo que varia entre períodos:** `pa_qtdpro`, `pa_qtdapr`, `pa_valpro`, `pa_valapr` aparecem com mais de um tipo nas amostras (por exemplo, inteiro em alguns períodos e texto em outros); leia a coluna `Tipo` do dicionário e converta explicitamente antes de empilhar períodos. Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Colunas que não existem em todo o período:** 63 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -228,11 +223,18 @@ Aplicações: produção ambulatorial por procedimento, grupo/subgrupo/forma de 
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sia-pa").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sia-pa/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "mes", "uf")
+    dados.group_by("ano", "mes", "uf")
     .agg(pl.len().alias("linhas"))
     .sort("ano", "mes", "uf")
     .collect()
@@ -241,48 +243,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sia-pa
-quantilica datasus list sia-pa
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sia-pa
 
-# 2. Baixar microdados de sia-pa com recorte adequado à partição (uf + yearmonth)
-quantilica datasus sync sia-pa -o ./data --start 2024-01 --end 2024-03 --regions sp
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sia-pa -o ./data --start 2024-01 --end 2024-12 --regions sp rj --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sia-pa -o ./data --start 2024-01 --end 2024-03 --regions sp --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sia-pa -o ./data/raw --parquet-dir ./data/parquet --start 2024-01 --end 2024-03 --regions sp
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sia-pa
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from pathlib import Path
-
-arquivo = next(Path("./data/sia-pa/202401").glob("sia-pa_sp_202401_*.dbc"))
-pa = df.read_dbc(arquivo, dataset="sia-pa")
-
-# Procedimentos mais produzidos (quantidade aprovada) e valor aprovado
-top = (
-    pa.group_by("pa_proc_id")
-    .agg(
-        pl.col("pa_qtdapr").sum().alias("qtd_aprovada"),
-        pl.col("pa_valapr").sum().alias("valor_aprovado"),
-    )
-    .sort("qtd_aprovada", descending=True)
-)
-print(top.head(10))
-
-# Distribuição por faixa etária (excluindo 999 = ignorada)
-idade = pa.with_columns(pl.col("pa_idade").cast(pl.Int64, strict=False)).filter(
-    pl.col("pa_idade") != 999
-)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SIASUS/200801_/`

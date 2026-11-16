@@ -3,7 +3,7 @@ dataset:
   id: cnes-lt
   fonte: datasus
   titulo: Leitos
-  resumo: O cnes-lt contém os microdados do arquivo de Leitos do Cadastro Nacional de Estabelecimentos de Saúde (CNES).
+  resumo: 'Leitos do DATASUS: um conjunto de leitos de um tipo e especialidade em um estabelecimento, em uma competência.'
   orgao: Ministério da Saúde — Secretaria de Atenção Especializada à Saúde (SAES) e DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -48,13 +48,9 @@ O `cnes-lt` contém os microdados do arquivo de **Leitos** do Cadastro Nacional 
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `yearmonth` (um arquivo por UF e competência mensal, além de `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2005-10 a 2026-09 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 6804 arquivos (~143 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/CNES/200508_/doc` (`IT_CNES_1706.pdf`)
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/CNES/200508_/Auxiliar` (`TAB_CNES.zip`)
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/CNES/200508_/doc` (`IT_CNES_1706.pdf`)
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/CNES/200508_/Auxiliar` (`TAB_CNES.zip`)
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -65,7 +61,7 @@ O `cnes-lt` contém os microdados do arquivo de **Leitos** do Cadastro Nacional 
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `LTSP2401.dbc` — `LT` (Leitos), `SP` (UF), `24` (ano), `01` (mês). Há também `LTBR<AA><MM>.dbc`.
-- **No armazenamento local do `datasus-fetcher`**: `data/cnes-lt/2024-01/cnes-lt_202401-sp@20261015.dbc`.
+- **No armazenamento local do `datasus-fetcher`**: `data/cnes-lt/<AAAAMM>/cnes-lt_<AAAAMM>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/cnes-lt/202401/cnes-lt_202401-sp@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: `IT_CNES_1706.pdf` (seção "Layout dos arquivos de Leitos — LT*.dbf") e `TAB_CNES.zip` (domínios de tipo e especialidade de leito).
 
 ## Conteúdo
@@ -150,7 +146,6 @@ Aplicações analíticas típicas: oferta de leitos por habitante, taxa de ocupa
 - a granularidade é tipo+especialidade, portanto a soma de `QT_EXIST` por estabelecimento exige agregação; `QT_SUS` pode ser menor que `QT_CONTR` e `QT_EXIST` (nem todo leito é ofertado ao SUS); categorias de leito mudam com o tempo (novos tipos de UTI) e exigem os domínios atualizados de `TAB_CNES.zip`; e o autocadastro pode apresentar inconsistências que precisam de validação contra o SIH. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Colunas que não existem em todo o período:** 1 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -159,11 +154,18 @@ Aplicações analíticas típicas: oferta de leitos por habitante, taxa de ocupa
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/cnes-lt").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/cnes-lt/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "mes", "uf")
+    dados.group_by("ano", "mes", "uf")
     .agg(pl.len().alias("linhas"))
     .sort("ano", "mes", "uf")
     .collect()
@@ -172,39 +174,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para cnes-lt
-quantilica datasus list cnes-lt
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list cnes-lt
 
-# 2. Baixar microdados de cnes-lt (uf+yearmonth)
-quantilica datasus sync cnes-lt -o ./data --start 2024-01 --end 2024-12 --regions sp
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync cnes-lt -o ./data --start 2024-01 --end 2024-12 --regions sp rj --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync cnes-lt -o ./data --docs --aux --start 2024-01 --end 2024-12
-
-# 4. Pipeline completo até Parquet tratado
-quantilica datasus pipeline cnes-lt -o ./data/raw --parquet-dir ./data/parquet --start 2024-01 --end 2024-12
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset cnes-lt
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-qdf = read_dbc("data/cnes-lt/2024-01/cnes-lt_202401-sp@20261015.dbc", clean=True)
-
-# Total de leitos SUS por tipo de leito
-leitos = (
-    qdf.group_by("tp_leito")
-    .agg(pl.col("qt_sus").sum().alias("leitos_sus"))
-    .sort("leitos_sus", descending=True)
-)
-print(leitos)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/200508_/Dados/LT`

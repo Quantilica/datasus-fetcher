@@ -3,7 +3,7 @@ dataset:
   id: sinan-hans
   fonte: datasus
   titulo: Hanseníase
-  resumo: O sinan-hans contém os microdados das notificações e investigações epidemiológicas de casos de Hanseníase/Doença de Hansen (CID-10 A30) registrados no Sistema de Informação de Agravos de Notificação (SINAN) do Ministério da Saúde.
+  resumo: 'Hanseníase do DATASUS: uma ficha de notificação/investigação de hanseníase.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -49,13 +49,9 @@ O `sinan-hans` contém os microdados das notificações e investigações epidem
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (arquivos consolidados anuais, praticamente sempre `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2001 a 2026 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 26 arquivos (~60,9 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório `PRELIM`)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório `PRELIM`)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -67,7 +63,7 @@ O `sinan-hans` contém os microdados das notificações e investigações epidem
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `HANSBR23.dbc` — `HANS` é o prefixo do agravo, `BR` indica a consolidação nacional de todo o país e `23` é o ano de notificação (2023). As consolidações até 2023 estão em `FINAIS` e os anos de 2024 a 2026 estão apenas em `PRELIM` (ex.: `HANSBR26.dbc`, atualização de 29/09/2026).
-- **No armazenamento local do `datasus-fetcher`**: caminho padronizado `data/sinan-hans/<ano>/sinan-hans_<período>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-hans/2026/sinan-hans_preliminar_2026-br@20260929.dbc`; arquivos preliminares recebem o sufixo `-preliminar` no nome do dataset.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-hans/<AAAA>/sinan-hans_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-hans/2024/sinan-hans_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: no diretório `SINAN/DOCS` estão `Docs_TAB_SINAN.zip` e as instruções POP_I/II/III de acesso, descompactação e tabulação; em `SINAN/AUXILIAR` estão `TAB_SINANNET.zip`, `TAB_SINANONLINE.zip` (definições/tabulações do Sinan Net e Online) e `POPT_Estimativa_TCU_2019_Sinan.zip` (denominadores populacionais).
 
 ## Conteúdo
@@ -128,9 +124,9 @@ Schema extraído de `HANSBR23.dbc` (64 colunas depois de remover `_deleted`).
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
 | `nu_ano` | `NU_ANO` | texto | (campo interno). Ano da notificação | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
 | `id_regiona` | `ID_REGIONA` | texto | (campo interno). Regional de saúde onde está localizado o município da unidade de saúde ou outra fonte notificadora | — | todos |
-| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora. co_unidade_notifi cacao | — | todos |
+| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora | — | todos |
 | `dt_diag` | `DT_DIAG` | data | Data dos primeiros sintomas / Diagnóstico. Data dos primeiros sintomas do caso de agravo agudo. Data do diagnóstico do caso de agravo crônico e DRTs Data do acidente nos acidentes da saúde do trabalhador | — | todos |
 | `sem_diag` | `SEM_DIAG` | texto | Semana epidemiológica dos primeiros sintomas/ diagnósticos. (campo interno). Semanas do calendário epidemiológico padronizado | — | todos |
 | `ano_nasc` | `ANO_NASC` | texto | Ano de nascimento do paciente (campo do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
@@ -140,9 +136,9 @@ Schema extraído de `HANSBR23.dbc` (64 colunas depois de remover `_deleted`).
 | `cs_raca` | `CS_RACA` | texto | Raça/Cor. Considera-se cor ou raça declarada pela pessoa. 1. branca 2. preta 3. amarela (pessoa que se declarou de raça amarela) 4. parda (pessoa que se declarou mulata, cabocla, cafuza, mameluca ou mestiça de preto com pessoa de outra cor ou raça) 5. indígena (pessoa que se declarou indígena ou índia) | 1- branca 2- preta 3- amarela 4- parda 5- indígena 9 Ignorado | todos |
 | `cs_escol_n` | `CS_ESCOL_N` | texto | Escolaridade. 43 Analfabeto 1. 1ª a 4ª série incompleta do EF 2. 4ª série completa do EF ( antigo 1° grau) 3. 5ª à 8ª série incompleta do EF (antigo ginásio ou 1° grau) 4. Ensino fundamental completo (antigo ginásio ou 1° grau) 5. Ensino médio incompleto (antigo colegial ou 2° grau) 6. Ensino médio completo (antigo colegial ou 2° grau) 7. Educação superior incompleta 8. Educação superior completa 9. Ignorado 10. N... | — | todos |
 | `sg_uf` | `SG_UF` | texto | UF. Sigla da Unidade Federada de residência do paciente por ocasião da notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência. co_municipio_res idencia | — | todos |
+| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência | — | todos |
 | `id_rg_resi` | `ID_RG_RESI` | texto | (campo interno). Regional de saúde onde está localizado o município de residência do paciente por ocasião da notificação | — | todos |
-| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil). co_pais_residenc ia | — | todos |
+| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil) | — | todos |
 | `nduplic_n` | `NDUPLIC_N` | texto | Não Listar/ Não Contar. 0 ou branco – Não identificado 1 – Não é duplicidade (não listar) 2 – Duplicidade (não contar) | — | todos |
 | `dt_digita` | `DT_DIGITA` | data | Data de digitação. Data de Digitação da primeira inclusão da notificação no sistema | — | todos |
 | `dt_transus` | `DT_TRANSUS` | data | Data de transferência da unidade de saúde. Data de Transferência do registro da Unidade de Saúde para do nível superior do sistema | — | todos |
@@ -152,36 +148,36 @@ Schema extraído de `HANSBR23.dbc` (64 colunas depois de remover `_deleted`).
 | `dt_transrs` | `DT_TRANSRS` | data | Data de transferência da regional de saúde. Data de Transferência do registro da Regional de Saúde para do nível superior do sistema | — | todos |
 | `dt_transse` | `DT_TRANSSE` | data | Data de transferência da secretaria estadual de saúde. Data de Transferência do registro da Secretaria Estadual para do nível superior do sistema | — | todos |
 | `nu_lote_v` | `NU_LOTE_V` | texto | Número do lote vertical. Descrever aqui a estrutura da composição do número do lote | — | todos |
-| `nu_lote_h` | `NU_LOTE_H` | texto | Número do lote horizontal. nu_lote_horizont al | — | todos |
+| `nu_lote_h` | `NU_LOTE_H` | texto | Número do lote horizontal | — | todos |
 | `cs_flxret` | `CS_FLXRET` | texto | Fluxo de retorno. Identifica se o registro está habilitado ou foi enviado pelo fluxo de retorno para o município de residência | 0 - Não 1 - habilitado para envio. 2 - enviado | todos |
 | `flxrecebi` | `FLXRECEBI` | texto | Recebida por fluxo de retorno (campo interno). Colocar a estrutura do nº atribuído pelo sistema | — | todos |
 | `migrado_w` | `MIGRADO_W` | texto | Identifica migração (campo interno). Identifica se o registro é oriundo da rotina de migração da base Windows | 11- migrado do Sinan Windows | todos |
 | `id_ocupa_n` | `ID_OCUPA_N` | texto | Ocupação. Categorias da classificação brasileira de ocupações (CBO) | — | todos |
 | `nu_lesoes` | `NU_LESOES` | inteiro | Nº de lesões cutâneas. Número de lesões dermatológicas apresentadas pelo paciente por ocasião do diagnóstico | — | todos |
 | `formaclini` | `FORMACLINI` | texto | Forma Clínica. Forma clínica inicial por ocasião do diagnóstico, segundo classificação de Madrid | 1- I -Indeterminada 2- T - Tuberculóide 3- D - Dimorfa 4- V - Virchowiana 5- Não classificado | todos |
-| `avalia_n` | `AVALIA_N` | texto | Avaliação do Grau de Incapacidade Física no Diagnóstico. tp_incapacidade_fisi ca | — | todos |
-| `classopera` | `CLASSOPERA` | texto | Classificação Operacional. tp_classfic_operacio nal | 1- PB - Paucibacilar 2- MB - Multibacilar | todos |
+| `avalia_n` | `AVALIA_N` | texto | Avaliação do Grau de Incapacidade Física no Diagnóstico | — | todos |
+| `classopera` | `CLASSOPERA` | texto | Classificação Operacional | 1- PB - Paucibacilar 2- MB - Multibacilar | todos |
 | `modoentr` | `MODOENTR` | texto | Modo de entrada. Modo de entrada do paciente no sistema | 1- Caso novo 2- Transferencia do mesmo município (outra unidade) 3- Transferência de outro município (mesma UF) 4- Transferência de outro estado 5- Transferencia de outro país 6- Recidiva 7- Outros reingressos 9- Igno... | todos |
 | `mododetect` | `MODODETECT` | texto | Modo de detecção de caso novo. Modo de detecção do caso novo | 1- Encaminhamento 2- Demanda espontânea 3- Exame de coletividade 4- Exame de contatos 5- Outros modos 9- Ignorado | todos |
 | `baciloscop` | `BACILOSCOP` | texto | Resultado da baciloscopia (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `dtinictrat` | `DTINICTRAT` | data | Data do início do tratamento. Data do inicio do tratamento | — | todos |
-| `esq_ini_n` | `ESQ_INI_N` | texto | Esquema terapêutico inicial. tp_esquema_terape utico | 1. PQT/ PB/ 6 doses 2. PQT/ MB/ 12 doses 3. Outros Esquemas Substitutos | todos |
-| `contreg` | `CONTREG` | inteiro | Nº de contatos registrados. nu_contato_registra do | — | todos |
+| `esq_ini_n` | `ESQ_INI_N` | texto | Esquema terapêutico inicial | 1. PQT/ PB/ 6 doses 2. PQT/ MB/ 12 doses 3. Outros Esquemas Substitutos | todos |
+| `contreg` | `CONTREG` | inteiro | Nº de contatos registrados | — | todos |
 | `nervosafet` | `NERVOSAFET` | inteiro | Nº de nervos afetados. Número de nervos afetados | — | todos |
 | `ufatual` | `UFATUAL` | texto | UF de atendimento atual. Código da UF do cadastro do IBGE | — | todos |
 | `id_muni_at` | `ID_MUNI_AT` | texto | Município de atendimento atual. Código e nome dos municípios do cadastro do IBGE | — | todos |
 | `dt_noti_at` | `DT_NOTI_AT` | data | Data de notificação atual. Data de notificação do caso pela unidade de saúde responsável pelo tratamento atual do caso | — | todos |
 | `id_unid_at` | `ID_UNID_AT` | texto | Unidade de atendimento atual. Códigos e nomes de estabelecimentos de saúde (CNES) | — | todos |
-| `ufresat` | `UFRESAT` | texto | UF de residência atual (*). co_uf_residencia_a tual | — | todos |
-| `muniresat` | `MUNIRESAT` | texto | Município de residência atual (*). co_municipio_resid encia_atual | — | todos |
-| `dtultcomp` | `DTULTCOMP` | data | Data do último comparecimento. dt_ultimo_comparec imento | — | todos |
-| `classatual` | `CLASSATUAL` | texto | Classificação operacional atual. tp_classific_operac ao_atual | 1. PB (Paucibacilar) 2. MB (Multibacilar) | todos |
-| `aval_atu_n` | `AVAL_ATU_N` | texto | Avaliação de incapacidade física no momento da cura. tp_incapacidade_fis ica_cura | 0. grau zero 1. grau I 2. grau II 3. Não avaliado 9- Ignorado | todos |
-| `esq_atu_n` | `ESQ_ATU_N` | texto | Esquema terapêutico atual. tp_esquema_terape utico_atual | 1- PQT/PB/06 doses 2- PQT/MB/12 doses 3- Outros Esquemas Substitutivos | todos |
+| `ufresat` | `UFRESAT` | texto | UF de residência atual (*) | — | todos |
+| `muniresat` | `MUNIRESAT` | texto | Município de residência atual (*). encia_atual | — | todos |
+| `dtultcomp` | `DTULTCOMP` | data | Data do último comparecimento | — | todos |
+| `classatual` | `CLASSATUAL` | texto | Classificação operacional atual. ao_atual | 1. PB (Paucibacilar) 2. MB (Multibacilar) | todos |
+| `aval_atu_n` | `AVAL_ATU_N` | texto | Avaliação de incapacidade física no momento da cura. ica_cura | 0. grau zero 1. grau I 2. grau II 3. Não avaliado 9- Ignorado | todos |
+| `esq_atu_n` | `ESQ_ATU_N` | texto | Esquema terapêutico atual. utico_atual | 1- PQT/PB/06 doses 2- PQT/MB/12 doses 3- Outros Esquemas Substitutivos | todos |
 | `dose_receb` | `DOSE_RECEB` | inteiro | Número de doses supervisionadas. Número de doses supervisionadas recebidas sob supervisão | — | todos |
-| `epis_racio` | `EPIS_RACIO` | texto | Episódio Reacional Durante o Tratamento. tp_reacao_tratame nto | 1- Reação tipo 1 2- Reação tipo 2 3- Reação tipo 1 e 2 | todos |
-| `dtmudesq` | `DTMUDESQ` | data | Data de mudança do Esquema. dt_mudanca_esque ma | — | todos |
-| `contexam` | `CONTEXAM` | inteiro | Número de contatos examinados. nu_contato_examin ado | — | todos |
+| `epis_racio` | `EPIS_RACIO` | texto | Episódio Reacional Durante o Tratamento | 1- Reação tipo 1 2- Reação tipo 2 3- Reação tipo 1 e 2 | todos |
+| `dtmudesq` | `DTMUDESQ` | data | Data de mudança do Esquema | — | todos |
+| `contexam` | `CONTEXAM` | inteiro | Número de contatos examinados | — | todos |
 | `dtalta_n` | `DTALTA_N` | data | Data da alta | — | todos |
 | `tpalta_n` | `TPALTA_N` | texto | Tipo de alta (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `in_vincula` | `IN_VINCULA` | texto | Vinculação. Indica se a notificação foi vinculada | 0 - Não Vinculada 1 - Vinculada | todos |
@@ -202,20 +198,26 @@ Schema extraído de `HANSBR23.dbc` (64 colunas depois de remover `_deleted`).
 
 - a hanseníase cobre tanto **fichas de notificação** quanto **boletins de acompanhamento** de casos transferidos entre municípios/unidades — um caso pode aparecer mais de uma vez seguido de atualizações (`UFATUAL`, `DT_NOTI_AT`), exigindo deduplicação por caso antes de indicadores agregados; contar casos novos exige filtrar `MODOENTR` = 1 (Caso novo); o inventário de bases muda entre `FINAIS` (2001 a 2023) e `PRELIM` (2024 a 2026); a idade em `NU_IDADE_N` requer decomposição do primeiro dígito; e o campo `IN_VINCULA` marca notificações vinculadas pelo sistema a outras fichas (hanseníase/tuberculose). (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-hans").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-hans/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -224,41 +226,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-hans
-quantilica datasus list sinan-hans
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-hans
 
-# 2. Baixar microdados de sinan-hans com recorte adequado à partição do dataset
-# (SINAN usa uf+year com consolidações BR anuais)
-quantilica datasus sync sinan-hans -o ./data --start 2001 --end 2026 --regions br
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-hans -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-hans -o ./data --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-hans -o ./data/raw --parquet-dir ./data/parquet --start 2010
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-hans
 ```
 
-### Em Python e Polars
-
-```python
-import polars as pl
-
-from datasus_fetcher.reader import read_dbc
-
-# Descompacta o .dbc via extensão nativa em Rust e lê o .dbf tratado com polars
-qdf = read_dbc("data/sinan-hans/2023/sinan-hans_2023-br@20240912.dbc", clean=True)
-
-# Casos novos multibacilares (maior grau de transmissibilidade e complexidade clínica)
-casos_mb = qdf.filter((pl.col("modoentr") == 1) & (pl.col("classopera") == 2))
-print(casos_mb.group_by("formaclini").len().sort("formaclini"))
-
-# Grau de incapacidade física no diagnóstico por ano de diagnóstico
-grau = casos_mb.group_by(["avalia_n", "nu_ano"]).len().sort(["nu_ano", "avalia_n"])
-print(grau)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS` e `.../SINAN/DADOS/PRELIM`

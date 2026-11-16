@@ -3,7 +3,7 @@ dataset:
   id: ciha
   fonte: datasus
   titulo: Sistema de Comunicação de Informação Hospitalar e Ambulatorial
-  resumo: ciha é o Sistema de Comunicação de Informação Hospitalar e Ambulatorial (CIHA)
+  resumo: 'Sistema de Comunicação de Informação Hospitalar e Ambulatorial do DATASUS: um atendimento (internação ou ambulatorial) comunicado por um estabelecimento, em uma competência.'
   orgao: Ministério da Saúde — DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/CIHA/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -45,13 +45,9 @@ dataset:
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido com PKWARE DCL/blast, descompactado nativamente pelo `datasus-fetcher`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf / yearmonth`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2011-01 a 2026-07 (conforme `index.json`; 26 UFs com arquivos; última atualização no FTP em 2026-10-13)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 4.802 arquivos (~5,7 GB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/CIHA/201101_/Doc`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/CIHA/201101_/Auxiliar`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/CIHA/201101_/Doc`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/CIHA/201101_/Auxiliar`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -62,7 +58,7 @@ dataset:
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `CIHASP2401.dbc` — `CIHA` (prefixo do sistema, 4 letras) + `SP` (UF) + `24` (ano 2024) + `01` (mês de competência).
-- **No armazenamento local do `datasus-fetcher`**: `data/ciha/<AAAAMM>/ciha_<uf>_<AAAAMM>_<AAAAMMDD>.dbc`, por exemplo `data/ciha/202401/ciha_sp_202401_20261018.dbc` (o sufixo `AAAAMMDD` é a data do download).
+- **No armazenamento local do `datasus-fetcher`**: `data/ciha/<AAAAMM>/ciha_<AAAAMM>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/ciha/202401/ciha_202401-sp@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: `Doc/Layout_Arquivos_CIHA.pdf` (leiaute oficial, 10 KB, 2014) descreve os campos; `Auxiliar/TAB_CIHA.zip` (~68,8 MB, tabelas de procedimento, CID, município e conversores `.cnv`).
 
 ## Conteúdo
@@ -151,7 +147,6 @@ Aplicações: ampliar a cobertura das estatísticas de morbidade hospitalar e de
 
 - (i) mistura internação e atendimento ambulatorial — distinga-os por `MODALIDADE` e pela presença de `DIAS_PERM`/`DT_SAIDA`; (ii) não há `N_AIH` nem valores financeiros; (iii) apenas 26 UFs com arquivos; a participação varia entre estados e muda ao longo do tempo (o envio é obrigatório para estabelecimentos fora do SIH/SIA, mas a adesão não é uniforme); (iv) não some `ciha` a `sih-rd` sem verificar se o estabelecimento (`CNES`) já fatura no SIH, para evitar dupla contagem. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -160,11 +155,18 @@ Aplicações: ampliar a cobertura das estatísticas de morbidade hospitalar e de
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/ciha").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/ciha/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "mes", "uf")
+    dados.group_by("ano", "mes", "uf")
     .agg(pl.len().alias("linhas"))
     .sort("ano", "mes", "uf")
     .collect()
@@ -173,40 +175,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para ciha
-quantilica datasus list ciha
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list ciha
 
-# 2. Baixar microdados de ciha com recorte adequado à partição (uf + yearmonth)
-quantilica datasus sync ciha -o ./data --start 2024-01 --end 2024-12 --regions sp rj
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync ciha -o ./data --start 2024-01 --end 2024-12 --regions sp rj --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync ciha -o ./data --start 2024-01 --end 2024-12 --regions sp rj --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline ciha -o ./data/raw --parquet-dir ./data/parquet --start 2024-01 --end 2024-12 --regions sp rj
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset ciha
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from pathlib import Path
-
-arquivo = next(Path("./data/ciha/202401").glob("ciha_sp_202401_*.dbc"))
-ciha = df.read_dbc(arquivo, dataset="ciha")
-
-# Atendimentos por modalidade e estabelecimento
-q = (
-    ciha.group_by("modalidade", "cnes")
-    .agg(pl.len().alias("atendimentos"), pl.col("morte").sum().alias("obitos"))
-    .sort("atendimentos", descending=True)
-)
-print(q.head(10))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/CIHA/201101_/`

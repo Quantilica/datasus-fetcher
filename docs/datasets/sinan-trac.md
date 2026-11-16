@@ -3,7 +3,7 @@ dataset:
   id: sinan-trac
   fonte: datasus
   titulo: Inquérito de Tracoma
-  resumo: Registros de inquéritos populacionais de tracoma (busca ativa de casos) conduzidos no âmbito da vigilância epidemiológica e registrados no SINAN.
+  resumo: 'Inquérito de Tracoma do DATASUS: uma ficha de notificação/investigação de inquérito de Tracoma.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -43,13 +43,9 @@ Registros de inquéritos populacionais de tracoma (busca ativa de casos) conduzi
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (no FTP há apenas arquivos nacionais `BR`: `partition_n_ufs` = 1)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2009 a 2026 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 18 arquivos (~1,8 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório PRELIM, 2025–2026; Finais até 2024)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório PRELIM, 2025–2026; Finais até 2024)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -61,7 +57,7 @@ Registros de inquéritos populacionais de tracoma (busca ativa de casos) conduzi
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo `TRACBR24.dbc`, em que `TRAC` é o prefixo do agravo, `BR` indica a base nacional (arquivo único por ano para o Brasil) e `24` é o ano com 2 dígitos (2024).
-- **No armazenamento local do `datasus-fetcher`**: `data/sinan-trac/<partição>/sinan-trac_br_2009_<AAAAMMDD>.dbc`, em que `<AAAAMMDD>` é a data de modificação do arquivo no FTP.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-trac/<AAAA>/sinan-trac_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-trac/2024/sinan-trac_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e tabelas auxiliares associadas** (grupo `sinan`, compartilhadas por todos os agravos):
   - Documentação (`/SINAN/DOCS`): `Docs_TAB_SINAN.zip` (~65 MB), `POP_I_Acesso_a_Microdados_5.pdf`, `POP_II_Descompactacao_expansao_conversao_3.pdf`, `POP_III_Instalacao_do_tabulador_TabWin_3.pdf`.
   - Tabelas auxiliares (`/SINAN/AUXILIAR`): `TAB_SINANNET.zip` (~44 MB), `TAB_SINANONLINE.zip` (~240 KB), `POPT_Estimativa_TCU_2019_Sinan.zip`.
@@ -114,12 +110,12 @@ As colunas abaixo foram extraídas do cabeçalho do arquivo mais recente (`TRACB
 |---|---|---|---|---|---|
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
 | `id_agravo` | `ID_AGRAVO` | texto | Agravo. Tabela de agravos do sistema com códigos (classificação internacional de doenças –CID 10) e nomes dos agravos classificados como notificação compulsória ( nacional, estadual ou municipal) e as síndromes ( febre hemorragia aguda;respiratória aguda; diarréia aguda; sanguinolenta; | — | todos |
-| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_notifi cacao | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno) | — | todos |
 | `nu_ano` | `NU_ANO` | texto | (campo interno). Ano da notificação | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
 | `id_regiona` | `ID_REGIONA` | texto | (campo interno). Regional de saúde onde está localizado o município da unidade de saúde ou outra fonte notificadora | — | todos |
-| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora. co_unidade_notifi cacao | — | todos |
+| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora | — | todos |
 | `cs_inqueri` | `CS_INQUERI` | texto | Indica caso identificado em inquérito (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `nu_caso` | `NU_CASO` | inteiro | Número de casos (inquérito) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `sg_uf` | `SG_UF` | texto | UF. Sigla da Unidade Federada de residência do paciente por ocasião da notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
@@ -140,7 +136,7 @@ As colunas abaixo foram extraídas do cabeçalho do arquivo mais recente (`TRACB
 | `dt_transrs` | `DT_TRANSRS` | data ou texto | Data de transferência da regional de saúde. Data de Transferência do registro da Regional de Saúde para do nível superior do sistema | — | todos |
 | `dt_transse` | `DT_TRANSSE` | data ou texto | Data de transferência da secretaria estadual de saúde. Data de Transferência do registro da Secretaria Estadual para do nível superior do sistema | — | todos |
 | `nu_lote_v` | `NU_LOTE_V` | texto | Número do lote vertical. Descrever aqui a estrutura da composição do número do lote | — | todos |
-| `nu_lote_h` | `NU_LOTE_H` | texto | Número do lote horizontal. nu_lote_horizont al | — | todos |
+| `nu_lote_h` | `NU_LOTE_H` | texto | Número do lote horizontal | — | todos |
 | `uf` | — | texto | UF do arquivo de origem (sigla em minúsculas, `br` para arquivos nacionais), gravada pelo conversor; as linhas do período saem ordenadas por ela | sigla da UF | todos |
 | `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
 
@@ -158,20 +154,26 @@ As colunas abaixo foram extraídas do cabeçalho do arquivo mais recente (`TRACB
 - este é o **inquérito** (busca ativa, indivíduos examinados), distinto da **notificação individual** de casos em `sinan-ntra`. O denominador é o número de examinados, e a base não deve ser usada para contagem de casos notificados. Os leiautes variam substancialmente entre campanhas, especialmente nos indicadores de forma clínica (`FORMA_*`). Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` ou `ID_MUNICIP` conforme a pergunta. Arquivos do diretório PRELIM (2025+) são preliminares; deduplique com cautela ao combinar as fontes. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Tipo que varia entre períodos:** `dt_transus`, `dt_transdm`, `dt_transsm`, `dt_transrm`, `dt_transrs`, `dt_transse` aparecem com mais de um tipo nas amostras (por exemplo, inteiro em alguns períodos e texto em outros); leia a coluna `Tipo` do dicionário e converta explicitamente antes de empilhar períodos. Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-trac").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-trac/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -180,43 +182,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-trac
-quantilica datasus list sinan-trac
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-trac
 
-# 2. Baixar microdados de sinan-trac (partição uf + year; no SINAN a UF é sempre BR)
-quantilica datasus sync sinan-trac -o ./data --start 2015 --end 2022 --regions BR
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-trac -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-trac -o ./data --docs --aux --start 2015 --end 2022 --regions BR
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-trac -o ./data/raw --parquet-dir ./data/parquet --start 2015 --end 2022 --regions BR
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-trac
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-# Leitura direta de um .dbc nacional (descompacta, lê e aplica o saneamento padrão)
-frame = read_dbc("data/raw/TRACBR22.dbc", dataset="sinan-trac")
-
-# Total de examinados por UF e ano (denominador do inquérito)
-resumo = (
-    frame.group_by("sg_uf_not", "nu_ano")
-    .agg(pl.len().alias("examinados"))
-    .sort("sg_uf_not", "nu_ano")
-)
-
-# Resultado do exame e zona
-print(frame.group_by("zona").agg(pl.len().alias("n")).sort("n", descending=True))
-print(resumo.head())
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/`

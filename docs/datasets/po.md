@@ -3,7 +3,7 @@ dataset:
   id: po
   fonte: datasus
   titulo: Painel de Oncologia
-  resumo: O po contém os registros do Painel de Oncologia, que reúne informações sobre diagnóstico e tratamento de câncer no Brasil a partir de dados do SIA/SUS, SIH/SUS e do Sistema de Informação do Câncer (SISCAN).
+  resumo: 'Painel de Oncologia do DATASUS: um caso com procedimento diagnóstico ou terapêutico de câncer registrado.'
   orgao: Ministério da Saúde — DATASUS e Instituto Nacional de Câncer (INCA) (Painel de Oncologia)
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/PAINEL_ONCOLOGIA/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -44,13 +44,9 @@ O `po` contém os registros do **Painel de Oncologia**, que reúne informações
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (compactado do DBF)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (na prática um único arquivo nacional `BR` por ano)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2013 a 2026 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 14 arquivos (~194 MB; cobertura apenas nacional `BR`)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/PAINEL_ONCOLOGIA/DOC` (`Dicionario_Painel_Oncologia.txt`)
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/PAINEL_ONCOLOGIA/AUXILIAR` (`PAINEL_ONCOLOGIA.zip`, `tab_*.zip`)
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/PAINEL_ONCOLOGIA/DOC` (`Dicionario_Painel_Oncologia.txt`)
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/PAINEL_ONCOLOGIA/AUXILIAR` (`PAINEL_ONCOLOGIA.zip`, `tab_*.zip`)
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -61,7 +57,7 @@ O `po` contém os registros do **Painel de Oncologia**, que reúne informações
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `POBR2013.dbc` — `PO` é o prefixo, `BR` a cobertura nacional e `2013` o ano de quatro dígitos. Existem arquivos de 2013 a 2026, sempre nacionais (não há arquivos por UF).
-- **No armazenamento local do `datasus-fetcher`**: `data/po/2024/po_2024-br@20251120.dbc` (partição por ano, uf=`br`).
+- **No armazenamento local do `datasus-fetcher`**: `data/po/<AAAA>/po_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/po/2024/po_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: em `PAINEL_ONCOLOGIA/DOC` está `Dicionario_Painel_Oncologia.txt` (dicionário de variáveis); em `PAINEL_ONCOLOGIA/AUXILIAR` estão `PAINEL_ONCOLOGIA.zip` e `tab_*.zip`, com definições e conversões (CID, procedimento, município, UF) para tabulação no TabWin.
 
 ## Conteúdo
@@ -141,7 +137,6 @@ Aplicações analíticas típicas: avaliação do acesso e do tempo entre diagn�
 
 - é uma base de **casos agregados por procedimento**, não um registro clínico completo; um mesmo paciente pode aparecer em múltiplos registros (diagnóstico e tratamento); a identificação usa `cns_pac` (atenção à privacidade e ao pareamento); `tempo_trat` pode ser negativo/inconsistente quando o tratamento precede o registro de diagnóstico; a base é nacional e grande (requer processamento por ano); e há quebras de cobertura/atualização entre anos, recomendando verificar o `index.json` antes de séries longas. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -150,48 +145,34 @@ Aplicações analíticas típicas: avaliação do acesso e do tempo entre diagn�
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
-(
-    pl.scan_parquet("lake/datasus/po/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "uf")
-    .agg(pl.len().alias("linhas"))
-    .sort("ano", "uf")
-    .collect()
+arquivos = sorted(Path("lake/datasus/po").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
 )
+
+(dados.group_by("ano", "uf").agg(pl.len().alias("linhas")).sort("ano", "uf").collect())
 ```
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para po
-quantilica datasus list po
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list po
 
-# 2. Baixar microdados com recorte de anos (partição apenas por ano; uf = br)
-quantilica datasus sync po -o ./data --start 2015 --end 2024
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync po -o ./data --start 2020 --end 2024 --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync po -o ./data --docs --aux --start 2015 --end 2024
-
-# 4. Pipeline completo: download, descompactação do .dbc e conversão para Parquet
-quantilica datasus pipeline po -o ./data/raw --parquet-dir ./data/parquet --start 2015 --end 2024
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset po
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-po = read_dbc("data/raw/po/2024/po_2024-br.dbc", clean=True)
-
-# Casos por sexo em 2024
-casos = po.group_by("sexo").agg(pl.len().alias("casos")).sort("casos", descending=True)
-print(casos)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/PAINEL_ONCOLOGIA/DADOS`

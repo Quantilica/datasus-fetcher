@@ -3,7 +3,7 @@ dataset:
   id: sinan-acbi
   fonte: datasus
   titulo: Acidente de trabalho com material biológico
-  resumo: Notificações de acidentes de trabalho em que o trabalhador foi exposto, de forma direta ou indireta, a material biológico (orgânico) potencialmente contaminado por patógenos, registradas no SINAN.
+  resumo: 'Acidente de trabalho com material biológico do DATASUS: uma ficha de notificação/investigação de acidente de trabalho com material biológico.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -44,13 +44,9 @@ Notificações de acidentes de trabalho em que o trabalhador foi exposto, de for
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (no FTP há apenas arquivos nacionais `BR`: `partition_n_ufs` = 1)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2006 a 2026 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 21 arquivos (~54,1 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório PRELIM, 2023–2026; Finais até 2022)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório PRELIM, 2023–2026; Finais até 2022)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -62,7 +58,7 @@ Notificações de acidentes de trabalho em que o trabalhador foi exposto, de for
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo `ACBIBR24.dbc`, em que `ACBI` é o prefixo do agravo, `BR` indica a base nacional (o SINAN publica um único arquivo por ano para o Brasil) e `24` é o ano com 2 dígitos (2024, preliminar).
-- **No armazenamento local do `datasus-fetcher`**: `data/sinan-acbi/<partição>/sinan-acbi_br_2006_<AAAAMMDD>.dbc`, em que `<AAAAMMDD>` é a data de modificação do arquivo no FTP; arquivos preliminares seguem a mesma árvore, diferenciados pelo diretório de origem.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-acbi/<AAAA>/sinan-acbi_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-acbi/2024/sinan-acbi_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e tabelas auxiliares associadas** (grupo `sinan`, compartilhadas por todos os agravos):
   - Documentação (`/SINAN/DOCS`):
     - `Docs_TAB_SINAN.zip` — pacote de documentação e dicionários para tabulação (~65 MB)
@@ -160,12 +156,12 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 | `tp_not` | `TP_NOT` | texto | Tipo de Notificação. Identifica o tipo da notificação | 1 – Negativa 2 – Individual 3 – Surto 4 – Agregado | todos |
 | `id_agravo` | `ID_AGRAVO` | texto | Agravo. Tabela de agravos do sistema com códigos (classificação internacional de doenças –CID 10) e nomes dos agravos classificados como notificação compulsória ( nacional, estadual ou municipal) e as síndromes ( febre hemorragia aguda;respiratória aguda; diarréia aguda; sanguinolenta; | — | todos |
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
-| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_notifi cacao | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno) | — | todos |
 | `nu_ano` | `NU_ANO` | texto | (campo interno). Ano da notificação | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
 | `id_regiona` | `ID_REGIONA` | texto | (campo interno). Regional de saúde onde está localizado o município da unidade de saúde ou outra fonte notificadora | — | todos |
-| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora. co_unidade_notifi cacao | — | todos |
+| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora | — | todos |
 | `dt_acid` | `DT_ACID` | data | Data do acidente | — | todos |
 | `sem_acid` | `SEM_ACID` | texto | Semana epidemiológica do acidente (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `ano_nasc` | `ANO_NASC` | texto | Ano de nascimento do paciente (campo do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
@@ -175,9 +171,9 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 | `cs_raca` | `CS_RACA` | texto | Raça/Cor. Considera-se cor ou raça declarada pela pessoa. 1. branca 2. preta 3. amarela (pessoa que se declarou de raça amarela) 4. parda (pessoa que se declarou mulata, cabocla, cafuza, mameluca ou mestiça de preto com pessoa de outra cor ou raça) 5. indígena (pessoa que se declarou indígena ou índia) | 1- branca 2- preta 3- amarela 4- parda 5- indígena 9 Ignorado | todos |
 | `cs_escol_n` | `CS_ESCOL_N` | texto | Escolaridade. 43 Analfabeto 1. 1ª a 4ª série incompleta do EF 2. 4ª série completa do EF ( antigo 1° grau) 3. 5ª à 8ª série incompleta do EF (antigo ginásio ou 1° grau) 4. Ensino fundamental completo (antigo ginásio ou 1° grau) 5. Ensino médio incompleto (antigo colegial ou 2° grau) 6. Ensino médio completo (antigo colegial ou 2° grau) 7. Educação superior incompleta 8. Educação superior completa 9. Ignorado 10. N... | — | todos |
 | `sg_uf` | `SG_UF` | texto | UF. Sigla da Unidade Federada de residência do paciente por ocasião da notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência. co_municipio_res idencia | — | todos |
+| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência | — | todos |
 | `id_rg_resi` | `ID_RG_RESI` | texto | (campo interno). Regional de saúde onde está localizado o município de residência do paciente por ocasião da notificação | — | todos |
-| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil). co_pais_residenc ia | — | todos |
+| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil) | — | todos |
 | `id_ocupa_n` | `ID_OCUPA_N` | texto | Ocupação. Ocupação do indivíduo que sofreu o agravo | — | todos |
 | `sit_trab` | `SIT_TRAB` | texto | Situação no mercado de trabalho. Situação de trabalho do indivíduo que sofreu o agravo | 1. Empregado registrado com carteira assinada 2. Empregado não registrado 3. Autônomo/cont a própria 4. Servidor público estatuário | todos |
 | `nutempo` | `NUTEMPO` | texto | Número que compõe o tempo (de exposição ou de ocorrência); a unidade está em `tptempo` (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
@@ -214,13 +210,13 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 | `sem_quimio` | `SEM_QUIMIO` | texto | Conduta no momento do acidente Sem indicação de quimioprofilaxia | 1- Sim 2- Não 9-Ignorado | todos |
 | `recusa_qui` | `RECUSA_QUI` | texto | Conduta no momento do acidente Recusou quimioprofilaxia indicada | 1-Sim 2-Não 9-Ignorado | todos |
 | `azt3tc` | `AZT3TC` | texto | Conduta no momento do acidente AZT+3TC | 1-Sim 2-Não 9-Ignorado | todos |
-| `azt3tc_ind` | `AZT3TC_IND` | texto | Conduta no momento do acidente AZT+3TC+Indinavir. st_conduta_azt_3tc_indinavi r | 1-Sim 2-Não 9-Ignorado | todos |
+| `azt3tc_ind` | `AZT3TC_IND` | texto | Conduta no momento do acidente AZT+3TC+Indinavir. r | 1-Sim 2-Não 9-Ignorado | todos |
 | `azt3tc_nfv` | `AZT3TC_NFV` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
 | `imu_hep_b` | `IMU_HEP_B` | texto | Conduta no momento do acidente Imunoglobulina humana contra hepatite B (HBIG) | 1-Sim 2-Não 9-Ignorado | todos |
-| `vac_hep_b` | `VAC_HEP_B` | texto | Conduta no momento do acidente Vacina contra hepatite B. st_conduta_vacina_hepatite b | 1-Sim 2-Não 9-Ignorado | todos |
+| `vac_hep_b` | `VAC_HEP_B` | texto | Conduta no momento do acidente Vacina contra hepatite B. b | 1-Sim 2-Não 9-Ignorado | todos |
 | `outro_arv` | `OUTRO_ARV` | texto | Conduta no momento do acidente Outro esquema de ARV | 1-Sim 2-Não 9-Ignorado | todos |
 | `out_arv_es` | `OUT_ARV_ES` | texto | Conduta no momento do acidente Especifique | — | todos |
-| `evolucao` | `EVOLUCAO` | texto | Evolução do caso. tp_evolucao_caso ds_evolucao_caso_outro | 1-Alta com conversão sorológica Especificar vírus 2-Alta sem conversão sorológica 3-Alta paciente fonte negativo 4-Abandono 5-Óbito por acidente com exposição a material biológico 6-Óbito por outra causa 9-Ignorado | todos |
+| `evolucao` | `EVOLUCAO` | texto | Evolução do caso | 1-Alta com conversão sorológica Especificar vírus 2-Alta sem conversão sorológica 3-Alta paciente fonte negativo 4-Abandono 5-Óbito por acidente com exposição a material biológico 6-Óbito por outra causa 9-Ignorado | todos |
 | `evo_outr` | `EVO_OUTR` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
 | `dt_obito` | `DT_OBITO` | data | Se Óbito, Data do Óbito | — | todos |
 | `cat` | `CAT` | texto | Foi emitida a Comunicação de Acidente no Trabalho - CAT | 1 – Sim 2 – Não 3 – Não se aplica 9 – Ignorado | todos |
@@ -241,20 +237,26 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 
 - a tabela `1` do SINAN tem apenas o agravo específico, mas os campos de ocupação e CNAE podem vir incompletos em notificações de baixa qualidade; o profissional de saúde é a categoria predominante, e o `ID_OCUPA_N` deve ser agregado por grandes grupos. `ID_AGRAVO` é sempre `Z20.9`. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` (notificação) ou `ID_MN_RESI` (residência) conforme a pergunta. Arquivos do diretório PRELIM (2023+) são preliminares e substituídos pelos finais; como `NU_NOTIFIC` não consta dos arquivos públicos, deduplique por combinação de campos (ex.: `ID_UNIDADE`, `DT_NOTIFIC`, `ID_MN_RESI`, `ANO_NASC`, `CS_SEXO`) ao combinar as duas fontes. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-acbi").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-acbi/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -263,48 +265,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-acbi
-quantilica datasus list sinan-acbi
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-acbi
 
-# 2. Baixar microdados de sinan-acbi (partição uf + year; no SINAN a UF é sempre BR)
-quantilica datasus sync sinan-acbi -o ./data --start 2020 --end 2022 --regions BR
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-acbi -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-acbi -o ./data --docs --aux --start 2020 --end 2022 --regions BR
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-acbi -o ./data/raw --parquet-dir ./data/parquet --start 2020 --end 2022 --regions BR
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-acbi
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-# Leitura direta de um .dbc nacional (descompacta, lê e aplica o saneamento padrão)
-frame = read_dbc("data/raw/ACBIBR22.dbc", dataset="sinan-acbi")
-
-# Notificações por UF de notificação e ano
-resumo = (
-    frame.group_by("sg_uf_not", "nu_ano")
-    .agg(pl.len().alias("notificacoes"))
-    .sort("sg_uf_not", "nu_ano")
-)
-
-# Ocupações (CBO) mais frequentes entre os acidentados
-print(
-    frame.group_by("id_ocupa_n")
-    .agg(pl.len().alias("n"))
-    .sort("n", descending=True)
-    .head()
-)
-print(resumo.head())
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/`

@@ -3,7 +3,7 @@ dataset:
   id: sia-aq
   fonte: datasus
   titulo: APAC de Quimioterapia
-  resumo: sia-aq reúne as APAC de Quimioterapia do SIA/SUS
+  resumo: 'APAC de Quimioterapia do DATASUS: uma APAC de quimioterapia, por competência.'
   orgao: Ministério da Saúde — Secretaria de Atenção Especializada à Saúde (SAES) e DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SIASUS/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -49,13 +49,9 @@ dataset:
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido com PKWARE DCL/blast, descompactado nativamente pelo `datasus-fetcher`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf / yearmonth`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2008-01 a 2026-07 (conforme `index.json`; 27 UFs com arquivos; última atualização no FTP em 2026-09-14)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 5.979 arquivos (~5,1 GB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIASUS/200801_/Doc`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIASUS/200801_/Auxiliar`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/SIASUS/200801_/Doc`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SIASUS/200801_/Auxiliar`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -66,7 +62,7 @@ dataset:
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `AQSP2401.dbc` — `AQ` (APAC de Quimioterapia) + `SP` (UF) + `24` + `01`.
-- **No armazenamento local do `datasus-fetcher`**: `data/sia-aq/<AAAAMM>/sia-aq_<uf>_<AAAAMM>_<AAAAMMDD>.dbc`, por exemplo `data/sia-aq/202401/sia-aq_ac_202401_20261018.dbc` (o sufixo `AAAAMMDD` é a data do download).
+- **No armazenamento local do `datasus-fetcher`**: `data/sia-aq/<AAAAMM>/sia-aq_<AAAAMM>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sia-aq/202401/sia-aq_202401-sp@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: `Doc/Informe_Tecnico_SIASUS_2019_07.pdf` (~1,1 MB, julho/2019) descreve o leiaute dos arquivos do SIA; `Auxiliar/TAB_SIA.zip` (~73,8 MB, tabelas SIGTAP e conversores) e as versões históricas `TAB_SIA_199407-199910.zip`, `TAB_SIA_199911-200307.zip` e `TAB_SIA_200308-200712.zip` cobrem as fases anteriores à Tabela Unificada.
 
 ## Conteúdo
@@ -209,7 +205,6 @@ Aplicações: volume de tratamentos de quimioterapia por tipo de câncer (CID `C
 - (i) os campos oncológicos (`AQ_*`) vêm como `String` e vazios onde não se aplicam — converta vazios para `null` e `AQ_DTIDEN`/`AQ_DTINTR` para `pl.Date`; (ii) a APAC é mensal e o mesmo paciente aparece em várias competências: conte tratamentos por `AP_AUTORIZ`/`AP_CNSPCN` e use `AP_TPAPAC` (`1` inicial, `2` continuidade); (iii) `AP_CIDPRI` é o CID do câncer — filtre `C*` para tumores malignos; (iv) municípios de residência e do estabelecimento podem ser diferentes (fluxo oncológico). (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Colunas que não existem em todo o período:** 11 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -218,11 +213,18 @@ Aplicações: volume de tratamentos de quimioterapia por tipo de câncer (CID `C
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sia-aq").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sia-aq/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "mes", "uf")
+    dados.group_by("ano", "mes", "uf")
     .agg(pl.len().alias("linhas"))
     .sort("ano", "mes", "uf")
     .collect()
@@ -231,41 +233,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sia-aq
-quantilica datasus list sia-aq
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sia-aq
 
-# 2. Baixar microdados de sia-aq com recorte adequado à partição (uf + yearmonth)
-quantilica datasus sync sia-aq -o ./data --start 2024-01 --end 2024-12 --regions sp rj
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sia-aq -o ./data --start 2024-01 --end 2024-12 --regions sp rj --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sia-aq -o ./data --start 2024-01 --end 2024-12 --regions sp rj --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sia-aq -o ./data/raw --parquet-dir ./data/parquet --start 2024-01 --end 2024-12 --regions sp rj
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sia-aq
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from pathlib import Path
-
-arquivo = next(Path("./data/sia-aq/202401").glob("sia-aq_ac_202401_*.dbc"))
-aq = df.read_dbc(arquivo, dataset="sia-aq")
-
-# Tempo entre identificação patológica e início do tratamento (dias)
-aq = aq.with_columns(
-    pl.col("aq_dtiden").str.to_date("%Y%m%d", strict=False).alias("dt_iden"),
-    pl.col("aq_dtintr").str.to_date("%Y%m%d", strict=False).alias("dt_ini"),
-).with_columns(
-    (pl.col("dt_ini") - pl.col("dt_iden")).dt.total_days().alias("dias_ate_tratamento")
-)
-print(aq.select("ap_cidpri", "aq_estadi", "dias_ate_tratamento").head())
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SIASUS/200801_/`

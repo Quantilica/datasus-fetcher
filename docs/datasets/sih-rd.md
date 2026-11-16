@@ -3,7 +3,7 @@ dataset:
   id: sih-rd
   fonte: datasus
   titulo: RD - AIH Reduzida
-  resumo: 'sih-rd reúne as AIH Reduzidas: o arquivo principal do Sistema de Informações Hospitalares do SUS (SIH/SUS), em que cada linha é uma Autorização de Internação Hospitalar aprovada e paga em uma competência de processamento, com dados do paciente, do estabelecime'
+  resumo: 'RD - AIH Reduzida do DATASUS: uma AIH (Autorização de Internação Hospitalar) aprovada, em uma competência de processamento.'
   orgao: Ministério da Saúde — Secretaria de Atenção Especializada à Saúde (SAES) e DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -98,13 +98,9 @@ dataset:
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido com PKWARE DCL/blast, descompactado nativamente pelo `datasus-fetcher`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf / yearmonth`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 1992-01 a 2026-08 (conforme `index.json`; 27 UFs com arquivos; última atualização no FTP em 2026-10-16)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 11.211 arquivos (~25,6 GB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIHSUS/200801_/Doc`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIHSUS/200801_/Auxiliar`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/SIHSUS/200801_/Doc`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SIHSUS/200801_/Auxiliar`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -116,7 +112,7 @@ dataset:
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `RDSP2401.dbc` — `RD` (AIH Reduzida) + `SP` (UF de gestão/internação: São Paulo) + `24` (ano 2024) + `01` (mês de competência janeiro). Arquivos de 1992–2007 seguem o mesmo padrão, p.ex. `RDAC9201.dbc`.
-- **No armazenamento local do `datasus-fetcher`**: `data/sih-rd/<AAAAMM>/sih-rd_<uf>_<AAAAMM>_<AAAAMMDD>.dbc`, por exemplo `data/sih-rd/202401/sih-rd_sp_202401_20261018.dbc` (o sufixo `AAAAMMDD` é a data do download).
+- **No armazenamento local do `datasus-fetcher`**: `data/sih-rd/<AAAAMM>/sih-rd_<AAAAMM>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sih-rd/202401/sih-rd_202401-sp@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: `Doc/IT_SIHSUS_1603.pdf` (Informe Técnico do SIHSUS, 57 KB, 2016) é o dicionário oficial de variáveis; `Auxiliar/TAB_SIH.zip` (~6,1 MB, tabelas e conversores `.cnv`/`.def` atuais) e as versões históricas `TAB_SIH_199201-199712.zip`, `TAB_SIH_199801-200307.zip` e `TAB_SIH_200308-200712.zip` trazem as tabelas de procedimentos, CID e códigos usadas em cada fase.
 
 ## Conteúdo
@@ -177,7 +173,7 @@ Colunas do leiaute atual (114 campos no arquivo de 2024-01, `RDAC2401.dbc`); o l
 | `ident` | `IDENT` | texto | Identificação do tipo da AIH. | — | todos |
 | `nasc` | `NASC` | texto | Data de nascimento do paciente (aaaammdd). | — | todos |
 | `sexo` | `SEXO` | texto | Sexo do paciente. | — | todos |
-| `uti_total` | `UTI_TOTAL` | inteiro | Total de dias de UTI (leiaute antigo, anterior à separação por tipo de UTI) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1992-10 a 1992-10 |
+| `uti_total` | `UTI_TOTAL` | inteiro | Total de dias de UTI (leiaute antigo, anterior à separação por tipo de UTI) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 1992-10 |
 | `proc_rea` | `PROC_REA` | texto | Procedimento realizado. | — | todos |
 | `val_sh` | `VAL_SH` | decimal(13,2) | Valor de serviços hospitalares. | — | todos |
 | `val_sp` | `VAL_SP` | decimal(13,2) | Valor de serviços profissionais. | — | todos |
@@ -185,11 +181,11 @@ Colunas do leiaute atual (114 campos no arquivo de 2024-01, `RDAC2401.dbc`); o l
 | `val_ortp` | `VAL_ORTP` | decimal(13,2) | Zerado | — | todos |
 | `val_sangue` | `VAL_SANGUE` | decimal(13,2) | Zerado | — | todos |
 | `val_tot` | `VAL_TOT` | decimal(14,2) | Valor total da AIH. | — | todos |
-| `us_sh` | `US_SH` | decimal(9,2) | Valor de serviços hospitalares em dólar (leiaute antigo) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1992-10 a 1992-10 |
-| `us_sp` | `US_SP` | decimal(9,2) | Valor de serviços profissionais em dólar (leiaute antigo) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1992-10 a 1992-10 |
-| `us_sadt` | `US_SADT` | decimal(9,2) | Valor de SADT (serviços auxiliares de diagnóstico e terapia) em dólar (leiaute antigo) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1992-10 a 1992-10 |
-| `us_ortp` | `US_ORTP` | decimal(9,2) | Valor de órteses e próteses em dólar (leiaute antigo) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1992-10 a 1992-10 |
-| `us_sangue` | `US_SANGUE` | decimal(9,2) | Valor de sangue em dólar (leiaute antigo) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1992-10 a 1992-10 |
+| `us_sh` | `US_SH` | decimal(9,2) | Valor de serviços hospitalares em dólar (leiaute antigo) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 1992-10 |
+| `us_sp` | `US_SP` | decimal(9,2) | Valor de serviços profissionais em dólar (leiaute antigo) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 1992-10 |
+| `us_sadt` | `US_SADT` | decimal(9,2) | Valor de SADT (serviços auxiliares de diagnóstico e terapia) em dólar (leiaute antigo) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 1992-10 |
+| `us_ortp` | `US_ORTP` | decimal(9,2) | Valor de órteses e próteses em dólar (leiaute antigo) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 1992-10 |
+| `us_sangue` | `US_SANGUE` | decimal(9,2) | Valor de sangue em dólar (leiaute antigo) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 1992-10 |
 | `us_tot` | `US_TOT` | decimal(10,2) | Valor total, em dólar. | — | todos |
 | `dt_inter` | `DT_INTER` | data | Data de internação (AAAAMMDD, convertida para data); o informe técnico a grafa `DI_INTER` | — | todos |
 | `dt_saida` | `DT_SAIDA` | data | Data de saída, no formato aaaammdd. | — | todos |
@@ -291,7 +287,7 @@ Colunas do leiaute atual (114 campos no arquivo de 2024-01, `RDAC2401.dbc`); o l
 | `tpdisec7` | `TPDISEC7` | texto | Tipo de diagnóstico secundário 7. | — | 2016-03 a 2026-08 |
 | `tpdisec8` | `TPDISEC8` | texto | Tipo de diagnóstico secundário 8. | — | 2016-03 a 2026-08 |
 | `tpdisec9` | `TPDISEC9` | texto | Tipo de diagnóstico secundário 9. | — | 2016-03 a 2026-08 |
-| `fonte_orc` | `FONTE_ORC` | texto | Fonte orçamentária do pagamento (campo presente só nas partições mais recentes) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2026-08 a 2026-08 |
+| `fonte_orc` | `FONTE_ORC` | texto | Fonte orçamentária do pagamento (campo presente só nas partições mais recentes) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2026-08 |
 
 ## No lake
 
@@ -306,7 +302,6 @@ Colunas do leiaute atual (114 campos no arquivo de 2024-01, `RDAC2401.dbc`); o l
 - (i) o RD contém apenas AIH **aprovadas**; AIH rejeitadas estão em `sih-rj`/`sih-er` e podem ser reapresentadas e aprovadas em competência posterior, portanto não some RD+RJ sem deduplicar `N_AIH`; (ii) AIH tipo 5 (`IDENT = 5`) repete-se por competência — exclua-as ao contar admissões; (iii) `MUNIC_RES` `999999`/ignorado vira `null`; (iv) UF do arquivo = UF de gestão (`UF_ZI`), não necessariamente a UF de residência — pacientes de outras UFs aparecem em `MUNIC_RES`; (v) valores monetários são nominais da época (não deflacionados) e mudam de regra com a SIGTAP. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Colunas que não existem em todo o período:** 95 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -315,11 +310,18 @@ Colunas do leiaute atual (114 campos no arquivo de 2024-01, `RDAC2401.dbc`); o l
 Quantas internações aprovadas (AIH normais, sem as de continuação) houve por UF e ano, e qual o valor total pago?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sih-rd").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sih-rd/**/*.parquet", hive_partitioning=True)
-    .filter(
+    dados.filter(
         pl.col("ident") == "1"
     )  # exclui AIH de continuação (tipo 5), que repetem a internação
     .group_by("ano", "uf")
@@ -331,48 +333,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sih-rd
-quantilica datasus list sih-rd
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sih-rd
 
-# 2. Baixar microdados de sih-rd com recorte adequado à partição (uf + yearmonth)
-quantilica datasus sync sih-rd -o ./data --start 2024-01 --end 2024-12 --regions sp rj
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sih-rd -o ./data --start 2024-01 --end 2024-12 --regions sp rj --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sih-rd -o ./data --start 2024-01 --end 2024-12 --regions sp rj --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sih-rd -o ./data/raw --parquet-dir ./data/parquet --start 2024-01 --end 2024-12 --regions sp rj
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sih-rd
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from pathlib import Path
-
-# Leitura (descompacta o .dbc em Rust, aplica o saneamento canônico e retorna um pl.DataFrame)
-arquivo = next(Path("./data/sih-rd/202401").glob("sih-rd_sp_202401_*.dbc"))
-rd = df.read_dbc(arquivo, dataset="sih-rd")
-
-# Internações aprovadas, permanência média e letalidade por diagnóstico principal (CID-10, 3 caracteres)
-resumo = (
-    rd.filter(pl.col("ident") == "1")  # só AIH normais (exclui continuação tipo 5)
-    .with_columns(pl.col("diag_princ").str.slice(0, 3).alias("cid3"))
-    .group_by("cid3")
-    .agg(
-        pl.len().alias("internacoes"),
-        pl.col("dias_perm").mean().alias("permanencia_media"),
-        (pl.col("morte").sum() / pl.len()).alias("letalidade"),
-        pl.col("val_tot").sum().alias("valor_total"),
-    )
-    .sort("internacoes", descending=True)
-)
-print(resumo.head(10))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/200801_/`

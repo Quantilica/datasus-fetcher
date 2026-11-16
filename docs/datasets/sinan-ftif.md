@@ -3,7 +3,7 @@ dataset:
   id: sinan-ftif
   fonte: datasus
   titulo: Febre Tifoide
-  resumo: O sinan-ftif contém os microdados das notificações e investigações epidemiológicas de casos de Febre Tifoide (CID-10 A01.0) registrados no Sistema de Informação de Agravos de Notificação (SINAN) do Ministério da Saúde.
+  resumo: 'Febre Tifoide do DATASUS: uma ficha de notificação/investigação de febre Tifoide.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -47,13 +47,9 @@ O `sinan-ftif` contém os microdados das notificações e investigações epidem
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (arquivos consolidados anuais, praticamente sempre `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2007 a 2026 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 20 arquivos (~0,8 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório `PRELIM`)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório `PRELIM`)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -65,7 +61,7 @@ O `sinan-ftif` contém os microdados das notificações e investigações epidem
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `FTIFBR25.dbc` — `FTIF` é o prefixo do agravo, `BR` indica a consolidação nacional de todo o país e `25` é o ano de notificação (2025). As consolidações até 2024 estão em `FINAIS` e os anos de 2025 e 2026 estão apenas em `PRELIM` (ex.: `FTIFBR26.dbc`, atualização de 02/06/2026).
-- **No armazenamento local do `datasus-fetcher`**: caminho padronizado `data/sinan-ftif/<ano>/sinan-ftif_<período>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-ftif/2026/sinan-ftif_preliminar_2026-br@20260602.dbc`; arquivos preliminares recebem o sufixo `-preliminar` no nome do dataset.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-ftif/<AAAA>/sinan-ftif_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-ftif/2024/sinan-ftif_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: no diretório `SINAN/DOCS` estão `Docs_TAB_SINAN.zip` e as instruções POP_I/II/III de acesso, descompactação e tabulação; em `SINAN/AUXILIAR` estão `TAB_SINANNET.zip`, `TAB_SINANONLINE.zip` (definições/tabulações do Sinan Net e Online) e `POPT_Estimativa_TCU_2019_Sinan.zip` (denominadores populacionais).
 
 ## Conteúdo
@@ -122,14 +118,14 @@ Schema extraído de `FTIFBR23.dbc` (131 colunas depois de remover `_deleted`).
 | `tp_not` | `TP_NOT` | texto | Tipo de Notificação. Identifica o tipo da notificação | 1 – Negativa 2 – Individual 3 – Surto 4 – Agregado | todos |
 | `id_agravo` | `ID_AGRAVO` | texto | Agravo. Tabela de agravos do sistema com códigos (classificação internacional de doenças –CID 10) e nomes dos agravos classificados como notificação compulsória ( nacional, estadual ou municipal) e as síndromes ( febre hemorragia aguda;respiratória aguda; diarréia aguda; sanguinolenta; | — | todos |
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
-| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_notifi cacao | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno) | — | todos |
 | `nu_ano` | `NU_ANO` | texto | (campo interno). Ano da notificação | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
 | `id_regiona` | `ID_REGIONA` | texto | (campo interno). Regional de saúde onde está localizado o município da unidade de saúde ou outra fonte notificadora | — | todos |
-| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora. co_unidade_notifi cacao | — | todos |
-| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico. dt_diagnostico_si ntoma | — | todos |
-| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno). ds_semana_sinto ma | — | todos |
+| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora | — | todos |
+| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico | — | todos |
+| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno) | — | todos |
 | `ano_nasc` | `ANO_NASC` | texto | Ano de nascimento do paciente (campo do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `nu_idade_n` | `NU_IDADE_N` | inteiro | Idade. A composição da variável obedece o seguinte critério: 1o | — | todos |
 | `cs_sexo` | `CS_SEXO` | texto | Sexo. M- Masculino F- Feminino I- Ignorado | — | todos |
@@ -137,91 +133,91 @@ Schema extraído de `FTIFBR23.dbc` (131 colunas depois de remover `_deleted`).
 | `cs_raca` | `CS_RACA` | texto | Raça/Cor. Considera-se cor ou raça declarada pela pessoa. 1. branca 2. preta 3. amarela (pessoa que se declarou de raça amarela) 4. parda (pessoa que se declarou mulata, cabocla, cafuza, mameluca ou mestiça de preto com pessoa de outra cor ou raça) 5. indígena (pessoa que se declarou indígena ou índia) | 1- branca 2- preta 3- amarela 4- parda 5- indígena 9 Ignorado | todos |
 | `cs_escol_n` | `CS_ESCOL_N` | texto | Escolaridade. 43 Analfabeto 1. 1ª a 4ª série incompleta do EF 2. 4ª série completa do EF ( antigo 1° grau) 3. 5ª à 8ª série incompleta do EF (antigo ginásio ou 1° grau) 4. Ensino fundamental completo (antigo ginásio ou 1° grau) 5. Ensino médio incompleto (antigo colegial ou 2° grau) 6. Ensino médio completo (antigo colegial ou 2° grau) 7. Educação superior incompleta 8. Educação superior completa 9. Ignorado 10. N... | — | todos |
 | `sg_uf` | `SG_UF` | texto | UF. Sigla da Unidade Federada de residência do paciente por ocasião da notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência. co_municipio_res idencia | — | todos |
+| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência | — | todos |
 | `id_rg_resi` | `ID_RG_RESI` | texto | (campo interno). Regional de saúde onde está localizado o município de residência do paciente por ocasião da notificação | — | todos |
-| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil). co_pais_residenc ia | — | todos |
+| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil) | — | todos |
 | `dt_invest` | `DT_INVEST` | data | Data da Investigação. dt_investigaçao | — | todos |
-| `id_ocupa_n` | `ID_OCUPA_N` | texto | Ocupação/ Ramo de atividade. co_cbo_ocupaca o | — | todos |
-| `contato` | `CONTATO` | texto | Contato compatível com caso de febre tifóide (até 45 dias antes do início dos sinais e sintomas).. tp_contato_caso _febre | 1. Domicílio 2. Vizinhança 3. Trabalho 4. Creche/escola 5. Posto de saúde/hospita l 6. Outro Estado/Municí pio 7. Outros 8. Sem história de contato 9. Ignorado | todos |
-| `cont_out` | `CONT_OUT` | texto | Contato compatível com caso de febre tifóide (até 45 dias antes do início dos sinais e sintomas). Se Outros especificar. ds_contato_caso _febre_outro | — | todos |
+| `id_ocupa_n` | `ID_OCUPA_N` | texto | Ocupação/ Ramo de atividade. o | — | todos |
+| `contato` | `CONTATO` | texto | Contato compatível com caso de febre tifóide (até 45 dias antes do início dos sinais e sintomas).. _febre | 1. Domicílio 2. Vizinhança 3. Trabalho 4. Creche/escola 5. Posto de saúde/hospita l 6. Outro Estado/Municí pio 7. Outros 8. Sem história de contato 9. Ignorado | todos |
+| `cont_out` | `CONT_OUT` | texto | Contato compatível com caso de febre tifóide (até 45 dias antes do início dos sinais e sintomas). Se Outros especificar. _febre_outro | — | todos |
 | `suge_vincu` | `SUGE_VINCU` | texto | Sugestão de vínculo com. Identificar fontes de infecção mais comuns | 1. Consumo de água não tratada 2. Exposição à esgoto 3. Alimento suspeito 4. Deslocamento 5.Outros 9. Ignorado | todos |
-| `vinc_out` | `VINC_OUT` | texto | Se outros, especificar. ds_sugestao_out ro | — | todos |
-| `assintomat` | `ASSINTOMAT` | texto | Sinais e sintomas Assintomático. st_sinais_assinto matico | 1. Sim 2. Não 9. Ignorado | todos |
+| `vinc_out` | `VINC_OUT` | texto | Se outros, especificar | — | todos |
+| `assintomat` | `ASSINTOMAT` | texto | Sinais e sintomas Assintomático | 1. Sim 2. Não 9. Ignorado | todos |
 | `febre` | `FEBRE` | texto | Sinais e sintomas Febre. O paciente teve febre | 1. Sim 2. Não 9. Ignorado | todos |
-| `cefaleia` | `CEFALEIA` | texto | Sinais e sintomas Cefaléia. st_sinais_cefalei a | 1. Sim 2. Não 9. Ignorado | todos |
-| `diarreia` | `DIARREIA` | texto | Sinais e sintomas Diarréia. st_sinais_diarrei a | 1. Sim 2. Não 9. Ignorado | todos |
-| `constipa` | `CONSTIPA` | texto | Sinais e sintomas Constipação. st_sinais_constip arcao | 1. Sim 2. Não 9. Ignorado | todos |
+| `cefaleia` | `CEFALEIA` | texto | Sinais e sintomas Cefaléia. a | 1. Sim 2. Não 9. Ignorado | todos |
+| `diarreia` | `DIARREIA` | texto | Sinais e sintomas Diarréia. a | 1. Sim 2. Não 9. Ignorado | todos |
+| `constipa` | `CONSTIPA` | texto | Sinais e sintomas Constipação | 1. Sim 2. Não 9. Ignorado | todos |
 | `astenia` | `ASTENIA` | texto | Sinais e sintomas Astenia. O paciente apresentou astenia | 1. Sim 2. Não 9. Ignorado | todos |
 | `tosse` | `TOSSE` | texto | Sinais e sintomas Tosse. O paciente teve tosse | 1. Sim 2. Não 9. Ignorado | todos |
-| `espleno` | `ESPLENO` | texto | Sinais e sintomas Esplenomegalia. st_sinais_espen omeg | 1. Sim 2. Não 9. Ignorado | todos |
-| `tifica` | `TIFICA` | texto | Sinais e sintomas Roséola tífica. st_sinais_roseol a_tifica | 1. Sim 2. Não 9. Ignorado | todos |
-| `nauseas` | `NAUSEAS` | texto | Sinais e sintomas Náuseas. st_sinais_nause a | 1. Sim 2. Não 9. Ignorado | todos |
+| `espleno` | `ESPLENO` | texto | Sinais e sintomas Esplenomegalia | 1. Sim 2. Não 9. Ignorado | todos |
+| `tifica` | `TIFICA` | texto | Sinais e sintomas Roséola tífica. a_tifica | 1. Sim 2. Não 9. Ignorado | todos |
+| `nauseas` | `NAUSEAS` | texto | Sinais e sintomas Náuseas. a | 1. Sim 2. Não 9. Ignorado | todos |
 | `vomitos` | `VOMITOS` | texto | Sinais e sintomas Vômitos. O paciente apresentou vômitos | 1. Sim 2. Não | todos |
-| `dor` | `DOR` | texto | Sinais e sintomas Dor abdominal. st_sinais_abdom inal | 1. Sim 2. Não 9. Ignorado | todos |
-| `pulso` | `PULSO` | texto | Sinais e sintomas Dissociação pulso/temperatura. st_sinais_dissoci acao | 1. Sim 2. Não 9. Ignorado | todos |
-| `entero` | `ENTERO` | texto | Complicações Enterorragia. st_complicacao_ enterorragia | 1. Sim 2. Não 9. Ignorado | todos |
-| `perfura` | `PERFURA` | texto | Complicações Perfurações intestinais. st_complicacao_ perfuracao | 1. Sim 2. Não 9. Ignorado | todos |
-| `comp_out` | `COMP_OUT` | texto | Complicações Outras. st_complicacao_ outro | 1. Sim 2. Não 9. Ignorado | todos |
-| `comp_out_d` | `COMP_OUT_D` | texto | Complicações Se Outras, especificar. ds_complicacao _outro | — | todos |
+| `dor` | `DOR` | texto | Sinais e sintomas Dor abdominal | 1. Sim 2. Não 9. Ignorado | todos |
+| `pulso` | `PULSO` | texto | Sinais e sintomas Dissociação pulso/temperatura | 1. Sim 2. Não 9. Ignorado | todos |
+| `entero` | `ENTERO` | texto | Complicações Enterorragia | 1. Sim 2. Não 9. Ignorado | todos |
+| `perfura` | `PERFURA` | texto | Complicações Perfurações intestinais | 1. Sim 2. Não 9. Ignorado | todos |
+| `comp_out` | `COMP_OUT` | texto | Complicações Outras | 1. Sim 2. Não 9. Ignorado | todos |
+| `comp_out_d` | `COMP_OUT_D` | texto | Complicações Se Outras, especificar. _outro | — | todos |
 | `atendiment` | `ATENDIMENT` | texto | Tipo de atendimento. Tipo de atendimento recebido pelo paciente em decorrência da suspeita de febre tifóide | 1. Hospitalar 2. Ambulatorial 3. Domiciliar 4. Nenhum 9. Ignorado | todos |
 | `dt_atende` | `DT_ATENDE` | data | Data do atendimento | — | todos |
 | `uf_hospital` | `UF` | texto | UF do hospital de internação (coluna `UF` da fonte, renomeada pelo conversor porque `uf` é coluna do lake) | — | todos |
-| `municipio` | `MUNICIPIO` | texto | Município do hospital. co_municipio_at endimento | — | todos |
-| `sangue` | `SANGUE` | texto | Material coletado Sangue. st_material_colet ado_sangue | 1. Sim 2. Não 9. Ignorado | todos |
-| `fezes` | `FEZES` | texto | Material coletado Fezes. st_material_colet ado_fezes | 1. Sim 2. Não 9. Ignorado | todos |
-| `urina` | `URINA` | texto | Material coletado Urina. st_material_colet ado_medular | 1. Sim 2. Não 9. Ignorado | todos |
-| `antibiotic` | `ANTIBIOTIC` | texto | Uso de antibiótico antes da coleta do material. st_uso_antibiotic o | 1. Sim 2. Não | todos |
-| `dt_hemo1` | `DT_HEMO1` | data | Hemocultura Data da 1ª Coleta. dt_hemocultura_ coleta_1 | — | todos |
-| `hemo_r1` | `HEMO_R1` | texto | Hemocultura Resultado da 1° coleta. tp_hemocultura_ resultado_1 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
-| `hemo_d_1` | `HEMO_D_1` | texto | Hemocultura Resultado da 1° coleta Especificar. ds_hemocultura_ resultado_1 | — | todos |
-| `dt_hemo2` | `DT_HEMO2` | data | Hemocultura Data da 2ª Coleta. dt_hemocultura_ coleta_2 | — | todos |
-| `hemo_r2` | `HEMO_R2` | texto | Hemocultura Resultado da 2° coleta. tp_hemocultura_ resultado_2 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
-| `hemo_d_2` | `HEMO_D_2` | texto | Hemocultura Resultado da 2° coleta Especificar. ds_hemocultura_ resultado_2 | — | todos |
-| `dt_hemo3` | `DT_HEMO3` | data | Hemocultura Data da 3ª Coleta. dt_hemocultura_ coleta_3 | — | todos |
-| `hemo_r3` | `HEMO_R3` | texto | Hemocultura Resultado da 3° coleta. tp_hemocultura_ resultado_3 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
-| `hemo_d_3` | `HEMO_D_3` | texto | Hemocultura Resultado da 3° coleta Especificar. ds_hemocultura_ resultado_3 | — | todos |
-| `dt_uro` | `DT_URO` | data | Urocultura Data da 1ª Coleta. dt_mielocultura_ coleta_1 | — | todos |
-| `uro_r1` | `URO_R1` | texto | Urocultura Resultado da 1°coleta. tp_mielocultura_r esultado_1 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
+| `municipio` | `MUNICIPIO` | texto | Município do hospital | — | todos |
+| `sangue` | `SANGUE` | texto | Material coletado Sangue. ado_sangue | 1. Sim 2. Não 9. Ignorado | todos |
+| `fezes` | `FEZES` | texto | Material coletado Fezes. ado_fezes | 1. Sim 2. Não 9. Ignorado | todos |
+| `urina` | `URINA` | texto | Material coletado Urina. ado_medular | 1. Sim 2. Não 9. Ignorado | todos |
+| `antibiotic` | `ANTIBIOTIC` | texto | Uso de antibiótico antes da coleta do material. o | 1. Sim 2. Não | todos |
+| `dt_hemo1` | `DT_HEMO1` | data | Hemocultura Data da 1ª Coleta. coleta_1 | — | todos |
+| `hemo_r1` | `HEMO_R1` | texto | Hemocultura Resultado da 1° coleta. resultado_1 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
+| `hemo_d_1` | `HEMO_D_1` | texto | Hemocultura Resultado da 1° coleta Especificar. resultado_1 | — | todos |
+| `dt_hemo2` | `DT_HEMO2` | data | Hemocultura Data da 2ª Coleta. coleta_2 | — | todos |
+| `hemo_r2` | `HEMO_R2` | texto | Hemocultura Resultado da 2° coleta. resultado_2 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
+| `hemo_d_2` | `HEMO_D_2` | texto | Hemocultura Resultado da 2° coleta Especificar. resultado_2 | — | todos |
+| `dt_hemo3` | `DT_HEMO3` | data | Hemocultura Data da 3ª Coleta. coleta_3 | — | todos |
+| `hemo_r3` | `HEMO_R3` | texto | Hemocultura Resultado da 3° coleta. resultado_3 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
+| `hemo_d_3` | `HEMO_D_3` | texto | Hemocultura Resultado da 3° coleta Especificar. resultado_3 | — | todos |
+| `dt_uro` | `DT_URO` | data | Urocultura Data da 1ª Coleta. coleta_1 | — | todos |
+| `uro_r1` | `URO_R1` | texto | Urocultura Resultado da 1°coleta. esultado_1 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
 | `uro_d` | `URO_D` | texto | Urocultura Resultado da 1°coleta Especificar. Ds_mielocultura _resultado_1 | — | todos |
 | `dt_uro2` | `DT_URO2` | data | Urocultura Data da 2ª Coleta. Dt_mielocultura _coleta_2 | — | todos |
 | `uro_r2` | `URO_R2` | texto | Urocultura Resultado da 2° coleta. tp_ mielocultura_res ultado_2 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
 | `uro_d_2` | `URO_D_2` | texto | Urocultura Resultado da 2° coleta Especificar. ds_ mielocultura_res ultado_2 | — | todos |
-| `dt_uro3` | `DT_URO3` | data | Urocultura Data da 3ª Coleta. dt_mielocultura _coleta_3 | — | todos |
+| `dt_uro3` | `DT_URO3` | data | Urocultura Data da 3ª Coleta. _coleta_3 | — | todos |
 | `uro_r3` | `URO_R3` | texto | Urocultura Resultado da 3° coleta. tp_ mielocultura_res ultado_3 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
-| `uro_d_3` | `URO_D_3` | texto | Urocultura Resultado da 3° coleta Especificar. ds_mielocultura_ resultado_3 | — | todos |
-| `dt_copro1` | `DT_COPRO1` | data | Coprocultura data da 1° coleta. dt_coprocultura_ coleta_1 | — | todos |
-| `copro_r1` | `COPRO_R1` | texto | Coprocultura Resultado da 1° coleta. tp_coprocultura_ resultado_1 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
-| `copro_d_1` | `COPRO_D_1` | texto | Coprocultura Resultado da 1° coleta Especificar. ds_coprocultura_ resultado_1 | — | todos |
-| `dt_copro2` | `DT_COPRO2` | data | Coprocultura data da 2° coleta. dt_coprocultura_ coleta_2 | — | todos |
-| `copro_r2` | `COPRO_R2` | texto | Coprocultura Resultado da 2° coleta. tp_coprocultura_ resultado_2 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
-| `copro_d_2` | `COPRO_D_2` | texto | Coprocultura Resultado da 2° coleta Especificar. ds_coprocultura_ resultado_2 | — | todos |
-| `dt_copro3` | `DT_COPRO3` | data | Coprocultura Data da 3ª Coleta. dt_coprocultura_ coleta_3 | — | todos |
-| `copro_r3` | `COPRO_R3` | texto | Coprocultura Resultado da 3° coleta. tp_coprocultura_ resultado_3 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
-| `copro_d_3` | `COPRO_D_3` | texto | Coprocultura Resultado da 3° coleta Especificar. ds_coprocultura_ resultado_3 | — | todos |
-| `dt_outr1` | `DT_OUTR1` | data | Outro exame Data da 1ª Coleta. dt_outro_coleta_ 1 | — | todos |
-| `outr_r1` | `OUTR_R1` | texto | Outro exame Resultado. tp_outro_resulta do_1 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
-| `outr_d1` | `OUTR_D1` | texto | Outro exame Resultado Especificar. ds_outro_resulta do_1 | — | todos |
-| `dt_outr2` | `DT_OUTR2` | data | Outro exame Data da 2ª Coleta. dt_outro_coleta_ 2 | — | todos |
-| `outr_r2` | `OUTR_R2` | texto | Outro exame Resultado. tp_outro_resulta do_2 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
-| `outr_d2` | `OUTR_D2` | texto | Outro exame Resultado Especificar. ds_outro_resulta do_2 | — | todos |
-| `dt_outr3` | `DT_OUTR3` | data | Outro exame Data da 3ª Coleta. dt_outro_coleta_ 3 | — | todos |
-| `outr_r3` | `OUTR_R3` | texto | Outro exame Resultado. tp_outro_resulta do_3 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
+| `uro_d_3` | `URO_D_3` | texto | Urocultura Resultado da 3° coleta Especificar. resultado_3 | — | todos |
+| `dt_copro1` | `DT_COPRO1` | data | Coprocultura data da 1° coleta. coleta_1 | — | todos |
+| `copro_r1` | `COPRO_R1` | texto | Coprocultura Resultado da 1° coleta. resultado_1 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
+| `copro_d_1` | `COPRO_D_1` | texto | Coprocultura Resultado da 1° coleta Especificar. resultado_1 | — | todos |
+| `dt_copro2` | `DT_COPRO2` | data | Coprocultura data da 2° coleta. coleta_2 | — | todos |
+| `copro_r2` | `COPRO_R2` | texto | Coprocultura Resultado da 2° coleta. resultado_2 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
+| `copro_d_2` | `COPRO_D_2` | texto | Coprocultura Resultado da 2° coleta Especificar. resultado_2 | — | todos |
+| `dt_copro3` | `DT_COPRO3` | data | Coprocultura Data da 3ª Coleta. coleta_3 | — | todos |
+| `copro_r3` | `COPRO_R3` | texto | Coprocultura Resultado da 3° coleta. resultado_3 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
+| `copro_d_3` | `COPRO_D_3` | texto | Coprocultura Resultado da 3° coleta Especificar. resultado_3 | — | todos |
+| `dt_outr1` | `DT_OUTR1` | data | Outro exame Data da 1ª Coleta. 1 | — | todos |
+| `outr_r1` | `OUTR_R1` | texto | Outro exame Resultado. do_1 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
+| `outr_d1` | `OUTR_D1` | texto | Outro exame Resultado Especificar. do_1 | — | todos |
+| `dt_outr2` | `DT_OUTR2` | data | Outro exame Data da 2ª Coleta. 2 | — | todos |
+| `outr_r2` | `OUTR_R2` | texto | Outro exame Resultado. do_2 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
+| `outr_d2` | `OUTR_D2` | texto | Outro exame Resultado Especificar. do_2 | — | todos |
+| `dt_outr3` | `DT_OUTR3` | data | Outro exame Data da 3ª Coleta. 3 | — | todos |
+| `outr_r3` | `OUTR_R3` | texto | Outro exame Resultado. do_3 | 1. Salmonella typhi 2. Salmonella SPP 3. Negativo 4. Outro agente | todos |
 | `outr_d3` | `OUTR_D3` | texto | Outro exame Resultado Especificar. ds- outro_resultado_ 3 | — | todos |
-| `clorafen` | `CLORAFEN` | texto | Antibióticos utilizados no tratamento Cloranfenicol. st_antibio_trata_ cloranfenicol | 1. Sim 2. Não 9. Ignorado | todos |
-| `ampicilina` | `AMPICILINA` | texto | Antibióticos utilizados no tratamento Ampicilina. st_antibio_trata_ ampicilina | 1. Sim 2. Não 9. Ignorado | todos |
-| `sulfa` | `SULFA` | texto | Antibióticos utilizados no tratamento Sulfametaxazol+Trimetropina. st_antibio_trata_ sulfametox | 1. Sim 2. Não 9. Ignorado | todos |
-| `quinolona` | `QUINOLONA` | texto | Antibióticos utilizados no tratamento. st_antibio_trata_ quinolona | 1. Sim 2. Não | todos |
-| `ant_outr` | `ANT_OUTR` | texto | Antibióticos utilizados no tratamento Outro. st_antibio_trata_ outro | 1. Sim 2. Não 9. Ignorado | todos |
-| `ant_out_d` | `ANT_OUT_D` | texto | Se outros, especificar. ds_antibio_trata_ outro | — | todos |
+| `clorafen` | `CLORAFEN` | texto | Antibióticos utilizados no tratamento Cloranfenicol. cloranfenicol | 1. Sim 2. Não 9. Ignorado | todos |
+| `ampicilina` | `AMPICILINA` | texto | Antibióticos utilizados no tratamento Ampicilina | 1. Sim 2. Não 9. Ignorado | todos |
+| `sulfa` | `SULFA` | texto | Antibióticos utilizados no tratamento Sulfametaxazol+Trimetropina | 1. Sim 2. Não 9. Ignorado | todos |
+| `quinolona` | `QUINOLONA` | texto | Antibióticos utilizados no tratamento | 1. Sim 2. Não | todos |
+| `ant_outr` | `ANT_OUTR` | texto | Antibióticos utilizados no tratamento Outro | 1. Sim 2. Não 9. Ignorado | todos |
+| `ant_out_d` | `ANT_OUT_D` | texto | Se outros, especificar | — | todos |
 | `dias` | `DIAS` | texto | Tempo de uso (dias). Tempo de uso do antibiótico (em dias) | — | todos |
-| `classi_fin` | `CLASSI_FIN` | texto | Classificação final. tp_classificacao_ final | 1. Confirmado 2. Descartado | todos |
-| `criterio` | `CRITERIO` | texto | Critério de confirmação/Descarte. tp_criterio_confir macao | 1. Laboratorial 2. Clínico epidemiológico | todos |
-| `tpautocto` | `TPAUTOCTO` | texto | O caso é Autóctone de residência?. tp_autoctone_re sidencia | 1 – Sim 2 – Não 3 – Indeterminado | todos |
+| `classi_fin` | `CLASSI_FIN` | texto | Classificação final | 1. Confirmado 2. Descartado | todos |
+| `criterio` | `CRITERIO` | texto | Critério de confirmação/Descarte | 1. Laboratorial 2. Clínico epidemiológico | todos |
+| `tpautocto` | `TPAUTOCTO` | texto | O caso é Autóctone de residência? | 1 – Sim 2 – Não 3 – Indeterminado | todos |
 | `coufinf` | `COUFINF` | texto | UF (provável da fonte de infecção). Sigla da unidade federada onde o paciente foi provavelmente infectado | — | todos |
-| `copaisinf` | `COPAISINF` | texto | País (provável da fonte de infecção). co_pais_infecca o | — | todos |
-| `comuninf` | `COMUNINF` | texto | Município (provável da fonte de infecção). co_municipio _infeccao | — | todos |
-| `doenca_tra` | `DOENCA_TRA` | texto | Doença relacionada ao trabalho. st_doenca_trabal ho | 1. Sim 2. Não 9. Ignorado | todos |
-| `evolucao` | `EVOLUCAO` | texto | Evolução do caso. tp_evolucao_cas o | 1. Cura 2. Óbito por febre tifóide 3. óbito por outras causas 9. Ignorado | todos |
+| `copaisinf` | `COPAISINF` | texto | País (provável da fonte de infecção). o | — | todos |
+| `comuninf` | `COMUNINF` | texto | Município (provável da fonte de infecção). _infeccao | — | todos |
+| `doenca_tra` | `DOENCA_TRA` | texto | Doença relacionada ao trabalho | 1. Sim 2. Não 9. Ignorado | todos |
+| `evolucao` | `EVOLUCAO` | texto | Evolução do caso. o | 1. Cura 2. Óbito por febre tifóide 3. óbito por outras causas 9. Ignorado | todos |
 | `dt_obito` | `DT_OBITO` | data | Data do óbito | — | todos |
 | `dt_encerra` | `DT_ENCERRA` | data | Data do encerramento. Data do encerramento da investigação | — | todos |
 | `dt_digita` | `DT_DIGITA` | data | Data de digitação. Data de Digitação da primeira inclusão da notificação no sistema | — | todos |
@@ -232,20 +228,20 @@ Schema extraído de `FTIFBR23.dbc` (131 colunas depois de remover `_deleted`).
 | `dt_transrs` | `DT_TRANSRS` | data | Data de transferência da regional de saúde. Data de Transferência do registro da Regional de Saúde para do nível superior do sistema | — | todos |
 | `dt_transse` | `DT_TRANSSE` | data | Data de transferência da secretaria estadual de saúde. Data de Transferência do registro da Secretaria Estadual para do nível superior do sistema | — | todos |
 | `nu_lote_v` | `NU_LOTE_V` | texto | Número do lote vertical. Descrever aqui a estrutura da composição do número do lote | — | todos |
-| `nu_lote_h` | `NU_LOTE_H` | texto | Número do lote horizontal. nu_lote_horizont al | — | todos |
+| `nu_lote_h` | `NU_LOTE_H` | texto | Número do lote horizontal | — | todos |
 | `nu_lote_i` | `NU_LOTE_I` | texto | Transferência vertical da investigação. Descrever aqui a estrutura da composição do número do lote | — | todos |
 | `dt_desc1` | `DT_DESC1` | data | Informações complementares e observações Data de deslocamento 1. informar data de deslocamento 1 | — | todos |
 | `dt_desc2` | `DT_DESC2` | data | Informações complementares e observações Data de deslocamento 2. informar data de deslocamento 2 | — | todos |
 | `dt_desc3` | `DT_DESC3` | data | Informações complementares e observações Data de deslocamento 3. informar data de deslocamento 3 | — | todos |
-| `co_uf_des1` | `CO_UF_DES1` | texto | Informações complementares e observações UF deslocamento 1. co_uf_deslocamento_ 1 | — | todos |
-| `co_uf_des2` | `CO_UF_DES2` | texto | Informações complementares e observações UF deslocamento 2. co_uf_deslocamento_ 2 | — | todos |
-| `co_uf_des3` | `CO_UF_DES3` | texto | Informações complementares e. co_uf_deslocamento_ 3 | — | todos |
-| `mun_des1` | `MUN_DES1` | texto | Informações complementares e observações Município deslocamento 1. co_municipio_desloca mento_1 | — | todos |
-| `mun_des2` | `MUN_DES2` | texto | Informações complementares e observações Município deslocamento 2. co_municipio_desloca mento_2 | — | todos |
-| `mun_des3` | `MUN_DES3` | texto | Informações complementares e observações Município deslocamento 3. co_municipio_desloca mento_3 | — | todos |
-| `pa_des1` | `PA_DES1` | inteiro | Informações complementares e observações País deslocamento 1. co_pais_deslocament o_1 | — | todos |
-| `pa_des2` | `PA_DES2` | inteiro | Informações complementares e observações País deslocamento 2. co_pais_deslocament o_2 | — | todos |
-| `pa_des3` | `PA_DES3` | inteiro | Informações complementares e observações País deslocamento. co_pais_deslocament o_3 | — | todos |
+| `co_uf_des1` | `CO_UF_DES1` | texto | Informações complementares e observações UF deslocamento 1. 1 | — | todos |
+| `co_uf_des2` | `CO_UF_DES2` | texto | Informações complementares e observações UF deslocamento 2. 2 | — | todos |
+| `co_uf_des3` | `CO_UF_DES3` | texto | Informações complementares e. 3 | — | todos |
+| `mun_des1` | `MUN_DES1` | texto | Informações complementares e observações Município deslocamento 1. mento_1 | — | todos |
+| `mun_des2` | `MUN_DES2` | texto | Informações complementares e observações Município deslocamento 2. mento_2 | — | todos |
+| `mun_des3` | `MUN_DES3` | texto | Informações complementares e observações Município deslocamento 3. mento_3 | — | todos |
+| `pa_des1` | `PA_DES1` | inteiro | Informações complementares e observações País deslocamento 1. o_1 | — | todos |
+| `pa_des2` | `PA_DES2` | inteiro | Informações complementares e observações País deslocamento 2. o_2 | — | todos |
+| `pa_des3` | `PA_DES3` | inteiro | Informações complementares e observações País deslocamento. o_3 | — | todos |
 | `ds_trans1` | `DS_TRANS1` | texto | Informações complementares e observações Meio de transporte 1. informar o meio de transporte de deslocamento 1 | — | todos |
 | `ds_trans2` | `DS_TRANS2` | texto | Informações complementares e observações Meio de transporte 2. informar o meio de transporte de deslocamento 2 | — | todos |
 | `ds_trans3` | `DS_TRANS3` | texto | Informações complementares e observações Meio de transporte 3. informar o meio de transporte de deslocamento 3 | — | todos |
@@ -265,20 +261,26 @@ Schema extraído de `FTIFBR23.dbc` (131 colunas depois de remover `_deleted`).
 
 - o bloco laboratorial é organizado em 3 exames por material (hemocultura, urocultura, coprocultura e outros), que devem ser processados mediante "explodir" colunas por coluna de resultado; a validação do dicionário impede descartar casos com qualquer resultado *S. typhi* positivo — essa consistência deve ser preservada em pipelines; o histórico de contatos e portadores (`COPRO_R*`) é peça-chave para estudos de portador crônico; e o campo `ASSINTOMAT` marca portadores assintomáticos, que não devem ser contabilizados como casos de doença. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-ftif").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-ftif/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -287,46 +289,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-ftif
-quantilica datasus list sinan-ftif
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-ftif
 
-# 2. Baixar microdados de sinan-ftif com recorte adequado à partição do dataset
-# (SINAN usa uf+year com consolidações BR anuais)
-quantilica datasus sync sinan-ftif -o ./data --start 2007 --end 2026 --regions br
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-ftif -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-ftif -o ./data --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-ftif -o ./data/raw --parquet-dir ./data/parquet --start 2010
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-ftif
 ```
 
-### Em Python e Polars
-
-```python
-import polars as pl
-
-from datasus_fetcher.reader import read_dbc
-
-# Descompacta o .dbc via extensão nativa em Rust e lê o .dbf tratado com polars
-qdf = read_dbc("data/sinan-ftif/2023/sinan-ftif_2023-br@20251202.dbc", clean=True)
-
-# Casos confirmados e critério de confirmação por ano
-conf = (
-    qdf.filter(pl.col("classi_fin") == 1)
-    .group_by(["nu_ano", "criterio"])
-    .len()
-    .sort("nu_ano")
-)
-print(conf)
-
-# Antibióticos utilizados no tratamento
-antibio = qdf.group_by("quinolona").len().sort("quinolona")
-print(antibio)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS` e `.../SINAN/DADOS/PRELIM`

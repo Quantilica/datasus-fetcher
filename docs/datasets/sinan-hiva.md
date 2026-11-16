@@ -3,7 +3,7 @@ dataset:
   id: sinan-hiva
   fonte: datasus
   titulo: HIV em adultos
-  resumo: Notificações de infecção pelo HIV em indivíduos com 13 anos ou mais, registradas no SINAN.
+  resumo: 'HIV em adultos do DATASUS: uma ficha de notificação/investigação de hIV em adultos.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -42,13 +42,9 @@ Notificações de infecção pelo HIV em indivíduos com 13 anos ou mais, regist
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (no FTP há apenas arquivos nacionais `BR`: `partition_n_ufs` = 1)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2007 a 2024 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 18 arquivos (~17,6 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório PRELIM)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório PRELIM)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -60,7 +56,7 @@ Notificações de infecção pelo HIV em indivíduos com 13 anos ou mais, regist
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo `HIVABR24.dbc`, em que `HIVA` é o prefixo do agravo, `BR` indica a base nacional (o SINAN publica um único arquivo por ano para o Brasil) e `24` é o ano com 2 dígitos (2024).
-- **No armazenamento local do `datasus-fetcher`**: `data/sinan-hiva/<partição>/sinan-hiva_br_2024_<AAAAMMDD>.dbc`, em que `<AAAAMMDD>` é a data de modificação do arquivo no FTP.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-hiva/<AAAA>/sinan-hiva_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-hiva/2024/sinan-hiva_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e tabelas auxiliares associadas** (grupo `sinan`, compartilhadas por todos os agravos):
   - Documentação (`/SINAN/DOCS`):
   - `Docs_TAB_SINAN.zip` — pacote de documentação e dicionários para tabulação (~65 MB)
@@ -226,20 +222,26 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 
 - Registros anteriores a 2014 não representam a incidência real, pois a notificação ainda não era obrigatória. Pessoas menores de 13 anos estão em `sinan-hivc`; gestantes vivendo com HIV em `sinan-hivg`. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` (UF de notificação) ou `SG_UF`/`ID_MN_RESI` (residência) conforme a pergunta, pois os dois podem diferir. Arquivos do diretório PRELIM são preliminares e substituídos pelos finais; prefira sempre os arquivos finais quando o mesmo ano existir nas duas fontes, evitando somar PRELIM e FINAIS. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-hiva").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-hiva/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -248,43 +250,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-hiva
-quantilica datasus list sinan-hiva
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-hiva
 
-# 2. Baixar microdados de sinan-hiva (partição uf + year; no SINAN a UF é sempre BR)
-quantilica datasus sync sinan-hiva -o ./data --start 2022 --end 2024 --regions BR
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-hiva -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-hiva -o ./data --docs --aux --start 2022 --end 2024 --regions BR
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-hiva -o ./data/raw --parquet-dir ./data/parquet --start 2022 --end 2024 --regions BR
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-hiva
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-# Leitura direta de um .dbc nacional (descompacta, lê e aplica o saneamento padrão)
-frame = read_dbc("data/raw/HIVABR24.dbc", dataset="sinan-hiva")
-
-# Contagem de notificações por UF de notificação e ano
-resumo = (
-    frame.group_by("sg_uf_not", "nu_ano")
-    .agg(pl.len().alias("notificacoes"))
-    .sort("sg_uf_not", "nu_ano")
-)
-
-# Distribuição por cs_sexo, cs_raca
-print(frame.group_by("cs_sexo").agg(pl.len().alias("n")).sort("n", descending=True))
-print(resumo.head())
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/`

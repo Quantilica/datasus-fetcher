@@ -3,7 +3,7 @@ dataset:
   id: sisprenatal-pn
   fonte: datasus
   titulo: Pré-Natal
-  resumo: Microdados do SISPRENATAL (Sistema de Monitoramento e Avaliação do Pré-Natal, Parto, Puerpério e Criança) do Ministério da Saúde, com registros de acompanhamento de gestantes no SUS entre 2012 e 2014.
+  resumo: 'Pré-Natal do DATASUS: um registro de acompanhamento de gestante.'
   orgao: Ministério da Saúde — DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SISPRENATAL/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -45,13 +45,9 @@ Microdados do SISPRENATAL (Sistema de Monitoramento e Avaliação do Pré-Natal,
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido no formato DATASUS; descompactado nativamente em Rust para `.dbf`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf / yearmonth`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2012-01 a 2014-12 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 944 arquivos (~232,4 MB); 27 UF(s) na partição; última atualização 2015-01-06
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): Não aplicável (o catálogo `meta.docs` não define diretório de documentação para este sistema)
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SISPRENATAL/201201_/Auxiliar`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** Não aplicável (o catálogo `meta.docs` não define diretório de documentação para este sistema)
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SISPRENATAL/201201_/Auxiliar`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -62,7 +58,7 @@ Microdados do SISPRENATAL (Sistema de Monitoramento e Avaliação do Pré-Natal,
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `PNSP1201.dbc` — `PN` (pré-natal) + `SP` (UF) + `12` (ano 2012) + `01` (mês).
-- **No armazenamento local do `datasus-fetcher`**: `data/sisprenatal-pn/<AAAAMM>/sisprenatal-pn_<AAAAMM>-<uf>@<AAAAMMDD>.dbc` (ex.: `data/sisprenatal-pn/201201/sisprenatal-pn_201201-sp@20150106.dbc`).
+- **No armazenamento local do `datasus-fetcher`**: `data/sisprenatal-pn/<AAAAMM>/sisprenatal-pn_<AAAAMM>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sisprenatal-pn/202401/sisprenatal-pn_202401-sp@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**:
   - Documentação: nenhum arquivo catalogado em `documentation/sisprenatal.json` (não há `meta.docs` para `sisprenatal`); o dicionário de variáveis está dentro do pacote de tabulação listado abaixo.
   - Tabelas auxiliares (`datasus-metadata/metadata/auxiliary/sisprenatal.json`):
@@ -162,7 +158,6 @@ Nomes verificados contra o arquivo real `PNSP1408.dbc` (36 colunas). Não há mu
 ## Cuidados de uso
 
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -171,11 +166,18 @@ Nomes verificados contra o arquivo real `PNSP1408.dbc` (36 colunas). Não há mu
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sisprenatal-pn").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sisprenatal-pn/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "mes", "uf")
+    dados.group_by("ano", "mes", "uf")
     .agg(pl.len().alias("linhas"))
     .sort("ano", "mes", "uf")
     .collect()
@@ -184,39 +186,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
-
-> `quantilica datasus <subcomando>` e `datasus-fetcher <subcomando>` são equivalentes.
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sisprenatal-pn
-quantilica datasus list sisprenatal-pn
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sisprenatal-pn
 
-# 2. Baixar microdados de sisprenatal-pn com recorte adequado à partição (uf / yearmonth)
-quantilica datasus sync sisprenatal-pn -o ./data --start 2010-01 --end 2012-12 --regions sp rj
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sisprenatal-pn -o ./data --start 2024-01 --end 2024-12 --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sisprenatal-pn -o ./data --start 2010-01 --end 2012-12 --regions sp rj --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sisprenatal-pn -o ./data/raw --parquet-dir ./data/parquet --start 2010-01 --end 2012-12 --regions sp rj
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sisprenatal-pn
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-
-frame = df.read_dbc(
-    "data/sisprenatal-pn/201201/sisprenatal-pn_201201-sp@20150106.dbc",
-    dataset="sisprenatal-pn",
-)
-print(frame.shape)
-print(frame.columns)
-
-print(frame.group_by("qt_cons").len().sort("qt_cons"))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SISPRENATAL/201201_/Dados`

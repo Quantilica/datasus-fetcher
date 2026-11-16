@@ -3,7 +3,7 @@ dataset:
   id: sih-er
   fonte: datasus
   titulo: ER - AIH Rejeitadas com código de erro
-  resumo: sih-er registra os erros de processamento das AIH rejeitadas
+  resumo: 'ER - AIH Rejeitadas com código de erro do DATASUS: um erro de processamento associado a uma AIH rejeitada.'
   orgao: Ministério da Saúde — Secretaria de Atenção Especializada à Saúde (SAES) e DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -43,13 +43,9 @@ dataset:
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido com PKWARE DCL/blast, descompactado nativamente pelo `datasus-fetcher`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf / yearmonth`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2011-01 a 2026-08 (conforme `index.json`; 27 UFs com arquivos; última atualização no FTP em 2026-10-16)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 4.958 arquivos (~321,3 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIHSUS/200801_/Doc`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIHSUS/200801_/Auxiliar`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/SIHSUS/200801_/Doc`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SIHSUS/200801_/Auxiliar`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -60,7 +56,7 @@ dataset:
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `ERSP2401.dbc` — `ER` (AIH Rejeitadas com código de erro) + `SP` (UF) + `24` (ano 2024) + `01` (mês de competência).
-- **No armazenamento local do `datasus-fetcher`**: `data/sih-er/<AAAAMM>/sih-er_<uf>_<AAAAMM>_<AAAAMMDD>.dbc`, por exemplo `data/sih-er/202401/sih-er_sp_202401_20261018.dbc` (o sufixo `AAAAMMDD` é a data do download).
+- **No armazenamento local do `datasus-fetcher`**: `data/sih-er/<AAAAMM>/sih-er_<AAAAMM>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sih-er/202401/sih-er_202401-sp@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: `Doc/IT_SIHSUS_1603.pdf` (Informe Técnico do SIHSUS, 57 KB, 2016) é o dicionário oficial de variáveis; `Auxiliar/TAB_SIH.zip` (~6,1 MB, tabelas e conversores `.cnv`/`.def` atuais) e as versões históricas `TAB_SIH_199201-199712.zip`, `TAB_SIH_199801-200307.zip` e `TAB_SIH_200308-200712.zip` trazem as tabelas de procedimentos, CID e códigos usadas em cada fase.
 
 ## Conteúdo
@@ -126,7 +122,6 @@ Aplicações: ranking das causas de rejeição por hospital e município; mensur
 
 - (i) o par (`AIH`, `CNES`, competência) liga o ER ao `sih-rj`; (ii) pode haver várias linhas por AIH — conte AIH distintas com `n_unique` ao calcular taxas; (iii) o ER só existe a partir de 2011-01, então rejeições anteriores não têm código de erro neste dataset; (iv) o significado de `CO_ERRO` muda com o tempo, use a tabela auxiliar da data correspondente. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -135,11 +130,18 @@ Aplicações: ranking das causas de rejeição por hospital e município; mensur
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sih-er").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sih-er/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "mes", "uf")
+    dados.group_by("ano", "mes", "uf")
     .agg(pl.len().alias("linhas"))
     .sort("ano", "mes", "uf")
     .collect()
@@ -148,43 +150,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sih-er
-quantilica datasus list sih-er
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sih-er
 
-# 2. Baixar microdados de sih-er com recorte adequado à partição (uf + yearmonth)
-quantilica datasus sync sih-er -o ./data --start 2024-01 --end 2024-12 --regions sp
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sih-er -o ./data --start 2024-01 --end 2024-12 --regions sp rj --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sih-er -o ./data --start 2024-01 --end 2024-12 --regions sp --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sih-er -o ./data/raw --parquet-dir ./data/parquet --start 2024-01 --end 2024-12 --regions sp
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sih-er
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from pathlib import Path
-
-arquivo = next(Path("./data/sih-er/202401").glob("sih-er_sp_202401_*.dbc"))
-er = df.read_dbc(arquivo, dataset="sih-er")
-
-# Principais causas de rejeição e hospitais afetados
-causas = (
-    er.group_by("co_erro")
-    .agg(
-        pl.col("aih").n_unique().alias("aih_distintas"),
-        pl.col("cnes").n_unique().alias("hospitais"),
-    )
-    .sort("aih_distintas", descending=True)
-)
-print(causas.head(10))
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/200801_/`

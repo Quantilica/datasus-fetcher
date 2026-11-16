@@ -3,7 +3,7 @@ dataset:
   id: sim-doinf-cid09
   fonte: datasus
   titulo: Declarações de Óbito Infantis CID-9
-  resumo: Microdados nacionais do SIM/SVSA-MS com as Declarações de Óbito de menores de 1 ano de 1979 a 1995, codificadas pela CID-9.
+  resumo: 'Declarações de Óbito Infantis CID-9 do DATASUS: um óbito de menor de 1 ano, de 1979 a 1995 (CID-9).'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), Coordenação-Geral de Informações e Análise Epidemiológicas (CGIAE)
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -44,13 +44,9 @@ Microdados nacionais do SIM/SVSA-MS com as Declarações de Óbito de menores de
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido no formato DATASUS; descompactado nativamente em Rust para `.dbf`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `year`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 1979 a 1995 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 17 arquivos (~60,8 MB); 1 UF(s) na partição; última atualização 2020-01-31
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIM/CID9/DOCS`, `/dissemin/publicos/SIM/CID10/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIM/CID9/TAB`, `/dissemin/publicos/SIM/CID10/TAB`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/SIM/CID9/DOCS`, `/dissemin/publicos/SIM/CID10/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SIM/CID9/TAB`, `/dissemin/publicos/SIM/CID10/TAB`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -61,7 +57,7 @@ Microdados nacionais do SIM/SVSA-MS com as Declarações de Óbito de menores de
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `DOINF95.dbc` — `DOINF` (óbitos infantis, CID-9) + `95` (ano com 2 dígitos, 1995); arquivo nacional, sem sufixo de UF.
-- **No armazenamento local do `datasus-fetcher`**: `data/sim-doinf-cid09/<AAAA>/sim-doinf-cid09_<AAAA>@<AAAAMMDD>.dbc` (ex.: `data/sim-doinf-cid09/1995/sim-doinf-cid09_1995@20260828.dbc`); como não há UF na partição, o nome contém apenas o ano.
+- **No armazenamento local do `datasus-fetcher`**: `data/sim-doinf-cid09/<AAAA>/sim-doinf-cid09_<AAAA>@<AAAAMMDD>.dbc`, por exemplo `data/sim-doinf-cid09/2024/sim-doinf-cid09_2024@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**:
   - Documentação (`datasus-metadata/metadata/documentation/sim.json`):
     - `/dissemin/publicos/SIM/CID9/DOCS/Docs-Tabs-CID9.zip` (0.7 MB)
@@ -170,8 +166,8 @@ Layout CID-9: **confirme por ano** a presença de cada coluna em `Docs-Tabs-CID9
 | `crsres` | `CRSRES` | texto | Coordenadoria Regional de Saúde (CRS) do local de residência (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `ufinform` | `UFINFORM` | texto | UF que informou o registro (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
-| `racacor` | `RACACOR` | texto | Cor informada pelo responsável pelas informações do falecido | 1 – Branca; 2 – Preta; 3 – Amarela; 4 – Parda; 5 – Indígena | 1995 a 1995 |
-| `etnia` | `ETNIA` | texto | Etnia do falecido, quando indígena (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 1995 a 1995 |
+| `racacor` | `RACACOR` | texto | Cor informada pelo responsável pelas informações do falecido | 1 – Branca; 2 – Preta; 3 – Amarela; 4 – Parda; 5 – Indígena | só em 1995 |
+| `etnia` | `ETNIA` | texto | Etnia do falecido, quando indígena (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 1995 |
 
 ## No lake
 
@@ -185,63 +181,42 @@ Layout CID-9: **confirme por ano** a presença de cada coluna em `Docs-Tabs-CID9
 
 - **Colunas que não existem em todo o período:** 2 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
+Quantas linhas há por período? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
-(
-    pl.scan_parquet("lake/datasus/sim-doinf-cid09/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "uf")
-    .agg(pl.len().alias("linhas"))
-    .sort("ano", "uf")
-    .collect()
+arquivos = sorted(Path("lake/datasus/sim-doinf-cid09").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
 )
+
+(dados.group_by("ano").agg(pl.len().alias("linhas")).sort("ano").collect())
 ```
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
-
-> `quantilica datasus <subcomando>` e `datasus-fetcher <subcomando>` são equivalentes.
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sim-doinf-cid09
-quantilica datasus list sim-doinf-cid09
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sim-doinf-cid09
 
-# 2. Baixar microdados de sim-doinf-cid09 com recorte adequado à partição (year)
-quantilica datasus sync sim-doinf-cid09 -o ./data --start 2015 --end 2023
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sim-doinf-cid09 -o ./data --start 2020 --end 2024 --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sim-doinf-cid09 -o ./data --start 2015 --end 2023 --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sim-doinf-cid09 -o ./data/raw --parquet-dir ./data/parquet --start 2015 --end 2023
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sim-doinf-cid09
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-
-frame = df.read_dbc(
-    "data/sim-doinf-cid09/1995/sim-doinf-cid09_1995@20200131.dbc",
-    dataset="sim-doinf-cid09",
-)
-print(frame.shape)
-
-frame = frame.with_columns(
-    pl.col("dtobito").str.to_date("%d%m%Y", strict=False).alias("data_obito"),
-)
-print(frame.columns)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID9/DOFET`

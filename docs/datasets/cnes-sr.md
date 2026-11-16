@@ -3,7 +3,7 @@ dataset:
   id: cnes-sr
   fonte: datasus
   titulo: Serviço Especializado
-  resumo: O cnes-sr contém os microdados do arquivo de Serviço Especializado do Cadastro Nacional de Estabelecimentos de Saúde (CNES), que registra os serviços especializados ofertados pelos estabelecimentos.
+  resumo: 'Serviço Especializado do DATASUS: um serviço especializado e sua classificação em um estabelecimento, em uma competência.'
   orgao: Ministério da Saúde — Secretaria de Atenção Especializada à Saúde (SAES) e DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -43,13 +43,9 @@ O `cnes-sr` contém os microdados do arquivo de **Serviço Especializado** do Ca
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `yearmonth` (um arquivo por UF e competência mensal, além de `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2005-08 a 2026-09 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 6856 arquivos (~1,7 GB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/CNES/200508_/doc` (`IT_CNES_1706.pdf`)
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/CNES/200508_/Auxiliar` (`TAB_CNES.zip`)
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/CNES/200508_/doc` (`IT_CNES_1706.pdf`)
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/CNES/200508_/Auxiliar` (`TAB_CNES.zip`)
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -60,7 +56,7 @@ O `cnes-sr` contém os microdados do arquivo de **Serviço Especializado** do Ca
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `SRSP2401.dbc` — `SR` (Serviço Especializado), `SP` (UF), `24` (ano), `01` (mês). Há também `SRBR<AA><MM>.dbc`.
-- **No armazenamento local do `datasus-fetcher`**: `data/cnes-sr/2024-01/cnes-sr_202401-sp@20261015.dbc`.
+- **No armazenamento local do `datasus-fetcher`**: `data/cnes-sr/<AAAAMM>/cnes-sr_<AAAAMM>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/cnes-sr/202401/cnes-sr_202401-sp@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: `IT_CNES_1706.pdf` (seção "Layout dos arquivos de Serviço Especializado — SR*.dbf") e `TAB_CNES.zip` (tabelas de serviços/classificações).
 
 ## Conteúdo
@@ -125,10 +121,10 @@ Aplicações analíticas típicas: distribuição regional de serviços especial
 | `terceiro` | `TERCEIRO` | texto | O estabelecimento é terceiro: 1-Sim 0-Não | — | todos |
 | `cnpj_man` | `CNPJ_MAN` | texto | CNPJ da mantenedora do estabelecimento | — | todos |
 | `caracter` | `CARACTER` | texto | Caracterização do serviço | — | todos |
-| `amb_nsus` | `AMB_NSUS` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
-| `amb_sus` | `AMB_SUS` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
-| `hosp_nsus` | `HOSP_NSUS` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
-| `hosp_sus` | `HOSP_SUS` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
+| `amb_nsus` | `AMB_NSUS` | texto | Serviço ofertado no atendimento ambulatorial não SUS (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `amb_sus` | `AMB_SUS` | texto | Serviço ofertado no atendimento ambulatorial SUS (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `hosp_nsus` | `HOSP_NSUS` | texto | Serviço ofertado no atendimento hospitalar não SUS (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
+| `hosp_sus` | `HOSP_SUS` | texto | Serviço ofertado no atendimento hospitalar SUS (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `competen` | `COMPETEN` | texto | Ano e Mês de competência da informação (AAAAMM) | — | todos |
 | `contsrvu` | `CONTSRVU` | texto | INDICADOR de serviço especializado ÚNICO | — | todos |
 | `cnesterc` | `CNESTERC` | texto | Número nacional do estabelecimento de saúde TERCEIRO | — | todos |
@@ -149,7 +145,6 @@ Aplicações analíticas típicas: distribuição regional de serviços especial
 - como um estabelecimento pode ofertar vários serviços/classificações, a contagem de "serviços" exige agrupar por `SERV_ESP`; `AMB_HOSP` é um código de 4 caracteres que representa combinações de flags e precisa de dicionário; códigos de serviço são recompostos por portaria periodicamente, exigindo mapeamentos históricos; e `CNESTERC` revela arranjos de terceirização que devem ser considerados ao atribuir produção ao estabelecimento. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Colunas que não existem em todo o período:** 1 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -158,11 +153,18 @@ Aplicações analíticas típicas: distribuição regional de serviços especial
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/cnes-sr").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/cnes-sr/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "mes", "uf")
+    dados.group_by("ano", "mes", "uf")
     .agg(pl.len().alias("linhas"))
     .sort("ano", "mes", "uf")
     .collect()
@@ -171,39 +173,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para cnes-sr
-quantilica datasus list cnes-sr
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list cnes-sr
 
-# 2. Baixar microdados de cnes-sr (uf+yearmonth)
-quantilica datasus sync cnes-sr -o ./data --start 2024-01 --end 2024-12 --regions sp
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync cnes-sr -o ./data --start 2024-01 --end 2024-12 --regions sp rj --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync cnes-sr -o ./data --docs --aux --start 2024-01 --end 2024-12
-
-# 4. Pipeline completo até Parquet tratado
-quantilica datasus pipeline cnes-sr -o ./data/raw --parquet-dir ./data/parquet --start 2024-01 --end 2024-12
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset cnes-sr
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-qdf = read_dbc("data/cnes-sr/2024-01/cnes-sr_202401-sp@20261015.dbc", clean=True)
-
-# Estabelecimentos por serviço especializado
-servicos = (
-    qdf.group_by("serv_esp")
-    .agg(pl.col("cnes").n_unique().alias("estabelecimentos"))
-    .sort("estabelecimentos", descending=True)
-)
-print(servicos)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/200508_/Dados/SR`

@@ -3,7 +3,7 @@ dataset:
   id: sinan-rota
   fonte: datasus
   titulo: Rotavírus
-  resumo: O sinan-rota contém os microdados das notificações e investigações epidemiológicas de casos de Rotavírus (Ficha de Vigilância de Rotavírus, CID-10 A08.0) registrados no Sistema de Informação de Agravos de Notificação (SINAN) do Ministério da Saúde.
+  resumo: 'Rotavírus do DATASUS: uma ficha de notificação/investigação de rotavírus.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -49,13 +49,9 @@ O `sinan-rota` contém os microdados das notificações e investigações epidem
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (arquivos consolidados anuais, praticamente sempre `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2009 a 2026 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 18 arquivos (~1,4 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório `PRELIM`)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório `PRELIM`)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -67,7 +63,7 @@ O `sinan-rota` contém os microdados das notificações e investigações epidem
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `ROTABR25.dbc` — `ROTA` é o prefixo do agravo, `BR` indica a consolidação nacional de todo o país e `25` é o ano de notificação (2025). A série em `FINAIS` começa em 2009 e vai até 2024; os anos de 2025 e 2026 estão apenas em `PRELIM` (ex.: `ROTABR26.dbc`, atualização de 30/04/2026).
-- **No armazenamento local do `datasus-fetcher`**: caminho padronizado `data/sinan-rota/<ano>/sinan-rota_<período>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-rota/2026/sinan-rota_preliminar_2026-br@20260430.dbc`; arquivos preliminares recebem o sufixo `-preliminar` no nome do dataset.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-rota/<AAAA>/sinan-rota_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-rota/2024/sinan-rota_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: no diretório `SINAN/DOCS` estão `Docs_TAB_SINAN.zip`, as instruções POP_I/II/III de acesso/descompactação e a **`Nota_Tecnica_Rotavirus.pdf`** (nota técnica específica do agravo); em `SINAN/AUXILIAR` estão `TAB_SINANNET.zip`, `TAB_SINANONLINE.zip` e `POPT_Estimativa_TCU_2019_Sinan.zip` (denominadores populacionais).
 
 ## Conteúdo
@@ -126,59 +122,59 @@ Schema extraído de `ROTABR25.dbc` (73 colunas depois de remover `_deleted`).
 | `cs_suspeit` | `CS_SUSPEIT` | inteiro | Suspeita do Agravo. a) Doenças Exantemáticas 1 – Sarampo 2 – Rubéola b) Meningite 1 – Doenças Meningocócicas 2 – Outras Meningites c) AIDS (banco genérico) 1- Criança (<13) 2- Adulto (≥ 13 anos) AIDS (banco DBF) C- Criança (<13) A- Adulto (≥ 13 anos) | — | todos |
 | `cs_mening` | `CS_MENING` | inteiro | Tipo de meningite (campo do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
-| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_notifi cacao | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno) | — | todos |
 | `nu_ano` | `NU_ANO` | texto | (campo interno). Ano da notificação | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
 | `id_regiona` | `ID_REGIONA` | texto | (campo interno). Regional de saúde onde está localizado o município da unidade de saúde ou outra fonte notificadora | — | todos |
-| `id_unidade` | `ID_UNIDADE` | inteiro | Unidade de saúde ou outra fonte notificadora. co_unidade_notifi cacao | — | todos |
-| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico. dt_diagnostico_si ntoma | — | todos |
-| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno). ds_semana_sinto ma | — | todos |
+| `id_unidade` | `ID_UNIDADE` | inteiro | Unidade de saúde ou outra fonte notificadora | — | todos |
+| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico | — | todos |
+| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno) | — | todos |
 | `nu_idade_n` | `NU_IDADE_N` | inteiro | Idade. A composição da variável obedece o seguinte critério: 1o | — | todos |
 | `cs_sexo` | `CS_SEXO` | texto | Sexo. M- Masculino F- Feminino I- Ignorado | — | todos |
 | `cs_gestant` | `CS_GESTANT` | texto | Gestante. Gestante 1. 1º Trimestre 2. 2º Trimestre 3. 3º Trimestre 4. Idade gestacional ignorada 5. Não 6. Não se aplica 9. Ignorado | — | todos |
 | `cs_escol_n` | `CS_ESCOL_N` | texto | Escolaridade. 43 Analfabeto 1. 1ª a 4ª série incompleta do EF 2. 4ª série completa do EF ( antigo 1° grau) 3. 5ª à 8ª série incompleta do EF (antigo ginásio ou 1° grau) 4. Ensino fundamental completo (antigo ginásio ou 1° grau) 5. Ensino médio incompleto (antigo colegial ou 2° grau) 6. Ensino médio completo (antigo colegial ou 2° grau) 7. Educação superior incompleta 8. Educação superior completa 9. Ignorado 10. N... | — | todos |
 | `sg_uf` | `SG_UF` | texto | UF. Sigla da Unidade Federada de residência do paciente por ocasião da notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência. co_municipio_res idencia | — | todos |
+| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência | — | todos |
 | `id_rg_resi` | `ID_RG_RESI` | texto | (campo interno). Regional de saúde onde está localizado o município de residência do paciente por ocasião da notificação | — | todos |
-| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil). co_pais_residenc ia | — | todos |
-| `vomito` | `VOMITO` | texto | Sinais e sintomas Vômito. st_sintoma_vomit o | 1. Sim 2. Não 9. Ignorado | todos |
-| `n_vomito` | `N_VOMITO` | texto | Sinais e sintomas Vômito / Número de episódios de vômito. qt_episodio_vomit o | — | todos |
+| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil) | — | todos |
+| `vomito` | `VOMITO` | texto | Sinais e sintomas Vômito. o | 1. Sim 2. Não 9. Ignorado | todos |
+| `n_vomito` | `N_VOMITO` | texto | Sinais e sintomas Vômito / Número de episódios de vômito. o | — | todos |
 | `d_vomito` | `D_VOMITO` | texto | Sinais e sintomas Vômito / Duração de dias com vômito. Duração de dias com vômito | — | todos |
 | `febre` | `FEBRE` | texto | Sinais e sintomas Febre. O paciente teve febre | 1. Sim 2. Não 9. Ignorado | todos |
 | `t_febre` | `T_FEBRE` | texto | Tipo ou duração da febre (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `diarreia` | `DIARREIA` | texto | Sinais e sintomas. O paciente teve diarreia | 1. Sim | todos |
-| `n_diar` | `N_DIAR` | texto | Sinais e sintomas Diarreia / Número de episódios de diarreia. qt_episodio_diarr eia | — | todos |
+| `n_diar` | `N_DIAR` | texto | Sinais e sintomas Diarreia / Número de episódios de diarreia | — | todos |
 | `d_diar` | `D_DIAR` | texto | Sinais e sintomas Diarreia / Duração de dias com diarreia. Duração de dias com diarreia | — | todos |
-| `sang` | `SANG` | texto | Presença de sangue nas fezes. st_presenca_san gue | 1. Sim 2. Não 9. Ignorado | todos |
-| `leite` | `LEITE` | texto | Aleitamento Materno. st_aleitamento_m aterno | 1. Sim 2. Não | todos |
+| `sang` | `SANG` | texto | Presença de sangue nas fezes | 1. Sim 2. Não 9. Ignorado | todos |
+| `leite` | `LEITE` | texto | Aleitamento Materno | 1. Sim 2. Não | todos |
 | `tipo_leite` | `TIPO_LEITE` | texto | Tipo de leite consumido pela criança (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
-| `vacina` | `VACINA` | texto | Vacina contra Rotavírus. st_vacina_rotavir us | 1. Sim 2. Não 9. Ignorado | todos |
-| `dt_1vac` | `DT_1VAC` | data | Data da aplicação 1ª dose. dt_aplicacao_dos e_1 | — | todos |
+| `vacina` | `VACINA` | texto | Vacina contra Rotavírus | 1. Sim 2. Não 9. Ignorado | todos |
+| `dt_1vac` | `DT_1VAC` | data | Data da aplicação 1ª dose. e_1 | — | todos |
 | `lote1` | `LOTE1` | texto | Lote da vacina 1ª dose. Número do lote da vacina 1ª dose | — | todos |
-| `lab_prod1` | `LAB_PROD1` | texto | Laboratório produtor 1ª dose. ds_laboratorio_do se_1 | — | todos |
-| `dt_2vac` | `DT_2VAC` | data | Data da aplicação 2ª dose. dt_aplicacao_dos e_2 | — | todos |
+| `lab_prod1` | `LAB_PROD1` | texto | Laboratório produtor 1ª dose. se_1 | — | todos |
+| `dt_2vac` | `DT_2VAC` | data | Data da aplicação 2ª dose. e_2 | — | todos |
 | `lote2` | `LOTE2` | texto | Lote da vacina 2ª dose. Número do lote da vacina 2ª dose | — | todos |
-| `lab_prod2` | `LAB_PROD2` | texto | Laboratório produtor 2ª dose. ds_laboratorio_do se_2 | — | todos |
+| `lab_prod2` | `LAB_PROD2` | texto | Laboratório produtor 2ª dose. se_2 | — | todos |
 | `vop_vorh` | `VOP_VORH` | texto | Vacina oral contra poliomielite/rotavírus humano: registro de doses (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
-| `dt_vop` | `DT_VOP` | data | Data da última dose de VOP. dt_ultima_dose_v op | — | todos |
+| `dt_vop` | `DT_VOP` | data | Data da última dose de VOP | — | todos |
 | `dt_fezes` | `DT_FEZES` | data | Data da coleta da amostra de fezes. Data da coleta de Fezes | — | todos |
 | `rota_r` | `ROTA_R` | texto | Resultado do teste para rotavírus (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `genot_g` | `GENOT_G` | texto | Qual o genótipo G:. Nome do genótipo G | — | todos |
 | `genot_p` | `GENOT_P` | texto | Qual o genótipo P:. Nome do genótipo P | — | todos |
 | `out_virus` | `OUT_VIRUS` | texto | Outros vírus identificados na amostra. Se outros vírus identificados na amostra | 1. Sim 2. Não 9. Ignorado | todos |
 | `nome_virus` | `NOME_VIRUS` | texto | Se sim, qual. Nome do vírus identificado na amostra | — | todos |
-| `bacteria` | `BACTERIA` | texto | Bactéria identificada na amostra. st_bacteria_identi ficada | 1. Sim 2. Não 9. Ignorado | todos |
-| `nome_bact` | `NOME_BACT` | texto | Se sim, qual bactéria. ds_bacteria_ident ificada | — | todos |
-| `parasita` | `PARASITA` | texto | Parasita identificado na amostra. st_parasita_identi ficado | 1. Sim 2. Não 9. Ignorado | todos |
-| `nome_paras` | `NOME_PARAS` | texto | Se sim, qual parasita. ds_parasita_ident ificado | — | todos |
-| `medicament` | `MEDICAMENT` | texto | Uso de medicamento antes da coleta. st_uso_medicam ento | 1. Sim 2. Não 9. Ignorado | todos |
+| `bacteria` | `BACTERIA` | texto | Bactéria identificada na amostra | 1. Sim 2. Não 9. Ignorado | todos |
+| `nome_bact` | `NOME_BACT` | texto | Se sim, qual bactéria | — | todos |
+| `parasita` | `PARASITA` | texto | Parasita identificado na amostra | 1. Sim 2. Não 9. Ignorado | todos |
+| `nome_paras` | `NOME_PARAS` | texto | Se sim, qual parasita | — | todos |
+| `medicament` | `MEDICAMENT` | texto | Uso de medicamento antes da coleta | 1. Sim 2. Não 9. Ignorado | todos |
 | `out_medic` | `OUT_MEDIC` | texto | Se sim, qual?. Nome de outro medicamento antes da coleta | — | todos |
-| `dt_envio` | `DT_ENVIO` | data | Data de envio da amostra ao LACEN. dt_envio_amostra _lacen | — | todos |
-| `acondic` | `ACONDIC` | texto | Acondicionamento da amostra. st_acondicioname nto_amostra | 1. Sim 2. Não 9. Ignorado | todos |
-| `classi_fin` | `CLASSI_FIN` | texto | Classificação final. tp_classificacao_f inal | 1. Confirmado 2. Descartado | todos |
-| `criterio` | `CRITERIO` | texto | Critério de Confirmação/ Descarte. tp_criterio_confir macao | 1-Laboratorial 2-Clínico Epidemiológico 3- Clínico | todos |
-| `caso_isola` | `CASO_ISOLA` | texto | Diarreia por Rotavírus/ Caso isolado. st_diarreia_isolad o | 1. Sim 2. Não | todos |
+| `dt_envio` | `DT_ENVIO` | data | Data de envio da amostra ao LACEN. _lacen | — | todos |
+| `acondic` | `ACONDIC` | texto | Acondicionamento da amostra. nto_amostra | 1. Sim 2. Não 9. Ignorado | todos |
+| `classi_fin` | `CLASSI_FIN` | texto | Classificação final | 1. Confirmado 2. Descartado | todos |
+| `criterio` | `CRITERIO` | texto | Critério de Confirmação/ Descarte | 1-Laboratorial 2-Clínico Epidemiológico 3- Clínico | todos |
+| `caso_isola` | `CASO_ISOLA` | texto | Diarreia por Rotavírus/ Caso isolado. o | 1. Sim 2. Não | todos |
 | `surto` | `SURTO` | texto | Diarreia por Rotavírus/ Surto. Define se o caso faz parte de um surto | 1. Sim 2. Não | todos |
 | `evolucao` | `EVOLUCAO` | texto | Evolução. Evolução do caso | 1. Cura 2. Óbito por Rotavírus 3. Óbito por outras causas 9. Ignorado | todos |
 | `dt_obito` | `DT_OBITO` | data | Data do óbito | — | todos |
@@ -191,7 +187,7 @@ Schema extraído de `ROTABR25.dbc` (73 colunas depois de remover `_deleted`).
 | `dt_transrs` | `DT_TRANSRS` | data | Data de transferência da regional de saúde. Data de Transferência do registro da Regional de Saúde para do nível superior do sistema | — | todos |
 | `dt_transse` | `DT_TRANSSE` | data | Data de transferência da secretaria estadual de saúde. Data de Transferência do registro da Secretaria Estadual para do nível superior do sistema | — | todos |
 | `nu_lote_v` | `NU_LOTE_V` | texto | Número do lote vertical. Descrever aqui a estrutura da composição do número do lote | — | todos |
-| `nu_lote_h` | `NU_LOTE_H` | inteiro | Número do lote horizontal. nu_lote_horizont al | — | todos |
+| `nu_lote_h` | `NU_LOTE_H` | inteiro | Número do lote horizontal | — | todos |
 | `ano_nasc` | `ANO_NASC` | texto | Ano de nascimento do paciente (campo do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `uf` | — | texto | UF do arquivo de origem (sigla em minúsculas, `br` para arquivos nacionais), gravada pelo conversor; as linhas do período saem ordenadas por ela | sigla da UF | todos |
 | `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
@@ -209,20 +205,26 @@ Schema extraído de `ROTABR25.dbc` (73 colunas depois de remover `_deleted`).
 
 - a base é de **vigilância sentinela** (unidades selecionadas), não universal — os totais não representam a incidência nacional; a genotipagem (`GENOT_G`/`GENOT_P`) é registrada em poucos casos (requer vínculo a laboratório de referência), com frequentes resultados "não realizado"; a efetividade vacinal exige a lógica de doses/lotes e fabricante por dose (`LOTE1`/`LOTE2`, `LAB_PROD1/2`); e há casos com "outros vírus" (`OUT_VIRUS`) investigados como outras etiologias de diarreia. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-rota").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-rota/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -231,48 +233,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-rota
-quantilica datasus list sinan-rota
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-rota
 
-# 2. Baixar microdados de sinan-rota com recorte adequado à partição do dataset
-# (SINAN usa uf+year com consolidações BR anuais)
-quantilica datasus sync sinan-rota -o ./data --start 2009 --end 2026 --regions br
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-rota -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-rota -o ./data --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-rota -o ./data/raw --parquet-dir ./data/parquet --start 2010
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-rota
 ```
 
-### Em Python e Polars
-
-```python
-import polars as pl
-
-from datasus_fetcher.reader import read_dbc
-
-# Descompacta o .dbc via extensão nativa em Rust e lê o .dbf tratado com polars
-qdf = read_dbc(
-    "data/sinan-rota/2025/sinan-rota_preliminar_2025-br@20260430.dbc", clean=True
-)
-
-# Positividade de rotavírus nas fezes coletadas (vigilância sentinela)
-posit = qdf.filter(pl.col("rota_r") == 1).group_by("nu_ano").len().sort("nu_ano")
-print(posit)
-
-# Genotipos identificados nas amostras positivas
-geno = (
-    qdf.filter(pl.col("rota_r") == 1)
-    .group_by(["genot_g", "genot_p"])
-    .len()
-    .sort("genot_g")
-)
-print(geno)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS` e `.../SINAN/DADOS/PRELIM`

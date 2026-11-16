@@ -3,7 +3,7 @@ dataset:
   id: sismama-hm
   fonte: datasus
   titulo: Histopatológico de Mama
-  resumo: Microdados do SISMAMA (INCA/DATASUS) com os laudos histopatológicos de mama realizados no SUS entre 2009 e 2015, por UF e mês.
+  resumo: 'Histopatológico de Mama do DATASUS: um laudo histopatológico de mama.'
   orgao: Ministério da Saúde — Instituto Nacional de Câncer (INCA) e DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SISCAN/SISMAMA/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -41,13 +41,9 @@ Microdados do SISMAMA (INCA/DATASUS) com os laudos histopatológicos de mama rea
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido no formato DATASUS; descompactado nativamente em Rust para `.dbf`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf / yearmonth`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2009-01 a 2015-07 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 1674 arquivos (~5,9 MB); 27 UF(s) na partição; última atualização 2022-08-31
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): Não aplicável (o catálogo `meta.docs` não define diretório de documentação para este sistema)
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SISCAN/SISMAMA/Auxiliar`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** Não aplicável (o catálogo `meta.docs` não define diretório de documentação para este sistema)
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SISCAN/SISMAMA/Auxiliar`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -58,7 +54,7 @@ Microdados do SISMAMA (INCA/DATASUS) com os laudos histopatológicos de mama rea
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `HMSP1001.dbc` — `HM` (histopatológico de mama) + `SP` (UF) + `10` (ano 2010) + `01` (mês).
-- **No armazenamento local do `datasus-fetcher`**: `data/sismama-hm/<AAAAMM>/sismama-hm_<AAAAMM>-<uf>@<AAAAMMDD>.dbc` (ex.: `data/sismama-hm/201001/sismama-hm_201001-sp@20220817.dbc`).
+- **No armazenamento local do `datasus-fetcher`**: `data/sismama-hm/<AAAAMM>/sismama-hm_<AAAAMM>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sismama-hm/202401/sismama-hm_202401-sp@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**:
   - Documentação: nenhum arquivo catalogado em `documentation/sismama.json` (não há `meta.docs` para `sismama`); o dicionário de variáveis está dentro do pacote de tabulação listado abaixo.
   - Tabelas auxiliares (`datasus-metadata/metadata/auxiliary/sismama.json`):
@@ -174,7 +170,6 @@ Nomes verificados contra o arquivo real `HMSP1505.dbc` (55 colunas; resultado do
 ## Cuidados de uso
 
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -183,11 +178,18 @@ Nomes verificados contra o arquivo real `HMSP1505.dbc` (55 colunas; resultado do
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sismama-hm").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sismama-hm/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "mes", "uf")
+    dados.group_by("ano", "mes", "uf")
     .agg(pl.len().alias("linhas"))
     .sort("ano", "mes", "uf")
     .collect()
@@ -196,43 +198,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
-
-> `quantilica datasus <subcomando>` e `datasus-fetcher <subcomando>` são equivalentes.
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sismama-hm
-quantilica datasus list sismama-hm
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sismama-hm
 
-# 2. Baixar microdados de sismama-hm com recorte adequado à partição (uf / yearmonth)
-quantilica datasus sync sismama-hm -o ./data --start 2010-01 --end 2012-12 --regions sp rj
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sismama-hm -o ./data --start 2024-01 --end 2024-12 --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sismama-hm -o ./data --start 2010-01 --end 2012-12 --regions sp rj --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sismama-hm -o ./data/raw --parquet-dir ./data/parquet --start 2010-01 --end 2012-12 --regions sp rj
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sismama-hm
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-
-frame = df.read_dbc(
-    "data/sismama-hm/201001/sismama-hm_201001-sp@20220817.dbc", dataset="sismama-hm"
-)
-print(frame.shape)
-print(frame.columns)
-
-print(
-    frame.group_by("cclilo ca".replace(" ", ""))
-    .len()
-    .sort("len", descending=True)
-    .head(10)
-)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SISCAN/SISMAMA/Dados`

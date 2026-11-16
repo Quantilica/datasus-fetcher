@@ -3,7 +3,7 @@ dataset:
   id: cnes-dc
   fonte: datasus
   titulo: Dados Complementares
-  resumo: O cnes-dc contém os microdados do arquivo de Dados Complementares do Cadastro Nacional de Estabelecimentos de Saúde (CNES).
+  resumo: 'Dados Complementares do DATASUS: um estabelecimento de saúde (dados complementares), em uma competência.'
   orgao: Ministério da Saúde — Secretaria de Atenção Especializada à Saúde (SAES) e DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -115,13 +115,9 @@ O `cnes-dc` contém os microdados do arquivo de **Dados Complementares** do Cada
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `yearmonth` (um arquivo por UF e competência mensal, além de `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2005-08 a 2026-09 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 6858 arquivos (~122 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/CNES/200508_/doc` (`IT_CNES_1706.pdf`)
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/CNES/200508_/Auxiliar` (`TAB_CNES.zip`)
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/CNES/200508_/doc` (`IT_CNES_1706.pdf`)
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/CNES/200508_/Auxiliar` (`TAB_CNES.zip`)
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -132,7 +128,7 @@ O `cnes-dc` contém os microdados do arquivo de **Dados Complementares** do Cada
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `DCSP2401.dbc` — `DC` é o prefixo de Dados Complementares, `SP` a UF, `24` o ano e `01` o mês de competência. Existem também arquivos `DCBR<AA><MM>.dbc`.
-- **No armazenamento local do `datasus-fetcher`**: `data/cnes-dc/2024-01/cnes-dc_202401-sp@20261015.dbc`.
+- **No armazenamento local do `datasus-fetcher`**: `data/cnes-dc/<AAAAMM>/cnes-dc_<AAAAMM>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/cnes-dc/202401/cnes-dc_202401-sp@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: `IT_CNES_1706.pdf` (seção "Layout dos arquivos de Dados Complementares — DC*.dbf") e o pacote de domínios `TAB_CNES.zip`.
 
 ## Conteúdo
@@ -338,13 +334,13 @@ Aplicações analíticas típicas: identificação de serviços habilitados em a
 | `uf` | — | texto | UF do arquivo de origem (sigla em minúsculas, `br` para arquivos nacionais), gravada pelo conversor; as linhas do período saem ordenadas por ela | sigla da UF | todos |
 | `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
 | `nat_jur` | `NAT_JUR` | texto | Natureza Jurídica de Profissionais - Nomenclatura (PF*.dbf) | — | 2016-08 a 2026-07 |
-| `ap01cv07` | `AP01CV07` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2026-07 a 2026-07 |
-| `ap02cv07` | `AP02CV07` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2026-07 a 2026-07 |
-| `ap03cv07` | `AP03CV07` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2026-07 a 2026-07 |
-| `ap04cv07` | `AP04CV07` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2026-07 a 2026-07 |
-| `ap05cv07` | `AP05CV07` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2026-07 a 2026-07 |
-| `ap06cv07` | `AP06CV07` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2026-07 a 2026-07 |
-| `ap07cv07` | `AP07CV07` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | 2026-07 a 2026-07 |
+| `ap01cv07` | `AP01CV07` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2026-07 |
+| `ap02cv07` | `AP02CV07` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2026-07 |
+| `ap03cv07` | `AP03CV07` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2026-07 |
+| `ap04cv07` | `AP04CV07` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2026-07 |
+| `ap05cv07` | `AP05CV07` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2026-07 |
+| `ap06cv07` | `AP06CV07` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2026-07 |
+| `ap07cv07` | `AP07CV07` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | só em 2026-07 |
 
 ## No lake
 
@@ -359,7 +355,6 @@ Aplicações analíticas típicas: identificação de serviços habilitados em a
 - o leiaute do `DC` mudou bastante ao longo dos anos (blocos de salas de radioterapia, hemoterapia e diálise foram acrescentados em competências distintas), de modo que nem todas as colunas existem em todas as competências — a leitura deve tolerar schema variável; os muitos campos `AP*CV*` exigem dicionário para decodificar grupo de atendimento + convênio; e o `DC` só cobre estabelecimentos que declaram essas características, devendo ser sempre lido em conjunto com o `ST`. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Colunas que não existem em todo o período:** 8 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -368,11 +363,18 @@ Aplicações analíticas típicas: identificação de serviços habilitados em a
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/cnes-dc").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/cnes-dc/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "mes", "uf")
+    dados.group_by("ano", "mes", "uf")
     .agg(pl.len().alias("linhas"))
     .sort("ano", "mes", "uf")
     .collect()
@@ -381,35 +383,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para cnes-dc
-quantilica datasus list cnes-dc
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list cnes-dc
 
-# 2. Baixar microdados de cnes-dc (uf+yearmonth)
-quantilica datasus sync cnes-dc -o ./data --start 2024-01 --end 2024-12 --regions sp
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync cnes-dc -o ./data --start 2024-01 --end 2024-12 --regions sp rj --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync cnes-dc -o ./data --docs --aux --start 2024-01 --end 2024-12
-
-# 4. Pipeline completo até Parquet tratado
-quantilica datasus pipeline cnes-dc -o ./data/raw --parquet-dir ./data/parquet --start 2024-01 --end 2024-12
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset cnes-dc
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-qdf = read_dbc("data/cnes-dc/2024-01/cnes-dc_202401-sp@20261015.dbc", clean=True)
-
-# Estabelecimentos com requisito de diálise
-dialise = qdf.filter(pl.col("dialise") == "1").select(["cnes", "codufmun"])
-print(dialise.height)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/200508_/Dados/DC`

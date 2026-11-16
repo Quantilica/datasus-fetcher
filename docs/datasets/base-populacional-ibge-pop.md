@@ -3,7 +3,7 @@ dataset:
   id: base-populacional-ibge-pop
   fonte: datasus
   titulo: POP - Censo e Estimativas
-  resumo: O base-populacional-ibge-pop contém as populações residentes dos municípios brasileiros, estratificadas por sexo, situação de domicílio (urbano/rural) e faixa etária, obtidas dos Censos Demográficos, Contagens Populacionais e Projeções Intercensitárias do IBGE
+  resumo: 'POP - Censo e Estimativas do DATASUS: a população residente de um município, em um ano, por sexo, situação e faixa etária.'
   orgao: Instituto Brasileiro de Geografia e Estatística (IBGE), distribuído pelo DATASUS / Ministério da Saúde
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/IBGE/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -42,13 +42,9 @@ O `base-populacional-ibge-pop` contém as **populações residentes** dos munic�
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.zip` (contendo arquivos `.DBF`, `.CSV` e `.XML`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (na prática um único arquivo nacional `BR` por ano)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 1980 a 2012 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 33 arquivos (~150 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/IBGE/DOC` (`populacao.pdf`, etc.)
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/IBGE/Auxiliar` (`TAB_POP.zip`)
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/IBGE/DOC` (`populacao.pdf`, etc.)
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/IBGE/Auxiliar` (`TAB_POP.zip`)
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -59,7 +55,7 @@ O `base-populacional-ibge-pop` contém as **populações residentes** dos munic�
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `POPBR12.zip` — `POP` é o prefixo, `BR` indica a cobertura nacional e `12` o ano de referência (2012). O ZIP contém `POPBR12.DBF`, `POPBR12.csv` e `POPBR12.xml`; há um arquivo por ano.
-- **No armazenamento local do `datasus-fetcher`**: `data/base-populacional-ibge-pop/2012/base-populacional-ibge-pop_2012-br@20151110.zip`.
+- **No armazenamento local do `datasus-fetcher`**: `data/base-populacional-ibge-pop/<AAAA>/base-populacional-ibge-pop_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/base-populacional-ibge-pop/2024/base-populacional-ibge-pop_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: em `IBGE/DOC` estão `populacao.pdf` (este dataset), `NT-POPULACAO-RESIDENTE-2000-2024.pdf` (série `POPS`) e `Pop_Residente_TCU_*.pdf` (série `POPT`); em `IBGE/Auxiliar` está `TAB_POP.zip`, com definições e conversões `.cnv`/`.def` para tabulação (inclusive `PROJPOPUF.DEF` e conversões de ano, município e região).
 
 ## Conteúdo
@@ -112,7 +108,6 @@ Aplicações analíticas típicas: denominadores de taxas de mortalidade/incidê
 
 - a disponibilidade de abertura por situação urbano/rural e por idade simples varia por ano (ver nota técnica); o total de municípios muda ao longo da série por criação/emancipação de municípios e mudanças de divisão administrativa; houve quebras metodológicas em 1992, 2007 (método AiBi) e 2011-2012, recomendando cautela em séries longas; e o município de Pinto Bandeira/RS teve população agregada a Bento Gonçalves/RS em 2003-2012 por decisão judicial. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -121,57 +116,34 @@ Aplicações analíticas típicas: denominadores de taxas de mortalidade/incidê
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
-(
-    pl.scan_parquet(
-        "lake/datasus/base-populacional-ibge-pop/**/*.parquet", hive_partitioning=True
-    )
-    .group_by("ano", "uf")
-    .agg(pl.len().alias("linhas"))
-    .sort("ano", "uf")
-    .collect()
+arquivos = sorted(Path("lake/datasus/base-populacional-ibge-pop").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
 )
+
+(dados.group_by("ano", "uf").agg(pl.len().alias("linhas")).sort("ano", "uf").collect())
 ```
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para base-populacional-ibge-pop
-quantilica datasus list base-populacional-ibge-pop
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list base-populacional-ibge-pop
 
-# 2. Baixar microdados com recorte de anos (partition uf+year; na prática br)
-quantilica datasus sync base-populacional-ibge-pop -o ./data --start 2000 --end 2012
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync base-populacional-ibge-pop -o ./data --start 2020 --end 2024 --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync base-populacional-ibge-pop -o ./data --docs --aux --start 2000 --end 2012
-
-# 4. Pipeline completo: download e extração do .zip
-quantilica datasus pipeline base-populacional-ibge-pop -o ./data/raw --parquet-dir ./data/parquet --start 2000 --end 2012
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset base-populacional-ibge-pop
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-
-df_pop = pl.read_csv(
-    "data/raw/base-populacional-ibge-pop/2010/POPBR10.csv",
-    separator=";",
-    infer_schema_length=0,
-)
-
-# População total por sexo em 2010
-total = (
-    df_pop.with_columns(pl.col("POPULACAO").cast(pl.Int64))
-    .group_by("SEXO")
-    .agg(pl.col("POPULACAO").sum().alias("populacao"))
-)
-print(total)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/IBGE/POP`

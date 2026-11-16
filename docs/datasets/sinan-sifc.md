@@ -3,7 +3,7 @@ dataset:
   id: sinan-sifc
   fonte: datasus
   titulo: Sífilis Congênita
-  resumo: Notificações de sífilis congênita registradas no SINAN.
+  resumo: 'Sífilis Congênita do DATASUS: uma ficha de notificação/investigação de sífilis Congênita.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -46,13 +46,9 @@ Notificações de sífilis congênita registradas no SINAN. Cada linha represent
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (no FTP há apenas arquivos nacionais `BR`: `partition_n_ufs` = 1)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2007 a 2025 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 19 arquivos (~15,1 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório PRELIM)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório PRELIM)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -64,7 +60,7 @@ Notificações de sífilis congênita registradas no SINAN. Cada linha represent
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo `SIFCBR25.dbc`, em que `SIFC` é o prefixo do agravo, `BR` indica a base nacional (o SINAN publica um único arquivo por ano para o Brasil) e `25` é o ano com 2 dígitos (2025).
-- **No armazenamento local do `datasus-fetcher`**: `data/sinan-sifc/<partição>/sinan-sifc_br_2025_<AAAAMMDD>.dbc`, em que `<AAAAMMDD>` é a data de modificação do arquivo no FTP.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-sifc/<AAAA>/sinan-sifc_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-sifc/2024/sinan-sifc_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e tabelas auxiliares associadas** (grupo `sinan`, compartilhadas por todos os agravos):
   - Documentação (`/SINAN/DOCS`):
   - `Docs_TAB_SINAN.zip` — pacote de documentação e dicionários para tabulação (~65 MB)
@@ -148,12 +144,12 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 | Coluna no lake | Na fonte | Tipo | Descrição | Unidade / códigos | Período |
 |---|---|---|---|---|---|
 | `tp_not` | `TP_NOT` | texto | Tipo de Notificação. Identifica o tipo da notificação | 1 – Negativa 2 – Individual 3 – Surto 4 – Agregado | todos |
-| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_notifi cacao | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno) | — | todos |
 | `id_agravo` | `ID_AGRAVO` | texto | Agravo. Tabela de agravos do sistema com códigos (classificação internacional de doenças –CID 10) e nomes dos agravos classificados como notificação compulsória ( nacional, estadual ou municipal) e as síndromes ( febre hemorragia aguda;respiratória aguda; diarréia aguda; sanguinolenta; | — | todos |
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
 | `nu_ano` | `NU_ANO` | texto | (campo interno). Ano da notificação | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
 | `id_regiona` | `ID_REGIONA` | texto | (campo interno). Regional de saúde onde está localizado o município da unidade de saúde ou outra fonte notificadora | — | todos |
 | `dt_diag` | `DT_DIAG` | data | Data dos primeiros sintomas / Diagnóstico. Data dos primeiros sintomas do caso de agravo agudo. Data do diagnóstico do caso de agravo crônico e DRTs Data do acidente nos acidentes da saúde do trabalhador | — | todos |
 | `sem_diag` | `SEM_DIAG` | texto | Semana epidemiológica dos primeiros sintomas/ diagnósticos. (campo interno). Semanas do calendário epidemiológico padronizado | — | todos |
@@ -163,41 +159,41 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 | `cs_raca` | `CS_RACA` | texto | Raça/Cor. Considera-se cor ou raça declarada pela pessoa. 1. branca 2. preta 3. amarela (pessoa que se declarou de raça amarela) 4. parda (pessoa que se declarou mulata, cabocla, cafuza, mameluca ou mestiça de preto com pessoa de outra cor ou raça) 5. indígena (pessoa que se declarou indígena ou índia) | 1- branca 2- preta 3- amarela 4- parda 5- indígena 9 Ignorado | todos |
 | `cs_escol_n` | `CS_ESCOL_N` | texto | Escolaridade. 43 Analfabeto 1. 1ª a 4ª série incompleta do EF 2. 4ª série completa do EF ( antigo 1° grau) 3. 5ª à 8ª série incompleta do EF (antigo ginásio ou 1° grau) 4. Ensino fundamental completo (antigo ginásio ou 1° grau) 5. Ensino médio incompleto (antigo colegial ou 2° grau) 6. Ensino médio completo (antigo colegial ou 2° grau) 7. Educação superior incompleta 8. Educação superior completa 9. Ignorado 10. N... | — | todos |
 | `sg_uf` | `SG_UF` | texto | UF. Sigla da Unidade Federada de residência do paciente por ocasião da notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência. co_municipio_res idencia | — | todos |
+| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência | — | todos |
 | `id_rg_resi` | `ID_RG_RESI` | texto | (campo interno). Regional de saúde onde está localizado o município de residência do paciente por ocasião da notificação | — | todos |
-| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil). co_pais_residenc ia | — | todos |
+| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil) | — | todos |
 | `ant_idade` | `ANT_IDADE` | inteiro | Idade da mãe. Idade da mãe, por ocasião da notificação do caso. Permite digitação | — | todos |
 | `ant_raca` | `ANT_RACA` | texto | Raça/cor da mãe. Considera-se na seleção das categorias a cor ou raça declarada pela mãe. 1- branca 2- preta 3- amarela ( pessoa que se declarou de raça amarela) 4- parda (pessoa que se declarou mulata, cabocla, cafuza, mameluca ou mestiça de preto com pessoa de outra cor ou raça) | 1 – branca 2 – preta 3 – amarela 4 – parda 5 – indígena 9 – ignorado | todos |
-| `id_ocupa_n` | `ID_OCUPA_N` | texto | Ocupação/ Ramo de Atividade Econômica. co_ocupacao_ma e | — | todos |
-| `escolmae` | `ESCOLMAE` | texto | Escolaridade da Mãe. tp_escolaridade_ mae | 0 – analfabeto 1 – 1ª a 4ª série incompleta do ef 2 – até 4ª série completa do ef 3 – 5 a 8ª série incompleta do ef. 4 – ensino fundamental completo. 5 – ensino médio incompleto. 6 – ensino médio completo. 7 – educaçã... | todos |
+| `id_ocupa_n` | `ID_OCUPA_N` | texto | Ocupação/ Ramo de Atividade Econômica. e | — | todos |
+| `escolmae` | `ESCOLMAE` | texto | Escolaridade da Mãe | 0 – analfabeto 1 – 1ª a 4ª série incompleta do ef 2 – até 4ª série completa do ef 3 – 5 a 8ª série incompleta do ef. 4 – ensino fundamental completo. 5 – ensino médio incompleto. 6 – ensino médio completo. 7 – educaçã... | todos |
 | `ant_pre_na` | `ANT_PRE_NA` | texto | Realizou pré-natal na gestação. Informa se a mãe realizou pré-natal durante a gravidez do caso notificado | 1 – sim 2 – não 9 – ignorado | todos |
 | `uf_pre_nat` | `UF_PRE_NAT` | texto | UF do Local da realização do Pré-Natal. Informa a UF do local de realização do pré- natal | — | todos |
-| `mun_pre_na` | `MUN_PRE_NA` | texto | Município do Local da realização do Pré-Natal. co_municipio_pre natal | — | todos |
-| `antsifil_n` | `ANTSIFIL_N` | texto | Diagnóstico de sífilis materna. tp_diagnostico_sifi lis | 1. durante o pré-natal 2. no momento do parto/curetagem 3. após o parto 4. não realizado 9. ignorado. | todos |
+| `mun_pre_na` | `MUN_PRE_NA` | texto | Município do Local da realização do Pré-Natal | — | todos |
+| `antsifil_n` | `ANTSIFIL_N` | texto | Diagnóstico de sífilis materna | 1. durante o pré-natal 2. no momento do parto/curetagem 3. após o parto 4. não realizado 9. ignorado. | todos |
 | `lab_parto` | `LAB_PARTO` | texto | Teste não treponêmico no parto/cureta gem. Resultado qualitativo do VDRL materno recomendado na admissão de todas as gestantes para a realização do parto/curetagem | 1 – reagente 2 – não reagente 3 – não realizado 9 – ignorado | todos |
 | `lab_titu_2` | `LAB_TITU_2` | inteiro | Resultado teste não treponêmi co no parto/cure tagem – Título. Resultado quantitativo do VDRL materno recomendado na admissão de todas as gestantes para a realização do parto/curetagem | — | todos |
 | `lab_dt3` | `LAB_DT3` | data | Data da coleta teste não treponêmi co no parto/cure tagem. Data da coleta do VDRL realizado no momento do parto/curetagem | — | todos |
-| `lab_conf` | `LAB_CONF` | texto | Teste confirmatóri o treponêmico no parto /curetagem. tp_teste_confirmat orio | 1 – reagente 2 – não reagente 3 – não realizado 9 – ignorado | todos |
-| `tra_esquem` | `TRA_ESQUEM` | texto | Esquema de tratamento materno. tp_esquema_trata mento | 1. adequado 2. inadequado 3. não realizado 9. Ignorado | todos |
-| `tra_dt` | `TRA_DT` | data | Data do início do tratamento. dt_inicio_tratamen to | — | todos |
-| `ant_tratad` | `ANT_TRATAD` | texto | Parceiro (s) tratado(s) concomitant. st_parceiro_tratad o | 1. sim 2. não 9. ignorado | todos |
+| `lab_conf` | `LAB_CONF` | texto | Teste confirmatóri o treponêmico no parto /curetagem | 1 – reagente 2 – não reagente 3 – não realizado 9 – ignorado | todos |
+| `tra_esquem` | `TRA_ESQUEM` | texto | Esquema de tratamento materno | 1. adequado 2. inadequado 3. não realizado 9. Ignorado | todos |
+| `tra_dt` | `TRA_DT` | data | Data do início do tratamento | — | todos |
+| `ant_tratad` | `ANT_TRATAD` | texto | Parceiro (s) tratado(s) concomitant. o | 1. sim 2. não 9. ignorado | todos |
 | `ant_uf_cri` | `ANT_UF_CRI` | texto | UF. UF de localização da ocorrência do nascimento, aborto ou óbito da criança | — | todos |
-| `ant_muni_c` | `ANT_MUNI_C` | texto | Município do Nascimento/ Aborto/Nati morto. co_municipio_nas cimento | — | todos |
-| `labc_sangu` | `LABC_SANGU` | texto | Teste não treponêmi co – Sangue Periférico. tp_teste_periferi co | 1. reagente 2. não reagente 3. não realizado 9. ignorado | todos |
-| `labc_tit_1` | `LABC_TIT_1` | inteiro | Título. nu_titulo_perifer ico | — | todos |
-| `labc_dt_1` | `LABC_DT_1` | data | Data. dt_teste_perife rico | — | todos |
-| `labc_igg` | `LABC_IGG` | texto | Teste treponêmi co após 18 meses. tp_teste_18mes es | 1. reagente 2. não reagente 3. não realizado 4. não se aplica 9. ignorado | todos |
-| `labc_dt` | `LABC_DT` | data | Data. dt_teste_18mes es | — | todos |
+| `ant_muni_c` | `ANT_MUNI_C` | texto | Município do Nascimento/ Aborto/Nati morto | — | todos |
+| `labc_sangu` | `LABC_SANGU` | texto | Teste não treponêmi co – Sangue Periférico | 1. reagente 2. não reagente 3. não realizado 9. ignorado | todos |
+| `labc_tit_1` | `LABC_TIT_1` | inteiro | Título | — | todos |
+| `labc_dt_1` | `LABC_DT_1` | data | Data | — | todos |
+| `labc_igg` | `LABC_IGG` | texto | Teste treponêmi co após 18 meses | 1. reagente 2. não reagente 3. não realizado 4. não se aplica 9. ignorado | todos |
+| `labc_dt` | `LABC_DT` | data | Data | — | todos |
 | `labc_liquo` | `LABC_LIQUO` | texto | Teste não treponemi co – Líquor. Resultado qualitativo do teste não treponêmico realizado em amostra de líquor do caso notificado | 1. reagente 2. não reagente 3. não realizado 9. ignorado | todos |
 | `labc_tit_2` | `LABC_TIT_2` | inteiro | Título. Resultado quantitativo do teste treponêmico realizado em amostra de líquor do caso notificado | — | todos |
 | `labc_dt_2` | `LABC_DT_2` | data | Data. Data da coleta do Teste não treponêmico – Líquor | — | todos |
 | `labc_titul` | `LABC_TITUL` | texto | Titulação ascendent e. Titulação ascendente – Refere-se à comparação dos títulos da sorologia não treponêmica da criança após cada teste realizado durante o esquema de seguimento ( VDRL com 1mes, 3, 6 ,12 e 18 meses) | 1. sim 2. não 3. não realizado 9. ignorado | todos |
-| `labc_evide` | `LABC_EVIDE` | texto | Evidência de T. pallidum. tp_evidencia_pa llidum | 1. sim 2. não 3. não realizado 9. ignorado | todos |
-| `labc_liq_1` | `LABC_LIQ_1` | texto | Alteração liquórica. tp_alteracao_liq uorica | 1. sim 2. não 3. não realizado 9. ignorado | todos |
-| `tra_diag_t` | `TRA_DIAG_T` | texto | Diagnóstic o radiológic o da criança: Alteração no Exame dos Ossos Longos. tp_diagnostico_r adiologico | 1. sim 2. não 3. não realizado 9. ignorado | todos |
+| `labc_evide` | `LABC_EVIDE` | texto | Evidência de T. pallidum | 1. sim 2. não 3. não realizado 9. ignorado | todos |
+| `labc_liq_1` | `LABC_LIQ_1` | texto | Alteração liquórica | 1. sim 2. não 3. não realizado 9. ignorado | todos |
+| `tra_diag_t` | `TRA_DIAG_T` | texto | Diagnóstic o radiológic o da criança: Alteração no Exame dos Ossos Longos | 1. sim 2. não 3. não realizado 9. ignorado | todos |
 | `tra_esqu_1` | `TRA_ESQU_1` | texto | Esquema de Tratament o. Esquema terapêutico utilizado para o tratamento da sífilis congênita do caso notificado, ao nível hospitalar ou ambulatorial. A Penicilina Cristalina é administrada por via intravenosa, e as Penicilinas Procaína e Benzatina administradas por via intramuscular | 1. penicilina g cristalina 100.000 a 150.000 ui kg / dia / 10 dias 2. penicilina g procaína 50.000 ui kg / dia / 10 dias 3. penicilina g benzatina 50.000 ui kg / dia / dose única 4. outro esquema 5. não realizado 6. n... | todos |
-| `ds_esquema` | `DS_ESQUEMA` | texto | Esquema de Tratament o – Outro Esquema. ds_esquema_o utro | — | todos |
-| `evolucao` | `EVOLUCAO` | texto | Evolução do caso. tp_evolucao_ca so | 1. vivo 2. óbito por sífilis congênita 3. óbito por outras causas 4. aborto 5. natimorto 9. ignorado | todos |
+| `ds_esquema` | `DS_ESQUEMA` | texto | Esquema de Tratament o – Outro Esquema | — | todos |
+| `evolucao` | `EVOLUCAO` | texto | Evolução do caso | 1. vivo 2. óbito por sífilis congênita 3. óbito por outras causas 4. aborto 5. natimorto 9. ignorado | todos |
 | `dt_obito` | `DT_OBITO` | data | Data do óbito. Data do óbito da criança | — | todos |
 | `evo_diag_n` | `EVO_DIAG_N` | texto | Diagnóstic o Final Campo Interno. Diagnóstico definitivo do caso notificado, segundo o estadiamento do caso.  Sífilis congênita recente: diagnóstico em criança < de 2 anos de idade.  Sífilis congênita tardia: diagnóstico em criança > de 2 anos de idade.  Natimorto com sífilis: perda fetal com mais de 22 semanas de gestação ou >500g de peso;  Aborto por sífilis: perda fetal com <22 semanas de gestação;  Descar... | 1. sífilis congênita recente 2. sífilis congênita tardia 3. aborto 4. natimorto 5. descartado | todos |
 | `tra_diag_c` | `TRA_DIAG_C` | texto | Dado do inquérito/tratamento de tracoma (`TRA_DIAG_C`) | — | todos |
@@ -209,8 +205,8 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 | `cli_osteo` | `CLI_OSTEO` | texto | Manifestação clínica registrada na ficha de Sífilis Congênita (`CLI_OSTEO`); o dicionário consultado não define o campo isoladamente | — | todos |
 | `lesoes` | `LESOES` | texto | Sem descrição na documentação oficial consultada; o nome é o do campo no arquivo de origem | — | todos |
 | `cli_outro` | `CLI_OUTRO` | texto | Manifestação clínica registrada na ficha de Sífilis Congênita (`CLI_OUTRO`); o dicionário consultado não define o campo isoladamente | — | todos |
-| `sin_outr_e` | `SIN_OUTR_E` | texto | Presença de sinais e sintomas Outro Especificar. ds_sinal_sintom a_outro | — | todos |
-| `cli_pseudo` | `CLI_PSEUDO` | texto | Sinais e Sintomas (Pseudomembrana). st_sinais_pseudomenbra na | 1. Sim 2. Não 9. Ignorado | todos |
+| `sin_outr_e` | `SIN_OUTR_E` | texto | Presença de sinais e sintomas Outro Especificar. a_outro | — | todos |
+| `cli_pseudo` | `CLI_PSEUDO` | texto | Sinais e Sintomas (Pseudomembrana) | 1. Sim 2. Não 9. Ignorado | todos |
 | `uf` | — | texto | UF do arquivo de origem (sigla em minúsculas, `br` para arquivos nacionais), gravada pelo conversor; as linhas do período saem ordenadas por ela | sigla da UF | todos |
 | `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
 
@@ -227,20 +223,26 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 
 - A UF/município de residência é da criança (ou da mãe, conforme preenchimento). Usar `sinasc` como denominador pela UF de residência da mãe. Os campos específicos da ficha mudaram com a revisão de 2017. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` (UF de notificação) ou `SG_UF`/`ID_MN_RESI` (residência) conforme a pergunta, pois os dois podem diferir. Arquivos do diretório PRELIM são preliminares e substituídos pelos finais; prefira sempre os arquivos finais quando o mesmo ano existir nas duas fontes, evitando somar PRELIM e FINAIS. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-sifc").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-sifc/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -249,43 +251,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-sifc
-quantilica datasus list sinan-sifc
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-sifc
 
-# 2. Baixar microdados de sinan-sifc (partição uf + year; no SINAN a UF é sempre BR)
-quantilica datasus sync sinan-sifc -o ./data --start 2023 --end 2025 --regions BR
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-sifc -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-sifc -o ./data --docs --aux --start 2023 --end 2025 --regions BR
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-sifc -o ./data/raw --parquet-dir ./data/parquet --start 2023 --end 2025 --regions BR
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-sifc
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-# Leitura direta de um .dbc nacional (descompacta, lê e aplica o saneamento padrão)
-frame = read_dbc("data/raw/SIFCBR25.dbc", dataset="sinan-sifc")
-
-# Contagem de notificações por UF de notificação e ano
-resumo = (
-    frame.group_by("sg_uf_not", "nu_ano")
-    .agg(pl.len().alias("notificacoes"))
-    .sort("sg_uf_not", "nu_ano")
-)
-
-# Distribuição por cs_raca, nu_ano
-print(frame.group_by("cs_raca").agg(pl.len().alias("n")).sort("n", descending=True))
-print(resumo.head())
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/`

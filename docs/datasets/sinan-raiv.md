@@ -3,7 +3,7 @@ dataset:
   id: sinan-raiv
   fonte: datasus
   titulo: Raiva
-  resumo: O sinan-raiv contém os microdados das notificações e investigações de casos de Raiva Humana (CID-10 A82) registrados no Sistema de Informação de Agravos de Notificação (SINAN).
+  resumo: 'Raiva do DATASUS: uma ficha de notificação/investigação de raiva.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -48,13 +48,9 @@ O `sinan-raiv` contém os microdados das notificações e investigações de cas
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (comprimido dBASE, descompactável nativamente em Rust)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (arquivos consolidados anuais, praticamente sempre `br`)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2007 a 2026 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 20 arquivos (~0,2 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório `PRELIM`)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório `PRELIM`)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -66,7 +62,7 @@ O `sinan-raiv` contém os microdados das notificações e investigações de cas
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo real `RAIVBR07.dbc` — prefixo `RAIV`, `BR` (consolidação nacional) e `07` (ano 2007), até `RAIVBR24.dbc` (2024); os anos recentes ficam em `PRELIM` (ex.: `RAIVBR26.dbc`). O volume é minúsculo (~163 kB em 20 arquivos), pois os casos humanos de raiva são eventos raríssimos e esporádicos.
-- **No armazenamento local do `datasus-fetcher`**: caminho padronizado `data/sinan-raiv/<ano>/sinan-raiv_<período>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-raiv/2024/sinan-raiv_2024-br@20260602.dbc`; arquivos preliminares recebem o sufixo `-preliminar`.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-raiv/<AAAA>/sinan-raiv_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-raiv/2024/sinan-raiv_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: em `SINAN/DOCS`: `Docs_TAB_SINAN.zip` e os PDFs de acesso/conversão/tabulação (`POP_I`, `POP_II`, `POP_III`); em `SINAN/AUXILIAR`: `TAB_SINANNET.zip`, `TAB_SINANONLINE.zip` e `POPT_Estimativa_TCU_2019_Sinan.zip`.
 
 ## Conteúdo
@@ -117,14 +113,14 @@ Aplicações analíticas: monitor da eliminação da raiva, espécie do animal a
 | `tp_not` | `TP_NOT` | texto | Tipo de Notificação. Identifica o tipo da notificação | 1 – Negativa 2 – Individual 3 – Surto 4 – Agregado | todos |
 | `id_agravo` | `ID_AGRAVO` | texto | Agravo. Tabela de agravos do sistema com códigos (classificação internacional de doenças –CID 10) e nomes dos agravos classificados como notificação compulsória ( nacional, estadual ou municipal) e as síndromes ( febre hemorragia aguda;respiratória aguda; diarréia aguda; sanguinolenta; | — | todos |
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
-| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno). ds_semana_notifi cacao | — | todos |
+| `sem_not` | `SEM_NOT` | texto | Semana epidemiológic a da notificação (campo interno) | — | todos |
 | `nu_ano` | `NU_ANO` | texto | (campo interno). Ano da notificação | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
 | `id_regiona` | `ID_REGIONA` | texto | (campo interno). Regional de saúde onde está localizado o município da unidade de saúde ou outra fonte notificadora | — | todos |
-| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora. co_unidade_notifi cacao | — | todos |
-| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico. dt_diagnostico_si ntoma | — | todos |
-| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno). ds_semana_sinto ma | — | todos |
+| `id_unidade` | `ID_UNIDADE` | texto | Unidade de saúde ou outra fonte notificadora | — | todos |
+| `dt_sin_pri` | `DT_SIN_PRI` | data | Data dos primeiros sintomas / Diagnóstico | — | todos |
+| `sem_pri` | `SEM_PRI` | texto | Semana epidemiológic a dos primeiros sintomas/ diagnósticos. (campo interno) | — | todos |
 | `ano_nasc` | `ANO_NASC` | texto | Ano de nascimento do paciente (campo do SINAN-Windows) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | todos |
 | `nu_idade_n` | `NU_IDADE_N` | inteiro | Idade. A composição da variável obedece o seguinte critério: 1o | — | todos |
 | `cs_sexo` | `CS_SEXO` | texto | Sexo. M- Masculino F- Feminino I- Ignorado | — | todos |
@@ -132,9 +128,9 @@ Aplicações analíticas: monitor da eliminação da raiva, espécie do animal a
 | `cs_raca` | `CS_RACA` | texto | Raça/Cor. Considera-se cor ou raça declarada pela pessoa. 1. branca 2. preta 3. amarela (pessoa que se declarou de raça amarela) 4. parda (pessoa que se declarou mulata, cabocla, cafuza, mameluca ou mestiça de preto com pessoa de outra cor ou raça) 5. indígena (pessoa que se declarou indígena ou índia) | 1- branca 2- preta 3- amarela 4- parda 5- indígena 9 Ignorado | todos |
 | `cs_escol_n` | `CS_ESCOL_N` | texto | Escolaridade. 43 Analfabeto 1. 1ª a 4ª série incompleta do EF 2. 4ª série completa do EF ( antigo 1° grau) 3. 5ª à 8ª série incompleta do EF (antigo ginásio ou 1° grau) 4. Ensino fundamental completo (antigo ginásio ou 1° grau) 5. Ensino médio incompleto (antigo colegial ou 2° grau) 6. Ensino médio completo (antigo colegial ou 2° grau) 7. Educação superior incompleta 8. Educação superior completa 9. Ignorado 10. N... | — | todos |
 | `sg_uf` | `SG_UF` | texto | UF. Sigla da Unidade Federada de residência do paciente por ocasião da notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência. co_municipio_res idencia | — | todos |
+| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência | — | todos |
 | `id_rg_resi` | `ID_RG_RESI` | texto | (campo interno). Regional de saúde onde está localizado o município de residência do paciente por ocasião da notificação | — | todos |
-| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil). co_pais_residenc ia | — | todos |
+| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil) | — | todos |
 | `nduplic_n` | `NDUPLIC_N` | texto | Não Listar/ Não Contar. 0 ou branco – Não identificado 1 – Não é duplicidade (não listar) 2 – Duplicidade (não contar) | — | todos |
 | `cs_flxret` | `CS_FLXRET` | texto | Fluxo de retorno. Identifica se o registro está habilitado ou foi enviado pelo fluxo de retorno para o município de residência | 0 - Não 1 - habilitado para envio. 2 - enviado | todos |
 | `flxrecebi` | `FLXRECEBI` | texto | Recebida por fluxo de retorno (campo interno). Colocar a estrutura do nº atribuído pelo sistema | — | todos |
@@ -144,25 +140,25 @@ Aplicações analíticas: monitor da eliminação da raiva, espécie do animal a
 | `arranhao` | `ARRANHAO` | texto | Tipo de exposição ao vírus rábico Arranhão. Forma de exposição ao vírus da raiva | 1. Sim 2. Não 9. Ignorado | todos |
 | `lambedura` | `LAMBEDURA` | texto | Tipo de exposição ao vírus rábico Lambedura. Forma de exposição ao vírus da raiva | 1. Sim 2. Não 9. Ignorado | todos |
 | `mordedura` | `MORDEDURA` | texto | Tipo de exposição ao vírus rábico Mordedura. Forma de exposição ao vírus da raiva | 1. Sim 2. Não 9. Ignorado | todos |
-| `contato` | `CONTATO` | texto | Tipo de exposição ao vírus rábico Contato Indireto. st_exposicao_contato_indi reto | 1. Sim 2. Não 9. Ignorado | todos |
+| `contato` | `CONTATO` | texto | Tipo de exposição ao vírus rábico Contato Indireto | 1. Sim 2. Não 9. Ignorado | todos |
 | `mucosa` | `MUCOSA` | texto | Localização Mucosa. Localização do ferimento | 1. Sim 2. Não | todos |
-| `cabeca` | `CABECA` | texto | Localização Cabeça/Pescoço. st_localizacao_cabeca_pe scoco | 1. Sim 2. Não 9. Ignorado | todos |
+| `cabeca` | `CABECA` | texto | Localização Cabeça/Pescoço | 1. Sim 2. Não 9. Ignorado | todos |
 | `maos_n` | `MAOS_N` | texto | Localização Mãos. Localização do ferimento | 1. Sim 2. Não 9. Ignorado | todos |
 | `pes` | `PES` | texto | Localização Pés. Localização do ferimento | 1. Sim 2. Não 9. Ignorado | todos |
 | `tronco` | `TRONCO` | texto | Localização Tronco. Localização do ferimento | 1. Sim 2. Não 9. Ignorado | todos |
-| `superiores` | `SUPERIORES` | texto | Localização Membros Superiores. st_localizacao_membro_s uperior | 1. Sim 2. Não 9. Ignorado | todos |
-| `inferiores` | `INFERIORES` | texto | Localização Membros Inferiores. st_localizacao_membro_i nferior | 1. Sim 2. Não 9. Ignorado | todos |
+| `superiores` | `SUPERIORES` | texto | Localização Membros Superiores | 1. Sim 2. Não 9. Ignorado | todos |
+| `inferiores` | `INFERIORES` | texto | Localização Membros Inferiores | 1. Sim 2. Não 9. Ignorado | todos |
 | `feriment_n` | `FERIMENT_N` | texto | Ferimento. Quantidade de ferimentos no paciente | 1. único 2. múltiplo 3. sem ferimento 9. ignorado | todos |
 | `profundo` | `PROFUNDO` | texto | Tipo de ferimento – Profundo. Informa se tipo de ferimento Profundo | 1. Sim 2. Não 9. Ignorado | todos |
 | `superficia` | `SUPERFICIA` | texto | Tipo de ferimento – Superficial. Informa se tipo de ferimento Superficial | 1. Sim 2. Não 9. Ignorado | todos |
-| `dilacerant` | `DILACERANT` | texto | Tipo de ferimento – Dilacerante. st_ferimento_desconhecid o | 1. Sim 2. Não 9. Ignorado | todos |
+| `dilacerant` | `DILACERANT` | texto | Tipo de ferimento – Dilacerante. o | 1. Sim 2. Não 9. Ignorado | todos |
 | `dt_expo` | `DT_EXPO` | data | Data da exposição. Data em que | — | todos |
-| `antec_pre` | `ANTEC_PRE` | texto | Tem antecedentes de tratamento anti- rábico ? Pré-exposição. st_antecedente_pre_expo sicao | 1-Sim 2-Não 9-Ignorado | todos |
-| `antec_pos` | `ANTEC_POS` | texto | Tem antecedentes de tratamento anti- rábico ? Pós-exposição. st_atencedente_pos_expo sicao | 1-Sim 2-Não 9-Ignorado | todos |
+| `antec_pre` | `ANTEC_PRE` | texto | Tem antecedentes de tratamento anti- rábico ? Pré-exposição | 1-Sim 2-Não 9-Ignorado | todos |
+| `antec_pos` | `ANTEC_POS` | texto | Tem antecedentes de tratamento anti- rábico ? Pós-exposição | 1-Sim 2-Não 9-Ignorado | todos |
 | `num_doses` | `NUM_DOSES` | inteiro | Número de doses aplicadas. Informa nºde doses aplicadas | — | todos |
 | `dt_tr_rab` | `DT_TR_RAB` | data | Data da última dose | — | todos |
 | `especie_n` | `ESPECIE_N` | texto | Espécie do animal agressor | 1. canina 2. felina 3. quiróptera(m orcego) 4. primata (macaco) 5. raposa 6. herbívora 7. outra 9. ignorada | todos |
-| `esp_out` | `ESP_OUT` | texto | Espécie do animal agressor Outra, especificar. ds_especie_agressor_outr o | — | todos |
+| `esp_out` | `ESP_OUT` | texto | Espécie do animal agressor Outra, especificar. o | — | todos |
 | `vacinad` | `VACINAD` | texto | Animal vacinado. Se o animal foi | 1. Sim | todos |
 | `hospitaliz` | `HOSPITALIZ` | texto | Ocorreu hospitalização. Se ocorreu hospitalização do paciente | 1. Sim 2. Não 9. Ignorado | todos |
 | `dt_interna` | `DT_INTERNA` | data | Data da internação. Data de internação, caso tenha ocorrido | — | todos |
@@ -187,7 +183,7 @@ Aplicações analíticas: monitor da eliminação da raiva, espécie do animal a
 | `dt_apli_so` | `DT_APLI_SO` | data | Se sim, data da aplicação. Data da aplicação do soro | — | todos |
 | `quantid` | `QUANTID` | inteiro | Quantidade de soro aplicada. Quantidade do soro aplicado em ml | — | todos |
 | `infiltra` | `INFILTRA` | texto | Infiltração de soro no (s) local (ais) do (s) ferimento (s). Informa se houve infiltração no local do ferimento | 1. Sim total 2- Sim parcial 3. Não 9. Ignorado | todos |
-| `imuno_dire` | `IMUNO_DIRE` | texto | Diagnóstico laboratorial – Imunofluorescência direta. st_diag_lmunofluorescenc ia | 1. Positivo 2. Negativo 3.Inconclusivo 4. Não realizado | todos |
+| `imuno_dire` | `IMUNO_DIRE` | texto | Diagnóstico laboratorial – Imunofluorescência direta | 1. Positivo 2. Negativo 3.Inconclusivo 4. Não realizado | todos |
 | `imuno_indi` | `IMUNO_INDI` | texto | Diagnóstico laboratorial – Imunofluorescência indireta. Se foi realizado exame de imunofluorescência indireta | 1. Positivo 2. Negativo 3.Inconclusivo 4. Não realizado | todos |
 | `histolog_n` | `HISTOLOG_N` | texto | Diagnóstico laboratorial – Histológico. Se foi realizado exame histológico | 1. Positivo 2. Negativo 3.Inconclusivo 4. Não realizado | todos |
 | `prova_biol` | `PROVA_BIOL` | texto | Diagnóstico laboratorial – Prova. Informa se foi realizada Prova | 1. Positivo 2. Negativo | todos |
@@ -224,20 +220,26 @@ Aplicações analíticas: monitor da eliminação da raiva, espécie do animal a
 
 - volume mínimo (20 consolidações `BR` anuais, ~163 kB) — cada caso humano é um evento raro e muito investigado; cada leitura anual recupera casos confirmados dispersos em poucas UFs; casos registrados em município de internação podem divergir do município de residência (exposição rural), e o arquivo do ano corrente em `PRELIM` é sujeito a revisão. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-raiv").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-raiv/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -246,43 +248,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-raiv
-quantilica datasus list sinan-raiv
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-raiv
 
-# 2. Baixar microdados de sinan-raiv com recorte adequado à partição do dataset
-quantilica datasus sync sinan-raiv -o ./data --start 2007 --end 2024 --regions br
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-raiv -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-raiv -o ./data --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-raiv -o ./data/raw --parquet-dir ./data/parquet --start 2007
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-raiv
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-# Lê o arquivo consolidado de raiva humana já tratado
-qdf = read_dbc("data/sinan-raiv/2024/sinan-raiv_2024-br@20260602.dbc", clean=True)
-
-# Casos confirmados por ano
-print(qdf.filter(pl.col("classi_fin") == 1).group_by("nu_ano").len().sort("nu_ano"))
-
-# Espécie do animal agressor nos casos confirmados
-print(
-    qdf.filter(pl.col("classi_fin") == 1)
-    .group_by("esp_animal")
-    .len()
-    .sort("len", descending=True)
-)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS` e `.../SINAN/DADOS/PRELIM`

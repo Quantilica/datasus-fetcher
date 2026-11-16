@@ -3,7 +3,7 @@ dataset:
   id: sim-dorext-cid10
   fonte: datasus
   titulo: Mortalidade de Residentes no Exterior CID-10
-  resumo: Microdados nacionais do SIM/SVSA-MS com os óbitos de residentes no exterior ocorridos no Brasil, de 2013 a 2025 (CID-10).
+  resumo: 'Mortalidade de Residentes no Exterior CID-10 do DATASUS: um óbito de residente no exterior ocorrido no Brasil, a partir de 2013 (CID-10).'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), Coordenação-Geral de Informações e Análise Epidemiológicas (CGIAE)
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -42,13 +42,9 @@ Microdados nacionais do SIM/SVSA-MS com os óbitos de residentes no exterior oco
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido no formato DATASUS; descompactado nativamente em Rust para `.dbf`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `year`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2013 a 2025 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 13 arquivos (~0,6 MB); 1 UF(s) na partição; última atualização 2026-08-28
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIM/CID9/DOCS`, `/dissemin/publicos/SIM/CID10/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIM/CID9/TAB`, `/dissemin/publicos/SIM/CID10/TAB`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/SIM/CID9/DOCS`, `/dissemin/publicos/SIM/CID10/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SIM/CID9/TAB`, `/dissemin/publicos/SIM/CID10/TAB`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -59,7 +55,7 @@ Microdados nacionais do SIM/SVSA-MS com os óbitos de residentes no exterior oco
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `DOREXT23.dbc` — `DOREXT` (óbitos de residentes no exterior) + `23` (ano com 2 dígitos, 2023); arquivo nacional, sem sufixo de UF.
-- **No armazenamento local do `datasus-fetcher`**: `data/sim-dorext-cid10/<AAAA>/sim-dorext-cid10_<AAAA>@<AAAAMMDD>.dbc` (ex.: `data/sim-dorext-cid10/2023/sim-dorext-cid10_2023@20260828.dbc`); como não há UF na partição, o nome contém apenas o ano.
+- **No armazenamento local do `datasus-fetcher`**: `data/sim-dorext-cid10/<AAAA>/sim-dorext-cid10_<AAAA>@<AAAAMMDD>.dbc`, por exemplo `data/sim-dorext-cid10/2024/sim-dorext-cid10_2024@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**:
   - Documentação (`datasus-metadata/metadata/documentation/sim.json`):
     - `/dissemin/publicos/SIM/CID9/DOCS/Docs-Tabs-CID9.zip` (0.7 MB)
@@ -224,65 +220,42 @@ Nomes verificados contra o arquivo real `DOREXT25.dbc` (87 colunas); o layout é
 ## Cuidados de uso
 
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
+Quantas linhas há por período? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
-(
-    pl.scan_parquet(
-        "lake/datasus/sim-dorext-cid10/**/*.parquet", hive_partitioning=True
-    )
-    .group_by("ano", "uf")
-    .agg(pl.len().alias("linhas"))
-    .sort("ano", "uf")
-    .collect()
+arquivos = sorted(Path("lake/datasus/sim-dorext-cid10").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
 )
+
+(dados.group_by("ano").agg(pl.len().alias("linhas")).sort("ano").collect())
 ```
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
-
-> `quantilica datasus <subcomando>` e `datasus-fetcher <subcomando>` são equivalentes.
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sim-dorext-cid10
-quantilica datasus list sim-dorext-cid10
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sim-dorext-cid10
 
-# 2. Baixar microdados de sim-dorext-cid10 com recorte adequado à partição (year)
-quantilica datasus sync sim-dorext-cid10 -o ./data --start 2015 --end 2023
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sim-dorext-cid10 -o ./data --start 2020 --end 2024 --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sim-dorext-cid10 -o ./data --start 2015 --end 2023 --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sim-dorext-cid10 -o ./data/raw --parquet-dir ./data/parquet --start 2015 --end 2023
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sim-dorext-cid10
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-
-frame = df.read_dbc(
-    "data/sim-dorext-cid10/2023/sim-dorext-cid10_2023@20260828.dbc",
-    dataset="sim-dorext-cid10",
-)
-print(frame.shape)
-
-frame = frame.with_columns(
-    pl.col("dtobito").str.to_date("%d%m%Y", strict=False).alias("data_obito"),
-)
-print(frame.shape)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/DOFET`

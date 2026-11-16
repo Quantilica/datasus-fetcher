@@ -3,7 +3,7 @@ dataset:
   id: sinan-hivg
   fonte: datasus
   titulo: HIV em gestante
-  resumo: Notificações de gestantes, parturientes e puérperas infectadas pelo HIV, registradas no SINAN.
+  resumo: 'HIV em gestante do DATASUS: uma ficha de notificação/investigação de hIV em gestante.'
   orgao: Ministério da Saúde — Secretaria de Vigilância em Saúde e Ambiente (SVSA), GT-SINAN
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -42,13 +42,9 @@ Notificações de gestantes, parturientes e puérperas infectadas pelo HIV, regi
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf`, `year` (no FTP há apenas arquivos nacionais `BR`: `partition_n_ufs` = 1)
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2007 a 2024 (conforme `index.json`)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 18 arquivos (~3,8 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Sim (diretório PRELIM)
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/DOCS`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SINAN/AUXILIAR`
+- **Arquivos preliminares:** Sim (diretório PRELIM)
+- **Documentação oficial no FTP:** `/dissemin/publicos/SINAN/DOCS`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SINAN/AUXILIAR`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -60,7 +56,7 @@ Notificações de gestantes, parturientes e puérperas infectadas pelo HIV, regi
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: exemplo `HIVGBR24.dbc`, em que `HIVG` é o prefixo do agravo, `BR` indica a base nacional (o SINAN publica um único arquivo por ano para o Brasil) e `24` é o ano com 2 dígitos (2024).
-- **No armazenamento local do `datasus-fetcher`**: `data/sinan-hivg/<partição>/sinan-hivg_br_2024_<AAAAMMDD>.dbc`, em que `<AAAAMMDD>` é a data de modificação do arquivo no FTP.
+- **No armazenamento local do `datasus-fetcher`**: `data/sinan-hivg/<AAAA>/sinan-hivg_<AAAA>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sinan-hivg/2024/sinan-hivg_2024-br@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e tabelas auxiliares associadas** (grupo `sinan`, compartilhadas por todos os agravos):
   - Documentação (`/SINAN/DOCS`):
   - `Docs_TAB_SINAN.zip` — pacote de documentação e dicionários para tabulação (~65 MB)
@@ -137,7 +133,7 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 | `dt_notific` | `DT_NOTIFIC` | data | Data da Notificação. Data de preenchimento da ficha de notificação | — | todos |
 | `nu_ano` | `NU_ANO` | texto | (campo interno). Ano da notificação | — | todos |
 | `sg_uf_not` | `SG_UF_NOT` | texto | UF de Notificação. Sigla da Unidade Federativa onde está localizada a unidade de saúde (ou outra fonte notificadora) que realizou a notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação. co_municipio_not ificacao | — | todos |
+| `id_municip` | `ID_MUNICIP` | texto | Município de Notificação | — | todos |
 | `id_regiona` | `ID_REGIONA` | texto | (campo interno). Regional de saúde onde está localizado o município da unidade de saúde ou outra fonte notificadora | — | todos |
 | `dt_diag` | `DT_DIAG` | data | Data dos primeiros sintomas / Diagnóstico. Data dos primeiros sintomas do caso de agravo agudo. Data do diagnóstico do caso de agravo crônico e DRTs Data do acidente nos acidentes da saúde do trabalhador | — | todos |
 | `sem_diag` | `SEM_DIAG` | texto | Semana epidemiológica dos primeiros sintomas/ diagnósticos. (campo interno). Semanas do calendário epidemiológico padronizado | — | todos |
@@ -147,22 +143,22 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 | `cs_raca` | `CS_RACA` | texto | Raça/Cor. Considera-se cor ou raça declarada pela pessoa. 1. branca 2. preta 3. amarela (pessoa que se declarou de raça amarela) 4. parda (pessoa que se declarou mulata, cabocla, cafuza, mameluca ou mestiça de preto com pessoa de outra cor ou raça) 5. indígena (pessoa que se declarou indígena ou índia) | 1- branca 2- preta 3- amarela 4- parda 5- indígena 9 Ignorado | todos |
 | `cs_escol_n` | `CS_ESCOL_N` | texto | Escolaridade. 43 Analfabeto 1. 1ª a 4ª série incompleta do EF 2. 4ª série completa do EF ( antigo 1° grau) 3. 5ª à 8ª série incompleta do EF (antigo ginásio ou 1° grau) 4. Ensino fundamental completo (antigo ginásio ou 1° grau) 5. Ensino médio incompleto (antigo colegial ou 2° grau) 6. Ensino médio completo (antigo colegial ou 2° grau) 7. Educação superior incompleta 8. Educação superior completa 9. Ignorado 10. N... | — | todos |
 | `sg_uf` | `SG_UF` | texto | UF. Sigla da Unidade Federada de residência do paciente por ocasião da notificação. A sigla é uma variável que está associada ao código na tabela | — | todos |
-| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência. co_municipio_res idencia | — | todos |
+| `id_mn_resi` | `ID_MN_RESI` | texto | Município de residência | — | todos |
 | `id_rg_resi` | `ID_RG_RESI` | texto | (campo interno). Regional de saúde onde está localizado o município de residência do paciente por ocasião da notificação | — | todos |
-| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil). co_pais_residenc ia | — | todos |
-| `ant_evlabo` | `ANT_EVLABO` | texto | Evidência laboratorial do HIV. tp_evidencia_l aboratorial | 1. Antes do pré-natal 2. Durante o pré- natal 3. Durante o parto 4. Após o parto | todos |
+| `id_pais` | `ID_PAIS` | texto | País (se residente fora do Brasil) | — | todos |
+| `ant_evlabo` | `ANT_EVLABO` | texto | Evidência laboratorial do HIV | 1. Antes do pré-natal 2. Durante o pré- natal 3. Durante o parto 4. Após o parto | todos |
 | `pre_prenat` | `PRE_PRENAT` | texto | Fez/Faz pré-natal. VARCHAR2( 1) | 1 – Sim 2 - Não 9 - Ignorado | todos |
 | `pre_ufrel` | `PRE_UFREL` | texto | UF de realização do Pré-Natal. Sigla da UF de localização da Unidade de Saúde de realização do pré-natal | — | todos |
-| `pre_munire` | `PRE_MUNIRE` | texto | Município de realização do Pré- Natal. co_municipio_ prenatal | — | todos |
-| `pre_antret` | `PRE_ANTRET` | texto | Uso de Anti- retrovirais para profilaxia. st_anti_retrovir al | 1 – Sim 2 – Não 9 – Ignorado | todos |
-| `pre_dt_ret` | `PRE_DT_RET` | data | Data do início do uso de anti- retroviral para profilaxia. dt_ini_anti_retr oviral | — | todos |
+| `pre_munire` | `PRE_MUNIRE` | texto | Município de realização do Pré- Natal | — | todos |
+| `pre_antret` | `PRE_ANTRET` | texto | Uso de Anti- retrovirais para profilaxia | 1 – Sim 2 – Não 9 – Ignorado | todos |
+| `pre_dt_ret` | `PRE_DT_RET` | data | Data do início do uso de anti- retroviral para profilaxia | — | todos |
 | `par_ufpart` | `PAR_UFPART` | texto | UF do local do parto. Tabela de códigos de UF | — | todos |
-| `pre_munipa` | `PRE_MUNIPA` | texto | Município do local do parto. co_municipio_ parto | — | todos |
+| `pre_munipa` | `PRE_MUNIPA` | texto | Município do local do parto | — | todos |
 | `par_dt_par` | `PAR_DT_PAR` | data | Data do parto. Data em que ocorreu o parto | — | todos |
 | `par_tipo` | `PAR_TIPO` | texto | Tipo do parto. VARCHAR2( 1) | 1 – Vaginal 2 – Cesárea eletiva 3 –Cesárea de urgência 4 – Não se aplica | todos |
-| `par_antidu` | `PAR_ANTIDU` | texto | Fez uso de profilaxia anti- retroviral durante o parto. st_uso_anti_ret roviral | 1 – Sim 2 – não 9 – Ignorado | todos |
-| `par_evoluc` | `PAR_EVOLUC` | texto | Evolução da gravidez. tp_evolucao_gr avidez | 1 – Nascido vivo 2 – Natimorto 3 – Aborto 4 – Não se aplica | todos |
-| `par_inicpr` | `PAR_INICPR` | texto | Início da profilaxia com anti-retroviral na criança (horas). tp_profilaxia_a nti_retroviral | 1 – Nas primeiras 24h 2 – Após 24h do nascimento 3 – Não se aplica 4 – Não realizado 9 – Ignorado | todos |
+| `par_antidu` | `PAR_ANTIDU` | texto | Fez uso de profilaxia anti- retroviral durante o parto | 1 – Sim 2 – não 9 – Ignorado | todos |
+| `par_evoluc` | `PAR_EVOLUC` | texto | Evolução da gravidez | 1 – Nascido vivo 2 – Natimorto 3 – Aborto 4 – Não se aplica | todos |
+| `par_inicpr` | `PAR_INICPR` | texto | Início da profilaxia com anti-retroviral na criança (horas). nti_retroviral | 1 – Nas primeiras 24h 2 – Após 24h do nascimento 3 – Não se aplica 4 – Não realizado 9 – Ignorado | todos |
 | `uf` | — | texto | UF do arquivo de origem (sigla em minúsculas, `br` para arquivos nacionais), gravada pelo conversor; as linhas do período saem ordenadas por ela | sigla da UF | todos |
 | `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
 
@@ -179,20 +175,26 @@ Os nomes de coluna abaixo foram verificados diretamente no cabeçalho do arquivo
 
 - A idade em `NU_IDADE_N` refere-se à gestante. Para taxas por mil nascidos vivos, usar o denominador do `sinasc` no mesmo ano e UF de residência. Os arquivos `BR` reúnem todas as UFs; use `SG_UF_NOT` (UF de notificação) ou `SG_UF`/`ID_MN_RESI` (residência) conforme a pergunta, pois os dois podem diferir. Arquivos do diretório PRELIM são preliminares e substituídos pelos finais; prefira sempre os arquivos finais quando o mesmo ano existir nas duas fontes, evitando somar PRELIM e FINAIS. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
 ### Consulta sobre o lake (polars)
 
-Quantas fichas foram notificadas por ano de notificação e UF de notificação?
+Quantas fichas foram notificadas por ano e UF de notificação?
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sinan-hivg").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sinan-hivg/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "sg_uf_not")
+    dados.group_by("ano", "sg_uf_not")
     .agg(pl.len().alias("fichas"))
     .sort("ano", "sg_uf_not")
     .collect()
@@ -201,43 +203,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sinan-hivg
-quantilica datasus list sinan-hivg
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sinan-hivg
 
-# 2. Baixar microdados de sinan-hivg (partição uf + year; no SINAN a UF é sempre BR)
-quantilica datasus sync sinan-hivg -o ./data --start 2022 --end 2024 --regions BR
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sinan-hivg -o ./data --start 2020 --end 2024 --regions br --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sinan-hivg -o ./data --docs --aux --start 2022 --end 2024 --regions BR
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sinan-hivg -o ./data/raw --parquet-dir ./data/parquet --start 2022 --end 2024 --regions BR
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sinan-hivg
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from datasus_fetcher.reader import read_dbc
-
-# Leitura direta de um .dbc nacional (descompacta, lê e aplica o saneamento padrão)
-frame = read_dbc("data/raw/HIVGBR24.dbc", dataset="sinan-hivg")
-
-# Contagem de notificações por UF de notificação e ano
-resumo = (
-    frame.group_by("sg_uf_not", "nu_ano")
-    .agg(pl.len().alias("notificacoes"))
-    .sort("sg_uf_not", "nu_ano")
-)
-
-# Distribuição por cs_raca, nu_ano
-print(frame.group_by("cs_raca").agg(pl.len().alias("n")).sort("n", descending=True))
-print(resumo.head())
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/`

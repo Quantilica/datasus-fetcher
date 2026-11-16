@@ -3,7 +3,7 @@ dataset:
   id: sih-rj
   fonte: datasus
   titulo: RJ - AIH Rejeitadas
-  resumo: sih-rj contém as AIH Rejeitadas no processamento do SIH/SUS
+  resumo: 'RJ - AIH Rejeitadas do DATASUS: uma AIH rejeitada no processamento, em uma competência.'
   orgao: Ministério da Saúde — Secretaria de Atenção Especializada à Saúde (SAES) e DATASUS
   pagina_oficial: ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/
   licenca: 'Sem licença declarada; dados públicos pela Lei 12.527/2011 (LAI) e Decreto 8.777/2016 (declaração do próprio fetcher, `FetcherInfo.licenca`); os informes técnicos do DATASUS citam o art. 8º da LAI (transparência ativa): https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm'
@@ -80,13 +80,9 @@ dataset:
 
 ## Origem e coleta
 
-- **Formato dos arquivos** (índice de 2026-10, conforme a página anterior): `.dbc` (dBASE comprimido com PKWARE DCL/blast, descompactado nativamente pelo `datasus-fetcher`)
-- **Particionamento** (índice de 2026-10, conforme a página anterior): `uf / yearmonth`
-- **Cobertura temporal no FTP** (índice de 2026-10, conforme a página anterior): 2008-01 a 2026-08 (conforme `index.json`; 27 UFs com arquivos; última atualização no FTP em 2026-10-16)
-- **Volume aproximado no FTP** (índice de 2026-10, conforme a página anterior): 5.887 arquivos (~945,8 MB)
-- **Arquivos preliminares** (índice de 2026-10, conforme a página anterior): Não
-- **Documentação oficial no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIHSUS/200801_/Doc`
-- **Tabelas auxiliares no FTP** (índice de 2026-10, conforme a página anterior): `/dissemin/publicos/SIHSUS/200801_/Auxiliar`
+- **Arquivos preliminares:** Não
+- **Documentação oficial no FTP:** `/dissemin/publicos/SIHSUS/200801_/Doc`
+- **Tabelas auxiliares no FTP:** `/dissemin/publicos/SIHSUS/200801_/Auxiliar`
 
 ### Diretórios e Padrões de Arquivos (`meta.py`)
 
@@ -97,7 +93,7 @@ dataset:
 ### Nomenclatura e Armazenamento Local
 
 - **No servidor FTP (`ftp.datasus.gov.br`)**: `RJSP2401.dbc` — `RJ` (AIH Rejeitada) + `SP` (UF) + `24` (ano 2024) + `01` (mês de competência). Disponível apenas no diretório `200801_`.
-- **No armazenamento local do `datasus-fetcher`**: `data/sih-rj/<AAAAMM>/sih-rj_<uf>_<AAAAMM>_<AAAAMMDD>.dbc`, por exemplo `data/sih-rj/202401/sih-rj_sp_202401_20261018.dbc` (o sufixo `AAAAMMDD` é a data do download).
+- **No armazenamento local do `datasus-fetcher`**: `data/sih-rj/<AAAAMM>/sih-rj_<AAAAMM>-<uf>@<AAAAMMDD>.dbc`, por exemplo `data/sih-rj/202401/sih-rj_202401-sp@20261016.dbc` (o sufixo `@AAAAMMDD` é a data do arquivo no FTP; arquivos preliminares levam `-preliminar` no nome do dataset).
 - **Documentação e Tabelas Auxiliares associadas**: `Doc/IT_SIHSUS_1603.pdf` (Informe Técnico do SIHSUS, 57 KB, 2016) é o dicionário oficial de variáveis; `Auxiliar/TAB_SIH.zip` (~6,1 MB, tabelas e conversores `.cnv`/`.def` atuais) e as versões históricas `TAB_SIH_199201-199712.zip`, `TAB_SIH_199801-200307.zip` e `TAB_SIH_200308-200712.zip` trazem as tabelas de procedimentos, CID e códigos usadas em cada fase.
 
 ## Conteúdo
@@ -232,7 +228,7 @@ Aplicações: taxa de rejeição/glosa por hospital, município e gestor (RJ ÷ 
 | `uf` | — | texto | UF do arquivo de origem (sigla em minúsculas, `br` para arquivos nacionais), gravada pelo conversor; as linhas do período saem ordenadas por ela | sigla da UF | todos |
 | `_origem` | — | texto | Chave do arquivo bruto que originou a linha (nome do arquivo no FTP, sem o carimbo de data), gravada pelo conversor | texto | todos |
 | `nat_jur` | `NAT_JUR` | texto | Natureza jurídica do Estabelecimento, conforme a Comissão Nacional de Classificação - CONCLA | — | 2014-06 a 2026-03 |
-| `fonte_orc` | `FONTE_ORC` | texto | Fonte orçamentária do pagamento (campo presente só nas partições mais recentes) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | 2026-03 a 2026-03 |
+| `fonte_orc` | `FONTE_ORC` | texto | Fonte orçamentária do pagamento (campo presente só nas partições mais recentes) (inferido do nome do campo; sem definição na documentação oficial consultada) | — | só em 2026-03 |
 
 ## No lake
 
@@ -247,7 +243,6 @@ Aplicações: taxa de rejeição/glosa por hospital, município e gestor (RJ ÷ 
 - (i) o RJ **não** contém o motivo da rejeição — junte com `sih-er` pelo número da AIH, CNES e competência; (ii) a mesma AIH pode ser rejeitada em mais de uma competência e depois aprovada, então deduplique antes de calcular taxas; (iii) os valores representam o que o hospital apresentou e **não foi pago**, não despesa do SUS; (iv) `ST_SITUAC`/`ST_BLOQ`/`ST_MOT_BLO` seguem tabelas de domínio do SIHSUS presentes em `TAB_SIH.zip`. (texto da versão anterior desta página; não reconferido nesta revisão.)
 - **Colunas que não existem em todo o período:** 2 colunas aparecem só em parte das amostras (a coluna `Período` do dicionário dá o intervalo amostrado); consultas sobre vários períodos devem tolerar colunas ausentes (ex.: `pl.scan_parquet(..., missing_columns="insert")` ou `diagonal_relaxed`). Evidência: conversão local de amostras em 2026-11-16, `datasus-fetcher` 0.19.0.
 - **Dado pessoal:** as colunas listadas em `dados_pessoais` no cabeçalho são o inventário por nome de coluna; atributos demográficos e territoriais (sexo, raça/cor, idade, município de residência) não entram na lista, mas combinados podem identificar uma pessoa.
-- **Arquivos DBC vazios:** um arquivo sem nenhuma linha escapa da limpeza do conversor e grava as colunas com os nomes originais em maiúsculas, mais `_deleted`, no Parquet daquele período; filtre arquivos com zero linhas antes de empilhar partições. Verificado na conversão de amostras em 2026-11-16 (achado do conversor; não corrigido aqui).
 
 ## Exemplos
 
@@ -256,11 +251,18 @@ Aplicações: taxa de rejeição/glosa por hospital, município e gestor (RJ ÷ 
 Quantas linhas há por período e por UF do arquivo de origem? (confere a cobertura do lake antes de qualquer análise)
 
 ```python
+from pathlib import Path
+
 import polars as pl
 
+arquivos = sorted(Path("lake/datasus/sih-rj").glob("**/*.parquet"))
+dados = pl.concat(  # períodos diferentes têm colunas e tipos diferentes
+    [pl.scan_parquet(a, hive_partitioning=True) for a in arquivos],
+    how="diagonal_relaxed",
+)
+
 (
-    pl.scan_parquet("lake/datasus/sih-rj/**/*.parquet", hive_partitioning=True)
-    .group_by("ano", "mes", "uf")
+    dados.group_by("ano", "mes", "uf")
     .agg(pl.len().alias("linhas"))
     .sort("ano", "mes", "uf")
     .collect()
@@ -269,54 +271,19 @@ import polars as pl
 
 O caminho `lake/` é a raiz do lake (a pasta que contém `datasus/`). A consulta foi executada sobre a conversão local de amostras de 2026-11-16.
 
-### Via CLI (`quantilica datasus` / `datasus-fetcher`)
+### Pela linha de comando (`datasus-fetcher`)
 
 ```bash
-# 1. Inspecionar arquivos, volume e cobertura disponíveis no FTP para sih-rj
-quantilica datasus list sih-rj
+# o que o FTP publica para o dataset (arquivos e tamanho)
+datasus-fetcher list sih-rj
 
-# 2. Baixar microdados de sih-rj com recorte adequado à partição (uf + yearmonth)
-quantilica datasus sync sih-rj -o ./data --start 2024-01 --end 2024-12 --regions sp
+# baixa um recorte, com a documentação oficial e as tabelas auxiliares (`--dry-run` só lista)
+datasus-fetcher sync sih-rj -o ./data --start 2024-01 --end 2024-12 --regions sp rj --docs --aux
 
-# 3. Baixar microdados acompanhados da documentação oficial e tabelas auxiliares
-quantilica datasus sync sih-rj -o ./data --start 2024-01 --end 2024-12 --regions sp --docs --aux
-
-# 4. Pipeline completo: download, descompactação nativa em Rust e conversão para Parquet tratado
-quantilica datasus pipeline sih-rj -o ./data/raw --parquet-dir ./data/parquet --start 2024-01 --end 2024-12 --regions sp
+# converte o que foi baixado para o lake (Parquet particionado)
+datasus-fetcher convert -i ./data -o ./lake --dataset sih-rj
 ```
 
-### Em Python e Polars
-
-```python
-import datasus_fetcher as df
-import polars as pl
-from pathlib import Path
-
-arquivo = next(Path("./data/sih-rj/202401").glob("sih-rj_sp_202401_*.dbc"))
-rj = df.read_dbc(arquivo, dataset="sih-rj")
-
-# Valor apresentado e não pago, por hospital (CNES)
-por_hospital = (
-    rj.group_by("cnes")
-    .agg(
-        pl.len().alias("aih_rejeitadas"),
-        pl.col("val_tot").sum().alias("valor_rejeitado"),
-    )
-    .sort("valor_rejeitado", descending=True)
-)
-print(por_hospital.head(10))
-
-# Ligação com o motivo da rejeição (sih-er): N_AIH == AIH
-er = df.read_dbc(
-    next(Path("./data/sih-er/202401").glob("sih-er_sp_202401_*.dbc")), dataset="sih-er"
-)
-rj_com_erro = rj.join(
-    er.select("aih", "cnes", "co_erro"),
-    left_on=["n_aih", "cnes"],
-    right_on=["aih", "cnes"],
-    how="left",
-)
-```
 ## Referências
 
 - **Servidor FTP do DATASUS**: `ftp://ftp.datasus.gov.br/dissemin/publicos/SIHSUS/200801_/`
