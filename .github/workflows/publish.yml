@@ -5,6 +5,9 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: read
+
 jobs:
   # Compila os wheels abi3 (Linux x86_64/aarch64, macOS x86_64/arm64, Windows
   # x64) e o sdist, e testa os que o runner executa. Se qualquer job falhar, o
@@ -21,7 +24,7 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           pattern: wheels-*
           merge-multiple: true
@@ -31,7 +34,7 @@ jobs:
         run: ls -l dist
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
         with:
           files: |
             dist/*.whl
@@ -42,7 +45,7 @@ jobs:
       # O índice é gerado a partir dos assets do Release: só dispara depois de
       # todos os wheels estarem anexados.
       - name: Dispatch Event to quantilica-index
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0 # v3.0.0
         with:
           token: ${{ secrets.INDEX_DISPATCH_TOKEN }}
           repository: Quantilica/quantilica-index
