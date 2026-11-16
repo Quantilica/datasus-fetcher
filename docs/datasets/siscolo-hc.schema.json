@@ -1,0 +1,948 @@
+{
+  "fonte": "datasus",
+  "dataset": "siscolo-hc",
+  "gerado_em": "2026-11-16T18:27:31+00:00",
+  "particoes": [
+    "ano",
+    "mes"
+  ],
+  "colunas": [
+    {
+      "nome": "co_us",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_us_uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_us_ibge",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "regus",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_pac_ibg",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_pac_uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_pac_esc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "dt_pac_nas",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_pac_ida",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "regresid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_cnes",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "clabibge",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "clabuf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "clabcid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "reglab",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "dt_id_comp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "ano_comp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_fx_etar",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_cit_esc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_cit_gla",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_cit_ind",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "o_cit_esca",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "o_cit_glan",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_colp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_res_tip",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_res_loc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_ben_cer",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_ben_alt",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_neo_nic",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_neo_ade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_dif_gra",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_exten_p",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_exten_v",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "o_exten_pe",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "o_exten_pa",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_exten_c",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "o_exten_va",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_marg",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_res_fra",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_res_tam",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "o_res_tam2",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_res_mar",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "dt_his_exa",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "dt_his_rec",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_mat_ins",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_ctrl_fr",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_ctrl_bl",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "qtdexa",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "escamosa",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "pneopla",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "gpnneop",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "gnaltgrau",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "indpnaoneo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "citindalgr",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "esclipbx",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "escinalt",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "esciemcinv",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "esccarinva",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "adenoinsut",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "adencarcin",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "cit_outneo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "ccoldefaul",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "ccolnormal",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "ccolanorma",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "ccolinsati",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_colp_po",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "o_colp_pos",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_colp_bi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_colp_cu",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_colp_ex",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_colp_re",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "o_colp_bio",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "cresbiopsi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "cresconiza",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "creshissim",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "crespanhis",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "cresoutros",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "cresecto",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "cresendo",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "cresjunc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_ben_met",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_ben_pol",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "cbencervi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "cbenalter",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "nicdleve",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "nicdmode",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "nicdacent",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "niccarcmin",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "nicepiinva",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "nicimpaval",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "nicverruco",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "nicnaocera",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "neoinsutu",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "neomucino",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "neovilogl",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "ds_neo_out",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "cdifgrau",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "cdifmoddif",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "cdifpoudif",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "cdifindfer",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "cdiexamins",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "c_ext_vasc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "c_ext_peri",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "c_ext_para",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "c_ext_corp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "c_ext_vagi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_exten_l",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "o_exten_li",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "cmarlivre",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "cmarcompro",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "cmarimpava",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2006-02",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "dintcoleta",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-08",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "dintresult",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-08",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "dinttempex",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-08",
+      "periodo_fim": "2015-08"
+    },
+    {
+      "nome": "co_pac_rac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2011-11",
+      "periodo_fim": "2015-08"
+    }
+  ],
+  "arquivos": 5
+}

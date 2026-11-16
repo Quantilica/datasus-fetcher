@@ -1,0 +1,460 @@
+{
+  "fonte": "datasus",
+  "dataset": "sismama-cm",
+  "gerado_em": "2026-11-16T18:27:31+00:00",
+  "particoes": [
+    "ano",
+    "mes"
+  ],
+  "colunas": [
+    {
+      "nome": "co_pac_uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "co_us_uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "co_pac_ibg",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "co_us_ibge",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "co_us",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "co_cnes",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "prestuf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "regus",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "regresid",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "reglab",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "ano_comp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "prestmun",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "dt_id_comp",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "co_fx_etar",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "co_pac_esc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "co_pac_sex",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "co_pac_rac",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "canmpacanc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "co_cli_des",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "co_cli_nod",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "cclimatmam",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "cclimatdpc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "dintcoleta",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "dintresult",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "dinttempex",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "co_res_ade",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "presulpaaf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "cresbenig",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "cresmaliin",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "cressusmal",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "cresposmal",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "cresderpap",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "quantexame",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "pbenmastit",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "pbenabsuba",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "pbenfibroa",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "pbennecgor",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "pbencondfi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "pbenlesepi",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "pbenoutras",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "pmalintump",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "pmalintumf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "pmalinoutr",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "psuslejpca",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "psusoutros",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "pposmacduc",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "pposmaclob",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "pposmacout",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "dematacelu",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "denegmalig",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "demaliindt",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "deposmalig",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "delesmalig",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "deprocinfl",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "uf",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    },
+    {
+      "nome": "_origem",
+      "tipos": [
+        "string"
+      ],
+      "periodo_inicio": "2009-09",
+      "periodo_fim": "2015-07"
+    }
+  ],
+  "arquivos": 5
+}
