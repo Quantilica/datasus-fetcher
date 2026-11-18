@@ -20,7 +20,9 @@ from pathlib import Path
 from typing import Any
 
 import polars as pl
-from quantilica.analytics.lake import LakeWriter
+import pyarrow as pa
+import pyarrow.parquet as pq
+from quantilica.analytics.lake import LakeWriter, footer_from_metadata
 from quantilica.core.lake import DatasetDescriptor, partition_types_for
 
 from datasus_fetcher import __version__, reader
@@ -265,7 +267,49 @@ def _conversao(path, writer_for, result, converter):
     )
 
 
+def _cites(dataset_dir: Path, name: str) -> bool:
+    """Se algum Parquet do dataset cita ``name`` como origem (só rodapés)."""
+    for parquet in sorted(dataset_dir.rglob("*.parquet")):
+        if ".tmp" in parquet.relative_to(dataset_dir).parts:
+            continue
+        try:
+            footer = footer_from_metadata(pq.read_metadata(parquet))
+        except (OSError, pa.ArrowException):
+            continue
+        if footer.get("quantilica.origin_file") == name:
+            return True
+    return False
+
+
+def _territorial_current(path: Path, writer_for) -> int:
+    """Quantas tabelas do ZIP já estão no lake com o ``sha256`` atual; 0 se não há pulo.
+
+    As tabelas só são conhecidas com o ZIP aberto, e abri-lo custa caro no bruto em
+    disco lento. Então a decisão vem dos rodapés do lake: cada tabela convertida é
+    um dataset ``base-territorial-<tabela>`` cujo Parquet cita o ZIP como origem.
+    O ZIP está em dia quando ao menos uma tabela o cita e todas as que o citam
+    registram o ``sha256`` atual; uma tabela que o cita com outro ``sha256`` (ZIP
+    alterado) ou nenhuma que o cite (ZIP novo) manda converter.
+    """
+    root = writer_for(TERRITORIAL, []).dataset_dir.parent
+    if not root.is_dir():
+        return 0
+    em_dia = 0
+    for directory in sorted(root.iterdir()):
+        if not directory.is_dir() or not directory.name.startswith(f"{TERRITORIAL}-"):
+            continue
+        if writer_for(directory.name, []).origin_recorded(path):
+            em_dia += 1
+        elif _cites(directory, path.name):
+            return 0
+    return em_dia
+
+
 def _territorial(path, writer_for, result, converter):
+    # Com tudo em dia o ZIP nem é aberto (``force`` faz o teste dar falso).
+    if (em_dia := _territorial_current(path, writer_for)) > 0:
+        result.skipped += em_dia
+        return
     with zipfile.ZipFile(path) as archive, tempfile.TemporaryDirectory() as tmp:
         tables: dict[str, str] = {}
         for name in archive.namelist():
