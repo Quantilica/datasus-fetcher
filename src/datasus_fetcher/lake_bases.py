@@ -20,9 +20,7 @@ from pathlib import Path
 from typing import Any
 
 import polars as pl
-import pyarrow as pa
-import pyarrow.parquet as pq
-from quantilica.analytics.lake import LakeWriter, footer_from_metadata
+from quantilica.analytics.lake import LakeWriter
 from quantilica.core.lake import DatasetDescriptor, partition_types_for
 
 from datasus_fetcher import __version__, reader
@@ -267,18 +265,8 @@ def _conversao(path, writer_for, result, converter):
     )
 
 
-def _cites(dataset_dir: Path, name: str) -> bool:
-    """Se algum Parquet do dataset cita ``name`` como origem (só rodapés)."""
-    for parquet in sorted(dataset_dir.rglob("*.parquet")):
-        if ".tmp" in parquet.relative_to(dataset_dir).parts:
-            continue
-        try:
-            footer = footer_from_metadata(pq.read_metadata(parquet))
-        except (OSError, pa.ArrowException):
-            continue
-        if footer.get("quantilica.origin_file") == name:
-            return True
-    return False
+def _dataset_da_tabela(stem: str) -> str:
+    return f"{TERRITORIAL}-{stem.replace('_', '-')}"
 
 
 def _territorial_current(path: Path, writer_for) -> int:
@@ -286,23 +274,31 @@ def _territorial_current(path: Path, writer_for) -> int:
 
     As tabelas só são conhecidas com o ZIP aberto, e abri-lo custa caro no bruto em
     disco lento. Então a decisão vem dos rodapés do lake: cada tabela convertida é
-    um dataset ``base-territorial-<tabela>`` cujo Parquet cita o ZIP como origem.
-    O ZIP está em dia quando ao menos uma tabela o cita e todas as que o citam
-    registram o ``sha256`` atual; uma tabela que o cita com outro ``sha256`` (ZIP
-    alterado) ou nenhuma que o cite (ZIP novo) manda converter.
+    um dataset ``base-territorial-<tabela>`` cujo Parquet cita o ZIP como origem e
+    declara (``origin_outputs``) a lista de todas as tabelas do ZIP. O ZIP está em
+    dia quando as declarações que o citam com o ``sha256`` atual são a mesma lista e
+    cada tabela da lista tem o seu Parquet em dia. Uma tabela que falta (conversão
+    interrompida ou que falhou), um lake gravado sem a declaração, um ZIP alterado
+    ou novo mandam abrir o ZIP.
     """
     root = writer_for(TERRITORIAL, []).dataset_dir.parent
     if not root.is_dir():
         return 0
-    em_dia = 0
+    declaracoes: set[tuple[str, ...]] = set()
     for directory in sorted(root.iterdir()):
         if not directory.is_dir() or not directory.name.startswith(f"{TERRITORIAL}-"):
             continue
-        if writer_for(directory.name, []).origin_recorded(path):
-            em_dia += 1
-        elif _cites(directory, path.name):
+        declarada = writer_for(directory.name, []).origin_outputs(path)
+        if declarada is not None:
+            declaracoes.add(tuple(declarada))
+    if len(declaracoes) != 1:
+        return 0
+    tabelas = next(iter(declaracoes))
+    for stem in tabelas:
+        writer = writer_for(_dataset_da_tabela(stem), [])
+        if not writer.is_current(path, file_key_name=stem, origin_outputs=tabelas):
             return 0
-    return em_dia
+    return len(tabelas)
 
 
 def _territorial(path, writer_for, result, converter):
@@ -319,9 +315,12 @@ def _territorial(path, writer_for, result, converter):
             # O DBF tem os tipos declarados; o CSV só quando não há DBF.
             if suffix == ".dbf" or stem not in tables:
                 tables[stem] = name
+        # Todas as tabelas do ZIP, conhecidas antes da primeira gravação: cada
+        # Parquet declara a lista inteira, e uma conversão interrompida deixa
+        # tabelas citadas que não existem (o ZIP é reaberto na rodada seguinte).
+        declaradas = sorted(tables)
         for stem, name in sorted(tables.items()):
-            dataset_id = f"{TERRITORIAL}-{stem.replace('_', '-')}"
-            writer = writer_for(dataset_id, [])
+            writer = writer_for(_dataset_da_tabela(stem), [])
             local = Path(archive.extract(name, tmp))
             if local.suffix.lower() == ".dbf":
                 df = reader.read_dbf(
@@ -333,7 +332,11 @@ def _territorial(path, writer_for, result, converter):
                     local, separator=";", encoding="latin-1", infer_schema_length=0
                 )
             written = writer.write_polars(
-                df, path, file_key_name=stem, converter=converter
+                df,
+                path,
+                file_key_name=stem,
+                converter=converter,
+                origin_outputs=declaradas,
             )
             _count(written, result)
 

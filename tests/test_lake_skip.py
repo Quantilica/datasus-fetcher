@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from quantilica.core import manifests
 
 pytest.importorskip("polars")
 pytest.importorskip("quantilica.analytics.lake")
@@ -95,6 +96,19 @@ def acessos(monkeypatch: pytest.MonkeyPatch) -> list[str]:
 
     monkeypatch.setattr(builtins, "open", aberto)
     monkeypatch.setattr(io, "open", aberto)
+
+    original_path_open = Path.open
+
+    def path_open(self: Path, *args: Any, **kwargs: Any) -> Any:
+        if "raw" in self.parts and not self.name.endswith(".manifest.json"):
+            vistos.append(f"Path.open:{self}")
+        return original_path_open(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", path_open)
+    # O sha256 vem do sidecar: ler o ZIP inteiro para o hash é acesso ao bruto.
+    monkeypatch.setattr(
+        manifests, "sha256_file", espia("sha256_file", manifests.sha256_file)
+    )
     return vistos
 
 
@@ -173,3 +187,81 @@ def test_zip_alterado_reconverte(tmp_path: Path, acessos: list[str]) -> None:
     res = converter.convert(raw, lake, datasets=[TERRITORIAL])
     assert (res.converted, res.skipped, res.errors) == (2, 0, [])
     assert "ZipFile" in acessos
+
+
+def _falha_na_tabela(monkeypatch: pytest.MonkeyPatch, nome: str) -> None:
+    """Faz a leitura do CSV da tabela ``nome`` falhar (conversão interrompida)."""
+    original = bases.pl.read_csv
+
+    def le(source: Any, *args: Any, **kwargs: Any) -> Any:
+        if Path(str(source)).name == nome:
+            raise ValueError(f"tabela {nome} corrompida")
+        return original(source, *args, **kwargs)
+
+    monkeypatch.setattr(bases.pl, "read_csv", le)
+
+
+def test_conversao_interrompida_numa_tabela_e_completada_na_rodada_seguinte(
+    tmp_path: Path, acessos: list[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    raw, lake = _bruto(tmp_path), tmp_path / "lake"
+    with monkeypatch.context() as m:
+        _falha_na_tabela(m, "tb_uf.csv")  # tb_regiao grava; tb_uf falha
+        res = converter.convert(raw, lake, datasets=[TERRITORIAL])
+    assert (res.converted, res.skipped) == (1, 0)
+    assert len(res.errors) == 1 and "tb_uf" in res.errors[0]
+
+    # Uma tabela do ZIP existe no lake, a outra não: o ZIP não está em dia.
+    acessos.clear()
+    res2 = converter.convert(raw, lake, datasets=[TERRITORIAL])
+    assert (res2.converted, res2.skipped, res2.errors) == (1, 1, [])
+    assert "ZipFile" in acessos
+
+    acessos.clear()
+    res3 = converter.convert(raw, lake, datasets=[TERRITORIAL])
+    assert (res3.converted, res3.skipped, res3.errors) == (0, 2, [])
+    assert acessos == []
+
+
+def test_falha_persistente_continua_aparecendo_a_cada_build(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    raw, lake = _bruto(tmp_path), tmp_path / "lake"
+    _falha_na_tabela(monkeypatch, "tb_uf.csv")
+    for _ in range(2):
+        res = converter.convert(raw, lake, datasets=[TERRITORIAL])
+        assert len(res.errors) == 1 and "tb_uf" in res.errors[0]
+
+
+def test_lake_sem_declaracao_reconverte_uma_vez_e_depois_pula(
+    tmp_path: Path, acessos: list[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    raw, lake = _bruto(tmp_path), tmp_path / "lake"
+    original = bases.LakeWriter.write_polars
+
+    def sem_declaracao(self: Any, *args: Any, **kwargs: Any) -> Any:
+        kwargs.pop("origin_outputs", None)  # como os conversores antes da API
+        return original(self, *args, **kwargs)
+
+    with monkeypatch.context() as m:
+        m.setattr(bases.LakeWriter, "write_polars", sem_declaracao)
+        res = converter.convert(raw, lake, datasets=[TERRITORIAL])
+    assert (res.converted, res.skipped) == (2, 0)
+
+    acessos.clear()
+    res2 = converter.convert(raw, lake, datasets=[TERRITORIAL])
+    assert (res2.converted, res2.skipped, res2.errors) == (2, 0, [])
+    assert "ZipFile" in acessos
+
+    acessos.clear()
+    res3 = converter.convert(raw, lake, datasets=[TERRITORIAL])
+    assert (res3.converted, res3.skipped, res3.errors) == (0, 2, [])
+    assert acessos == []
+
+
+def test_espiao_pega_o_hash_sem_sidecar(tmp_path: Path, acessos: list[str]) -> None:
+    raw, lake = _bruto(tmp_path), tmp_path / "lake"
+    for sidecar in raw.rglob("*.manifest.json"):
+        sidecar.unlink()
+    converter.convert(raw, lake, datasets=[TERRITORIAL])
+    assert "sha256_file" in acessos
