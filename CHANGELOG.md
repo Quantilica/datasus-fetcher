@@ -5,14 +5,16 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
-## [Não lançado]
-
-### Corrigido
-- `lake` (`base-territorial`): o build sem mudança não abre mais o ZIP mais recente. As tabelas só são conhecidas com o ZIP aberto, então cada Parquet passa a declarar (`origin_outputs`) a lista de todas as tabelas do ZIP e a decisão vem dos rodapés do lake: o ZIP está em dia quando todas as tabelas declaradas existem com o sha256 atual (do sidecar, sem ler o arquivo). Uma conversão interrompida ou com falha numa tabela deixa o ZIP "não em dia" e ele é reaberto na rodada seguinte, como antes. Lake gravado sem a declaração reconverte uma vez e depois pula. As contagens (um `skipped` por tabela), `force`, o ZIP novo e o ZIP alterado seguem como antes.
+## [0.20.1] - 2026-11-19
 
 ### Alterado
+
 - Piso de `quantilica-analytics` do extra `analysis` sobe para 0.15.0 (`origin_outputs`, `LakeWriter.origin_outputs`).
 - CI e infraestrutura alinhados ao template (fetcher-template v0.2.1).
+
+### Corrigido
+
+- `lake` (`base-territorial`): o build sem mudança não abre mais o ZIP mais recente. As tabelas só são conhecidas com o ZIP aberto, então cada Parquet passa a declarar (`origin_outputs`) a lista de todas as tabelas do ZIP e a decisão vem dos rodapés do lake: o ZIP está em dia quando todas as tabelas declaradas existem com o sha256 atual (do sidecar, sem ler o arquivo). Uma conversão interrompida ou com falha numa tabela deixa o ZIP "não em dia" e ele é reaberto na rodada seguinte, como antes. Lake gravado sem a declaração reconverte uma vez e depois pula. As contagens (um `skipped` por tabela), `force`, o ZIP novo e o ZIP alterado seguem como antes.
 
 ## [0.20.0] - 2026-11-16
 ### Adicionado
