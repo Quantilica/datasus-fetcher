@@ -20,54 +20,25 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Escrever lista de termos
+      - name: Ler lista de termos (segredo da organização)
+        env:
+          HYGIENE_TERMS: ${{ secrets.HYGIENE_TERMS }}
         run: |
-          cat > "$RUNNER_TEMP/termos-comuns.txt" <<'EOF'
-          \bOnda\b
-          \bADR\b
-          \bplanning/
-          \bplano (`|[a-z0-9-]+-[a-z0-9-]+|§)
-          \bPlano:
-          uploader
-          \bCAS\b
-          \bVPS\b
-          crontab
-          \bcrons?\b
-          systemd
-          runs\.csv
-          quantilica-(workers|cloud|web|events|portal|manifests-db)
-          bcb-sgs-app
-          rtn-app
-          crons-dashboard
-          datasus-analytics
-          [a-z-]+-metadata-db
-          tddata-db
-          dev-plugins
-          \bOKF\b
-          Flamingo
-          Alpaca
-          Hedgehog
-          Sloth
-          \bFish\b
-          Telegram
-          Umami
-          Cloudflare
-          (^|[^[:alnum:].])/home/[a-z]+
-          \.agents/
-          CLAUDE\.md
-          AGENTS\.md
-          EOF
-          cat > "$RUNNER_TEMP/termos-arquivos.txt" <<'EOF'
-          \bworkspace\b
-          ingestão efêmera
-          retenção efêmera
-          pipeline de ingestão
-          EOF
+          if [ -z "$HYGIENE_TERMS" ]; then
+            echo "::warning::Segredo HYGIENE_TERMS indisponível (PR de fork?). Verificação de termos internos ignorada."
+            exit 0
+          fi
+          printf '%s\n' "$HYGIENE_TERMS" > "$RUNNER_TEMP/termos-brutos.txt"
+          awk '/^#--arquivos--$/ {exit} NF' "$RUNNER_TEMP/termos-brutos.txt" \
+            > "$RUNNER_TEMP/termos-comuns.txt"
+          awk '/^#--arquivos--$/ {f=1; next} f && NF' "$RUNNER_TEMP/termos-brutos.txt" \
+            > "$RUNNER_TEMP/termos-arquivos.txt"
           cat "$RUNNER_TEMP/termos-comuns.txt" "$RUNNER_TEMP/termos-arquivos.txt" \
             > "$RUNNER_TEMP/termos-todos.txt"
 
       - name: CHANGELOG e README
         run: |
+          [ -s "$RUNNER_TEMP/termos-todos.txt" ] || { echo "Sem lista de termos; verificação ignorada."; exit 0; }
           files=$(ls CHANGELOG.md README*.md docs/changelog.md 2>/dev/null || true)
           if [ -z "$files" ]; then
             echo "Nenhum CHANGELOG/README para verificar."
@@ -88,6 +59,7 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
+          [ -s "$RUNNER_TEMP/termos-todos.txt" ] || { echo "Sem lista de termos; verificação ignorada."; exit 0; }
           range="${BASE_SHA}..${HEAD_SHA}"
           msgs=$(git log --format='%h %s%n%b' "$range")
           hits=$(printf '%s\n' "$msgs" \
