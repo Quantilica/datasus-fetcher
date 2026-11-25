@@ -211,12 +211,19 @@ class LakeConverter:
 
         # Duas versões do mesmo bruto na pasta (``X@d1.dbc`` e ``X@d2.dbc``) têm a
         # mesma chave de membro: vale a mais nova e a antiga nem é decodificada.
+        superadas: list[Path] = []
         if input_dir.is_dir():
             tabular = [p for p in files if p.suffix.lower() in {".dbc", ".dbf"}]
             current = set(select_current(tabular))
+            superadas = [p for p in tabular if p not in current]
             files = [p for p in files if p not in tabular or p in current]
 
         allowed = set(datasets) if datasets else None
+        # Versão anterior de um bruto dos datasets pedidos: pulada, e contada.
+        for path in superadas:
+            dataset_id, _ = route_file(path)
+            if dataset_id and (allowed is None or dataset_id in allowed):
+                result.skipped += 1
         writers: dict[str, LakeWriter] = {}
         groups: dict[tuple, _Group] = {}
         base_zips: list[tuple[Path, str, dict[str, Any]]] = []

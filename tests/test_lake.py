@@ -374,7 +374,7 @@ def test_duas_versoes_do_mesmo_bruto_valem_a_mais_nova(
     monkeypatch.setattr(lake_module, "_decode", counting)
     res = converter.convert(raw, lake)
     assert not res.errors, res.errors
-    assert (res.converted, res.skipped) == (2, 0)
+    assert (res.converted, res.skipped) == (2, 1)
     assert sorted(decoded) == ["DOAC1996@20261016.dbc", "DORO1996.dbc"]
     df = scan_dataset(lake / SOURCE_ID / "sim-do-cid10").collect()
     assert df["uf"].unique().sort().to_list() == ["ac", "ro"]
@@ -495,3 +495,18 @@ def test_inventory_coincide_com_convert(tmp_path: Path) -> None:
     converter.convert(raw, tmp_path / "lake")
     assert (tmp_path / "lake" / SOURCE_ID / item.dataset).is_dir()
     assert converter.inventory(tmp_path / "ausente") == []
+
+
+def test_dbc_superado_conta_em_skipped_so_dos_datasets_pedidos(
+    tmp_path: Path,
+) -> None:
+    if not FIXTURE_DBC.exists():
+        pytest.skip("Fixture DOAC1996.dbc não encontrada")
+    raw, lake = tmp_path / "raw", tmp_path / "lake"
+    raw.mkdir()
+    (raw / "DOAC1996@20260906.dbc").write_bytes(b"versao velha")
+    (raw / "DOAC1996@20261016.dbc").write_bytes(FIXTURE_DBC.read_bytes())
+    res = converter.convert(raw, lake, datasets=["sih-rd"])
+    assert (res.converted, res.skipped, res.errors) == (0, 0, [])
+    res = converter.convert(raw, lake, datasets=["sim-do-cid10"])
+    assert (res.converted, res.skipped, res.errors) == (1, 1, [])

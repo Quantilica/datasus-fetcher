@@ -198,7 +198,8 @@ def convert_base_zips(
     vigentes = current_zips(zips)
     for path, dataset_id, partitions in zips:
         if path not in vigentes:
-            continue  # versão anterior do mesmo bruto: nem é aberta
+            result.skipped += 1  # versão anterior do mesmo bruto: nem é aberta
+            continue
         try:
             if dataset_id.startswith(POPULACIONAL):
                 _populacional(

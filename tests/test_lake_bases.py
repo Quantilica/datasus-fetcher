@@ -110,7 +110,7 @@ def test_convert_base_zips(tmp_path: Path) -> None:
     ]
     pop = scan_dataset(lake / "base-populacional-ibge-pop").collect()
     assert pop["ano"].unique().to_list() == [2022]
-    assert converter.convert(raw, tmp_path / "lake").skipped == 3
+    assert converter.convert(raw, tmp_path / "lake").skipped == 4
 
 
 POP_DIR = "base-populacional-ibge-pop/2022"
@@ -152,7 +152,7 @@ def test_versoes_antigas_das_bases_nao_sao_abertas(tmp_path: Path) -> None:
     assert (res.converted, res.errors) == (2, [])
 
     res2 = converter.convert(raw, lake)
-    assert (res2.converted, res2.skipped, res2.errors) == (0, 2, [])
+    assert (res2.converted, res2.skipped, res2.errors) == (0, 4, [])
 
 
 def test_versao_nova_das_bases_substitui_sem_duplicar(tmp_path: Path) -> None:
@@ -175,7 +175,7 @@ def test_versao_nova_das_bases_substitui_sem_duplicar(tmp_path: Path) -> None:
         },
     )
     res = converter.convert(raw, lake)
-    assert (res.converted, res.skipped, res.errors) == (2, 0, [])
+    assert (res.converted, res.skipped, res.errors) == (2, 2, [])
 
     # mesmas linhas da população (a versão nova, não a soma das duas) e as da
     # conversão da versão nova (5 + 2 códigos), sem sobra da antiga
@@ -185,7 +185,7 @@ def test_versao_nova_das_bases_substitui_sem_duplicar(tmp_path: Path) -> None:
 
     # e a rodada seguinte não reconverte nada
     res3 = converter.convert(raw, lake)
-    assert (res3.converted, res3.skipped, res3.errors) == (0, 2, [])
+    assert (res3.converted, res3.skipped, res3.errors) == (0, 4, [])
 
 
 def test_inventario_marca_as_versoes_antigas_das_bases(tmp_path: Path) -> None:
@@ -208,3 +208,17 @@ def test_inventario_marca_as_versoes_antigas_das_bases(tmp_path: Path) -> None:
     assert got[antigo_cnv] == (None, "superado")
     assert got[novo_cnv] == (CONV_DIR, None)
     assert got[outra_uf] == (CONV_DIR, None)  # outra UF é outro arquivo
+
+
+def test_versoes_superadas_contam_em_skipped(tmp_path: Path) -> None:
+    raw, lake = tmp_path / "raw", tmp_path / "lake"
+    antigo = raw / POP_DIR / f"{POP}@20240101.zip"
+    antigo.parent.mkdir(parents=True, exist_ok=True)
+    antigo.write_bytes(b"nao e um zip")
+    _pop_zip(raw, "20240601")
+    # Primeira rodada: a vigente converte, a superada conta em skipped.
+    res = converter.convert(raw, lake)
+    assert (res.converted, res.skipped, res.errors) == (1, 1, [])
+    # Filtrar por outro dataset não conta as superadas das bases não pedidas.
+    res2 = converter.convert(raw, lake, datasets=[CONV_DIR])
+    assert (res2.converted, res2.skipped, res2.errors) == (0, 0, [])
