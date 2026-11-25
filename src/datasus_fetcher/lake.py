@@ -13,13 +13,20 @@ partitioning contract.
 
 from __future__ import annotations
 
+import logging
+import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 try:
     import polars as pl
-    from quantilica.analytics.lake import LakeError, LakeWriter
+    from quantilica.analytics.lake import (
+        ORIGIN_COLUMN,
+        GroupMember,
+        LakeError,
+        LakeWriter,
+    )
     from quantilica.core.lake import DatasetDescriptor, partition_types_for
 except ImportError as exc:
     raise ImportError(
@@ -33,6 +40,8 @@ from datasus_fetcher.wrangling import parse_filename_metadata
 
 if TYPE_CHECKING:
     from quantilica.core.lake import Planned
+
+logger = logging.getLogger(__name__)
 
 SOURCE_ID = "datasus"
 
@@ -106,6 +115,43 @@ def resolve_partitions(meta_dict: dict[str, Any]) -> tuple[list[str], dict[str, 
     return keys, values
 
 
+@dataclass
+class _Group:
+    """Raw files that share one grouped Parquet (one dataset, one period)."""
+
+    dataset_id: str
+    group: str
+    partitions: dict[str, str]
+    writer: LakeWriter
+    files: list[tuple[Path, dict[str, str]]] = field(default_factory=list)
+
+
+class _MemberFailed(Exception):  # noqa: N818
+    """A raw file of the group could not be decoded (carries the file)."""
+
+    def __init__(self, path: Path, cause: BaseException) -> None:
+        super().__init__(str(cause))
+        self.path = path
+        self.cause = cause
+
+
+def _first_line(exc: BaseException) -> str:
+    message = str(exc).strip()
+    return message.splitlines()[0] if message else repr(exc)
+
+
+def _decode(path: Path, dataset_id: str) -> pl.DataFrame:
+    """Rows of one raw DBC/DBF, cleaned and with lowercase column names."""
+    if path.suffix.lower() == ".dbc":
+        return reader.read_dbc(path, clean=True, dataset=dataset_id, lowercase=True)
+    return reader.read_dbf(
+        path,
+        transform=lambda f, ds=dataset_id: reader.wrangle_datasus(
+            f, dataset=ds, lowercase=True
+        ),
+    )
+
+
 class LakeConverter:
     """Converter registered under the ``quantilica.lake`` entry point."""
 
@@ -151,6 +197,7 @@ class LakeConverter:
 
         allowed = set(datasets) if datasets else None
         writers: dict[str, LakeWriter] = {}
+        groups: dict[tuple, _Group] = {}
         base_zips: list[tuple[Path, str, dict[str, Any]]] = []
 
         for path in files:
@@ -190,46 +237,15 @@ class LakeConverter:
                     force=force,
                 )
 
-            writer = writers[dataset_id]
-
-            try:
-                # Decodificar um DBC custa caro; o arquivo já presente no lake com
-                # o mesmo sha256 é pulado antes da leitura.
-                if writer.is_current_member(
-                    path, group_key=group, partitions=partition_values
-                ):
-                    result.skipped += 1
-                    continue
-                if path.suffix.lower() == ".dbc":
-                    df = reader.read_dbc(
-                        path, clean=True, dataset=dataset_id, lowercase=True
-                    )
-                else:
-                    df = reader.read_dbf(
-                        path,
-                        transform=lambda f, ds=dataset_id: reader.wrangle_datasus(
-                            f, dataset=ds, lowercase=True
-                        ),
-                    )
-
-                written = writer.write_member(
-                    df,
-                    path,
-                    group_key=group,
-                    partitions=partition_values,
-                    member_columns=member,
-                    converter=f"datasus-fetcher {__version__}",
+            slot = (dataset_id, group, tuple(partition_values.items()))
+            if slot not in groups:
+                groups[slot] = _Group(
+                    dataset_id, group, partition_values, writers[dataset_id]
                 )
-            except (LakeError, OSError, pl.exceptions.PolarsError, Exception) as exc:
-                message = str(exc).strip()
-                first_line = message.splitlines()[0] if message else repr(exc)
-                result.errors.append(f"{path.name}: {first_line}")
-                continue
+            groups[slot].files.append((path, member))
 
-            if written.status == "skipped":
-                result.skipped += 1
-            else:
-                result.converted += 1
+        for item in groups.values():
+            self._write_group(item, result)
 
         def writer_for(dataset_id: str, keys: list[str]) -> LakeWriter:
             key = f"{dataset_id}:{','.join(keys)}"
@@ -243,6 +259,110 @@ class LakeConverter:
 
         lake_bases.convert_base_zips(base_zips, writer_for, result)
         return result
+
+    @staticmethod
+    def _write_group(item: _Group, result: ConvertResult) -> None:
+        """Write the grouped Parquet of a period without holding it in memory.
+
+        Each raw file is decoded on its own, written to a temporary Parquet and
+        released before the next one is read; ``LakeWriter.write_group`` then
+        merges the temporary files in DuckDB, spilling to disk, and writes the
+        period's file once, sorted by the member columns and ``_origem``, as
+        ``write_member`` left it. The peak follows the largest raw file, never
+        the period (``sia-pa``: ~20 million rows by 76 columns per month).
+
+        A raw file that cannot be decoded is reported and left out; the rest of
+        the group is written and the file's previous rows (``prune=False``) stay.
+        A group the writer refuses as a whole (``LakeError``, for instance
+        members whose columns differ) is rewritten member by member, which
+        merges them by column name as before.
+        """
+        converter_tag = f"datasus-fetcher {__version__}"
+        remaining = list(item.files)
+        with tempfile.TemporaryDirectory(prefix="datasus-members-") as tmp:
+            stage = Path(tmp)
+            while remaining:
+
+                def staged(path: Path, number: int) -> Path:
+                    try:
+                        frame = _decode(path, item.dataset_id)
+                        out = stage / f"{number:06d}.parquet"
+                        frame.write_parquet(out, compression="lz4")
+                    except Exception as exc:
+                        raise _MemberFailed(path, exc) from exc
+                    return out
+
+                members = [
+                    GroupMember(
+                        path,
+                        data=lambda path=path, number=number: staged(path, number),
+                        columns=member,
+                    )
+                    for number, (path, member) in enumerate(remaining)
+                ]
+                try:
+                    written = item.writer.write_group(
+                        item.group,
+                        members,
+                        partitions=item.partitions,
+                        converter=converter_tag,
+                        prune=False,
+                        sort_by=[*remaining[0][1], ORIGIN_COLUMN],
+                    )
+                except _MemberFailed as failed:
+                    result.errors.append(
+                        f"{failed.path.name}: {_first_line(failed.cause)}"
+                    )
+                    remaining = [(p, m) for p, m in remaining if p != failed.path]
+                    continue
+                except LakeError as exc:
+                    logger.warning(
+                        "lake: group %s refused (%s); writing it member by member",
+                        item.group,
+                        _first_line(exc),
+                    )
+                    LakeConverter._write_members(item, remaining, converter_tag, result)
+                    return
+                except (OSError, pl.exceptions.PolarsError, Exception) as exc:
+                    result.errors.append(f"{item.group}: {_first_line(exc)}")
+                    return
+                done = len(written.written)
+                result.converted += done
+                result.skipped += len(members) - done
+                return
+
+    @staticmethod
+    def _write_members(
+        item: _Group,
+        files: list[tuple[Path, dict[str, str]]],
+        converter_tag: str,
+        result: ConvertResult,
+    ) -> None:
+        """Write the group one raw file at a time (``write_member``)."""
+        for path, member in files:
+            try:
+                # Decodificar um DBC custa caro; o arquivo já presente no lake com
+                # o mesmo sha256 é pulado antes da leitura.
+                if item.writer.is_current_member(
+                    path, group_key=item.group, partitions=item.partitions
+                ):
+                    result.skipped += 1
+                    continue
+                written = item.writer.write_member(
+                    _decode(path, item.dataset_id),
+                    path,
+                    group_key=item.group,
+                    partitions=item.partitions,
+                    member_columns=member,
+                    converter=converter_tag,
+                )
+            except (LakeError, OSError, pl.exceptions.PolarsError, Exception) as exc:
+                result.errors.append(f"{path.name}: {_first_line(exc)}")
+                continue
+            if written.status == "skipped":
+                result.skipped += 1
+            else:
+                result.converted += 1
 
     def inventory(self, input_dir: Path) -> list[Planned]:
         """Um ``Planned`` por arquivo bruto: o dataset ou o motivo de ignorar.

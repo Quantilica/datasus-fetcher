@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import json
+import weakref
 from importlib.metadata import entry_points
 from pathlib import Path
 
+import polars as pl
+import pyarrow.parquet as pq
 import pytest
 
 pytest.importorskip("quantilica.analytics.lake")
@@ -150,6 +154,181 @@ def test_ufs_do_mesmo_periodo_dividem_um_parquet(tmp_path: Path) -> None:
     assert df.height == 2 * 2263
     assert df["uf"].unique().sort().to_list() == ["ac", "ro"]
     assert df["_origem"].unique().sort().to_list() == ["DOAC1996", "DORO1996"]
+
+
+def _periodo_com_ufs(raw_dir: Path, ufs: tuple[str, ...]) -> None:
+    raw_dir.mkdir(exist_ok=True)
+    for uf in ufs:
+        (raw_dir / f"DO{uf}1996.dbc").write_bytes(FIXTURE_DBC.read_bytes())
+
+
+def _metodo_antigo(raw_dir: Path, lake_dir: Path) -> None:
+    """O que o conversor fazia: um ``write_member`` por arquivo, na ordem."""
+    from quantilica.analytics.lake import LakeWriter
+    from quantilica.core.lake import DatasetDescriptor, partition_types_for
+
+    from datasus_fetcher import lake_bases, reader
+
+    writer = LakeWriter(
+        lake_dir / SOURCE_ID / "sim-do-cid10",
+        DatasetDescriptor(
+            source_id=SOURCE_ID,
+            dataset_id="sim-do-cid10",
+            alias="sim-do-cid10",
+            partition_keys=["ano"],
+            partition_types=partition_types_for(["ano"]),
+        ),
+    )
+    for path in sorted(raw_dir.glob("*.dbc")):
+        dataset_id, meta_dict = lake_module.route_file(path)
+        keys, values, member, group = lake_bases.group_partitions(
+            dataset_id, *resolve_partitions(meta_dict)
+        )
+        writer.write_member(
+            reader.read_dbc(path, clean=True, dataset=dataset_id, lowercase=True),
+            path,
+            group_key=group,
+            partitions=values,
+            member_columns=member,
+        )
+
+
+def test_grupo_em_uma_passada_igual_ao_membro_a_membro(tmp_path: Path) -> None:
+    if not FIXTURE_DBC.exists():
+        pytest.skip("Fixture DOAC1996.dbc não encontrada")
+    raw = tmp_path / "raw"
+    _periodo_com_ufs(raw, ("AC", "RO", "SP"))
+    novo, antigo = tmp_path / "novo", tmp_path / "antigo"
+
+    res = converter.convert(raw, novo)
+    assert not res.errors, res.errors
+    assert (res.converted, res.skipped) == (3, 0)
+    _metodo_antigo(raw, antigo)
+
+    rel = Path(SOURCE_ID) / "sim-do-cid10" / "ano=1996" / "sim-do-cid10_1996.parquet"
+    a, b = pq.ParquetFile(antigo / rel), pq.ParquetFile(novo / rel)
+    # Mesmo arquivo, mesmas colunas e tipos, mesma contagem de linhas.
+    assert [(f.name, f.type) for f in a.schema_arrow] == [
+        (f.name, f.type) for f in b.schema_arrow
+    ]
+    assert a.metadata.num_rows == b.metadata.num_rows == 3 * 2263
+    keys = ["uf", "_origem"]
+    da = pl.read_parquet(antigo / rel).sort(keys, maintain_order=True)
+    db = pl.read_parquet(novo / rel)
+    # Blocos na mesma ordem (UF, depois o bruto) e o mesmo conteúdo.
+    assert db.select(keys).to_series(0).to_list() == da["uf"].to_list()
+    assert db["_origem"].to_list() == da["_origem"].to_list()
+    assert db.sort(db.columns).equals(da.sort(da.columns))
+
+    # O rodapé guarda os mesmos membros.
+    def members(path: Path) -> dict:
+        kv = pq.ParquetFile(path).schema_arrow.metadata
+        entries = json.loads(kv[b"quantilica.members"])
+        return {
+            k: {f: v for f, v in e.items() if f != "converted_at"}
+            for k, e in entries.items()
+        }
+
+    assert members(antigo / rel) == members(novo / rel)
+    assert check_dataset(novo / SOURCE_ID / "sim-do-cid10") == []
+
+
+def test_grupo_nao_usa_write_member_nem_segura_dois_arquivos(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    if not FIXTURE_DBC.exists():
+        pytest.skip("Fixture DOAC1996.dbc não encontrada")
+    raw = tmp_path / "raw"
+    _periodo_com_ufs(raw, ("AC", "RO", "SP"))
+
+    def refuses(*args, **kwargs):
+        raise AssertionError("write_member não deve ser usado")
+
+    monkeypatch.setattr(lake_module.LakeWriter, "write_member", refuses)
+    alive: list[weakref.ref] = []
+    decode = lake_module._decode
+
+    def watched(path: Path, dataset_id: str) -> pl.DataFrame:
+        # Os arquivos anteriores já foram soltos quando o próximo é decodificado.
+        assert [r for r in alive if r() is not None] == []
+        frame = decode(path, dataset_id)
+        alive.append(weakref.ref(frame))
+        return frame
+
+    monkeypatch.setattr(lake_module, "_decode", watched)
+    res = converter.convert(raw, tmp_path / "lake")
+    assert not res.errors, res.errors
+    assert res.converted == 3
+    assert len(alive) == 3
+
+
+def test_grupo_so_decodifica_o_membro_novo(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    if not FIXTURE_DBC.exists():
+        pytest.skip("Fixture DOAC1996.dbc não encontrada")
+    raw, lake = tmp_path / "raw", tmp_path / "lake"
+    _periodo_com_ufs(raw, ("AC",))
+    assert converter.convert(raw, lake).converted == 1
+
+    _periodo_com_ufs(raw, ("AC", "RO"))
+    decoded: list[str] = []
+    decode = lake_module._decode
+
+    def counting(path: Path, dataset_id: str) -> pl.DataFrame:
+        decoded.append(path.name)
+        return decode(path, dataset_id)
+
+    monkeypatch.setattr(lake_module, "_decode", counting)
+    res = converter.convert(raw, lake)
+    assert not res.errors, res.errors
+    assert (res.converted, res.skipped) == (1, 1)
+    assert decoded == ["DORO1996.dbc"]
+    df = scan_dataset(lake / SOURCE_ID / "sim-do-cid10").collect()
+    assert df["uf"].unique().sort().to_list() == ["ac", "ro"]
+    # Nada a fazer na terceira vez.
+    decoded.clear()
+    res = converter.convert(raw, lake)
+    assert (res.converted, res.skipped) == (0, 2)
+    assert decoded == []
+
+
+def test_grupo_arquivo_ruim_nao_derruba_os_outros(tmp_path: Path) -> None:
+    if not FIXTURE_DBC.exists():
+        pytest.skip("Fixture DOAC1996.dbc não encontrada")
+    raw, lake = tmp_path / "raw", tmp_path / "lake"
+    _periodo_com_ufs(raw, ("AC", "SP"))
+    (raw / "DORO1996.dbc").write_bytes(b"isto nao e um dbc")
+
+    res = converter.convert(raw, lake)
+    assert len(res.errors) == 1
+    assert res.errors[0].startswith("DORO1996.dbc:")
+    assert (res.converted, res.skipped) == (2, 0)
+    df = scan_dataset(lake / SOURCE_ID / "sim-do-cid10").collect()
+    assert df["uf"].unique().sort().to_list() == ["ac", "sp"]
+
+
+def test_grupo_recusado_cai_para_membro_a_membro(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    if not FIXTURE_DBC.exists():
+        pytest.skip("Fixture DOAC1996.dbc não encontrada")
+    raw, lake = tmp_path / "raw", tmp_path / "lake"
+    _periodo_com_ufs(raw, ("AC", "RO"))
+
+    def refuses(*args, **kwargs):
+        raise lake_module.LakeError("esquema diferente")
+
+    monkeypatch.setattr(lake_module.LakeWriter, "write_group", refuses)
+    res = converter.convert(raw, lake)
+    assert not res.errors, res.errors
+    assert (res.converted, res.skipped) == (2, 0)
+    df = scan_dataset(lake / SOURCE_ID / "sim-do-cid10").collect()
+    assert df.height == 2 * 2263
+    assert df["uf"].unique().sort().to_list() == ["ac", "ro"]
+    # Pulado na segunda rodada, também pelo caminho de reserva.
+    res = converter.convert(raw, lake)
+    assert (res.converted, res.skipped) == (0, 2)
 
 
 def test_inventory_roteia_e_ignora(tmp_path: Path) -> None:
