@@ -10,11 +10,14 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ### Alterado
 
 - `lake`: o Parquet de um período (todas as UFs de um mês, `<dataset>_<AAAAMM>.parquet`) passa a ser escrito numa única passada, um bruto por vez, em vez de montar o período em memória. Antes, cada DBC era decodificado, copiado para o DuckDB por Arrow e o arquivo acumulado do mês era lido, ordenado e reescrito a cada UF (31 vezes no `sia-pa`). Agora cada bruto é decodificado, gravado num Parquet temporário e solto antes do próximo, e `LakeWriter.write_group` funde os temporários uma vez, com spill em disco, ordenando por UF e `_origem` como antes. O layout do lake não muda (mesmas partições `ano=/mes=`, mesmo nome de arquivo, mesmas colunas e tipos, mesma contagem de linhas e mesmos blocos por UF; o rodapé guarda os mesmos membros). Medido no `sia-pa` de 2024-01 (31 DBC, 52,8 milhões de linhas por 62 colunas), com teto de 14 GB de memória: 20 min 43 s, pico de RSS de 9,7 GB; o método anterior passou de 17 GB de memória anônima e não terminou em 26 min.
-- Só o que mudou de arquivo é decodificado, como antes: o grupo em dia é pulado e um membro novo não reabre os que já estão no arquivo. Os membros que já estão no Parquet e não estão mais no bruto continuam nele (`prune=False`).
+- Só o que mudou de arquivo é decodificado, como antes: o período em dia é pulado e um membro novo não reabre os que já estão no arquivo. Os membros que já estão no Parquet e não estão mais no bruto continuam nele (`prune=False`).
+- Duas versões do mesmo bruto na pasta (`X@20260906.dbc` e `X@20261016.dbc`) valem uma só: a mais nova é convertida e a antiga nem é decodificada (`quantilica.core.lake.select_current`, antes de agrupar). Sem isso as duas viravam o mesmo membro e o período inteiro dava erro.
+- Os Parquets temporários dos brutos ficam no diretório de trabalho do lake (`QUANTILICA_LAKE_SCRATCH`, ou o temporário do sistema se não houver) e cada um é apagado assim que o escritor o copia. Cada bruto é decodificado uma vez: os ilegíveis são separados antes de o escritor começar, em vez de reiniciar o período.
+- `ConvertResult.fallbacks` conta os períodos regravados membro a membro (ver abaixo).
 
 ### Corrigido
 
-- `lake`: um bruto ilegível (DBC corrompido) é relatado em `errors` e deixado de fora; os outros arquivos do período são gravados, sem perder as linhas que o Parquet já tinha. Um período que o escritor recusa por inteiro (`LakeError`, por exemplo colunas diferentes entre as UFs) é regravado membro a membro, pelo caminho antigo.
+- `lake`: um bruto ilegível (DBC corrompido) é relatado em `errors` e deixado de fora; os outros arquivos do período são gravados, sem perder as linhas que o Parquet já tinha. Um período que o escritor recusa por esquema (colunas ou tipos diferentes entre as UFs) é regravado membro a membro, pelo caminho antigo, com aviso no log e contado em `fallbacks`. Qualquer outra recusa (linhas que não fecham, arquivo que não é o do período) é erro do período, sem regravar.
 
 ## [0.20.1] - 2026-11-19
 
