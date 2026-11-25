@@ -317,18 +317,123 @@ def test_grupo_recusado_cai_para_membro_a_membro(
     _periodo_com_ufs(raw, ("AC", "RO"))
 
     def refuses(*args, **kwargs):
-        raise lake_module.LakeError("esquema diferente")
+        raise lake_module.LakeError(
+            "x: column 'a' is BIGINT but the group has VARCHAR; "
+            "declare the type in `schema`"
+        )
 
     monkeypatch.setattr(lake_module.LakeWriter, "write_group", refuses)
     res = converter.convert(raw, lake)
     assert not res.errors, res.errors
-    assert (res.converted, res.skipped) == (2, 0)
+    assert (res.converted, res.skipped, res.fallbacks) == (2, 0, 1)
     df = scan_dataset(lake / SOURCE_ID / "sim-do-cid10").collect()
     assert df.height == 2 * 2263
     assert df["uf"].unique().sort().to_list() == ["ac", "ro"]
     # Pulado na segunda rodada, também pelo caminho de reserva.
     res = converter.convert(raw, lake)
     assert (res.converted, res.skipped) == (0, 2)
+
+
+def test_grupo_recusa_de_integridade_e_erro_nao_queda(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    if not FIXTURE_DBC.exists():
+        pytest.skip("Fixture DOAC1996.dbc não encontrada")
+    raw = tmp_path / "raw"
+    _periodo_com_ufs(raw, ("AC", "RO"))
+
+    def refuses(*args, **kwargs):
+        raise lake_module.LakeError("group: the file has 1 rows but its members add up")
+
+    monkeypatch.setattr(lake_module.LakeWriter, "write_group", refuses)
+    monkeypatch.setattr(lake_module.LakeWriter, "write_member", refuses)
+    res = converter.convert(raw, tmp_path / "lake")
+    assert res.fallbacks == 0
+    assert res.converted == 0
+    assert len(res.errors) == 1
+    assert res.errors[0].startswith("sim-do-cid10_1996:")
+
+
+def test_duas_versoes_do_mesmo_bruto_valem_a_mais_nova(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    if not FIXTURE_DBC.exists():
+        pytest.skip("Fixture DOAC1996.dbc não encontrada")
+    raw, lake = tmp_path / "raw", tmp_path / "lake"
+    _periodo_com_ufs(raw, ("RO",))
+    # AC publicado duas vezes: a versão velha está ilegível e não pode ser aberta.
+    (raw / "DOAC1996@20260906.dbc").write_bytes(b"versao velha")
+    (raw / "DOAC1996@20261016.dbc").write_bytes(FIXTURE_DBC.read_bytes())
+    decoded: list[str] = []
+    decode = lake_module._decode
+
+    def counting(path: Path, dataset_id: str) -> pl.DataFrame:
+        decoded.append(path.name)
+        return decode(path, dataset_id)
+
+    monkeypatch.setattr(lake_module, "_decode", counting)
+    res = converter.convert(raw, lake)
+    assert not res.errors, res.errors
+    assert (res.converted, res.skipped) == (2, 0)
+    assert sorted(decoded) == ["DOAC1996@20261016.dbc", "DORO1996.dbc"]
+    df = scan_dataset(lake / SOURCE_ID / "sim-do-cid10").collect()
+    assert df["uf"].unique().sort().to_list() == ["ac", "ro"]
+    assert df["_origem"].unique().sort().to_list() == ["DOAC1996", "DORO1996"]
+
+
+def test_grupo_cada_bruto_e_decodificado_uma_vez_mesmo_com_um_ruim(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    if not FIXTURE_DBC.exists():
+        pytest.skip("Fixture DOAC1996.dbc não encontrada")
+    raw = tmp_path / "raw"
+    _periodo_com_ufs(raw, ("AC", "RO"))
+    (raw / "DOSP1996.dbc").write_bytes(b"isto nao e um dbc")  # o último da ordem
+    decoded: list[str] = []
+    decode = lake_module._decode
+
+    def counting(path: Path, dataset_id: str) -> pl.DataFrame:
+        decoded.append(path.name)
+        return decode(path, dataset_id)
+
+    monkeypatch.setattr(lake_module, "_decode", counting)
+    res = converter.convert(raw, tmp_path / "lake")
+    assert len(res.errors) == 1 and res.errors[0].startswith("DOSP1996.dbc:")
+    assert (res.converted, res.skipped) == (2, 0)
+    assert sorted(decoded) == ["DOAC1996.dbc", "DORO1996.dbc", "DOSP1996.dbc"]
+
+
+def test_grupo_temporarios_ficam_no_scratch_e_somem(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    if not FIXTURE_DBC.exists():
+        pytest.skip("Fixture DOAC1996.dbc não encontrada")
+    raw = tmp_path / "raw"
+    _periodo_com_ufs(raw, ("AC", "RO", "SP"))
+    scratch = tmp_path / "scratch"
+    monkeypatch.setenv("QUANTILICA_LAKE_SCRATCH", str(scratch))
+    seen: list[Path] = []
+    decode = lake_module._decode
+    alive: list[int] = []
+    stage = lake_module.LakeWriter._stage_member
+
+    def staging(self, *args, **kwargs):
+        # O temporário do membro anterior sai quando o escritor pede o próximo.
+        alive.append(len(list(scratch.glob("datasus-members-*/*.parquet"))))
+        return stage(self, *args, **kwargs)
+
+    monkeypatch.setattr(lake_module.LakeWriter, "_stage_member", staging)
+
+    def watching(path: Path, dataset_id: str) -> pl.DataFrame:
+        seen.extend(scratch.glob("datasus-members-*"))
+        return decode(path, dataset_id)
+
+    monkeypatch.setattr(lake_module, "_decode", watching)
+    res = converter.convert(raw, tmp_path / "lake")
+    assert not res.errors, res.errors
+    assert seen and all(p.parent == scratch for p in seen)
+    assert alive == [3, 2, 1]
+    assert list(scratch.glob("datasus-members-*")) == []
 
 
 def test_inventory_roteia_e_ignora(tmp_path: Path) -> None:

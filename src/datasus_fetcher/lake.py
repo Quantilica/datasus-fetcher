@@ -13,7 +13,9 @@ partitioning contract.
 
 from __future__ import annotations
 
+import itertools
 import logging
+import os
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -22,12 +24,17 @@ from typing import TYPE_CHECKING, Any
 try:
     import polars as pl
     from quantilica.analytics.lake import (
+        LAKE_SCRATCH_ENV,
         ORIGIN_COLUMN,
         GroupMember,
         LakeError,
         LakeWriter,
     )
-    from quantilica.core.lake import DatasetDescriptor, partition_types_for
+    from quantilica.core.lake import (
+        DatasetDescriptor,
+        partition_types_for,
+        select_current,
+    )
 except ImportError as exc:
     raise ImportError(
         "datasus_fetcher.lake requer o extra 'analysis': "
@@ -43,6 +50,11 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+# The writer's refusals for members whose columns or types differ all point to
+# its ``schema`` argument; the other ``LakeError`` (rows that do not add up, a
+# file that is not the group) are not a reason to rewrite the period.
+_SCHEMA_HINT = "`schema`"
+
 SOURCE_ID = "datasus"
 
 
@@ -53,6 +65,8 @@ class ConvertResult:
     converted: int = 0
     skipped: int = 0
     errors: list[str] = field(default_factory=list)
+    #: Períodos que o escritor recusou por esquema e foram regravados membro a membro.
+    fallbacks: int = 0
 
 
 def resolve_dataset_id(path: Path, meta_dict: dict[str, Any]) -> str | None:
@@ -195,6 +209,13 @@ class LakeConverter:
             result.errors.append(f"arquivo ou diretório '{input_dir}' não existe")
             return result
 
+        # Duas versões do mesmo bruto na pasta (``X@d1.dbc`` e ``X@d2.dbc``) têm a
+        # mesma chave de membro: vale a mais nova e a antiga nem é decodificada.
+        if input_dir.is_dir():
+            tabular = [p for p in files if p.suffix.lower() in {".dbc", ".dbf"}]
+            current = set(select_current(tabular))
+            files = [p for p in files if p not in tabular or p in current]
+
         allowed = set(datasets) if datasets else None
         writers: dict[str, LakeWriter] = {}
         groups: dict[tuple, _Group] = {}
@@ -264,41 +285,83 @@ class LakeConverter:
     def _write_group(item: _Group, result: ConvertResult) -> None:
         """Write the grouped Parquet of a period without holding it in memory.
 
-        Each raw file is decoded on its own, written to a temporary Parquet and
-        released before the next one is read; ``LakeWriter.write_group`` then
-        merges the temporary files in DuckDB, spilling to disk, and writes the
-        period's file once, sorted by the member columns and ``_origem``, as
-        ``write_member`` left it. The peak follows the largest raw file, never
-        the period (``sia-pa``: ~20 million rows by 76 columns per month).
+        Each raw file that has to be written is decoded on its own, written to a
+        temporary Parquet and released before the next one is read; a file that
+        cannot be decoded is reported and left out *before* the writer starts, so
+        no decode is repeated. ``LakeWriter.write_group`` then merges the
+        temporary files in DuckDB, spilling to disk, and writes the period's file
+        once, sorted by the member columns and ``_origem``, as ``write_member``
+        left it; each temporary file is removed as soon as the writer has copied
+        it. The peak follows the largest raw file, never the period (``sia-pa``:
+        52 million rows by 62 columns in a month).
 
-        A raw file that cannot be decoded is reported and left out; the rest of
-        the group is written and the file's previous rows (``prune=False``) stay.
-        A group the writer refuses as a whole (``LakeError``, for instance
-        members whose columns differ) is rewritten member by member, which
-        merges them by column name as before.
+        The rows a file had in the Parquet stay if it is left out
+        (``prune=False``), as do members whose raw file is gone. A period the
+        writer refuses because the members' columns or types differ is rewritten
+        member by member, which merges them by column name as before, and is
+        counted in ``result.fallbacks``; any other refusal (rows that do not add
+        up, a file that is not the group) is an error of the period.
         """
         converter_tag = f"datasus-fetcher {__version__}"
         remaining = list(item.files)
-        with tempfile.TemporaryDirectory(prefix="datasus-members-") as tmp:
+        scratch = os.environ.get(LAKE_SCRATCH_ENV)
+        if scratch:
+            Path(scratch).mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(
+            prefix="datasus-members-", dir=scratch or None
+        ) as tmp:
             stage = Path(tmp)
-            while remaining:
+            staged: dict[Path, Path] = {}
 
-                def staged(path: Path, number: int) -> Path:
-                    try:
-                        frame = _decode(path, item.dataset_id)
-                        out = stage / f"{number:06d}.parquet"
-                        frame.write_parquet(out, compression="lz4")
-                    except Exception as exc:
-                        raise _MemberFailed(path, exc) from exc
-                    return out
+            counter = itertools.count()
+            asked: list[Path] = []
 
-                members = [
-                    GroupMember(
-                        path,
-                        data=lambda path=path, number=number: staged(path, number),
-                        columns=member,
+            def decode(path: Path) -> Path:
+                """The member's rows as a temporary Parquet (decoded once)."""
+                if path in staged:
+                    return staged[path]
+                out = stage / f"{next(counter):06d}.parquet"
+                try:
+                    frame = _decode(path, item.dataset_id)
+                    frame.write_parquet(out, compression="lz4")
+                except Exception as exc:
+                    out.unlink(missing_ok=True)
+                    raise _MemberFailed(path, exc) from exc
+                staged[path] = out
+                return out
+
+            def release(path: Path) -> Path:
+                # The writer copied the member it asked for last before asking
+                # for this one: its temporary file is no longer needed.
+                for done in asked:
+                    staged.pop(done).unlink(missing_ok=True)
+                asked.clear()
+                out = decode(path)
+                asked.append(path)
+                return out
+
+            # Decode up front what the writer would ask for, so a bad file is
+            # dropped now and the writer runs once.
+            for path, _member in list(remaining):
+                try:
+                    if item.writer.is_current_member(
+                        path, group_key=item.group, partitions=item.partitions
+                    ):
+                        continue
+                    decode(path)
+                except _MemberFailed as failed:
+                    result.errors.append(
+                        f"{failed.path.name}: {_first_line(failed.cause)}"
                     )
-                    for number, (path, member) in enumerate(remaining)
+                    remaining = [(p, m) for p, m in remaining if p != failed.path]
+                except Exception as exc:
+                    result.errors.append(f"{path.name}: {_first_line(exc)}")
+                    remaining = [(p, m) for p, m in remaining if p != path]
+
+            while remaining:
+                members = [
+                    GroupMember(path, data=lambda path=path: release(path), columns=m)
+                    for path, m in remaining
                 ]
                 try:
                     written = item.writer.write_group(
@@ -310,17 +373,23 @@ class LakeConverter:
                         sort_by=[*remaining[0][1], ORIGIN_COLUMN],
                     )
                 except _MemberFailed as failed:
+                    # Only a file the up-front pass saw as current but the writer
+                    # did not (its member columns changed) can fail here.
                     result.errors.append(
                         f"{failed.path.name}: {_first_line(failed.cause)}"
                     )
                     remaining = [(p, m) for p, m in remaining if p != failed.path]
                     continue
                 except LakeError as exc:
+                    if _SCHEMA_HINT not in str(exc):
+                        result.errors.append(f"{item.group}: {_first_line(exc)}")
+                        return
                     logger.warning(
                         "lake: group %s refused (%s); writing it member by member",
                         item.group,
                         _first_line(exc),
                     )
+                    result.fallbacks += 1
                     LakeConverter._write_members(item, remaining, converter_tag, result)
                     return
                 except (OSError, pl.exceptions.PolarsError, Exception) as exc:
