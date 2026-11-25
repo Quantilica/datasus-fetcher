@@ -111,3 +111,100 @@ def test_convert_base_zips(tmp_path: Path) -> None:
     pop = scan_dataset(lake / "base-populacional-ibge-pop").collect()
     assert pop["ano"].unique().to_list() == [2022]
     assert converter.convert(raw, tmp_path / "lake").skipped == 3
+
+
+POP_DIR = "base-populacional-ibge-pop/2022"
+POP = "base-populacional-ibge-pop_2022-br"
+CONV_DIR = "base-territorial-conversao"
+CNV_OUTRO = (
+    "4 6\r\n"
+    "      1  13001 Rio Negro                                    130010,130020\r\n"
+)
+
+
+def _pop_zip(raw: Path, stamp: str, *, extra: bool = False) -> Path:
+    members = {"POPBR22.DBF": DBF.read_bytes()}
+    if extra:  # bytes diferentes, mesmos dados
+        members["LEIAME.txt"] = b"revisao"
+    return _zip(raw / POP_DIR / f"{POP}@{stamp}.zip", members)
+
+
+def _linhas(lake: Path, dataset: str) -> int:
+    return scan_dataset(lake / "datasus" / dataset).collect().height
+
+
+def test_versoes_antigas_das_bases_nao_sao_abertas(tmp_path: Path) -> None:
+    raw, lake = tmp_path / "raw", tmp_path / "lake"
+    # As versões antigas são ZIPs inválidos: abri-las seria erro contado.
+    for antigo in (
+        raw / POP_DIR / f"{POP}@20240101.zip",
+        raw / CONV_DIR / f"{CONV_DIR}_ac@20261001.zip",
+    ):
+        antigo.parent.mkdir(parents=True, exist_ok=True)
+        antigo.write_bytes(b"nao e um zip")
+    _pop_zip(raw, "20240601")
+    _zip(
+        raw / CONV_DIR / f"{CONV_DIR}_ac@20261015.zip",
+        {"AC_regsaud.cnv": CNV_SIMPLES.encode("latin-1")},
+    )
+
+    res = converter.convert(raw, lake)
+    assert (res.converted, res.errors) == (2, [])
+
+    res2 = converter.convert(raw, lake)
+    assert (res2.converted, res2.skipped, res2.errors) == (0, 2, [])
+
+
+def test_versao_nova_das_bases_substitui_sem_duplicar(tmp_path: Path) -> None:
+    raw, lake = tmp_path / "raw", tmp_path / "lake"
+    _pop_zip(raw, "20240101")
+    _zip(
+        raw / CONV_DIR / f"{CONV_DIR}_ac@20261001.zip",
+        {"AC_regsaud.cnv": CNV_SIMPLES.encode("latin-1")},
+    )
+    assert converter.convert(raw, lake).errors == []
+    pop_antes = _linhas(lake, "base-populacional-ibge-pop")
+    cnv_antes = _linhas(lake, "base-territorial-conversao")
+
+    _pop_zip(raw, "20240601", extra=True)
+    _zip(
+        raw / CONV_DIR / f"{CONV_DIR}_ac@20261015.zip",
+        {
+            "AC_regsaud.cnv": CNV_SIMPLES.encode("latin-1"),
+            "AC_outro.cnv": CNV_OUTRO.encode("latin-1"),
+        },
+    )
+    res = converter.convert(raw, lake)
+    assert (res.converted, res.skipped, res.errors) == (2, 0, [])
+
+    # mesmas linhas da população (a versão nova, não a soma das duas) e as da
+    # conversão da versão nova (5 + 2 códigos), sem sobra da antiga
+    assert _linhas(lake, "base-populacional-ibge-pop") == pop_antes
+    assert cnv_antes == 5
+    assert _linhas(lake, "base-territorial-conversao") == 7
+
+    # e a rodada seguinte não reconverte nada
+    res3 = converter.convert(raw, lake)
+    assert (res3.converted, res3.skipped, res3.errors) == (0, 2, [])
+
+
+def test_inventario_marca_as_versoes_antigas_das_bases(tmp_path: Path) -> None:
+    raw = tmp_path / "raw"
+    antigo_pop = _pop_zip(raw, "20240101")
+    novo_pop = _pop_zip(raw, "20240601")
+    antigo_cnv = _zip(
+        raw / CONV_DIR / f"{CONV_DIR}_ac@20261001.zip", {"AC.cnv": CNV_SIMPLES.encode()}
+    )
+    novo_cnv = _zip(
+        raw / CONV_DIR / f"{CONV_DIR}_ac@20261015.zip", {"AC.cnv": CNV_SIMPLES.encode()}
+    )
+    outra_uf = _zip(
+        raw / CONV_DIR / f"{CONV_DIR}_am@20261001.zip", {"AM.cnv": CNV_SIMPLES.encode()}
+    )
+
+    got = {p.path: (p.dataset, p.skip_reason) for p in converter.inventory(raw)}
+    assert got[antigo_pop] == (None, "superado")
+    assert got[novo_pop] == ("base-populacional-ibge-pop", None)
+    assert got[antigo_cnv] == (None, "superado")
+    assert got[novo_cnv] == (CONV_DIR, None)
+    assert got[outra_uf] == (CONV_DIR, None)  # outra UF é outro arquivo

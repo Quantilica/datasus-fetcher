@@ -471,6 +471,18 @@ def test_inventory_roteia_e_ignora(tmp_path: Path) -> None:
     assert (new.dataset, new.skip_reason) == ("base-territorial", None)
 
 
+def test_inventory_marca_versoes_antigas_do_dbc(tmp_path: Path) -> None:
+    raw = tmp_path / "raw" / "sih-rd"
+    raw.mkdir(parents=True)
+    for nome in ("RDSP2401@20260906.dbc", "RDSP2401@20261016.dbc", "RDSP2402.dbc"):
+        (raw / nome).write_bytes(b"x")
+
+    got = {p.path.name: (p.dataset, p.skip_reason) for p in converter.inventory(raw)}
+    assert got["RDSP2401@20260906.dbc"] == (None, "superado")
+    assert got["RDSP2401@20261016.dbc"] == ("sih-rd", None)
+    assert got["RDSP2402.dbc"] == ("sih-rd", None)
+
+
 def test_inventory_coincide_com_convert(tmp_path: Path) -> None:
     if not FIXTURE_DBC.exists():
         pytest.skip("Fixture DOAC1996.dbc não encontrada")

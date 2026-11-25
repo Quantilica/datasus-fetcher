@@ -442,10 +442,13 @@ class LakeConverter:
 
         - ``.dbc``/``.dbf``: o dataset de ``route_file`` (sem dataset
           identificável, o item fica sem destino nem motivo, como o erro de
-          ``convert``);
+          ``convert``); as versões anteriores de um mesmo bruto
+          (``X@20260906.dbc`` ao lado de ``X@20261016.dbc``) vêm como
+          ``"superado"``;
         - ``.zip`` de base auxiliar (população do IBGE, base territorial,
-          conversão do TabWin): o dataset da pasta; os ZIPs de ``base-territorial``
-          anteriores ao mais recente vêm como ``"superado"``;
+          conversão do TabWin): o dataset da pasta; as versões anteriores do mesmo
+          ZIP (população e conversão) e os ZIPs de ``base-territorial`` anteriores
+          ao mais recente vêm como ``"superado"``;
         - qualquer outro arquivo (mapas, ZIPs de mapas, ``.cnv``, ``.def``,
           documentação): ``"nao_tabular"``.
 
@@ -473,9 +476,14 @@ class LakeConverter:
         planned: list[Planned | None] = []
         base_zips: list[tuple[Path, str, None]] = []
         zip_slots: dict[Path, int] = {}
+        tabular = [p for p in files if p.suffix.lower() in {".dbc", ".dbf"}]
+        vigentes = set(select_current(tabular)) if not input_dir.is_file() else None
         for path in files:
             suffix = path.suffix.lower()
             if suffix in {".dbc", ".dbf"}:
+                if vigentes is not None and path not in vigentes:
+                    planned.append(Planned(path, skip_reason="superado"))
+                    continue
                 dataset_id, _ = route_file(path)
                 planned.append(Planned(path, dataset=dataset_id))
             elif suffix == ".zip" and not input_dir.is_file():
@@ -489,9 +497,9 @@ class LakeConverter:
             else:
                 planned.append(Planned(path, skip_reason="nao_tabular"))
 
-        latest = lake_bases.latest_territorial(base_zips)
+        vigentes_bases = lake_bases.current_zips(base_zips)
         for path, dataset_id, _ in base_zips:
-            superseded = dataset_id == lake_bases.TERRITORIAL and path != latest
+            superseded = path not in vigentes_bases
             planned[zip_slots[path]] = (
                 Planned(path, skip_reason="superado")
                 if superseded

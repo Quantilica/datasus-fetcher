@@ -1,11 +1,13 @@
 """Bases auxiliares do DATASUS distribuídas em ZIP, para o lake.
 
-- ``base-populacional-ibge-pop*``: um DBF de população por ano (``ano=``, com ``uf``).
+- ``base-populacional-ibge-pop*``: um DBF de população por ano (``ano=``, com ``uf``);
+  de cada ZIP só a versão vigente (``@AAAAMMDD`` mais novo) vale.
 - ``base-territorial``: tabelas de referência (``tb_municip``, ``rl_municip_*``...);
   só o ZIP mais recente vale, e cada tabela vira o dataset
   ``base-territorial-<tabela>``.
 - ``base-territorial-conversao``: arquivos ``.cnv`` do TabWin (categorias e os
-  códigos de cada uma), uma linha por código, com a UF numa coluna.
+  códigos de cada uma), uma linha por código, com a UF numa coluna; só a versão
+  vigente de cada ZIP vale.
 
 Os mapas (``base-territorial-mapas``, ``.MAP``) são polígonos e ficam fora.
 """
@@ -21,7 +23,11 @@ from typing import Any
 
 import polars as pl
 from quantilica.analytics.lake import LakeWriter
-from quantilica.core.lake import DatasetDescriptor, partition_types_for
+from quantilica.core.lake import (
+    DatasetDescriptor,
+    partition_types_for,
+    select_current,
+)
 
 from datasus_fetcher import __version__, reader
 
@@ -31,7 +37,7 @@ TERRITORIAL = "base-territorial"
 CONVERSAO = "base-territorial-conversao"
 
 _UF = re.compile(r"_(?P<uf>[a-z]{2})@", re.IGNORECASE)
-_STAMP = re.compile(r"@(?P<stamp>\d{8})")
+_STAMP = re.compile(r"@(?P<stamp>\d{8})(?:T(?P<hora>\d{6}))?")
 # Linha de um .cnv: sequência nas 7 primeiras colunas (às vezes precedida de um
 # marcador de subtotal, "  1   2"), descrição e, no fim, os códigos de tamanho L
 # (do cabeçalho "<categorias> <L>"), com vírgulas e faixas "a-b".
@@ -140,7 +146,7 @@ def read_cnv(text: str, table: str) -> pl.DataFrame:
 
 def _stamp(path: Path) -> str:
     match = _STAMP.search(path.name)
-    return match["stamp"] if match else ""
+    return f"{match['stamp']}{match['hora'] or '000000'}" if match else ""
 
 
 def latest_territorial(zips: list[tuple[Path, str, Any]]) -> Path | None:
@@ -158,6 +164,24 @@ def latest_territorial(zips: list[tuple[Path, str, Any]]) -> Path | None:
     return latest[0] if latest else None
 
 
+def current_zips(zips: list[tuple[Path, str, Any]]) -> set[Path]:
+    """Os ZIPs das bases que valem: o resto é versão anterior (``superado``).
+
+    O bruto guarda cada versão carimbada (``X@20261015.zip``, ``X@20261101.zip``) e
+    todas mapeiam para o mesmo membro do lake. Na população e na conversão vale a
+    mais nova de cada arquivo (``select_current``: mesma pasta e mesmo nome sem o
+    carimbo). A base territorial muda de nome a cada edição
+    (``..._jan24@...``, ``..._jan25@...``), então só vale o ZIP de carimbo mais
+    recente de todos (:func:`latest_territorial`).
+    """
+    others = [z[0] for z in zips if z[1] != TERRITORIAL]
+    keep = set(select_current(others))
+    latest = latest_territorial(zips)
+    if latest is not None:
+        keep.add(latest)
+    return keep
+
+
 def convert_base_zips(
     zips: list[tuple[Path, str, dict[str, Any]]],
     writer_for: Callable[[str, list[str]], LakeWriter],
@@ -171,8 +195,10 @@ def convert_base_zips(
         result: ``ConvertResult`` do conversor (contagens e erros).
     """
     converter = f"datasus-fetcher {__version__}"
-    latest = latest_territorial(zips)
+    vigentes = current_zips(zips)
     for path, dataset_id, partitions in zips:
+        if path not in vigentes:
+            continue  # versão anterior do mesmo bruto: nem é aberta
         try:
             if dataset_id.startswith(POPULACIONAL):
                 _populacional(
@@ -180,7 +206,7 @@ def convert_base_zips(
                 )
             elif dataset_id == CONVERSAO:
                 _conversao(path, writer_for, result, converter)
-            elif latest is not None and path == latest:
+            elif dataset_id == TERRITORIAL:
                 _territorial(path, writer_for, result, converter)
         except Exception as exc:  # noqa: BLE001 - registra e segue
             message = str(exc).strip()
